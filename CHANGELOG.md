@@ -6,6 +6,13 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+### Fixed
+
+- License page: the fwtool.py link pointed to a repository that does not exist.
+- License page: the Nex-Hack wiki is offline; the link now leads to its archived copy.
+- Windows installer: *Delete the application data* during uninstallation now
+  also removes imported keys, plugins, edited translations and rollback copies.
+
 ## [1.0.0] - 2026-10-16
 
 The first public release: a new implementation of the ideas behind

@@ -385,7 +385,19 @@ jobs:
           Each file has a `.sha256` beside it. That confirms the download
           arrived intact, not who produced it.
           EOF
-          } > notes.md
+          } > notes.raw
+          # Release bodies render every line break, so join wrapped lines into
+          # one line per paragraph or list item; headings and tables stay as they are.
+          awk '
+            function flush() { if (buf != "") print buf; buf = "" }
+            /^```/ { flush(); code = !code; print; next }
+            code { print; next }
+            /^[[:space:]]*$/ { flush(); print ""; next }
+            /^(#|\|)/ { flush(); print; next }
+            /^([-*] |[0-9]+\. )/ { flush(); buf = $0; next }
+            { line = $0; sub(/^[[:space:]]+/, "", line); buf = (buf == "") ? line : buf " " line }
+            END { flush() }
+          ' notes.raw > notes.md
           cat notes.md
 
       - name: Create GitHub release

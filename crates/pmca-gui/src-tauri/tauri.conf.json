@@ -46,6 +46,11 @@
       "../../../updatershell/bodyfs": "bodyfs",
       "../../../LICENSE.txt": "LICENSE.txt",
       "../../../THIRD-PARTY.md": "THIRD-PARTY.md"
+    },
+    "windows": {
+      "nsis": {
+        "installerHooks": "./windows/hooks.nsh"
+      }
     }
   }
 }

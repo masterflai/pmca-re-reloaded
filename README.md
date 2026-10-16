@@ -321,7 +321,7 @@ import (from the address you enter). There is no telemetry.
 PMCA-RE RELOADED builds on the research of
 [Sony-PMCA-RE](https://github.com/ma1co/Sony-PMCA-RE) by ma1co, which first
 worked out camera detection, the external command protocol, the updater
-procedure and service mode, and of [fwtool](https://github.com/ma1co/fwtool),
+procedure and service mode, and of [fwtool.py](https://github.com/ma1co/fwtool.py),
 whose work on Sony's firmware format underlies the generation of update images.
 Sony-PMCA-RE targets Python 2 and depends in parts
 on services Sony has since shut down. This project continues the idea as a new
@@ -334,7 +334,8 @@ Thanks to ma1co and the contributors to
 [OpenMemories: Platform](https://github.com/ma1co/OpenMemories-Platform), the
 [app list](https://github.com/ma1co/OpenMemories-AppList) and the
 [device documentation](https://openmemories.readthedocs.io/devices.html); to the
-people at [nex-hack](https://www.personal-view.com/faqs/sony-hack/hack-development);
+people at [nex-hack](https://web.archive.org/web/20201027234246/http://www.personal-view.com/faqs/sony-hack/hack-development)
+(archived);
 and to [zv-e10-re](https://github.com/qn06142/zv-e10-re), whose research
 confirmed several findings on newer camera generations.
 

@@ -131,7 +131,7 @@ pub const SECTIONS: &[AboutSection] = &[
 /// The original project and the work that grew around it.
 pub const LINKS: &[AboutLink] = &[
     AboutLink { label: "about-link-original", url: "https://github.com/ma1co/Sony-PMCA-RE" },
-    AboutLink { label: "about-link-fwtool", url: "https://github.com/ma1co/fwtool" },
+    AboutLink { label: "about-link-fwtool", url: "https://github.com/ma1co/fwtool.py" },
     AboutLink { label: "about-link-tweak", url: "https://github.com/ma1co/OpenMemories-Tweak" },
     AboutLink { label: "about-link-applist", url: "https://github.com/ma1co/OpenMemories-AppList" },
     AboutLink {
@@ -144,7 +144,8 @@ pub const LINKS: &[AboutLink] = &[
     },
     AboutLink {
         label: "about-link-nexhack",
-        url: "https://www.personal-view.com/faqs/sony-hack/hack-development",
+        // The wiki is offline; this is its last complete archived copy.
+        url: "https://web.archive.org/web/20201027234246/http://www.personal-view.com/faqs/sony-hack/hack-development",
     },
     AboutLink { label: "about-link-zve10", url: "https://github.com/qn06142/zv-e10-re" },
 ];
