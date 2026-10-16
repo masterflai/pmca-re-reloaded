@@ -313,6 +313,11 @@ jobs:
     permissions:
       contents: write
     steps:
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: CHANGELOG.md
+          sparse-checkout-cone-mode: false
+
       - name: Download artifacts
         uses: actions/download-artifact@v4
         with:
@@ -340,7 +345,15 @@ jobs:
         shell: bash
         run: |
           {
+            # The section of CHANGELOG.md for this version, without its heading.
+            version="${GITHUB_REF_NAME#v}"
+            awk -v v="$version" '
+              /^## \[/ { inside = index($0, "## [" v "]") == 1; next }
+              /^\[[^]]+\]: / { next }
+              inside { print }
+            ' CHANGELOG.md
             cat <<'EOF'
+
           ### Which file do I need?
 
           | System | Desktop app | Command line |
@@ -381,8 +394,9 @@ jobs:
           files: release/*
           name: PMCA-RE RELOADED ${{ github.ref_name }}
           draft: true
-          generate_release_notes: true
-          # Prepended to the generated notes. Every release repeats this,
-          # because whoever downloads a release rarely reads the README first,
-          # and macOS phrases the quarantine flag as file corruption.
+          # The curated CHANGELOG section replaces GitHub's commit list.
+          generate_release_notes: false
+          # The download table follows it in every release, because whoever
+          # downloads a release rarely reads the README first, and macOS
+          # phrases the quarantine flag as file corruption.
           body_path: notes.md

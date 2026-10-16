@@ -21,8 +21,20 @@
   <a href="https://github.com/masterflai/pmca-re-reloaded/releases/latest"><b>Download</b></a> ·
   <a href="#getting-started">Getting started</a> ·
   <a href="#what-it-does">What it does</a> ·
+  <a href="#supported-devices">Supported devices</a> ·
   <a href="#safety">Safety</a> ·
-  <a href="ARCHITECTURE.md">Architecture</a>
+  <a href="CHANGELOG.md">Changelog</a>
+</p>
+
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="docs/images/camera-info-dark.png">
+    <img src="docs/images/camera-info-light.png" width="49%" alt="Camera info page showing model, product code, serial number, firmware version and lens of a connected camera (example data)">
+  </picture>
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="docs/images/app-install-dark.png">
+    <img src="docs/images/app-install-light.png" width="49%" alt="Apps page: the community app store installing three selected apps one after another, the second at 64 percent">
+  </picture>
 </p>
 
 PMCA-RE RELOADED talks to Sony cameras and other Sony imaging devices through
@@ -55,6 +67,10 @@ in Rust, and it needs neither Python nor extra driver tools.
 | **21 languages** | Every text is translated, and each translation can be edited from within the app. |
 
 ## What it does
+
+<p align="center">
+  <img src="docs/images/demo.gif" width="720" alt="Short demo: reading the camera info, loading the community app list and installing three apps">
+</p>
 
 **Camera information** — model, firmware version, serial number and USB mode at
 a glance; the shutter count, read from any ARW, JPEG or HEIF photo the camera
@@ -101,6 +117,27 @@ app, so reaching them stays a deliberate step.
 Everything is also available on the command line; `pmca-console --help` lists
 the commands, for example `pmca-console info`, `pmca-console install --apk <file>`
 or `pmca-console tweaks`.
+
+## Supported devices
+
+What works depends on the camera's generation, not on this program:
+
+| | Camera info, shutter count, usage log | Apps | Firmware, updater shell | Settings memory, service shell |
+|---|:-:|:-:|:-:|:-:|
+| **Cameras with PlayMemories Camera Apps** (NEX, α, RX and other Cyber-shot models of roughly 2012–2017) | ✔ | ✔ | ✔ | ✔ |
+| **Newer Sony cameras** (roughly 2018 onwards) | ✔ | ✖ | ✖ | many models |
+| **Other Sony imaging devices** (camcorders, action cameras, compacts without app support) | ✔ | ✖ | model-dependent | model-dependent |
+
+The exact list is in the app: *Camera info → Compatible devices* shows every
+known model with its processor generation and which functions apply, and
+*More devices* adds further models together with what the community has
+reported. Before a function changes anything, the program checks the
+connected model against this list and warns when it is untested.
+
+The shutter count does not even need the camera: it is read from any photo
+the camera took. If you have used the program with a model, a
+[camera report](https://github.com/masterflai/pmca-re-reloaded/issues/new?template=camera_report.yml)
+helps everyone else.
 
 ## Downloads
 
@@ -229,9 +266,14 @@ the program at your own risk.
 
 Found a bug, or used the program with a camera model? Please open an
 [issue](https://github.com/masterflai/pmca-re-reloaded/issues/new/choose) —
-there is a form for camera reports. Do not post serial numbers or key material.
+there is a form for camera reports. Questions, ideas and experiences belong in
+[Discussions](https://github.com/masterflai/pmca-re-reloaded/discussions).
+Do not post serial numbers or key material.
 Security problems: please report them
 [privately](https://github.com/masterflai/pmca-re-reloaded/security/advisories/new).
+
+Translations and code are welcome — [CONTRIBUTING.md](CONTRIBUTING.md) explains
+how, including how to improve a language from within the app.
 
 ## Building from source
 

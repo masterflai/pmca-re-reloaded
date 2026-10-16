@@ -1,5 +1,8 @@
 blank_issues_enabled: true
 contact_links:
+  - name: Questions and experiences
+    url: https://github.com/masterflai/pmca-re-reloaded/discussions
+    about: Ask a question or share how the program works with your camera.
   - name: Security issue
     url: https://github.com/masterflai/pmca-re-reloaded/security/advisories/new
     about: Report a vulnerability privately instead of opening a public issue.
