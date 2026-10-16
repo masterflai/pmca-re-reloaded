@@ -1,9 +1,10 @@
 /** Administrator rights and the driver helper badge. */
 
 import { invoke } from "@tauri-apps/api/core";
+import type { ForeignDriver } from "./bindings/ForeignDriver";
 import type { Rights as DriverRights } from "./bindings/Rights";
-import { confirmed, make } from "./dom";
-import { errorText, tr } from "./i18n";
+import { chosen, confirmed, make, told } from "./dom";
+import { errorText, tr, trFill } from "./i18n";
 import { hostPlatform } from "./platform";
 
 // ---------------------------------------------------------------------------
@@ -76,4 +77,49 @@ export function translateElevation(): void {
   const title =
     driverRights === "elevated" ? `${tr("app-title")} (${tr("elevation-admin")})` : tr("app-title");
   void invoke("set_window_title", { title }).catch(() => undefined);
+}
+
+// ---------------------------------------------------------------------------
+// Drivers other tools left behind
+// ---------------------------------------------------------------------------
+
+/** `oem122.inf (libusb-win32), …` */
+function describe(drivers: ForeignDriver[]): string {
+  return drivers.map((d) => `${d.published} (${d.provider})`).join(", ");
+}
+
+/**
+ * Offer to remove driver packages Zadig or a similar tool installed for Sony
+ * devices, as users of the original Sony-PMCA-RE were told to.
+ *
+ * Windows hands the camera to such a package before this program can assign
+ * its own driver, so service mode fails in ways that explain nothing. Asked
+ * once per start, and only when there is something to remove.
+ */
+export async function offerForeignDriverCleanup(): Promise<void> {
+  if (hostPlatform !== "windows") return;
+  let found: ForeignDriver[];
+  try {
+    found = await invoke<ForeignDriver[]>("foreign_drivers");
+  } catch {
+    return;
+  }
+  if (found.length === 0) return;
+
+  const question = trFill("foreign-drivers-found", { packages: describe(found) });
+  if (!(await chosen(question, tr("btn-remove-foreign-drivers"), tr("btn-not-now"), true))) {
+    return;
+  }
+  try {
+    await invoke("remove_foreign_drivers");
+    const left = await invoke<ForeignDriver[]>("foreign_drivers");
+    if (left.length === 0) {
+      await told(tr("foreign-drivers-removed"), tr("btn-ok"));
+    } else {
+      await told(trFill("foreign-drivers-remaining", { packages: describe(left) }), tr("btn-ok"), true);
+    }
+  } catch (e) {
+    await told(errorText(e), tr("btn-ok"), true);
+  }
+  await refreshElevation();
 }

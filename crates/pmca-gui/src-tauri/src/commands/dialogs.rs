@@ -122,3 +122,24 @@ pub(crate) fn ask_choice(
         .parent(&window)
         .blocking_show()
 }
+
+/// Show a message with a single, named button, modal like [`ask_choice`].
+#[tauri::command(async)]
+pub(crate) fn show_message(
+    app: AppHandle,
+    window: Window,
+    message: String,
+    ok: String,
+    warning: Option<bool>,
+) {
+    let title = window.title().unwrap_or_default();
+    let kind =
+        if warning == Some(true) { MessageDialogKind::Warning } else { MessageDialogKind::Info };
+    app.dialog()
+        .message(message)
+        .title(title)
+        .kind(kind)
+        .buttons(MessageDialogButtons::OkCustom(ok))
+        .parent(&window)
+        .blocking_show();
+}

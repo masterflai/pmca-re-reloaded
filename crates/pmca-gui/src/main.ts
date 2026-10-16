@@ -22,7 +22,12 @@ import { listen } from "@tauri-apps/api/event";
 import { showBusy, showDone, showNotice } from "./dom";
 import { setFileDrop } from "./drop";
 import { PROGRESS_EVENT, type AboutInfo, type ProgressPayload } from "./dto";
-import { driverRights, refreshElevation, setupElevationBadge } from "./elevation";
+import {
+  driverRights,
+  offerForeignDriverCleanup,
+  refreshElevation,
+  setupElevationBadge,
+} from "./elevation";
 import {
   LOCALE_STORAGE_KEY,
   applyLocale,
@@ -174,6 +179,8 @@ async function main(): Promise<void> {
   setupNavigation();
   showAppVersion();
   await setupProgress();
+  // Last, so the window is complete behind the question.
+  void offerForeignDriverCleanup();
 }
 
 void main();

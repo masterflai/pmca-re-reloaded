@@ -6,6 +6,16 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+## [1.1.0] - 2026-10-16
+
+### Added
+
+- Windows: drivers that Zadig or a similar tool left for Sony cameras — as
+  the original Sony-PMCA-RE had users install — are found at start, and the
+  app offers to remove them. They took the camera before this program's own
+  driver and made service mode fail. On the command line:
+  `pmca-console driver zadig [--remove]`.
+
 ### Fixed
 
 - License page: the fwtool.py link pointed to a repository that does not exist.
@@ -53,5 +63,6 @@ and Linux.
 - **Device list** in the app with the functions each known model supports,
   plus community reports for further models.
 
-[Unreleased]: https://github.com/masterflai/pmca-re-reloaded/compare/v1.0.0...HEAD
+[Unreleased]: https://github.com/masterflai/pmca-re-reloaded/compare/v1.1.0...HEAD
+[1.1.0]: https://github.com/masterflai/pmca-re-reloaded/compare/v1.0.0...v1.1.0
 [1.0.0]: https://github.com/masterflai/pmca-re-reloaded/releases/tag/v1.0.0

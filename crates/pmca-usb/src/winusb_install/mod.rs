@@ -39,9 +39,12 @@
 
 #![allow(unsafe_code)]
 
+mod foreign;
 pub mod helper_pipe;
 mod setup;
 mod signing;
+
+pub use foreign::{ForeignPackage, foreign_packages, remove_foreign};
 
 use std::path::PathBuf;
 

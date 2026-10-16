@@ -119,6 +119,15 @@ export async function chosen(
   }
 }
 
+/** Shows a message in a native dialog with a single button labelled `ok`. */
+export async function told(message: string, ok: string, warning = false): Promise<void> {
+  try {
+    await invoke("show_message", { message, ok, warning });
+  } catch {
+    // A dialog that cannot open has nobody to tell.
+  }
+}
+
 /** A status line used for progress, results and errors. */
 export function statusLine(): HTMLElement {
   return make("p", { className: "status" });

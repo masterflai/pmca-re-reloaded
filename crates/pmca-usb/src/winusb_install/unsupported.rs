@@ -86,6 +86,27 @@ pub fn pending_packages() -> usize {
     0
 }
 
+/// A driver package another tool generated for a Sony device.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct ForeignPackage {
+    /// Published name in the driver store.
+    pub published: String,
+    /// Provider named in the package.
+    pub provider: String,
+    /// The Sony hardware ids it claims.
+    pub devices: Vec<String>,
+}
+
+/// Packages Zadig or similar tools left behind. There is no driver store here.
+pub fn foreign_packages() -> Vec<ForeignPackage> {
+    Vec::new()
+}
+
+/// Removes those packages. Nothing to do here.
+pub fn remove_foreign() -> Result<Cleanup> {
+    Ok(Cleanup::default())
+}
+
 /// Whether drivers can be assigned. Always, since none ever has to be.
 pub fn can_assign_drivers() -> bool {
     true

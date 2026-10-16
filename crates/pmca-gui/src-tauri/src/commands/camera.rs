@@ -90,6 +90,24 @@ pub(crate) fn driver_rights() -> pmca_app::drivers::Rights {
     pmca_app::drivers::rights()
 }
 
+/// Driver packages Zadig or a similar tool left for Sony devices. Reads the
+/// driver database only, so it needs no rights and no camera.
+#[tauri::command]
+pub(crate) fn foreign_drivers() -> Vec<pmca_app::drivers::ForeignDriver> {
+    pmca_app::drivers::foreign_drivers()
+}
+
+/// Remove those packages after the user agreed. Asks for administrator rights
+/// when the helper is not running yet, and holds the camera meanwhile, since
+/// a device bound to one of them is re-enumerated.
+#[tauri::command]
+pub(crate) async fn remove_foreign_drivers(app: AppHandle) -> Result<Vec<String>, CommandError> {
+    with_camera_as_is(app, |_, state| {
+        Ok(pmca_app::drivers::remove_foreign_drivers(&state.localizer()?)?)
+    })
+    .await
+}
+
 /// Set the title bar text; the front-end adds the rights in the user's language.
 #[tauri::command]
 pub(crate) fn set_window_title(window: Window, title: String) -> Result<(), CommandError> {

@@ -219,6 +219,11 @@ that itself:
 * When the session ends, the driver packages are removed and the camera returns
   to the drivers Windows chose. A clean-up at program start removes anything a
   crash may have left behind; `pmca-console driver unbind` does the same by hand.
+* Drivers that Zadig installed for a Sony camera — the original Sony-PMCA-RE
+  asked for that — stay in Windows and take the camera before this program's
+  driver can, which makes service mode fail. The app finds them at start and
+  offers to remove them; on the command line, `pmca-console driver zadig`
+  lists them and `--remove` removes them.
 
 Power-cycling the camera always returns it to normal mode.
 

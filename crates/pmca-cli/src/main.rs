@@ -359,6 +359,17 @@ enum DriverAction {
     /// The same sweep runs automatically when a service session ends and again
     /// at every program start, so this is only needed to tidy up by hand.
     Unbind,
+    /// List driver packages Zadig or a similar tool installed for Sony devices.
+    ///
+    /// The original Sony-PMCA-RE had them installed by hand. Windows gives the
+    /// camera to them before this program can assign its own driver, which
+    /// breaks service mode and can hide the camera's drive.
+    Zadig {
+        /// Remove the packages listed; the devices return to the drivers
+        /// Windows ships. Asks for administrator rights.
+        #[arg(long)]
+        remove: bool,
+    },
 }
 
 /// Renders an error in the user's language where a translation exists.
@@ -453,6 +464,11 @@ fn main() -> ExitCode {
         }
         if pmca_usb::winusb_install::pending_packages() > 0 {
             eprintln!("{}", l.tr("driver-leftover-needs-elevation"));
+        }
+        let foreign = pmca_app::drivers::foreign_drivers();
+        if !foreign.is_empty() {
+            let packages = pmca_app::drivers::describe(&foreign);
+            eprintln!("{}", l.tr_arg("foreign-drivers-hint", "packages", &packages));
         }
     }
 

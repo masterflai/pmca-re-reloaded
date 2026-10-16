@@ -3,15 +3,17 @@
 //! An elevated process does it itself. Any other process starts an elevated
 //! helper once, on first need, and hands it each request over a private pipe:
 //! one rights prompt per program run instead of one per service session. The
-//! helper is the same executable started with [`HELPER_FLAG`]; it accepts four
-//! requests, binds only Sony devices, and ends with the program that started
-//! it, releasing whatever is still bound on the way out.
+//! helper is the same executable started with [`HELPER_FLAG`]; it accepts five
+//! requests, binds only Sony devices, removes only packages it finds itself,
+//! and ends with the program that started it, releasing whatever is still
+//! bound on the way out.
 
 use std::io::{BufRead, BufReader, Write};
 use std::sync::Mutex;
 use std::sync::atomic::{AtomicBool, AtomicIsize, Ordering};
 use std::time::Duration;
 
+use pmca_i18n::Localizer;
 use pmca_usb::winusb_install::{self as winusb, Cleanup, helper_pipe};
 use serde::{Deserialize, Serialize};
 
@@ -122,6 +124,52 @@ pub(crate) fn sweep() -> Cleanup {
     }
 }
 
+/// A driver package Zadig or another libwdi-based tool left for a Sony device.
+///
+/// The original Sony-PMCA-RE had users install these by hand. Windows keeps
+/// them and hands them to the camera on its own, ahead of the driver this
+/// program assigns, which breaks service mode and, on a mass-storage product
+/// id, the camera's drive.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize)]
+#[serde(rename_all = "camelCase")]
+#[cfg_attr(test, derive(ts_rs::TS), ts(export))]
+pub struct ForeignDriver {
+    /// Published name in the driver store, `oem<n>.inf`.
+    pub published: String,
+    /// Provider named in the package, e.g. `libusb-win32`.
+    pub provider: String,
+    /// The Sony hardware ids it claims.
+    pub devices: Vec<String>,
+}
+
+/// The packages of this kind on this machine. Needs no rights.
+pub fn foreign_drivers() -> Vec<ForeignDriver> {
+    winusb::foreign_packages()
+        .into_iter()
+        .map(|p| ForeignDriver { published: p.published, provider: p.provider, devices: p.devices })
+        .collect()
+}
+
+/// `oem122.inf (libusb-win32), …` for messages.
+pub fn describe(drivers: &[ForeignDriver]) -> String {
+    drivers
+        .iter()
+        .map(|d| format!("{} ({})", d.published, d.provider))
+        .collect::<Vec<_>>()
+        .join(", ")
+}
+
+/// Remove those packages, starting the helper if necessary, and return the
+/// published names removed. The helper looks them up again itself.
+pub fn remove_foreign_drivers(l: &Localizer) -> crate::Result<Vec<String>> {
+    let removed = if winusb::can_assign_drivers() {
+        winusb::remove_foreign().map(|cleanup| cleanup.packages)
+    } else {
+        call(&Request::RemoveForeign, true).map(|reply| reply.packages)
+    };
+    removed.map_err(|e| crate::tweaks::driver_error(l, e))
+}
+
 /// One request to the helper.
 #[derive(Debug, Serialize, Deserialize, PartialEq, Eq)]
 #[serde(tag = "op", rename_all = "kebab-case")]
@@ -129,6 +177,7 @@ enum Request {
     Bind { id: String },
     UnbindAll,
     Sweep,
+    RemoveForeign,
 }
 
 /// The helper's answer. `error` is set on failure, with `needs-elevation`,
@@ -315,6 +364,10 @@ fn handle(request: &Request) -> Reply {
             Err(e) => failure(e),
         },
         Request::Sweep => Reply { packages: winusb::sweep().packages, ..Reply::default() },
+        Request::RemoveForeign => match winusb::remove_foreign() {
+            Ok(cleanup) => Reply { packages: cleanup.packages, ..Reply::default() },
+            Err(e) => failure(e),
+        },
     }
 }
 
@@ -329,6 +382,10 @@ mod tests {
         assert_eq!(text, r#"{"op":"bind","id":"USB\\VID_054C&PID_0336"}"#);
         assert_eq!(serde_json::from_str::<Request>(&text).unwrap(), request);
         assert_eq!(serde_json::to_string(&Request::UnbindAll).unwrap(), r#"{"op":"unbind-all"}"#);
+        assert_eq!(
+            serde_json::to_string(&Request::RemoveForeign).unwrap(),
+            r#"{"op":"remove-foreign"}"#
+        );
     }
 
     #[test]

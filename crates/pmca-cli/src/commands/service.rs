@@ -79,6 +79,43 @@ pub(crate) fn driver_command(
                 l.tr_arg("driver-released", "count", &cleanup.packages.len().to_string())
             );
         }
+        DriverAction::Zadig { remove } => zadig_command(l, *remove)?,
+    }
+    Ok(())
+}
+
+/// List the packages Zadig and similar tools left for Sony devices, and
+/// remove them when asked to.
+fn zadig_command(l: &Localizer, remove: bool) -> Result<(), Box<dyn std::error::Error>> {
+    let found = pmca_app::drivers::foreign_drivers();
+    if found.is_empty() {
+        println!("{}", l.tr("driver-zadig-none"));
+        return Ok(());
+    }
+    for driver in &found {
+        println!(
+            "{}",
+            l.tr_args(
+                "driver-zadig-entry",
+                &[
+                    ("package", &driver.published),
+                    ("provider", &driver.provider),
+                    ("devices", &driver.devices.join(", ")),
+                ],
+            )
+        );
+    }
+    if !remove {
+        println!("{}", l.tr("driver-zadig-remove-hint"));
+        return Ok(());
+    }
+
+    let removed = pmca_app::drivers::remove_foreign_drivers(l)?;
+    println!("{}", l.tr_arg("driver-zadig-removed", "count", &removed.len().to_string()));
+    let left = pmca_app::drivers::foreign_drivers();
+    if !left.is_empty() {
+        let packages = pmca_app::drivers::describe(&left);
+        return Err(l.tr_arg("foreign-drivers-remaining", "packages", &packages).into());
     }
     Ok(())
 }
