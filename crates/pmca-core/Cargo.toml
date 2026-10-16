@@ -1,0 +1,21 @@
+[package]
+name = "pmca-core"
+description = "Hardware-independent core logic (crypto + binary parsers) for PMCA-RE RELOADED."
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+
+[dependencies]
+thiserror.workspace = true
+num-bigint.workspace = true
+aes.workspace = true
+cipher.workspace = true
+hmac.workspace = true
+sha2.workspace = true
+kamadak-exif.workspace = true
+
+[features]
+# Exposes `keystore::install_unchecked`, which stores a key without the digest
+# check. For tests in dependent crates only; never enable in a release build.
+test-keys = []

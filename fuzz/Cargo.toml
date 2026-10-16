@@ -1,0 +1,69 @@
+[package]
+name = "pmca-fuzz"
+version = "0.0.0"
+edition = "2024"
+publish = false
+
+[package.metadata]
+cargo-fuzz = true
+
+[dependencies]
+libfuzzer-sys = "0.4"
+pmca-core = { path = "../crates/pmca-core" }
+pmca-apk = { path = "../crates/pmca-apk" }
+pmca-platform = { path = "../crates/pmca-platform" }
+pmca-i18n = { path = "../crates/pmca-i18n" }
+
+# A workspace of its own, so the main workspace (which excludes this
+# directory) never builds libFuzzer.
+[workspace]
+members = ["."]
+
+[[bin]]
+name = "backup"
+path = "fuzz_targets/backup.rs"
+test = false
+doc = false
+bench = false
+
+[[bin]]
+name = "apk"
+path = "fuzz_targets/apk.rs"
+test = false
+doc = false
+bench = false
+
+[[bin]]
+name = "usagelog"
+path = "fuzz_targets/usagelog.rs"
+test = false
+doc = false
+bench = false
+
+[[bin]]
+name = "firmware"
+path = "fuzz_targets/firmware.rs"
+test = false
+doc = false
+bench = false
+
+[[bin]]
+name = "snapshot"
+path = "fuzz_targets/snapshot.rs"
+test = false
+doc = false
+bench = false
+
+[[bin]]
+name = "photo"
+path = "fuzz_targets/photo.rs"
+test = false
+doc = false
+bench = false
+
+[[bin]]
+name = "catalog"
+path = "fuzz_targets/catalog.rs"
+test = false
+doc = false
+bench = false

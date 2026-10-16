@@ -1,0 +1,51 @@
+{
+  "$schema": "https://schema.tauri.app/config/2",
+  "productName": "PMCA-RE RELOADED",
+  "version": "1.0.0",
+  "identifier": "io.github.masterflai.pmca-re-reloaded",
+  "build": {
+    "frontendDist": "../dist",
+    "devUrl": "http://localhost:1420",
+    "beforeDevCommand": "npm run dev",
+    "beforeBuildCommand": "npm run build"
+  },
+  "app": {
+    "windows": [
+      {
+        "title": "PMCA-RE RELOADED – Camera Toolkit",
+        "width": 1100,
+        "height": 720,
+        "minWidth": 860,
+        "minHeight": 560,
+        "resizable": true
+      }
+    ],
+    "security": {
+      "csp": "default-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self' ipc: http://ipc.localhost; object-src 'none'; base-uri 'self'; form-action 'none'"
+    }
+  },
+  "bundle": {
+    "active": true,
+    "targets": "all",
+    "publisher": "masterflai",
+    "copyright": "Copyright (c) 2015 ma1co, (c) 2026 masterflai. MIT License.",
+    "homepage": "https://github.com/masterflai/pmca-re-reloaded",
+    "license": "MIT",
+    "category": "Photography",
+    "shortDescription": "Tweak settings and install apps on Sony cameras over USB",
+    "longDescription": "PMCA-RE RELOADED talks to Sony digital cameras over USB: it reads camera information, changes hidden settings, installs Android apps on supported models and runs official firmware updates. Independent project, not affiliated with Sony.",
+    "icon": [
+      "icons/32x32.png",
+      "icons/128x128.png",
+      "icons/128x128@2x.png",
+      "icons/icon.icns",
+      "icons/icon.ico",
+      "icons/icon.png"
+    ],
+    "resources": {
+      "../../../updatershell/bodyfs": "bodyfs",
+      "../../../LICENSE.txt": "LICENSE.txt",
+      "../../../THIRD-PARTY.md": "THIRD-PARTY.md"
+    }
+  }
+}

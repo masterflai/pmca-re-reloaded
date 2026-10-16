@@ -1,0 +1,817 @@
+# Hrvatski prijevod za PMCA-RE RELOADED.
+# Prevodi se samo desna strana (nakon znaka =). Identifikatori se nikada ne mijenjaju.
+# Jedna poruka po retku: <id> = <tekst>.
+
+app-title = PMCA-RE RELOADED – alat za fotoaparate
+
+# Navigacija / kartice
+nav-camera-info = Podaci o fotoaparatu
+nav-install-app = Aplikacije
+nav-tweaks = Prilagodbe
+nav-network = Mreža
+nav-firmware = Firmver
+nav-updater = Ljuska updatera
+nav-service = Servisna ljuska
+nav-tools = Alati za datoteke
+nav-settings = Postavke
+nav-license = Licenca
+
+# Početna stranica: stranica kojom se prozor otvara.
+nav-welcome = Dobro došli
+welcome-intro-heading = Što ovaj program radi
+welcome-intro-body = Ovaj program pomaže očuvati funkcije vašeg Sonyjeva fotoaparata i prilagoditi ga vašim potrebama. Nakon što je Sony zatvorio trgovinu za PlayMemories Camera Apps, nije bilo načina da se kupljene ili već instalirane aplikacije sigurnosno kopiraju ili ponovno instaliraju. Vraćanje fotoaparata na početne postavke nepovratno briše instalirane aplikacije. Ovaj program omogućuje sigurnosno kopiranje postojećih aplikacija i njihovu ponovnu instalaciju, a uz to može ponuditi i slobodno dostupne aplikacije zajednice. Možete instalirati i vlastite aplikacije (datoteke *.apk). Kod problema program čita podatke o fotoaparatu i interne zapise radi analize. Postavke koje fotoaparat već ima, ali ih njegov izbornik ne nudi, mogu se promijeniti i ponovno poništiti. Program s fotoaparatom komunicira izravno preko USB kabela. Koji su modeli podržani, navedeno je na stranici Podaci o fotoaparatu.
+welcome-start-heading = Prvi korak
+welcome-start-body = Najprije uključite fotoaparat i, dok kabel još nije priključen, u njegovu izborniku postavite „USB veza” na Masovnu pohranu ili MTP. „Auto” obično također radi jer fotoaparat tada sam odabere jedno od toga dvoga. Redoslijed je važan: kada je kabel jednom priključen, do izbornika fotoaparata više se ne može doći. Tek zatim povežite fotoaparat USB kabelom, otvorite Podaci o fotoaparatu i pritisnite „Dohvati podatke o fotoaparatu”. Čim se pojave model i verzija firmvera, veza je ispravna i sve ostale funkcije ovog programa su dostupne.
+welcome-start-driver = Pojavi li se umjesto toga poruka o upravljačkom programu, prvo riješite nju. Na Windowsima sistemski upravljački program prisvaja fotoaparat i treba ga zamijeniti prije nego što bude moguć izravan USB pristup koji ovaj komplet alata treba. Program to obavlja sam, no dodjela upravljačkog programa pravo je koje Windows daje samo administratoru. U tom vam slučaju program nudi mogućnost da ga ponovno pokrenete kao administrator, a Windows će zatražiti potvrdu postupka. Na kraju sesije dodjela se opet poništava. Na Linuxu i macOS-u to nije potrebno.
+welcome-start-driver-linux = Pojavi li se umjesto toga poruka o upravljačkom programu, prvo riješite nju. Na Linuxu ne treba ništa zamjenjivati: fotoaparat je dostupan izravno. Jednokratno su potrebni pravo otvaranja uređaja — udev pravilo za Sonyjevu oznaku proizvođača — te, za način rada masovne pohrane, oslobađanje jezgrenog upravljačkog programa usb-storage. Oboje se priprema izvan ovog programa s root pravima; skripta scripts/linux-prepare.sh u izvornom kodu obavlja oboje. Ovaj prozor sam nikada ne traži takva prava.
+welcome-start-driver-macos = Pojavi li se umjesto toga poruka o upravljačkom programu, prvo riješite nju. Na macOS-u za izravan USB pristup ne treba ništa zamjenjivati. Samo način rada masovne pohrane ide preko Sonyjeva vlastitog Camera Drivera, koji se instalira zasebno i pritom traži administratorsku lozinku kao i svaki instalacijski program. Ovaj prozor sam nikada ne traži takva prava.
+welcome-tweaks-heading = Prilagodbe i jezici
+welcome-tweaks-body = Prilagodbe su postavke koje fotoaparat već ima, ali ih ne nudi u svom izborniku: vremensko ograničenje snimanja, ograničenje 4K snimanja, izbor između PAL-a i NTSC-a, USB instalacija aplikacija — i jezici izbornika.
+welcome-tweaks-languages-heading = Jezici fotoaparata
+welcome-tweaks-languages-body = Sonyjevi fotoaparati prikazuju samo jezike izbornika koji su uobičajeni u regiji u kojoj se prodaju. Tko živi u inozemstvu, zato često ne pronalazi svoj jezik i mora se snalaziti sa stranim. No dodatni jezici već se nalaze u firmveru. Ovaj ih program donosi u izbornik kako biste fotoaparatom mogli upravljati na poznatom jeziku.
+welcome-tweaks-ui-heading = Jezik ovog programa
+welcome-tweaks-ui-body = Sasvim odvojeno od svega toga stoji izbornik na vrhu. On mijenja samo jezik ovog programa i nikada ne dira fotoaparat.
+welcome-tweaks-safety = Svaka se prilagodba upisuje u sigurnosnu memoriju fotoaparata i svaka se istim prekidačem može povući natrag. Prekinut upis može trajno oštetiti fotoaparat, pa tijekom njega nemojte ni odspajati kabel ni vaditi bateriju.
+welcome-privacy-heading = Vaši podaci
+welcome-privacy-where = Stranica „Licencija” sve ovo iznosi ponovno u cijelosti, zajedno s licencijama svih biblioteka od kojih je ovaj program sastavljen.
+welcome-where-heading = Gdje što naći
+welcome-where-info = Model, serijski broj i verzija firmvera. Ujedno i provjera veze.
+welcome-where-install = Aplikacije s popisa zajednice ili vaša vlastita .apk datoteka.
+welcome-where-tweaks = Postavke do kojih izbornik fotoaparata ne doseže, među njima i jezici.
+welcome-where-network = Podaci GPS pomoći te pristupne točke i usluge za prijenos uživo.
+welcome-where-firmware = Zapisati Sonyjevu sliku firmvera u fotoaparat.
+welcome-where-tools = Raspakirati i pregledati datoteke firmvera i paketa. Bez fotoaparata.
+welcome-where-shells = Izravan pristup memoriji i datotečnom sustavu fotoaparata. Prethodno prikazati u Postavkama.
+welcome-where-settings = Tema, napredni način i uređivanje prijevoda ovog programa.
+welcome-where-license = Odakle ovaj prijenos dolazi, na čijem radu počiva i pod kojim je uvjetima objavljen.
+welcome-where-hint = Nijedna stranica ne dira fotoaparat sama od sebe. Ništa se ne čita ni ne zapisuje dok ne pritisnete gumb koji to najavljuje.
+
+# Gumbi
+btn-get-info = Dohvati podatke o fotoaparatu
+btn-refresh = Osvježi
+btn-load-apps = Učitaj dostupne aplikacije
+btn-list-tweaks = Prikaži dostupne prilagodbe
+btn-install = Instaliraj odabranu aplikaciju
+btn-install-file = Instaliraj .apk datoteku…
+btn-apply = Primijeni
+btn-save = Spremi na fotoaparat
+btn-add = Dodaj
+btn-remove = Ukloni
+btn-reveal = Prikaži
+btn-update-gps = Prenesi pomoćne GPS podatke na uređaj
+btn-cancel = Odustani
+btn-browse = Pregledaj…
+btn-switch-msc = Prebaci u način masovne pohrane
+btn-start-driver-helper = Pokreni pomoćnika za upravljačke programe
+
+# Oznake filtara vrsta datoteka u dijalozima za odabir datoteke
+file-filter-apk = Android aplikacija (*.apk)
+file-filter-firmware = Sonyjeva slika firmvera (*.dat)
+file-filter-usage-log = Zapisnik korištenja (*.bin)
+file-filter-catalog = Datoteka prijevoda (*.ftl)
+file-filter-spk = Sonyjev paket aplikacije (*.spk)
+file-filter-any = Sve datoteke
+file-filter-gps = Pomoćni GPS podaci (*.dat)
+
+# Stanje / poruke
+msg-connecting = Povezivanje…
+msg-usage-log-written = Zapisnik korištenja zapisan je u { $path }
+msg-apps-found = Pronađeno aplikacija: { $count }
+msg-switch-mode = Prebacite fotoaparat u MTP način ili način masovne pohrane.
+msg-no-tweaks = Za ovaj fotoaparat nema dostupnih prilagodbi.
+msg-done = Gotovo.
+
+# Prebacivanje USB načina fotoaparata (MTP -> masovna pohrana). Nudi se ispod
+# poruke o pogrešnom načinu; za suprotan smjer ne postoji USB naredba.
+mode-switching = Fotoaparat se prebacuje u način masovne pohrane…
+mode-switch-wait = Čeka se ponovno povezivanje fotoaparata…
+camera-confirm-hint = Poruke na fotoaparatu (npr. o www.sony.net/pm) mogu se zatvoriti; ne ometaju postupak.
+mode-switch-done = Fotoaparat je sada u načinu masovne pohrane.
+mode-switch-timeout = Fotoaparat se nije pojavio u načinu masovne pohrane. Isključite ga i ponovno uključite pa pokušajte iznova.
+mode-switch-impossible = Ovaj se način ne može promijeniti putem USB-a. Isključite fotoaparat i ponovno ga uključite.
+mode-switch-hint = Putem USB-a moguće je prebaciti samo fotoaparat u MTP načinu. Promjena je privremena: USB način odabran u izborniku samog fotoaparata ostaje nepromijenjen, pa isključivanje i ponovno uključivanje fotoaparata — ili odspajanje i ponovno spajanje kabela — vraća prethodni način. Za povratak ne postoji USB naredba.
+
+# Polja s podacima o fotoaparatu
+info-model = Model
+info-product-code = Šifra proizvoda
+info-serial = Serijski broj
+info-firmware = Verzija firmvera
+info-lens = Objektiv
+info-region = Regija
+info-mode = Način rada
+mode-mass-storage = Masovna pohrana
+mode-mtp = MTP
+mode-updater = Način updatera
+mode-app-install = Način instalacije aplikacija
+mode-service = Servisni način
+mode-unknown = Nepoznato
+info-android-version = Verzija Android platforme
+info-photographer = Fotograf
+info-copyright = Autorska prava
+info-photographer-1 = Fotograf (unos 1)
+info-photographer-2 = Fotograf (unos 2)
+info-copyright-1 = Autorska prava (unos 1)
+info-copyright-2 = Autorska prava (unos 2)
+diagnose-services-heading = Fotoaparat nije dostupan?
+diagnose-services-hint = Neki Windows servisi mogu zauzeti fotoaparat u MTP načinu, pa ga ova aplikacija ne može dosegnuti. Provjera samo pita Windows koji su servisi pokrenuti; ništa ne mijenja.
+btn-diagnose-services = Provjeri Windows servise
+diagnose-services-none = Nije pokrenut nijedan poznati ometajući servis.
+diagnose-services-found = Ovi pokrenuti servisi mogu ometati pristup fotoaparatu:
+diagnose-services-advice = Zaustavite servis u prozoru Servisi (services.msc) ili sljedećom naredbom kao administrator, a zatim ponovno spojite fotoaparat:
+
+# Ažuriranje firmvera / ljuska
+updater-model = Model fotoaparata
+updater-firmware-current = Trenutačna verzija firmvera
+updater-guard-ok = Slika firmvera odgovara ovom fotoaparatu.
+updater-no-fdat = Za model { $model } nije priložen firmver za način ažuriranja.
+updater-model-required = Fotoaparat je već u načinu ažuriranja i u njemu ne može prijaviti svoj model. Isključite fotoaparat i ponovno ga uključite kako bi se pokrenuo u normalnom načinu, pa pokušajte ponovno. Umjesto toga možete navesti datoteku payloada (--fdat-file) ili, u konzoli, model (--model <MODEL>).
+updater-already-updater = Fotoaparat je već u načinu ažuriranja.
+updater-flash-required = Izmjena fotoaparata bez potvrde je odbijena. Pokrenite ponovno uz --flash kako biste prešli u način ažuriranja i zapisali payload.
+updater-flashing = Zapisivanje payloada updatera na fotoaparat…
+updater-switch-wait = Slijedite upute na zaslonu fotoaparata. Čeka se prelazak fotoaparata u način ažuriranja…
+updater-switch-timeout = Isteklo je vrijeme čekanja na fotoaparat. Pokrenite naredbu ponovno kada se fotoaparat ponovno poveže.
+updater-shell-ready = Payload updatera je pokrenut. Upišite 'help' za naredbe, 'exit' za izlaz.
+updater-shell-done = Sesija ljuske je završena.
+updater-session-panic = Sesija updatera završila je neočekivano. Isključite i ponovno uključite fotoaparat prije nego što pokušate opet.
+
+# Što odgovara ljuska updatera. Pogreške pri čitanju retka formulirane su samo
+# jednom, u ključevima service-*: obje ljuske dijele isti raspoznavač, pa put
+# u navodnicima i pogrešna heksadecimalna vrijednost padaju u obje jednako.
+updater-backup-synced = Sigurnosna kopija zapisana je u flash memoriju.
+updater-backup-locked = Zaštićene postavke sigurnosne kopije sada su zaključane.
+updater-backup-writable = U zaštićene postavke sigurnosne kopije sada se može pisati.
+updater-shell-console-only = Root ljuska traži terminal i postoji samo u naredbenom retku: pokrenite pmca-console updatershell --flash i ondje upišite „shell”.
+
+# Stranica ljuske updatera.
+updater-warning = Upozorenje: da bi se došlo do ove ljuske, fotoaparat se ponovno pokreće u načinu rada updatera i u njega se zapisuje payload – mali program ovog projekta koji fotoaparat prima kao ažuriranje firmvera i koji zatim odgovara na naredbe ove ljuske. Taj payload nestaje čim se fotoaparat isključi, ali naredbe koje nudi pišu u trajnu memoriju postavki fotoaparata, a prekinuto zapisivanje može trajno oštetiti fotoaparat. Osim toga, pritom se resetiraju sve postavke fotoaparata – za razliku od servisne ljuske.
+updater-console-heading = Pokretanje ljuske updatera u naredbenom retku
+updater-driver-hint = Ljuska updatera traži da fotoaparat ostane na Windowsovu vlastitom upravljačkom programu za masovnu pohranu, USBSTOR, jer se payload prenosi upravo njime. To je suprotno od onoga što traži servisna ljuska. Aplikacija sama dodjeljuje i sama otpušta WinUSB upravljački program, pa se ništa ne mora pripremati ručno — no upravljački program koji je dodijelio drugi alat treba prvo poništiti. Fotoaparat u načinu rada updatera javlja se pod vlastitim ID-om proizvoda i također se ne smije prevezati.
+updater-fdat-label = Datoteka payloada (neobavezno)
+updater-confirm = Fotoaparat će se ponovno pokrenuti u načinu rada updatera i u njega će se zapisati payload. Nastaviti?
+updater-cancelled = Otkazano. Fotoaparat nije promijenjen.
+
+btn-shell-primer = Što valja znati o ovoj ljusci
+btn-shell-primer-hide = Sakrij objašnjenje
+shell-primer-compare-heading = Dvije ljuske, dva protokola
+shell-primer-compare = Obje stranice nude naredbeni redak prema fotoaparatu, ali to nije ista ljuska. Servisna ljuska govori Sonyjev tvornički servisni protokol na koji fotoaparat nakon prijave odgovara sam; da bi se onamo došlo, ništa se u fotoaparat ne zapisuje. Ljuska ažuriranja postoji samo zato što ovaj projekt u fotoaparat upisuje vlastiti program: fotoaparat se ponovno pokreće u načinu ažuriranja, prima payload kao da je riječ o firmveru, a taj payload zatim odgovara na naredbe navedene niže. Istodobno može biti otvorena samo jedna od dvije.
+shell-primer-payload = „Payload” (engleski za korisni teret) označava stvarni sadržaj koji neki prijenosni put dostavlja. Kod ljuske ažuriranja to je mali program ovog projekta: fotoaparat ga prima istim putem kao ažuriranje firmvera, ali ga zadržava samo do isključivanja. Servisnoj ljusci payload nije potreban jer fotoaparat na njezine naredbe odgovara vlastitim firmverom. Kod datoteka firmvera pojam znači isto: stvarnu sliku firmvera u spremniku datoteke .dat.
+shell-primer-when-service = Servisna ljuska služi za sve što čita ili mijenja pohranjene postavke fotoaparata dok on i dalje pokreće vlastiti firmver: čitanje HASP bloka, spremanje kopije za vraćanje sigurnosnog područja, promjenu pojedinačnih unosa, dohvaćanje datoteka s fotoaparata. Nju ispod površine koristi i stranica Prilagodbe; sve odande može se učiniti i ovdje ručno.
+shell-primer-when-updater = Ljuska ažuriranja pravi je izbor kad se do fotoaparata ne može doći drukčije ili kad umjesto pojedinačnih naredbi trebate ljusku na sustavu koji radi. Samo taj put daje pravu root ljusku i radi i na fotoaparatu koji odbija servisni način. Košta ponovno pokretanje, jedan zapis i postavke fotoaparata, pa je drugi, a ne prvi izbor.
+shell-primer-driver-heading = Upravljački programi: svaka traži suprotno
+shell-primer-driver = Servisna ljuska govori sirovi USB i na Windowsima traži fotoaparat vezan uz WinUSB. Aplikacija taj upravljački program sama dodjeljuje na putu u servisni način rada i sama ga otpušta na kraju sesije; nijedan zaseban alat u tome ne sudjeluje. Ljuska ažuriranja ide kroz USBSTOR, vlastiti upravljački program za masovnu pohranu u Windowsima, i ne radi dok je fotoaparat vezan uz WinUSB — otpuštanje zato spada u završetak servisne sesije. Dodjela upravljačkog programa zahtijeva administratorska prava. Na Linuxu zamjena upravljačkog programa nije potrebna ni za jedno, dovoljan je pristup čvoru uređaja.
+shell-primer-risk-heading = Što može poći po zlu
+shell-primer-risk = Niže označene naredbe zapisuju u trajnu memoriju postavki fotoaparata. Prekinut zapis može ostaviti fotoaparat bez mogućnosti pokretanja i ništa se od toga ne može poništiti — upravo zato postoji bk d: spremite kopiju sigurnosnog područja prije nego što išta promijenite. Sam payload ažuriranja ne ostaje na fotoaparatu jer nestaje kad se fotoaparat isključi. Put kroz način ažuriranja ipak resetira sve postavke fotoaparata.
+shell-primer-commands-heading = Naredbe ove ljuske
+shell-primer-writes = Naredbe označene s (WRITES) mijenjaju fotoaparat. Sve ostale samo čitaju.
+shell-cmd-hasp = Čita HASP blok, zaštićeno identitetsko područje fotoaparata.
+shell-cmd-pull = Dohvaća datoteku s fotoaparata. Bez lokalnog imena zadržava se ime s fotoaparata.
+shell-cmd-push = Kopira lokalnu datoteku na fotoaparat i zamjenjuje ono što je ondje. (WRITES)
+shell-cmd-rm = Briše datoteku na fotoaparatu. (WRITES)
+shell-cmd-rmem = Zapisuje područje memorije uređaja u lokalnu datoteku. Pomak i duljina su heksadecimalni.
+shell-cmd-bk-r = Čita jedan unos sigurnosnog područja i prikazuje ga kao heksadecimalni ispis.
+shell-cmd-bk-d = Sprema cijelo sigurnosno područje u datoteku. Učinite to prije bilo kakve promjene: to je jedini put natrag.
+shell-cmd-bk-dump-txt = Sprema cijelo sigurnosno područje kao <file>.bin i čitljiv popis kao <file>.txt.
+shell-cmd-bk-stat = Prikazuje statusni blok sigurnosne kopije fotoaparata, uključujući regiju.
+shell-cmd-bk-w = Zapisuje jedan unos sigurnosnog područja, zadan kao heksadecimalni bajtovi odvojeni razmacima. (WRITES)
+shell-cmd-bk-s-sub = Trajno pohranjuje sigurnosno područje jednog podsustava u flash memoriju, da promjena preživi ponovno pokretanje. (WRITES)
+shell-cmd-bk-s = Trajno pohranjuje sigurnosno područje u flash memoriju, da promjena preživi ponovno pokretanje. (WRITES)
+shell-cmd-bk-lock = Uključuje ili isključuje zaštitu od pisanja zaštićenih unosa sigurnosne kopije; neke se postavke ne daju promijeniti dok je zaštita uključena. (WRITES)
+shell-cmd-term = Uključuje ili isključuje terminal za otklanjanje pogrešaka na fotoaparatu. (WRITES)
+shell-cmd-info = Čita statusni blok sigurnosne kopije, koji govori može li se u područje uopće pisati.
+shell-cmd-shell = Otvara root ljusku na fotoaparatu. Treba terminal, pa je dostupna samo u konzoli; shell tcp <port> nudi je umjesto toga na 127.0.0.1 drugom klijentu. (WRITES)
+shell-cmd-help = Popisuje naredbe koje ova ljuska prihvaća.
+shell-cmd-exit = Završava sjednicu i napušta ljusku.
+shell-primer-diagnostics-heading = Dijagnostika i popravak
+shell-cmd-bk-trace = Bilježi u datoteku, paket po paket, kako fotoaparat šalje cijelo sigurnosno područje preko USB-a. Služi za ispitivanje velikih sigurnosnih kopija; može ostaviti fotoaparat zaglavljen usred odgovora. Tada odspojite kabel te isključite i uključite fotoaparat, po potrebi izvadite bateriju.
+shell-cmd-bk-rewrite = Čita sigurnosno područje, zapisuje ga nepromijenjeno natrag i ponovno ga čita. Pokazuje prihvaća li fotoaparat cijelu sliku memorije, bez promjene ijedne postavke. (WRITES)
+shell-cmd-bk-restore-attrs = Vraća atribute svih unosa sigurnosne kopije, npr. zaštitu od pisanja, na stanje iz kopije spremljene naredbom bk d ili bk dump-txt. Vrijednosti ostaju nepromijenjene. Koristite samo kopiju istog fotoaparata. (WRITES)
+shell-primer-diagnostics-env = Tri varijable okruženja djeluju i na konzolu i na grafičko sučelje ako su postavljene prije pokretanja, npr. u PowerShellu s $env:PMCA_TWEAKS_DIRECT = "1". PMCA_TWEAKS_DIRECT tjera tweakove da zapisuju pojedinačne vrijednosti, čak i kad je sigurnosna kopija manja od 1 MB. PMCA_TWEAKS_IMAGE tjera ih da zapišu cijelu sliku memorije, čak i kad je veća od 1 MB; ako su postavljene obje, vrijedi PMCA_TWEAKS_DIRECT. PMCA_TLS_DUMP=<datoteka> pri instalaciji aplikacije sprema prvu TLS poruku fotoaparata (ClientHello) kako bi se mogla ispitati neuspjela veza.
+
+# Instalacija aplikacije
+install-switching = Prebacivanje u način instalacije aplikacija…
+install-disabled = Fotoaparat je odbio prijeći u način instalacije aplikacija. Uzrok je obično postavka „Omogući USB instalaciju aplikacija”: mora biti uključena pod „Prilagodbe”.
+install-stays-app-mode = Fotoaparat ostaje u načinu instalacije aplikacija, u kojem se mogu instalirati daljnje aplikacije. Za sve ostale funkcije odspojite USB kabel, a zatim isključite i ponovno uključite fotoaparat.
+err-usb-app-install-mode = Fotoaparat je još uvijek u načinu instalacije aplikacija i u njemu prihvaća samo instalacije aplikacija. Odspojite USB kabel, a zatim isključite i ponovno uključite fotoaparat — ponovno pokretanje dok je priključen vraća ga izravno u ovaj način.
+install-switch-wait = Čeka se ponovno povezivanje fotoaparata u načinu instalacije aplikacija…
+install-switch-timeout = Isteklo je vrijeme čekanja da fotoaparat prijeđe u način instalacije aplikacija. Pokrenite naredbu ponovno kada se fotoaparat ponovno poveže.
+install-bad-mode = Fotoaparat se ne može koristiti u ovom načinu rada. Prebacite ga u MTP način ili način masovne pohrane.
+install-starting = Pokretanje instalacije…
+install-error = Pogreška u komunikaciji tijekom instalacije
+install-server-failed = Lokalni poslužitelj za instalaciju nije prihvatio vezu s fotoaparatom:
+install-done = Zadatak je uspješno dovršen.
+
+# Provjera APK datoteke
+apk-package = Paket:
+apk-unreadable = Upozorenje: .apk datoteku nije bilo moguće analizirati.
+apk-incompatible = Upozorenje: ova aplikacija zahtijeva najnižu razinu SDK-a koju fotoaparat možda ne nudi.
+apk-unsigned = Upozorenje: .apk datoteka nema potpis.
+
+# Trgovina aplikacija zajednice
+store-loading = Učitavanje popisa aplikacija…
+store-resolving = Traži se najnovije izdanje…
+store-downloading = Preuzimanje
+store-unknown-app = Nepoznata aplikacija
+store-no-release = Za ovu aplikaciju nema izdanja za preuzimanje
+store-not-installable = nema izdanja
+msg-no-apps = Nije pronađena nijedna aplikacija.
+store-heading = Trgovina aplikacija zajednice
+store-discontinued = Sony je ugasio službenu trgovinu PlayMemories Camera Apps; njezini poslužitelji više ne odgovaraju pa se aplikacije iz nje više ne mogu kupiti ni preuzeti.
+store-use-own-apk = Vlastitu .apk datoteku i dalje možete instalirati: odaberite datoteku ispod ili je povucite u ovaj prozor. Trgovina aplikacija zajednice niže na stranici također i dalje radi.
+btn-store-sync = Provjeri fotoaparat
+btn-install-selected = Instaliraj odabrane
+btn-store-stop = Zaustavi nakon ove aplikacije
+btn-store-stopping = Zaustavlja se nakon ove aplikacije…
+btn-store-retry = Ponovi neuspjele
+btn-continue = Nastavi
+btn-reinstall = Ponovno instaliraj
+btn-skip = Preskoči
+btn-confirm-updater = Ponovno pokreni i zapiši
+btn-confirm-tweaks = Zapiši prilagodbe
+btn-confirm-languages = Uključi jezike
+btn-confirm-wifi = Zamijeni pristupne točke
+btn-confirm-stream = Prepiši postavke
+btn-confirm-show-shells = Prikaži ljuske
+btn-confirm-discard = Odbaci prijevod
+store-select-all = Odaberi sve aplikacije
+store-col-app = Aplikacija
+store-col-version = Verzija
+store-col-author = Autor
+store-col-camera = Verzija na fotoaparatu
+store-col-status = Stanje
+store-camera-absent = nije instalirano
+store-version-unknown = nepoznata
+store-batch-query = Čitaju se instalirane aplikacije s fotoaparata…
+store-sync-done = Fotoaparat provjeren. Instalirane aplikacije s popisa: { $count }
+store-batch-downloading = Preuzima se aplikacija { $current } od { $total }…
+store-batch-installing = Aplikacija { $current } od { $total }: instalira se { $name }…
+store-reinstall-confirm = Aplikacija { $name } već je instalirana na fotoaparatu. Instalirana verzija: { $installed }. Verzija u trgovini aplikacija: { $store }. Želite li je ponovno instalirati?
+store-state-queued = čeka
+store-state-installed = instalirano
+store-state-failed = neuspjelo
+store-state-skipped = preskočeno
+store-state-not-run = nije izvedeno
+store-batch-summary = Instalirano: { $done } · neuspjelo: { $failed } · preskočeno: { $skipped } · nije izvedeno: { $notrun }
+
+# Servisni način rada (senser)
+usb-mode-advice = Za tweakove, sigurnosne kopije i servisnu ljusku postavite način USB veze fotoaparata na „Auto“, a ne trajno na masovnu pohranu. Kada fotoaparat nakon sesije pita za način, odaberite „Masovna pohrana (MSC)“. Uz trajno postavljenu masovnu pohranu fotoaparat često odbije sljedeći prelazak u servisni način.
+service-switch-refused = Fotoaparat nije završio prelazak u servisni način i nije se ponovno prijavio na USB; tada obično prikazuje „Provjerite povezani uređaj“. Odspojite USB kabel, ponovno ga spojite i pokušajte ponovno.
+service-switching = Prebacivanje u servisni način rada…
+service-switch-wait = Čeka se ponovno povezivanje fotoaparata u servisnom načinu rada…
+service-switch-timeout = Fotoaparat se nije pojavio u servisnom načinu rada. Ondje se prijavljuje kao zaseban USB uređaj (šifra proizvoda 0336) kojemu treba vlastita dodjela WinUSB upravljačkog programa; provjerite u upravitelju uređaja postoji li Sonyjev uređaj bez upravljačkog programa. Isključite i ponovno uključite fotoaparat da biste ga vratili u uobičajeni način rada.
+service-authenticating = Provjera autentičnosti…
+# Prikazuje se kada je fotoaparat još uvijek u servisnom načinu rada od
+# prethodnog pokretanja te kada se to nije moglo poništiti.
+service-stranded-reset = Fotoaparat je još uvijek u servisnom načinu rada od prethodnog pokretanja. Prvo se završava ta sesija…
+service-stranded-failed = Fotoaparat je zapeo u servisnom načinu rada od prethodnog pokretanja i nije odgovorio na zahtjev da ga napusti. Isključite fotoaparat pa ga ponovno uključite i pokušajte ponovno.
+service-bad-mode = Fotoaparat se ne može koristiti u ovom načinu rada. Prebacite ga u način masovne pohrane.
+service-driver-required = Izravan USB pristup je odbijen i WinUSB upravljački program nije se mogao dodijeliti. Dodjela upravljačkog programa zahtijeva administratorska prava.
+service-warning = Upozorenje: servisni način rada omogućuje izravan pristup memoriji, datotečnom sustavu i kalibracijskim podacima fotoaparata. Naredbe za pisanje mogu trajno oštetiti fotoaparat.
+service-shell-ready = Servisna ljuska je spremna. Upišite 'help' za naredbe, 'exit' za izlaz.
+service-shell-done = Sesija servisne ljuske je završena.
+# Prijavljuje se pri pokretanju kada je prethodno pokretanje prekinuto prije
+# nego što je uspjelo osloboditi dodijeljeni upravljački program.
+driver-swept = Uklonjeno je { $count } dodjela upravljačkog programa zaostalih od prethodnog pokretanja.
+# Prijavljuje se pri pokretanju kada je isto prekinuto pokretanje ostavilo
+# fotoaparat i u servisnom načinu rada, gdje bi odbio sljedeću sesiju.
+driver-swept-camera = Fotoaparat koji je prethodno pokretanje ostavilo u servisnom načinu rada vraćen je u uobičajeni način rada.
+driver-release-replug = Windows pri otpuštanju upravljačkog programa čeka fotoaparat. Odspojite USB kabel i ponovno ga spojite kako bi se čišćenje moglo dovršiti.
+# Rezultati naredbe `driver`.
+driver-bound = { $id } sada koristi WinUSB (paket upravljačkog programa { $package }).
+driver-released = Oslobođeno je { $count } dodjela upravljačkog programa; fotoaparat ponovno koristi upravljačke programe isporučene sa sustavom Windows.
+driver-needs-elevation = Dodjela upravljačkog programa zahtijeva administratorska prava. Pokrenite ovu naredbu u konzoli pokrenutoj kao administrator.
+driver-leftover-needs-elevation = Raniji rad dodijelio je fotoaparatu upravljački program koji još nije oslobođen. Dok postoji, fotoaparat traži provjeru spojenog uređaja, a njegova masovna pohrana ne radi. Oslobađanje zahtijeva administratorska prava; potvrdite upit sustava Windows.
+driver-binding = Fotoaparatu se dodjeljuje upravljački program WinUSB…
+driver-bind-wait = Čeka se da se fotoaparat ponovno poveže s novim upravljačkim programom…
+driver-bind-timeout = Fotoaparat se nakon dodjele upravljačkog programa nije ponovno pojavio. Odspojite ga, ponovno ga spojite i pokušajte opet.
+driver-bind-failed = Upravljački program WinUSB nije se mogao dodijeliti: { $detail }
+# Odgovori ljuske. Dolaze iz jezgre aplikacije kako bi konzola i prozor
+# koristili iste riječi.
+service-usage = Upotreba: { $usage }
+service-bad-hex = Nije heksadecimalna vrijednost: { $value }
+service-unknown-command = Nepoznata naredba: { $command }. Upišite 'help' za popis.
+service-unterminated-quote = Redak završava unutar argumenta u navodnicima.
+service-help = Popis naredbi:
+service-read-bytes = Pročitano { $count } bajtova.
+service-pulled = { $remote } kopirano s fotoaparata u { $local }.
+service-pushed = { $local } kopirano u { $remote } na fotoaparatu.
+service-removed = { $remote } izbrisano s fotoaparata.
+service-dumped = { $size } bajtova od { $offset } spremljeno u { $local }.
+service-backup-saved = Slika sigurnosne kopije ({ $count } bajtova) spremljena u { $local }.
+service-backup-text-saved = Slika sigurnosne kopije ({ $count } bajtova) spremljena u { $bin }, a popis u { $txt }.
+service-backup-status = Status sigurnosne kopije, regija: { $region }
+service-backup-rewritten = Slika ({ $count } bajtova) zapisana je natrag bez promjena i ponovno pročitana; nije trajno spremljena.
+service-backup-attrs-restored = Atributi { $count } unosa vraćeni su prema { $local }.
+service-backup-written = Zapis sigurnosne kopije { $id } upisan.
+service-backup-persisted = Sigurnosna kopija podsustava { $id } upisana je u flash memoriju.
+service-terminal-on = Terminal za ispravljanje pogrešaka sada je uključen.
+service-terminal-off = Terminal za ispravljanje pogrešaka sada je isključen.
+
+# Servisna stranica bez naprednog načina rada: kako doći do ljuske iz konzole i
+# što prije toga mora biti pripremljeno.
+service-console-heading = Pokreni servisnu ljusku u konzoli
+service-console-hint = Otvorite naredbeni redak u mapi s pmca-console i pokrenite ovu naredbu:
+service-driver-heading = Prije početka
+service-driver-hint = Servisni način rada zahtijeva izravan pristup USB-u, koji Windows ne dopušta preko upravljačkog programa za masovnu pohranu. Aplikacija sama dodjeljuje WinUSB upravljački program — dvaput, jednom dok je fotoaparat u načinu masovne pohrane i drugi put nakon što se ponovno pojavi u servisnom načinu pod drugom identifikacijskom oznakom proizvoda — i obje dodjele otpušta na kraju sesije. Dodjela upravljačkog programa zahtijeva administratorska prava, pa konzolu pokrenite kao administrator; nikakav drugi alat nije potreban.
+driver-note-linux = Ovdje se ne mora instalirati ništa: libusb dolazi do fotoaparata izravno, bez potiskivanja upravljačkog programa jezgre. Potrebno je samo pravo otvaranja uređaja i radna površina koja ga već ne drži. Dodajte udev pravilo za Sonyjevu oznaku proizvođača 054c i odvojite upravljački program usb-storage prije uporabe načina rada za masovnu pohranu. Skripta scripts/linux-prepare.sh čini oboje i uz to zaustavlja gvfs nadzornike svezaka.
+driver-note-macos = Za izravan USB pristup ne mora se instalirati ništa: libusb dolazi do fotoaparata izravno. Iznimka je način rada za masovnu pohranu jer ide preko Sonyjeva vlastitog Camera Drivera, koji se instalira zasebno. Ova je platforma najmanje provjerena od triju; računajte prije na to da ćete problem prijaviti nego da ćete ga naći već opisanog.
+service-advanced-hint = Ljuska se može prikazati i ovdje, u Postavkama, Napredni način rada.
+btn-copy-command = Kopiraj naredbu
+msg-command-copied = Naredba je kopirana u međuspremnik.
+
+# Servisna stranica s uključenim naprednim načinom rada.
+btn-service-open = Poveži
+btn-service-close = Prekini vezu
+btn-service-run = Pokreni
+btn-service-browse = Umetni putanju datoteke…
+shell-path-quote = Ovu putanju nije moguće umetnuti: sadrži navodnik, znak kojim naredbeni redak određuje početak i kraj argumenta. Preimenujte datoteku ili je premjestite na putanju bez tog znaka.
+service-command-label = Naredba
+service-not-connected = Nije povezano.
+
+# Nizovi koji se koriste samo u grafičkom sučelju
+install-apk-path = Putanja do lokalne .apk datoteke (neobavezno)
+install-drop-hint = Ovdje ispustite .apk datoteku
+
+# Opisi prilagodbi
+tweak-rec-limit = Videosnimanje bez vremenskog ograničenja
+tweak-rec-limit-4k = 4K videosnimanje bez vremenskog ograničenja
+tweak-language = Prikaži sve jezike izbornika
+tweak-pal-ntsc = Omogući odabir PAL / NTSC i upozorenje
+tweak-pal-ntsc-mode = Videosustav (PAL / NTSC)
+tweak-pal-ntsc-pal = PAL
+tweak-pal-ntsc-ntsc = NTSC
+tweak-pal-ntsc-note = Nakon promjene videosustava fotoaparat traži formatiranje memorijske kartice. Prvo sve sigurnosno kopirajte — fotografije, videozapise, LUT-ove. Najjednostavnije je karticu izvaditi prije promjene.
+tweaks-set-malformed = Očekivano --set ID=VRIJEDNOST, primljeno: { $arg }
+tweaks-set-unknown-value = Nepoznata vrijednost „{ $value }“. Očekivana je jedna od: { $options }
+tweaks-set-not-a-choice = { $id } je prekidač, a ne izbor. Upotrijebite --enable ili --disable.
+tweaks-needs-set = { $id } je izbor, a ne prekidač. Upotrijebite --set { $id }=VRIJEDNOST s jednom od: { $options }
+tweak-usb-installer = Omogući USB instalaciju aplikacija
+
+# Tijek primjene prilagodbi
+tweaks-warning = Upozorenje: primjena prilagodbi ponovno zapisuje sigurnosnu memoriju fotoaparata. Prekinuto zapisivanje može trajno oštetiti fotoaparat.
+tweaks-reading = Čitanje postavki fotoaparata…
+tweaks-writing = Zapisivanje postavki fotoaparata…
+tweaks-done = Postavke fotoaparata su ažurirane.
+tweaks-write-failed = Fotoaparat nije spremio nove postavke onako kako su poslane. Dio je ipak možda zapisan: ponovno učitajte postavke i po potrebi ih poništite. Sigurnosna kopija napravljena prije promjene siguran je put natrag.
+tweaks-confirm-required = Zapisivanje bez potvrde je odbijeno. Nakon što pročitate gornje upozorenje, pokrenite ponovno uz --confirm.
+tweaks-state-enabled = omogućeno
+tweaks-state-disabled = onemogućeno
+tweaks-full-read-failed = Fotoaparat nije isporučio potpunu sigurnosnu kopiju ({ $detail }). Nakon toga često prestane reagirati: isključite ga, izvadite bateriju na nekoliko sekundi, vratite je i ponovno ga spojite.
+tweaks-direct-mode = Sigurnosna kopija ovog fotoaparata veća je od 1 MB, pa se postavke čitaju i zapisuju jedna po jedna. Stare vrijednosti spremaju se prije svake promjene i mogu se vratiti gumbom „Poništi promjene“.
+tweaks-direct-forced = PMCA_TWEAKS_DIRECT nameće put pojedinačnih vrijednosti, pa se postavke čitaju i zapisuju jedna po jedna. Stare vrijednosti spremaju se prije svake promjene i mogu se vratiti gumbom „Poništi promjene“.
+tweaks-direct-refused = Fotoaparat je odbio promjenu ({ $detail }). Već zapisane vrijednosti vraćene su; ništa nije promijenjeno. Neki modeli, osobito japanski, dopuštaju ovu postavku samo preko potpune sigurnosne kopije.
+tweaks-direct-revert-failed = Fotoaparat je odbio promjenu ({ $detail }) i nisu se sve već zapisane vrijednosti mogle vratiti. Stare vrijednosti su spremljene: pokušajte „Poništi promjene“.
+tweaks-direct-restart = Postavke fotoaparata ažurirane. Isključite i ponovno uključite fotoaparat kako bi promjena stupila na snagu.
+tweaks-rollback-unsaved = Trenutne vrijednosti nije bilo moguće spremiti za poništavanje; ništa nije promijenjeno.
+tweaks-image-saved = Slika sigurnosne kopije od prije promjene spremljena je: { $path }
+tweaks-whole-image-hint = Da biste promjenu umjesto toga zapisali preko cijele slike sigurnosne kopije, ponovno pokrenite istu naredbu s --whole-image. Slika od prije promjene najprije se sprema.
+tweaks-whole-image-confirm = Zapisati promjenu preko cijele slike sigurnosne kopije? Fotoaparat ju je odbio kao pojedinačnu vrijednost. Cijela slika zapisuje se natrag s promjenom; slika od prije promjene najprije se sprema na ovom računalu.
+btn-whole-image = Zapiši cijelu kopiju
+tweaks-undo-none = Za ovaj fotoaparat nema spremljenih vrijednosti.
+tweaks-undo-confirm = Zapisati spremljene vrijednosti natrag u fotoaparat? Time se poništavaju sve promjene zapisane jedna po jedna od trenutka spremanja.
+tweaks-undo-done = Spremljene vrijednosti zapisane su natrag. Isključite i ponovno uključite fotoaparat.
+tweaks-undo-available = Vrijednosti od prije prve promjene spremljene su i mogu se zapisati natrag.
+btn-undo-tweaks = Poništi promjene
+tweaks-identity-heading = Identitet fotoaparata (samo za čitanje)
+tweaks-caution-languages = Dva jezika — vjerojatno kineski (pojednostavljeni) i kineski (tradicionalni) — ovaj fotoaparat ne može prikazati. Pri pomicanju do njih izbornik jezika ponovno se pokreće, pa iz opreza ostaju isključeni.
+tweaks-caution-accept = Ipak uključi ova dva jezika (na vlastitu odgovornost)
+tweaks-caution-confirm = Ova dva jezika mogu uzrokovati ponovno pokretanje izbornika jezika na fotoaparatu. Ništa se ne oštećuje i promjena se može poništiti, ali postavku ćete možda morati tražiti ispočetka. Ipak uključiti?
+
+# Postavke
+settings-language = Jezik
+settings-theme = Tema
+settings-theme-system = Sustav
+settings-theme-light = Svijetla
+settings-theme-dark = Tamna
+
+# Napredni način rada. Zaštita od nehotičnog klika, a ne od napadača: sve što
+# prikazuje ionako je dostupno iz konzole.
+settings-advanced-heading = Napredni način rada
+settings-advanced-hint = Napredni način rada prikazuje servisnu ljusku i ljusku updatera na istoimenim stranicama. Servisni način rada daje izravan pristup memoriji fotoaparata, njegovu datotečnom sustavu i kalibracijskim podacima; krivo upisana naredba može fotoaparat učiniti neupotrebljivim. Ostavite ga isključenim dok ne znate što ćete pisati.
+settings-advanced-toggle = Prikaži servisnu ljusku i ljusku updatera
+settings-advanced-on = Napredni način rada je uključen. Stranice Servisna ljuska i Ljuska updatera sada nude same ljuske.
+settings-advanced-off = Napredni način rada je isključen. Stranice Servisna ljuska i Ljuska updatera umjesto toga objašnjavaju put preko konzole.
+settings-advanced-confirm = Servisna ljuska i ljuska updatera mogu trajno oštetiti fotoaparat. Želite li prikazati obje ljuske?
+
+# Uređivanje prijevoda. Jezične datoteke mogu se preuzeti, urediti u bilo kojem
+# uređivaču teksta i ponovno prenijeti; prenesena datoteka provjerava se prije uporabe.
+settings-catalog-heading = Uredi prijevod
+settings-catalog-hint = Preuzmite jezičnu datoteku, uredite je u bilo kojem uređivaču teksta i ponovno je prenesite. Prevodi se samo tekst desno od znaka jednakosti, a izostavljeni unosi zadržavaju ugrađeni tekst. Odabir jezika ovdje ne mijenja jezik aplikacije.
+settings-catalog-locale = Jezična datoteka
+settings-catalog-builtin = Koristi se ugrađeni prijevod.
+settings-catalog-custom = Koristi se vaš vlastiti prijevod:
+btn-catalog-export = Preuzmi…
+btn-catalog-import = Prenesi…
+btn-catalog-reset = Vrati ugrađeni
+catalog-exported = Zapisano u
+catalog-imported = Prijevod je primijenjen.
+catalog-reset-done = Ugrađeni prijevod je vraćen.
+catalog-reset-none = Nije postojao vlastiti prijevod koji bi se vratio.
+catalog-reset-confirm = Odbaciti vlastiti prijevod za ovaj jezik?
+catalog-rejected = Datoteka nije primijenjena. Ispravite ove retke:
+catalog-count-accepted = Primijenjeni unosi
+catalog-count-missing = Unosi zadržani iz ugrađenog prijevoda
+catalog-count-untranslated = Unosi istovjetni engleskom izvorniku
+catalog-line = Redak
+catalog-problem-syntax = nije unos oblika "id = tekst"
+catalog-problem-continuation = nastavljen u sljedećem retku, što nije podržano
+catalog-problem-duplicate = definiran više puta
+catalog-problem-unknown-key = nije unos koji ova aplikacija koristi
+catalog-problem-empty = nema teksta
+catalog-problem-placeholder = rezervirano mjesto je promijenjeno, očekivano:
+
+# Podrijetlo, zahvale i licenca. Prikazuje se na stranici s licencom i naredbom
+# `pmca-console license`. Sam tekst licence ne prevodi se: to je pravni dokument
+# i navodi se doslovno.
+about-thanks-heading = Zahvale
+about-thanks-body-1 = Ovaj alat postoji zahvaljujući korisniku ma1co, koji je otkrio kako Sony fotoaparati komuniciraju preko USB-a i 2015. objavio Sony-PMCA-RE, te zahvaljujući svima koji su tijekom sljedećih godina pridonijeli njemu i projektima OpenMemories.
+about-thanks-body-2 = Prepoznavanje fotoaparata, protokol vanjskih naredbi, postupak ažuriranja firmvera i servisni način rada u cijelosti su njihov rad, a ovaj port taj rad nastavlja. Hvala. Na tim temeljima PMCA-RE RELOADED donosi mnoge nove funkcije koje je pridonio masterflai. Najvažnija je sada ugrađena automatska zamjena upravljačkog programa uređaja u sustavu Windows: fotoaparatu više nije potrebno ručno dodjeljivati drugi upravljački program zasebnim alatom, pa je postupak udobniji, brži i manje rizičan.
+about-contributors-heading = Suradnici
+about-contributors-body = Osim korisnika ma1co, ovi su ljudi pridonijeli projektu Sony-PMCA-RE ili u vlastitim kopijama objavili izmjene koje su preuzete u ovaj port:
+about-purpose-heading = Zašto ovaj port postoji
+about-purpose-body-1 = Izvorna aplikacija više se ne razvija. Napisana je za Python 2, kojemu je podrška prestala 2020., a dijelovi se oslanjaju na usluge koje je Sony u međuvremenu ugasio, pa više ne radi bez ograničenja na današnjim sustavima.
+about-purpose-body-2 = Svrha ovog porta je očuvanje, a ne zamjena, i jednako tako neometana upotreba danas: zadržati ove fotoaparate upotrebljivima i omogućiti da program bez poteškoća radi na današnjim računalima kao i s novijim modelima fotoaparata. Sve što je izvornik mogao, trebao bi moći i ovaj port.
+about-origin-heading = Kako je nastao
+about-origin-body-1 = Prijenos s Pythona na Rust proveden je uz pomoć umjetne inteligencije.
+about-origin-body-2 = Jednako je jasno vrijedno reći što to ne znači: ponašanje je pokriveno automatiziranim skupom testova i planom hardverskih testova. Ponajprije je verzija za Windows temeljito provjerena, jer upravljački programi uređaja od nje čine najsloženiju platformu; macOS i Linux, s druge strane, nije bilo moguće u potpunosti testirati. Molimo da ovo smatrate eksperimentalnim softverom.
+about-license-heading = Licenca
+about-license-body = Ovaj port objavljen je pod licencom MIT, istom licencom kao i izvorni projekt. Izvorna obavijest o autorskim pravima ostaje nepromijenjena, kako ta licenca zahtijeva.
+about-license-full = Tekst licence
+about-third-party-heading = Licencije upotrijebljenih biblioteka
+about-third-party-body = Ovaj je program statički povezan: kôd svake biblioteke koju upotrebljava nalazi se unutar izvršne datoteke, a njihove licencije zahtijevaju da uz nju idu i obavijesti o autorskim pravima. Niže su navedene u cijelosti, jedan unos po paketu.
+about-third-party-toggle = Prikaži sve obavijesti trećih strana
+about-privacy-heading = Podaci
+about-privacy-body-1 = Ovaj program radi na vašem vlastitom računalu. Ne šalje podatke o upotrebi, nema telemetrije ni obveznog računa. Ništa od onoga što ovdje činite ne prijavljuje se nikamo.
+about-privacy-body-2 = Dvije se funkcije ipak same spajaju na mrežu, a druga strana pritom saznaje vašu IP adresu: podaci GPS pomoći preuzimaju se od Sonyja, a popis aplikacija s GitHuba. Bez tih funkcija program ostaje potpuno izvan mreže.
+about-privacy-body-3 = Ono što se očita iz fotoaparata — među ostalim serijski broj i pohranjene Wi-Fi lozinke — ne napušta vaše računalo. Zapišete li to u datoteku, pripazite komu je prosljeđujete.
+about-privacy-body-4 = Iza ovog programa ne stoji nikakva usluga i do njegovih autora ne dolaze nikakvi podaci, pa ovdje nema što tražiti ni dati brisati. Što dvije navedene usluge čine s adresama koje vide, uređeno je njihovim vlastitim izjavama o privatnosti, a ne ovom.
+about-legal-heading = Pravne napomene
+about-legal-trademark = Ovo je neovisan projekt. Nije ga izradila tvrtka Sony, nije od nje odobren niti je s njom na bilo koji način povezan. »Sony«, »PlayMemories« i nazivi modela fotoaparata zaštitni su znakovi tvrtke Sony Group Corporation i ovdje se navode isključivo kako bi se naznačilo s kojim fotoaparatima ovaj alat komunicira.
+about-legal-own-device = Ovaj je program namijenjen upotrebi s fotoaparatima koje posjedujete.
+about-legal-warranty = Ono što ovaj alat radi izvan je onoga što Sony predviđa za te fotoaparate i može okončati vaše jamstvo. Sam softver isporučuje se bez ikakvog jamstva, a upotrebljavate ga na vlastitu odgovornost. Je li i u kojoj mjeri obrnuti inženjering uređaja u vašem vlasništvu dopušten, ovisi o državi.
+about-links-heading = Projekti
+about-link-original = Sony-PMCA-RE — izvorni projekt
+about-link-fwtool = fwtool — alati za firmware na kojima se temelji izrada slika ažuriranja
+about-link-tweak = OpenMemories: Tweak — aplikacija koja se preporučuje za fotoaparate koji je podržavaju
+about-link-applist = OpenMemories: App list — dodatne aplikacije
+about-link-platform = OpenMemories: Platform — priloženo tijelo ažuriratelja
+about-link-devices = Podržani modeli fotoaparata
+about-link-nexhack = Nex-Hack — istraživanje zajednice na kojem se ovaj projekt temelji
+about-link-zve10 = zv-e10-re — istraživanje sučelja i memorije postavki fotoaparata ZV-E10
+about-version = Verzija
+btn-copy-url = Kopiraj adresu
+msg-url-copied = Adresa je kopirana u međuspremnik.
+
+# Sigurnosna napomena
+notice-experimental = Ovo je eksperimentalni softver. Koristite ga na vlastitu odgovornost.
+
+# Mrežne postavke (GPS pomoćni podaci, pristupne točke i usluge za prijenos uživo)
+gps-downloading = Preuzimanje GPS pomoćnih podataka…
+gps-writing = Zapisivanje GPS pomoćnih podataka na fotoaparat…
+gps-bad-size = GPS pomoćni podaci imaju neočekivanu veličinu i nisu zapisani.
+wifi-read = Čitanje pristupnih točaka za prijenos uživo s fotoaparata…
+wifi-written = Pristupne točke za prijenos uživo su zapisane.
+stream-read = Čitanje postavki prijenosa uživo s fotoaparata…
+stream-written = Postavke prijenosa uživo su zapisane.
+net-secret-warning = Upozorenje: ova datoteka sadrži Wi-Fi lozinke i pristupne tokene u čitljivom obliku.
+wifi-secret-warning = Fotoaparat te lozinke pohranjuje nešifrirane i ovdje se prikazuju točno onako kako su pohranjene. Ostaju na ovom računalu; spremite li ih u datoteku, pripazite komu je prosljeđujete.
+gps-heading = GPS pomoćni podaci
+gps-hint = Povucite datoteku ovamo, unesite putanju ili ostavite polje prazno da biste preuzeli trenutačne podatke od Sonyja.
+btn-gps-devices = Kompatibilni uređaji
+btn-gps-devices-hide = Sakrij kompatibilne uređaje
+gps-devices-note = Ovi modeli imaju ugrađeni GPS modul. Kod mnogih ga ima samo inačica čiji naziv završava slovom V; inačice bez V nemaju GPS.
+gps-devices-compact = Kompaktni fotoaparati (DSC)
+gps-devices-slt = SLT fotoaparati (A-bajonet)
+gps-devices-action = Akcijske kamere
+gps-devices-camcorder = Videokamere (Handycam)
+gps-col-variant = GPS inačica
+gps-col-arch = Arhitektura
+gps-col-module = GPS modul
+gps-col-apps = Podrška za aplikacije
+gps-yes = da
+gps-no = ne
+gps-unknown = nepoznato
+gps-devices-untested = GPS postoji, podrška nije testirana
+gps-devices-untested-note = Ovi modeli imaju ugrađeni GPS modul, ali nisu na popisu uređaja projekta OpenMemories. Nije testirano radi li ova aplikacija s njima, pa su njihova arhitektura i podrška za aplikacije nepoznate.
+wifi-heading = Pristupne točke za prijenos uživo
+wifi-hint = Ovo su pristupne točke koje koristi značajka prijenosa uživo, a ne Wi-Fi postavke samog fotoaparata. Kućište bez značajke prijenosa uživo to odbija.
+wifi-multi = Popis više pristupnih točaka
+wifi-none = Nema pohranjenih pristupnih točaka.
+wifi-writing = Zapisivanje pristupnih točaka za prijenos uživo na fotoaparat…
+wifi-confirm = Ovo zamjenjuje sve pristupne točke pohranjene na fotoaparatu. Nastaviti?
+wifi-empty-refused = Zapisivanje praznog popisa je odbijeno jer bi izbrisalo sve pohranjene pristupne točke.
+stream-heading = Prijenos uživo
+stream-writing = Zapisivanje postavki prijenosa uživo na fotoaparat…
+stream-confirm = Ovo prebrisuje postavke prijenosa uživo na fotoaparatu. Nastaviti?
+stream-invalid-json = Postavke nisu valjani JSON:
+
+# Ažuriranje firmvera i službena trgovina
+firmware-warning = Upozorenje: ovo prebrisuje firmver fotoaparata. Ne prekidajte ažuriranje nakon što je počelo: ne odspajajte USB kabel i ne isključujte fotoaparat. Upotrebljavajte samo datoteku firmvera namijenjenu upravo ovom modelu fotoaparata i pobrinite se da je baterija dovoljno napunjena. U protivnom fotoaparat može trajno postati neupotrebljiv.
+firmware-untested = Neprovjereno: zapisivanje firmvera preneseno je, ali nikada isprobano na stvarnom fotoaparatu. Neuspio ili prekinut zapis ne može se poništiti, pa sve na ovoj stranici smatrajte nepotvrđenim.
+firmware-confirm-required = Zapisivanje bez --confirm je odbijeno.
+firmware-truncated = Datoteka firmvera je krnja: FDAT payload proteže se izvan kraja datoteke.
+firmware-updating = Ažuriranje firmvera:
+firmware-invalid = Datoteka nije valjana Sonyjeva slika firmvera
+firmware-dat-path = Datoteka firmvera (.dat)
+firmware-drop-hint = Ovdje ispustite .dat datoteku firmvera
+firmware-file-required = Najprije odaberite datoteku firmvera.
+firmware-check-ok = Fotoaparat prihvaća ovu sliku. Ništa nije zapisano.
+firmware-cancelled = Zapisivanje firmvera je otkazano. Fotoaparat nije izmijenjen.
+firmware-current-version = Instalirana verzija
+firmware-new-version = Verzija u ovoj slici
+firmware-models-hint = Fotoaparat je kompatibilan ako ga ljuska updatera može dosegnuti.
+btn-firmware-check = Provjeri sliku
+btn-firmware-flash = Zapiši firmver
+firmware-own-device = Potvrdite da ste svjesni tih rizika i da ažurirate isključivo vlastiti uređaj.
+btn-firmware-accept = Rizici shvaćeni – zapiši
+
+# Alati za datoteke: postupci kojima fotoaparat uopće ne treba.
+tools-hint = Ovi postupci rade s datotekama i nikada ne diraju fotoaparat, pa ovdje ništa ne može biti oštećeno. To su isti postupci koje pmca-console nudi kao apk2spk, spk2apk, print-backup, print-usagelog, guess-firmware i xpd-checksum.
+tools-operation = Postupak
+tools-apk2spk = Zapakiraj .apk u kontejner .spk
+tools-spk2apk = Raspakiraj .spk natrag u .apk
+tools-print-backup = Prikaži sadržaj datoteke Backup.bin
+tools-print-usagelog = Prikaži sadržaj datoteke Usagelog.bin
+tools-guess-firmware = Pronađi payload u firmverskoj datoteci .dat
+tools-xpd-checksum = Izračunaj CIC kontrolni zbroj datoteke
+tools-input = Ulazna datoteka
+tools-file-required = Najprije odaberite datoteke koje ovaj postupak treba.
+tools-apk-invalid = Datoteku nije bilo moguće zapakirati kao .spk
+tools-spk-invalid = Datoteka nije valjan .spk paket
+tools-backup-invalid = Datoteka nije valjana slika Backup.bin
+tools-usagelog-invalid = Datoteka nije valjan zapisnik korištenja
+tools-reset-value = početna vrijednost:
+tools-fdat-found = Payload pronađen na odmaku { $offset }, veličina { $size }.
+tools-checksum = Kontrolni zbroj
+tools-written = Zapisano u { $path }
+
+# Poveznice na dokumentaciju projekta
+docs-compatibility = Kompatibilnost fotoaparata
+docs-compatibility-hint = Izvorni projekt objavio je pregled provjerenih fotoaparata. Obuhvaća pretežno starije modele i nalazi se na ovoj adresi:
+devices-note = Podaci iz pregleda izvornog projekta. Broj uz podršku za aplikacije verzija je platforme za aplikacije fotoaparata.
+devices-more-note = Sljedeći fotoaparati nisu izričito testirani s ovim programom. Kvačica u posljednjem stupcu znači da je zajednica izvijestila o njihovoj upotrebi. Ako je uz to servisna ljuska označena s ✖, upotreba nije uspjela.
+btn-more-models = Ostali uređaji
+btn-more-models-hide = Sakrij ostale uređaje
+check-updater-yes = Vaš uređaj { $model } je kompatibilan: prema popisu uređaja ljuska updatera može ga dosegnuti.
+check-updater-no = Vaš uređaj { $model } nije kompatibilan: prema popisu uređaja ljuska updatera ne može ga dosegnuti.
+check-updater-unknown = Kompatibilnost vašeg uređaja { $model } nije poznata: nije ni na jednom popisu uređaja ovog programa, pa se ne zna može li ga ljuska updatera dosegnuti.
+check-apps-no = Vaš uređaj { $model } nije kompatibilan: prema popisu uređaja ne podržava aplikacije.
+check-apps-untested = Kompatibilnost vašeg uređaja { $model } nije poznata: nalazi se na popisu uređaja, ali podrška za aplikacije nije potvrđena.
+check-apps-unknown = Kompatibilnost vašeg uređaja { $model } nije poznata: nije ni na jednom popisu uređaja ovog programa, pa se ne zna podržava li aplikacije.
+check-gps-no = Vaš uređaj { $model } nije kompatibilan: nije na popisu uređaja s GPS prijamnikom.
+check-gps-untested = Kompatibilnost vašeg uređaja { $model } nije poznata: prema popisu uređaja ima GPS prijamnik, ali prijenos na ovaj model nije testiran.
+check-gps-unknown = Kompatibilnost vašeg uređaja { $model } nije poznata: nije ni na jednom popisu uređaja ovog programa, pa se ne zna ima li GPS prijamnik.
+check-unidentified = Povezani uređaj nije moguće identificirati, pa njegova kompatibilnost nije poznata.
+check-proceed = Želite li ipak nastaviti?
+check-cancelled = Postupak je otkazan. Uređaj nije izmijenjen.
+devices-col-confirmed = Potvrđeno
+devices-group-ilc = Fotoaparati s izmjenjivim objektivima (bajunet E i A)
+devices-group-remote = Daljinski upravljači Live-View
+btn-copy-link = Kopiraj poveznicu
+shutter-heading = Brojač okidanja
+shutter-hint = Fotoaparat broji svako okidanje zatvarača i trenutačno stanje upisuje u svaku fotografiju koju spremi (ARW, JPEG ili HEIF). Odaberite posljednju snimljenu fotografiju kako biste očitali trenutačno stanje. Datoteka se samo čita, nikada se ne mijenja.
+shutter-source = Položaj brojača u datoteci razlikuje se od modela do modela. Položaji potječu iz javno dokumentiranih istraživanja (ExifTool) i nisu potvrđeni za svaki model.
+shutter-drop-hint = Ovdje ispustite fotografiju (ARW, JPEG, HEIF)
+btn-shutter-read = Analiziraj fotografiju
+shutter-file-required = Najprije odaberite fotografiju.
+shutter-file = Datoteka
+shutter-taken = Datum snimanja
+shutter-count = Okidanja
+shutter-type = Zatvarač
+shutter-type-mechanical = Mehanički
+shutter-type-electronic = Elektronički
+shutter-electronic-hint = Ova je fotografija snimljena elektroničkim zatvaračem. Kod mnogih modela takve se snimke ne broje; vrijednost tada pokazuje stanje pri posljednjem mehaničkom okidanju.
+shutter-not-sony = Fotografija nije snimljena Sony fotoaparatom. Iz nje se ne može očitati brojač okidanja.
+shutter-unknown-model = Nije poznato gdje ovaj model fotoaparata sprema brojač okidanja u datoteci, pa se ne prikazuje nikakva vrijednost.
+shutter-not-recorded = Datoteka ne sadrži čitljiv brojač okidanja. To se događa kod fotografija koje je spremio ili izvezao program za obradu slika te kod nekih modela kod snimaka elektroničkim zatvaračem. Odaberite izvornu datoteku s memorijske kartice.
+shutter-model-mismatch = Fotografija potječe s drugog modela fotoaparata od priključenog fotoaparata.
+shutter-invalid = Datoteka nije čitljiva fotografija
+file-filter-photo = Fotografije (ARW, JPEG, HEIF)
+usage-log-heading = Zapisnik korištenja
+usage-log-hint = Fotoaparat vodi interni zapisnik u nedokumentiranom obliku. Sprema se doslovno; iz fotoaparata se samo čita.
+usage-log-written = Zapisano u
+btn-usage-log-info = O zapisniku korištenja
+btn-usage-log-info-hide = Sakrij objašnjenje
+usage-log-info-what-heading = Što je ovaj zapisnik
+usage-log-info-what = Sony taj zapisnik interno naziva „KikiLog”. Fotoaparat ga sam zapisuje; ovaj ga program samo čita. Nije poznat nikakav javni opis formata.
+usage-log-info-read = Čitanje ništa ne mijenja: nekoliko uzastopnih preuzimanja bilo je identično bajt po bajt.
+usage-log-info-flush-heading = Zašto nedostaju novi zapisi
+usage-log-info-flush = Novi se zapisi često ne pojave odmah: fotoaparat ih može spremiti tek pri isključivanju, ponekad raspoređeno kroz više ciklusa uključivanja i isključivanja. Isključite i ponovno uključite fotoaparat, ponovno preuzmite i ponavljajte dok više ne pristižu novi zapisi.
+usage-log-info-content-heading = Što se iz njega može očitati
+usage-log-info-shutter = Okidanja: neki događaji odgovaraju svaki jednoj snimci. Njihov broj ipak nije brojač okidanja: zapisnik ima fiksnu veličinu i ne mora obuhvaćati cijeli vijek uporabe fotoaparata. Ukupno stanje fotoaparat vodi drugdje i upisuje ga u fotografije koje sprema; može se očitati u odjeljku „Brojač okidanja”.
+usage-log-info-clock = Vremenske oznake točne su koliko i sat fotoaparata. Nakon zamjene baterije sat se može vratiti unatrag i stvarati zapise s početnim datumom fotoaparata.
+usage-log-info-unknown = Nije poznat nikakav javni opis brojeva događaja. Program prikazuje brojeve bez tumačenja.
+usage-log-info-privacy-heading = Privatnost
+usage-log-info-privacy = Datoteka sadrži serijske brojeve umetnutih memorijskih kartica. Nemojte je nepromišljeno dijeliti ni objavljivati.
+btn-usage-log = Spremi zapisnik
+usagelog-size = Područje zapisnika
+usagelog-cursor = Položaj pisanja
+usagelog-spare = Drugo područje
+usagelog-count = Unosi
+usagelog-events = Događaji po broju
+usagelog-entries = Unosi redom
+msg-link-copied = Poveznica je kopirana u međuspremnik.
+
+# Poruke o pogreškama pozadinskog sloja, prema stabilnoj šifri koju on prijavljuje.
+# Promjenjivi dio poruke (putanju, statusni bajt, pogrešku uređaja) dodaje
+# sučelje, pa su ovi tekstovi potpune rečenice i bez njega.
+# Namjerno ne postoji `err-operation`: ta šifra označava poruku koju je
+# pozadinski sloj već preveo i koja se mora prikazati doslovno.
+err-usb-no-device = Nije pronađen nijedan fotoaparat. Priključite fotoaparat i uključite ga.
+err-usb-camera-not-ready = Fotoaparat je priključen, ali nije spreman: isključen je ili na zaslonu čeka odabir USB načina. Uključite ga ili na fotoaparatu odaberite „Masovna pohrana (MSC)“.
+camera-choose-usb-mode = Fotoaparat čeka odabir USB načina. Na fotoaparatu odaberite „Masovna pohrana (MSC)“.
+err-usb-too-many-devices = Priključen je više od jednog fotoaparata. Odspojite sve osim onoga s kojim želite raditi.
+err-usb-transfer = USB prijenos nije uspio. Pokušajte s drugim kabelom ili priključkom i izbjegavajte USB razdjelnike.
+err-usb-stall = Fotoaparat je prekinuo USB prijenos.
+err-usb-protocol = Fotoaparat je poslao neočekivan odgovor.
+err-usb-msc-status = Fotoaparat je odbio naredbu za pohranu.
+cli-error-prefix = pogreška
+err-usb-driver = Windows je ovom fotoaparatu dodijelio upravljački program koji ne dopušta izravan pristup. Ovaj način rada zahtijeva WinUSB upravljački program, koji aplikacija može dodijeliti sama — ali samo s administratorskim pravima.
+err-needs-elevation = Dodjela ili oslobađanje upravljačkog programa zahtijeva administratorska prava, a upit sustava Windows je odbijen. Pokušajte ponovno s „Pokreni pomoćnika za upravljačke programe“; na fotoaparatu ne treba ništa mijenjati.
+err-usb-no-mass-storage-volume = Fotoaparat je priključen u načinu rada za masovnu pohranu, ali ne nudi nijedan pogon. Probudite ga, potvrdite USB način rada na njegovu zaslonu ako to zatraži i provjerite je li umetnuta memorijska kartica. Nemojte mijenjati upravljački program: ovaj način rada treba upravo standardni Windowsov.
+err-usb-msc-sense = Fotoaparat je prijavio pogrešku pohrane.
+err-usb-ptp-response = Fotoaparat je odbio naredbu.
+err-usb-unsupported = Ovaj model fotoaparata ne podržava tu funkciju.
+err-usb-updater-status = Program za ažuriranje firmvera na fotoaparatu odbio je radnju.
+err-usb-senser = Naredba servisnog načina rada nije uspjela.
+err-market-core = Podatkovnu datoteku fotoaparata nije bilo moguće pročitati.
+err-market-json = Primljeni podaci su neispravno oblikovani.
+err-market-missing-field = U odgovoru nedostaje očekivano polje.
+err-market-no-apk = Nije odabrana nijedna aplikacija za instalaciju.
+err-market-http = Mrežni zahtjev nije uspio.
+err-market-io = Lokalni poslužitelj za instalaciju nije uspio.
+err-market-tls = Šifriranu vezu s fotoaparatom nije bilo moguće uspostaviti.
+err-apk = Datoteku aplikacije nije bilo moguće pročitati.
+err-io = Datoteku nije bilo moguće pročitati ili zapisati.
+err-json = Fotoaparat je poslao neispravno oblikovane podatke.
+err-unknown-locale = Ovaj jezik nije dostupan.
+err-catalog-encoding = Datoteka prijevoda nije spremljena kao UTF-8 tekst. Spremite je ponovno u UTF-8 kodiranju.
+err-internal = Došlo je do interne pogreške. Riječ je o programskoj pogrešci u aplikaciji.
+
+## Function analysis
+nav-analysis = Analiza
+analysis-title = Analiza funkcija
+analysis-experimental = Eksperimentalno. Ova je funkcija nova i isprobana tek na nekoliko fotoaparata.
+analysis-own-hardware = Koristite je samo na vlastitom fotoaparatu. Već je servisni način zahvat koji Sony ne predviđa; odgovornost je vaša.
+analysis-explanation-toggle = Objašnjenje: svrha, tijek, rizici
+analysis-purpose-heading = Čemu služi?
+analysis-purpose = Analiza funkcija dokumentira u kojoj vrijednosti svoje memorije postavki (sigurnosne kopije) fotoaparat sprema jednu od svojih vlastitih postavki izbornika. Rezultat opisuje memoriju postavki ovog fotoaparata; može se usporediti s drugim fotoaparatima, ali ne mijenja ono što fotoaparat nudi.
+analysis-how-heading = Kako teče?
+analysis-how = Za svaku vrijednost izbornika koju navedete program jednom čita cijelu memoriju postavki, svaki put u zasebnoj kratkoj sesiji servisnog načina. Između čitanja izvučete kabel i promijenite postavku u izborniku fotoaparata; fotoaparat ostaje uključen. Na kraju se prva vrijednost čita još jednom. Vrijednosti koje prate izbornik i na kraju se vrate na početnu vrijednost su kandidati. Vrijednosti koje se mijenjaju same (brojači, sat) izdvajaju se.
+analysis-requirements-heading = Preduvjeti
+analysis-requirements = Fotoaparat je spojen USB-om, njegov USB način je postavljen na „Auto“, a nakon svake sesije na fotoaparatu odaberete „Masovna pohrana (MSC)“. Na Windowsima program treba administratorska prava jer za servisni način nakratko dodjeljuje upravljački program. Napunite bateriju; svaka sesija traje oko minutu.
+analysis-read-heading = Koraci čitanja
+analysis-read = Snimke stanja samo čitaju. U postavkama fotoaparata ništa se ne mijenja. Rizik je malen, ali nije nula: već je prelazak u servisni način zahvat koji Sony ne predviđa.
+analysis-write-heading = Korak pisanja (test pisanja)
+analysis-write = Samo ako ga izričito uključite: program upisuje pronađenu vrijednost u fotoaparat, vi nakon ponovnog pokretanja u izborniku provjerite djeluje li, a zatim se upisuje izvorna vrijednost natrag. Upisuje se samo vrijednost koju je fotoaparat sam spremio i samo ako je pronađen točno jedan odgovarajući kandidat. Stara se vrijednost prethodno sprema. Ipak, ovaj korak mijenja fotoaparat; pogreška ga može ostaviti u stanju koje može popraviti samo servis.
+analysis-legal-heading = Pravne napomene
+analysis-legal = Softver se isporučuje bez ikakvog jamstva (MIT licenca). Zahvati u fotoaparat mogu utjecati na jamstvo. Koristite funkciju samo na fotoaparatima koji su vaši. Izvješće o analizi ne sadrži serijski broj ni ništa iz memorije postavki osim pronađenih kandidata; nikada se ne šalje automatski.
+analysis-start-heading = Nova analiza
+analysis-setting-label = Postavka izbornika, kako je fotoaparat naziva
+analysis-values-label = Vrijednosti izbornika, odvojene zarezima
+analysis-values-hint = Prva vrijednost je ona koja je sada postavljena. Dvije do osam vrijednosti; svaka košta jednu sesiju servisnog načina.
+analysis-write-option = Zatim provesti test pisanja (mijenja fotoaparat)
+analysis-write-warning = Test pisanja mijenja fotoaparat: upisuje vrijednost u njegovu memoriju postavki, a zatim upisuje izvornu vrijednost natrag. Samo na vlastitom fotoaparatu, na vlastiti rizik.
+analysis-write-consent = Fotoaparat je moj i snosim rizik.
+btn-analysis-write-enable = Uključi test pisanja
+btn-analysis-start = Pokreni analizu
+btn-analysis-snapshot = Pročitaj sigurnosnu kopiju
+btn-analysis-new = Nova analiza
+analysis-discard-confirm = Odbaciti analizu u tijeku? Dosadašnje izvješće ostaje spremljeno.
+analysis-access-read = ČITANJE
+analysis-access-write = PISANJE
+analysis-access-user = RUČNO
+analysis-access-local = PC
+analysis-step-snapshot = Pročitaj sigurnosnu kopiju, postavka je na „{ $value }“
+analysis-step-change = U izborniku fotoaparata prebaci na „{ $value }“
+analysis-step-evaluate = Usporedi snimke stanja
+analysis-step-write = Upiši u fotoaparat vrijednost za „{ $value }“
+analysis-step-check = Isključi i uključi fotoaparat, očitaj izbornik (očekivano: „{ $value }“)
+analysis-step-restore = Upiši natrag izvornu vrijednost za „{ $value }“
+analysis-step-report = Spremi izvješće o analizi
+analysis-do-prepare = PRIPREMA: 1. U izborniku fotoaparata postavite „{ $setting }“ na „{ $value }“ i izađite iz izbornika tipkom MENU kako bi fotoaparat spremio postavku. 2. Ostavite fotoaparat uključen. 3. Spojite kabel i na fotoaparatu odaberite „Masovna pohrana (MSC)“.
+analysis-do-change = VAŠ KORAK: 1. Izvucite kabel. 2. Fotoaparat ostaje uključen. 3. U izborniku fotoaparata postavite „{ $setting }“ na „{ $value }“ i izađite iz izbornika tipkom MENU kako bi fotoaparat spremio postavku. 4. Ponovno spojite kabel i odaberite „Masovna pohrana (MSC)“.
+analysis-do-check = VAŠ KORAK: 1. Izvucite kabel. 2. Isključite i ponovno uključite fotoaparat. 3. Pogledajte u izborniku što piše kod „{ $setting }“.
+analysis-do-reconnect = Ponovno spojite kabel i na fotoaparatu odaberite „Masovna pohrana (MSC)“.
+analysis-reading = Snimka stanja { $index } od { $total }: NE izvlačite kabel tijekom čitanja.
+analysis-cli-continue = Enter za nastavak, q za odustajanje:
+analysis-confirm-word = da
+analysis-cli-confirm = Za potvrdu upišite „{ $word }“:
+analysis-write-declined = Nije potvrđeno. Ništa nije upisano.
+analysis-aborted = Prekinuto. Ništa nije upisano.
+analysis-snapshot-done = Snimka stanja pročitana. Fotoaparat je napustio servisni način.
+analysis-result = Uspoređeno vrijednosti: { $compared }; kandidata: { $count }; vrijednosti promijenjenih samih od sebe: { $running }.
+analysis-candidate-consistent = jednoznačno odgovara izborniku
+analysis-candidate-inconsistent = ne odgovara jednoznačno
+analysis-write-preview-heading = Ovo će biti upisano
+analysis-write-preview = Vrijednost { $id } ({ $size } B): iz { $old } („{ $old-label }“) u { $new } („{ $new-label }“). Novu vrijednost fotoaparat je sam spremio dok je bilo postavljeno „{ $new-label }“.
+btn-analysis-write = Upiši
+btn-analysis-skip-write = Završi bez testa pisanja
+analysis-written = Vrijednost upisana, ponovno pročitana i trajno spremljena.
+analysis-menu-question = Što izbornik sada prikazuje?
+analysis-menu-other = nešto drugo
+btn-analysis-menu-confirm = Preuzmi
+btn-analysis-restore = Upiši natrag izvornu vrijednost
+analysis-restored = Izvorna vrijednost upisana natrag i trajno spremljena.
+analysis-survived = Upisana vrijednost i dalje je bila spremljena nakon ponovnog pokretanja.
+analysis-not-survived = Upisana vrijednost nakon ponovnog pokretanja više nije bila spremljena.
+analysis-report-saved = Izvješće o analizi spremljeno: { $path }
+analysis-report-hint = Izvješće ne sadrži serijski broj ni sigurnosnu kopiju. Možete ga proslijediti kako bi se nalaz mogao provjeriti i dokumentirati.
+btn-analysis-export = Izvezi izvješće…
+file-filter-analysis = Izvješće o analizi
+analysis-pending = Test pisanja nije dovršen. Izvorna vrijednost je spremljena i može se upisati natrag.
+analysis-pending-none = Za ovaj fotoaparat nije spremljen nijedan nedovršeni test pisanja.
+analysis-invalid-setting = Navedite postavku izbornika kako je fotoaparat naziva.
+analysis-invalid-values = Navedite dvije do { $max } različite vrijednosti izbornika. Prva je ona koja je sada postavljena.
+analysis-already-complete = Sve snimke stanja već su pročitane.
+analysis-other-camera = Ovo nije isti fotoaparat kao kod prve snimke stanja. Analiza je zaustavljena.
+analysis-write-not-allowed = Test pisanja nije moguć u ovom stanju.
+analysis-camera-changed = Fotoaparat sada ima drugu vrijednost nego kod prve snimke stanja. Ništa nije upisano.
+analysis-write-refused = Fotoaparat je odbio vrijednost; sve je kao prije. ({ $detail })
+analysis-refuse-none = Test pisanja nije moguć: nijedna vrijednost nije pratila izbornik.
+analysis-refuse-ambiguous = Test pisanja nije moguć: izbornik je pratilo vrijednosti: { $count }; nijedna se ne može sigurno dodijeliti.
+analysis-refuse-inconsistent = Test pisanja nije moguć: vrijednost ne odgovara jednoznačno vrijednostima izbornika.
+analysis-refuse-size = Test pisanja nije moguć: vrijednost ima { $size } B; upisuju se samo male vrijednosti.
+analysis-refuse-read-only = Test pisanja nije moguć: fotoaparat označava vrijednost samo za čitanje.
+analysis-refuse-protected = Test pisanja nije moguć: fotoaparat označava vrijednost kao zaštićenu.
+settings-analysis-heading = Analiza funkcija
+settings-analysis-purpose = Analiza funkcija dokumentira u kojoj vrijednosti svoje memorije postavki fotoaparat sprema jednu od svojih vlastitih postavki izbornika. Namijenjena je onima koji žele razumjeti memoriju postavki svog modela i podijeliti rezultate.
+settings-analysis-why-off = Isključena je jer je uobičajena upotreba ne treba, jer više puta prebacuje fotoaparat u servisni način i jer na zahtjev i upisuje u fotoaparat. Eksperimentalna je i isprobana tek na nekoliko modela.
+settings-analysis-toggle = Uključi analizu funkcija (stavka „Analiza“ u izborniku)
+settings-analysis-confirm = Uključiti analizu funkcija? Više puta prebacuje fotoaparat u servisni način i na zahtjev može upisivati u fotoaparat. Koristite je samo na vlastitom fotoaparatu.
+btn-analysis-enable = Uključi
+settings-analysis-on = Analiza funkcija je uključena.
+settings-analysis-off = Analiza funkcija je isključena.
+analysis-needs-admin = Svaka snimka stanja treba administratorska prava za servisni način. Windows ih traži jednom po sesiji programa; pomoćnika za upravljačke programe možete pokrenuti sada ili pričekati da ga zatraži prva snimka.
+analysis-changed-hint = Provjerite: nije pronađen nijedan kandidat. Sljedeće su se vrijednosti promijenile, ali se nisu vratile na početnu vrijednost. Ako se neka od njih mijenja samo jednom između dviju vrijednosti, fotoaparat kod prve snimke stanja vjerojatno nije bio na prvoj vrijednosti izbornika. Tada ponovite analizu s ispravno postavljenom početnom vrijednošću.
+analysis-changed-info = Info: vrijednosti koje su se tijekom analize same promijenile (npr. brojači, sat) zanemaruju se. Ne morate ništa učiniti.
+elevation-admin = Administrator
+elevation-standard = Standardna prava
+elevation-admin-hint = Program radi s administratorskim pravima i može dodijeliti upravljački program koji treba servisni način.
+elevation-standard-hint = Program radi sa standardnim pravima. Za servisni način, tweakove i analizu funkcija po potrebi pokreće pomoćnika za upravljačke programe s administratorskim pravima; Windows pita jednom po sesiji. Kliknite za pokretanje.
+driver-helper-declined = Upit za administratorska prava je odbijen. Bez njih nije moguće dodijeliti upravljački program za servisni način; ništa nije promijenjeno.
+elevation-helper = Pomoćnik za upravljačke programe aktivan
+elevation-helper-hint = Pomoćnik s administratorskim pravima dodjeljuje upravljački program za servisni način. Nema prozor i završava s programom; daljnjih upita neće biti.
+elevation-helper-confirm = Pokrenuti sada pomoćnika za upravljačke programe? Windows jednom traži administratorska prava i zatim više ne do zatvaranja programa.
+analysis-cross-heading = Provjera na drugom fotoaparatu
+analysis-cross-intro = Neobavezno: provjerava ima li i drugi fotoaparat pronađenu vrijednost i što je ondje postavljeno. Samo čita. Isti broj ne znači nužno istu funkciju; to potvrđuje tek pogled u izbornik drugog fotoaparata. Rezultat ulazi u isto izvješće o analizi.
+analysis-cross-do = 1. Izvucite analizirani fotoaparat. 2. Uključite drugi fotoaparat, postavite njegov USB način na „Auto“, spojite kabel i odaberite „Masovna pohrana (MSC)“.
+btn-analysis-cross = Provjeri drugi fotoaparat
+analysis-cross-present = postoji, vrijednost { $value }
+analysis-cross-match = odgovara „{ $label }“
+analysis-cross-nomatch = ne odgovara nijednoj izmjerenoj vrijednosti izbornika
+analysis-cross-absent = ne postoji
+analysis-cross-same-camera = Ovo je sam analizirani fotoaparat. Spojite drugi fotoaparat.
+analysis-cross-not-now = Provjera je moguća tek kad su pročitane sve snimke stanja i nijedna upisana vrijednost ne čeka vraćanje.
+analysis-cross-none = Nema kandidata za provjeru.
+analysis-wrong-camera = Spojeni fotoaparat nije analizirani. Spojite { $model }; ništa nije upisano.
+keys-fetching = Preuzimanje izvora…
+keys-scanning = Traženje materijala ključeva…
+keys-complete = Sav materijal ključeva je prisutan.
+keys-incomplete = Dio materijala ključeva još nedostaje.
+keys-present = prisutno
+keys-missing = nedostaje
+keys-class-senser = Ključevi servisnog načina (servisna ljuska, prilagodbe, analiza)
+keys-class-cic = Ključ kontrolnog zbroja XPD (instalacija aplikacija)
+keys-class-spk = Materijal ključeva SPK (instalacija aplikacija, apk2spk)
+keys-class-fdat = Materijal ključeva FDAT (firmver updater-shella)
+plugin-heading = Dodaci
+plugin-intro = Dodaci proširuju ovaj program jezicima, prekidačima za postavke fotoaparata, podacima o kompatibilnosti, alatima i dijagnostikom. Dolaze isključivo iz datoteka koje sami odaberete – trgovina dodataka ne postoji. Njihov se kod izvodi u izoliranom okruženju bez pristupa vašim datotekama, mreži ili materijalu ključeva. Instalirajte samo dodatke autora kojima vjerujete; promjene stupaju na snagu pri sljedećem pokretanju.
+plugin-none = Nema instaliranih dodataka.
+plugin-inactive = (aktivan nakon ponovnog pokretanja)
+plugin-author = Autor
+plugin-restart = Ponovno pokrenite program kako bi promjena stupila na snagu.
+btn-plugin-install = Instaliraj dodatak…
+plugin-install-confirm = Ovaj dodatak smije:
+btn-confirm-plugin-install = Instaliraj dodatak
+plugin-installed = Dodatak je instaliran.
+plugin-remove-confirm = Želite li ukloniti dodatak „{ $name }”?
+plugin-removed = Dodatak { $id } je uklonjen.
+plugin-perm-languages = dodavati jezike programu
+plugin-perm-camera-settings = mijenjati postavke fotoaparata (samo između dviju vrijednosti koje navodi i tek nakon vaše potvrde)
+plugin-perm-compatibility = dodavati unose u pregled kompatibilnosti
+plugin-perm-code = izvoditi vlastiti kod u izoliranom okruženju (alati ili dijagnostika)
+plugin-perm-host-os = doznati o kojem je operacijskom sustavu riječ
+plugin-perm-host-cameras = vidjeti koji su Sony fotoaparati povezani i u kojem načinu rada
+plugin-invalid = Ovo nije upotrebljiv dodatak: { $reason }
+plugin-no-folder = Mapu korisničkih podataka nije bilo moguće odrediti pa se dodaci ne mogu instalirati.
+plugin-not-installed = Nije instaliran dodatak s oznakom { $id }.
+plugin-failed = Dodatak nije uspio: { $reason }
+plugin-unknown-entry = Nijedan učitani dodatak ne pruža { $id }.
+plugin-run-done = Dodatak je završio.
+plugin-run-warning = Dodatak je završio s napomenama.
+plugin-run-error = Dodatak je prijavio pogrešku.
+plugin-tools-heading = Alati dodataka
+plugin-tools-hint = Dolaze iz instaliranih dodataka i izvode se u izoliranom okruženju. Dodatak dobiva samo ono što mu predate i ono što je prijavio te ne može mijenjati fotoaparat.
+plugin-diagnostics-heading = Dijagnostika dodataka
+plugin-compat-heading = Iz dodatka
+plugin-col-note = Napomena
+file-filter-plugin = Datoteka dodatka
+keys-not-set-up = Materijal ključeva koji ova radnja treba nije postavljen.
+err-missing-keys = Materijal ključeva koji ova radnja treba nije postavljen.
+keys-heading = Potreban materijal ključeva
+keys-intro = Ključevi servisnog načina, ključ kontrolnog zbroja XPD i materijal ključeva SPK nisu dio ovog programa. Unesite adresu izvora koji imate — repozitorij, arhivu ili datoteku — i program će pronaći i uvesti dijelove koje prepozna. Ništa se ne pokreće, a materijal ostaje samo na ovom računalu.
+keys-law-notice = Poštujte zakone koji vrijede ondje gdje se nalazite i radite samo s fotoaparatima i podacima koji su vaši.
+keys-url-label = Adresa izvora (jedna po retku)
+keys-url-required = Unesite barem jednu adresu izvora.
+btn-keys-import = Uvezi
+btn-import-keys = Postavi materijal ključeva

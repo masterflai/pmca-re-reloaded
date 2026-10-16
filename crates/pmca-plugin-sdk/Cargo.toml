@@ -1,0 +1,20 @@
+[package]
+name = "pmca-plugin-sdk"
+description = "Write tools and diagnostics for PMCA-RE RELOADED as WebAssembly plugins."
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+
+[dependencies]
+serde.workspace = true
+serde_json.workspace = true
+
+# Build with: cargo build -p pmca-plugin-sdk --examples --release --target wasm32-unknown-unknown
+[[example]]
+name = "hexdump"
+crate-type = ["cdylib"]
+
+[[example]]
+name = "system-check"
+crate-type = ["cdylib"]

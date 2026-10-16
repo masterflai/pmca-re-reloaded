@@ -1,0 +1,820 @@
+# Nederlandse lokalisatie voor PMCA-RE RELOADED.
+# Eén bericht per regel: <id> = <tekst>. Vertaal uitsluitend de rechterkant
+# van het isgelijkteken; wijzig de ids nooit.
+
+app-title = PMCA-RE RELOADED – camera-toolkit
+
+# Navigatie / tabbladen
+nav-camera-info = Camerainformatie
+nav-install-app = Apps
+nav-tweaks = Aanpassingen
+nav-network = Netwerk
+nav-firmware = Firmware
+nav-updater = Updater-shell
+nav-service = Service-shell
+nav-tools = Bestandsgereedschap
+nav-settings = Instellingen
+nav-license = Licentie
+
+# Welkomstpagina: de pagina waarmee het venster opent.
+nav-welcome = Welkom
+welcome-intro-heading = Wat dit programma doet
+welcome-intro-body = Dit programma helpt de functies van uw Sony-camera te behouden en de camera aan uw wensen aan te passen. Nadat Sony de winkel voor PlayMemories Camera Apps had gesloten, was er geen manier meer om gekochte of al geïnstalleerde apps te back-uppen of opnieuw te installeren. Een reset van de camera wist de geïnstalleerde apps onherroepelijk. Dit programma maakt het mogelijk bestaande apps te back-uppen en opnieuw te installeren, en kan daarnaast vrij beschikbare community-apps aanbieden. U kunt ook eigen apps (*.apk-bestanden) installeren. Bij problemen leest het programma camera-informatie en interne logboeken uit voor analyse. Instellingen die de camera al heeft maar niet in het menu aanbiedt, kunnen worden omgezet en weer ongedaan gemaakt. Het programma praat via de USB-kabel rechtstreeks met de camera. Welke modellen ondersteund worden, staat vermeld op de pagina Camerainformatie.
+welcome-start-heading = De eerste stap
+welcome-start-body = Zet de camera eerst aan en stel in het menu „USB-verbinding“ in op Massaopslag of MTP zolang de kabel er nog niet in zit. „Auto“ werkt meestal ook, omdat de camera dan vanzelf voor een van beide kiest. De volgorde doet ertoe: zodra de kabel erin zit, is het menu van de camera niet meer bereikbaar. Sluit de camera pas daarna met USB aan, open Camerainformatie en druk op „Camerainformatie ophalen“. Zodra het model en de firmwareversie verschijnen, is de verbinding in orde en staan alle overige functies van dit programma ter beschikking.
+welcome-start-driver = Verschijnt in plaats daarvan een stuurprogrammamelding, volg die dan eerst. Op Windows claimt een systeemstuurprogramma de camera; dat moet vervangen worden voordat de directe USB-toegang mogelijk is die deze gereedschapskist nodig heeft. Het programma doet dat zelf, maar een stuurprogramma toewijzen is een recht dat Windows alleen aan een beheerder verleent. In dat geval biedt het programma u de mogelijkheid het als beheerder opnieuw te starten, en Windows vraagt u de handeling te bevestigen. De toewijzing wordt aan het eind van de sessie weer opgeheven. Onder Linux en macOS is dat niet nodig.
+welcome-start-driver-linux = Verschijnt in plaats daarvan een stuurprogrammamelding, volg die dan eerst. Op Linux hoeft niets vervangen te worden: de camera is rechtstreeks bereikbaar. Eenmalig nodig zijn het recht om het apparaat te openen — een udev-regel voor Sony's fabrikantkenmerk — en, voor de massaopslagmodus, het losmaken van het kernelstuurprogramma usb-storage. Beide worden buiten dit programma met rootrechten ingericht; het script scripts/linux-prepare.sh in de broncode doet ze allebei. Dit venster vraagt zelf nooit om zulke rechten.
+welcome-start-driver-macos = Verschijnt in plaats daarvan een stuurprogrammamelding, volg die dan eerst. Op macOS hoeft er voor directe USB-toegang niets vervangen te worden. Alleen de massaopslagmodus loopt via Sony's eigen Camera Driver, die apart geïnstalleerd wordt en daarbij net als elk installatieprogramma om een beheerderswachtwoord vraagt. Dit venster vraagt zelf nooit om zulke rechten.
+welcome-tweaks-heading = Aanpassingen en talen
+welcome-tweaks-body = Aanpassingen zijn instellingen die de camera al heeft maar niet in zijn menu aanbiedt: de opnametijdlimiet, de 4K-opnamelimiet, de keuze tussen PAL en NTSC, het USB-app-installatieprogramma — en de menutalen.
+welcome-tweaks-languages-heading = De talen van de camera
+welcome-tweaks-languages-body = Sony-camera's tonen alleen de menutalen die in hun verkoopregio gebruikelijk zijn. Wie in het buitenland woont, vindt zijn eigen taal daarom vaak niet en moet zich behelpen met een vreemde. Toch zitten er al meer talen in de firmware. Dit programma haalt ze naar het menu, zodat u uw camera in een vertrouwde taal kunt bedienen.
+welcome-tweaks-ui-heading = De taal van dit programma
+welcome-tweaks-ui-body = Daar helemaal los van staat de keuzelijst bovenaan. Die verandert alleen de taal van dit programma en raakt de camera nooit aan.
+welcome-tweaks-safety = Elke aanpassing wordt in het back-upgeheugen van de camera geschreven, en elke aanpassing kan met dezelfde schakelaar weer worden teruggedraaid. Een onderbroken schrijfactie kan de camera blijvend beschadigen: koppel de kabel niet los en haal de accu er niet uit terwijl er een bezig is.
+welcome-privacy-heading = Uw gegevens
+welcome-privacy-where = De pagina ‘Licentie’ zet dit alles nog eens volledig uiteen, samen met de licenties van alle bibliotheken waaruit dit programma is opgebouwd.
+welcome-where-heading = Waar vind ik wat
+welcome-where-info = Model, serienummer en firmwareversie. Tegelijk de verbindingstest.
+welcome-where-install = Apps uit de gemeenschapslijst, of een eigen .apk-bestand.
+welcome-where-tweaks = De instellingen die het cameramenu niet bereikt, de talen daaronder.
+welcome-where-network = GPS-assistentiegegevens, en de toegangspunten en diensten voor livestreamen.
+welcome-where-firmware = Een Sony-firmwarebestand naar de camera schrijven.
+welcome-where-tools = Firmware- en pakketbestanden uitpakken en bekijken. Zonder camera.
+welcome-where-shells = Rechtstreekse toegang tot het geheugen en bestandssysteem van de camera. Eerst weergeven via Instellingen.
+welcome-where-settings = Thema, geavanceerde modus en het bewerken van de vertaling van dit programma.
+welcome-where-license = Waar deze overzetting vandaan komt, op wiens werk ze voortbouwt en onder welke voorwaarden ze staat.
+welcome-where-hint = Geen enkele pagina doet uit zichzelf iets met de camera. Er wordt niets gelezen of geschreven voordat u op een knop drukt die dat aankondigt.
+
+# Knoppen
+btn-get-info = Camerainformatie ophalen
+btn-refresh = Vernieuwen
+btn-load-apps = Beschikbare apps laden
+btn-list-tweaks = Beschikbare aanpassingen tonen
+btn-install = Geselecteerde app installeren
+btn-install-file = .apk-bestand installeren…
+btn-apply = Toepassen
+btn-save = Opslaan op camera
+btn-add = Toevoegen
+btn-remove = Verwijderen
+btn-reveal = Tonen
+btn-update-gps = GPS-assistentiegegevens naar het apparaat overbrengen
+btn-cancel = Annuleren
+btn-browse = Bladeren…
+btn-switch-msc = Naar massaopslagmodus schakelen
+btn-start-driver-helper = Stuurprogrammahulp starten
+
+# Labels van de bestandstypefilters in de bestandsdialogen
+file-filter-apk = Android-toepassing (*.apk)
+file-filter-firmware = Sony-firmware-image (*.dat)
+file-filter-usage-log = Gebruikslogboek (*.bin)
+file-filter-catalog = Vertaalbestand (*.ftl)
+file-filter-spk = Sony-apppakket (*.spk)
+file-filter-any = Alle bestanden
+file-filter-gps = GPS-assistentiegegevens (*.dat)
+
+# Status / meldingen
+msg-connecting = Verbinding maken…
+msg-usage-log-written = Gebruikslogboek weggeschreven naar { $path }
+msg-apps-found = { $count } apps gevonden
+msg-switch-mode = Schakel de camera naar de MTP- of massaopslagmodus.
+msg-no-tweaks = Voor deze camera zijn geen aanpassingen beschikbaar.
+msg-done = Klaar.
+
+# USB-moduswissel van de camera (MTP -> massaopslag). Wordt aangeboden onder
+# een melding over een verkeerde modus; voor de omgekeerde richting bestaat
+# geen USB-opdracht.
+mode-switching = De camera wordt gevraagd naar de massaopslagmodus te schakelen…
+mode-switch-wait = Wachten tot de camera opnieuw verbinding maakt…
+camera-confirm-hint = Meldingen op de camera (bijv. over www.sony.net/pm) kunnen worden weggeklikt; ze verstoren het proces niet.
+mode-switch-done = De camera staat nu in de massaopslagmodus.
+mode-switch-timeout = De camera is niet in de massaopslagmodus verschenen. Schakel het toestel uit en weer in en probeer het opnieuw.
+mode-switch-impossible = Deze modus kan niet via USB worden gewijzigd. Schakel de camera uit en weer in.
+mode-switch-hint = Alleen een camera in de MTP-modus kan via USB worden omgeschakeld. De wijziging is tijdelijk: de in het cameramenu gekozen USB-modus blijft ongewijzigd, dus de camera uit- en weer inschakelen — of de kabel losmaken en opnieuw aansluiten — herstelt de vorige modus. Voor de terugweg bestaat geen USB-opdracht.
+
+# Velden met camerainformatie
+info-model = Model
+info-product-code = Productcode
+info-serial = Serienummer
+info-firmware = Firmwareversie
+info-lens = Objectief
+info-region = Regio
+info-mode = Modus
+mode-mass-storage = Massaopslag
+mode-mtp = MTP
+mode-updater = Updatermodus
+mode-app-install = App-installatiemodus
+mode-service = Servicemodus
+mode-unknown = Onbekend
+info-android-version = Android-platformversie
+info-photographer = Fotograaf
+info-copyright = Copyright
+info-photographer-1 = Fotograaf (item 1)
+info-photographer-2 = Fotograaf (item 2)
+info-copyright-1 = Copyright (item 1)
+info-copyright-2 = Copyright (item 2)
+diagnose-services-heading = Camera niet bereikbaar?
+diagnose-services-hint = Sommige Windows-services kunnen een camera in MTP-modus bezet houden, zodat deze toepassing hem niet bereikt. De controle vraagt Windows alleen welke services actief zijn; er wordt niets gewijzigd.
+btn-diagnose-services = Windows-services controleren
+diagnose-services-none = Er is geen bekende storende service actief.
+diagnose-services-found = Deze actieve services kunnen de toegang tot de camera verstoren:
+diagnose-services-advice = Stop de service in Services (services.msc) of met de volgende opdracht als administrator en sluit de camera daarna opnieuw aan:
+
+# Firmware-updater / shell
+updater-model = Cameramodel
+updater-firmware-current = Huidige firmwareversie
+updater-guard-ok = Het firmware-image past bij deze camera.
+updater-no-fdat = Voor model { $model } is geen meegeleverde updaterfirmware beschikbaar.
+updater-model-required = De camera staat al in de updatermodus en kan daar het model niet melden. Zet de camera uit en weer aan, zodat hij in de normale modus opstart, en probeer het dan opnieuw. U kunt ook een payloadbestand opgeven (--fdat-file) of, in de console, het model (--model <MODEL>).
+updater-already-updater = De camera staat al in de updatermodus.
+updater-flash-required = De camera wordt zonder bevestiging niet gewijzigd. Voer de opdracht opnieuw uit met --flash om naar de updatermodus te schakelen en de payload te schrijven.
+updater-flashing = De updaterpayload wordt naar de camera geschreven…
+updater-switch-wait = Volg de aanwijzingen op het camerascherm. Er wordt gewacht tot de camera naar de updatermodus schakelt…
+updater-switch-timeout = Time-out tijdens het wachten op de camera. Voer de opdracht opnieuw uit zodra het toestel weer verbonden is.
+updater-shell-ready = De updaterpayload draait. Typ 'help' voor opdrachten en 'exit' om te stoppen.
+updater-shell-done = Shell-sessie beëindigd.
+updater-session-panic = De updater-sessie is onverwacht geëindigd. Zet de camera uit en weer aan voordat u het opnieuw probeert.
+
+# Wat de updater-shell antwoordt. De fouten bij het ontleden van een regel zijn
+# maar één keer geformuleerd, in de service-*-sleutels: beide shells delen de
+# ontleder, dus een pad tussen aanhalingstekens en een verkeerde hexwaarde
+# mislukken in allebei op dezelfde manier.
+updater-backup-synced = Back-up naar het flashgeheugen geschreven.
+updater-backup-locked = De beveiligde back-upinstellingen zijn nu vergrendeld.
+updater-backup-writable = De beveiligde back-upinstellingen zijn nu beschrijfbaar.
+updater-shell-console-only = De root-shell heeft een terminal nodig en bestaat alleen op de opdrachtregel: voer pmca-console updatershell --flash uit en typ daar ‘shell’.
+
+# De pagina van de updater-shell.
+updater-warning = Let op: om deze shell te bereiken start de camera opnieuw op in de updater-modus en wordt er een payload naartoe geschreven – een klein programma van dit project dat de camera aanneemt als een firmware-update en dat daarna de opdrachten van deze shell beantwoordt. Die payload verdwijnt zodra de camera wordt uitgezet, maar de opdrachten die hij aanbiedt schrijven in het permanente instellingengeheugen van de camera, en een afgebroken schrijfactie kan de camera blijvend beschadigen. Bovendien worden daarbij alle instellingen van de camera teruggezet – anders dan bij de service-shell.
+updater-console-heading = De updater-shell op de opdrachtregel uitvoeren
+updater-driver-hint = De updater-shell heeft de camera nodig op Windows' eigen stuurprogramma voor massaopslag, USBSTOR, want daarlangs wordt de payload verstuurd. Dat is precies het tegenovergestelde van wat de service-shell nodig heeft. De toepassing wijst het WinUSB-stuurprogramma zelf toe en geeft het zelf weer vrij, dus er hoeft niets met de hand te worden voorbereid — maar een stuurprogramma dat een ander hulpprogramma heeft toegewezen, moet eerst ongedaan worden gemaakt. Een camera in de updater-modus meldt zich met een eigen product-id en mag evenmin worden omgezet.
+updater-fdat-label = Payloadbestand (optioneel)
+updater-confirm = De camera start opnieuw op in de updater-modus en er wordt een payload naartoe geschreven. Doorgaan?
+updater-cancelled = Geannuleerd. De camera is niet gewijzigd.
+
+btn-shell-primer = Wetenswaardigheden over deze shell
+btn-shell-primer-hide = Uitleg verbergen
+shell-primer-compare-heading = Twee shells, twee protocollen
+shell-primer-compare = Beide pagina's bieden een opdrachtregel naar de camera, maar het is niet dezelfde shell. De service-shell spreekt Sony's eigen fabrieksserviceprotocol, dat de camera na aanmelding zelf beantwoordt; er wordt niets naar de camera geschreven om daar te komen. De updater-shell bestaat alleen omdat dit project een eigen programma naar de camera schrijft: de camera herstart in de updatermodus, accepteert de payload alsof het firmware is, en die payload beantwoordt vervolgens de hieronder genoemde opdrachten. Er kan er maar één tegelijk open zijn.
+shell-primer-payload = „Payload” (Engels voor nuttige lading) is de eigenlijke inhoud die een transportweg vervoert. Bij de updater-shell is dat een klein programma van dit project: de camera neemt het op dezelfde manier aan als een firmware-update, maar houdt het alleen vast tot hij wordt uitgeschakeld. De service-shell heeft geen payload nodig, omdat de camera de opdrachten ervan met zijn eigen firmware beantwoordt. Bij firmwarebestanden betekent de term hetzelfde: het eigenlijke firmware-image in de container van het .dat-bestand.
+shell-primer-when-service = De service-shell is er voor alles wat de opgeslagen instellingen van de camera leest of wijzigt terwijl die zijn eigen firmware blijft draaien: het HASP-blok lezen, een terugzetkopie van het backupgebied bewaren, losse vermeldingen wijzigen, bestanden van de camera halen. Het is ook wat de pagina Aanpassingen eronder gebruikt; alles van daar kan hier met de hand.
+shell-primer-when-updater = De updater-shell is de juiste keuze wanneer de camera op geen andere manier bereikbaar is, of wanneer u een shell op het draaiende systeem nodig hebt in plaats van losse opdrachten. Alleen deze weg biedt een echte root-shell, en hij werkt nog op een camera die de servicemodus weigert. Hij kost een herstart, een schrijfactie en de camera-instellingen en is dus de tweede keuze, niet de eerste.
+shell-primer-driver-heading = Stuurprogramma's: beide eisen het tegenovergestelde
+shell-primer-driver = De service-shell spreekt rauwe USB en vereist onder Windows een camera die aan WinUSB gekoppeld is. De toepassing wijst dat stuurprogramma zelf toe op weg naar de servicemodus en geeft het aan het einde van de sessie weer vrij; er komt geen apart hulpprogramma aan te pas. De updater-shell loopt via USBSTOR, het eigen stuurprogramma voor massaopslag van Windows, en werkt niet zolang de camera aan WinUSB gekoppeld is — het vrijgeven hoort daarom bij het afsluiten van een servicesessie. Een stuurprogramma toewijzen vereist beheerdersrechten. Onder Linux is voor geen van beide een wissel nodig, alleen toegang tot de apparaatnode.
+shell-primer-risk-heading = Wat er mis kan gaan
+shell-primer-risk = De hieronder gemarkeerde opdrachten schrijven in het permanente instellingengeheugen van de camera. Een afgebroken schrijfactie kan ervoor zorgen dat de camera niet meer start, en niets daarvan is terug te draaien — precies daarvoor bestaat bk d: bewaar een kopie van het backupgebied voordat u iets wijzigt. De payload van de updater zelf blijft niet op de camera: uitschakelen wist hem. De weg via de updater-modus zet wel alle instellingen van de camera terug.
+shell-primer-commands-heading = Opdrachten van deze shell
+shell-primer-writes = Met (WRITES) gemarkeerde opdrachten wijzigen de camera. Alle andere lezen alleen.
+shell-cmd-hasp = Leest het HASP-blok, het beschermde identiteitsgebied van de camera.
+shell-cmd-pull = Haalt een bestand van de camera. Zonder lokale naam blijft de naam op de camera behouden.
+shell-cmd-push = Kopieert een lokaal bestand naar de camera en vervangt wat daar staat. (WRITES)
+shell-cmd-rm = Verwijdert een bestand op de camera. (WRITES)
+shell-cmd-rmem = Schrijft een gebied van het apparaatgeheugen naar een lokaal bestand. Offset en lengte zijn hexadecimaal.
+shell-cmd-bk-r = Leest één vermelding van het backupgebied en toont die als hexdump.
+shell-cmd-bk-d = Bewaart het hele backupgebied in een bestand. Doe dit voordat u iets wijzigt: het is de enige weg terug.
+shell-cmd-bk-dump-txt = Bewaart het hele backupgebied als <file>.bin en een leesbare lijst als <file>.txt.
+shell-cmd-bk-stat = Toont het backupstatusblok van de camera, inclusief de regio.
+shell-cmd-bk-w = Schrijft één vermelding van het backupgebied, opgegeven als hexadecimale bytes met spaties ertussen. (WRITES)
+shell-cmd-bk-s-sub = Legt het backupgebied van één subsysteem vast in flash, zodat de wijziging een herstart overleeft. (WRITES)
+shell-cmd-bk-s = Legt het backupgebied vast in flash, zodat de wijziging een herstart overleeft. (WRITES)
+shell-cmd-bk-lock = Zet de schrijfbeveiliging van de beschermde backupvermeldingen aan of uit; sommige instellingen weigeren te wijzigen zolang die aan staat. (WRITES)
+shell-cmd-term = Schakelt de debugterminal van de camera in of uit. (WRITES)
+shell-cmd-info = Leest het backup-statusblok, dat aangeeft of het gebied überhaupt beschrijfbaar is.
+shell-cmd-shell = Opent een root-shell op de camera. Die heeft een terminal nodig en is daarom alleen in de console beschikbaar; shell tcp <port> biedt hem in plaats daarvan op 127.0.0.1 aan een andere client aan. (WRITES)
+shell-cmd-help = Somt de opdrachten op die deze shell accepteert.
+shell-cmd-exit = Beëindigt de sessie en verlaat de shell.
+shell-primer-diagnostics-heading = Diagnose en herstel
+shell-cmd-bk-trace = Legt pakket voor pakket in een bestand vast hoe de camera het hele backupgebied via USB verstuurt. Bedoeld om grote back-ups te onderzoeken; kan de camera midden in het antwoord laten hangen. Koppel dan de kabel los en zet de camera uit en weer aan, zo nodig door de accu te verwijderen.
+shell-cmd-bk-rewrite = Leest het backupgebied, schrijft het ongewijzigd terug en leest het opnieuw. Laat zien of de camera een volledig image accepteert, zonder een instelling te wijzigen. (WRITES)
+shell-cmd-bk-restore-attrs = Zet de attributen van alle backupvermeldingen, zoals de schrijfbeveiliging, terug naar die in een kopie die met bk d of bk dump-txt is bewaard. De waarden blijven ongewijzigd. Gebruik alleen een kopie van dezelfde camera. (WRITES)
+shell-primer-diagnostics-env = Drie omgevingsvariabelen werken zowel op de console als op de grafische interface als ze vóór het starten zijn ingesteld, bijvoorbeeld in PowerShell met $env:PMCA_TWEAKS_DIRECT = "1". PMCA_TWEAKS_DIRECT laat de tweaks losse waarden schrijven, ook als de back-up kleiner is dan 1 MB. PMCA_TWEAKS_IMAGE laat ze het volledige image schrijven, ook als het groter is dan 1 MB; zijn beide ingesteld, dan geldt PMCA_TWEAKS_DIRECT. PMCA_TLS_DUMP=<bestand> bewaart bij een app-installatie het eerste TLS-bericht van de camera (ClientHello), om een mislukte verbinding te onderzoeken.
+
+# App-installatie
+install-switching = Overschakelen naar de app-installatiemodus…
+install-disabled = De camera weigerde de app-installatiemodus te openen. Meestal ligt dat aan de instelling "USB-app-installatieprogramma inschakelen": die moet onder "Aanpassingen" worden ingeschakeld.
+install-stays-app-mode = De camera blijft in de app-installatiemodus, waarin nog meer apps geïnstalleerd kunnen worden. Maak voor alle andere functies de USB-kabel los en schakel de camera uit en weer in.
+err-usb-app-install-mode = De camera staat nog in de app-installatiemodus en accepteert daarin alleen app-installaties. Maak de USB-kabel los en schakel de camera daarna uit en weer in — opnieuw starten met de kabel aangesloten brengt het toestel meteen terug in deze modus.
+install-switch-wait = Wachten tot de camera opnieuw verbinding maakt in de app-installatiemodus…
+install-switch-timeout = Time-out tijdens het wachten tot de camera de app-installatiemodus opent. Voer de opdracht opnieuw uit zodra het toestel weer verbonden is.
+install-bad-mode = De camera kan in deze modus niet worden gebruikt. Schakel het toestel naar de MTP- of massaopslagmodus.
+install-starting = Installatie wordt gestart…
+install-error = Communicatiefout bij de installatie
+install-server-failed = De lokale installatieserver heeft de verbinding van de camera niet geaccepteerd:
+install-done = Taak succesvol afgerond.
+
+# APK-controle
+apk-package = Pakket:
+apk-unreadable = Waarschuwing: het .apk-bestand kon niet worden geanalyseerd.
+apk-incompatible = Waarschuwing: deze app vraagt een minimaal SDK-niveau dat de camera mogelijk niet biedt.
+apk-unsigned = Waarschuwing: het .apk-bestand bevat geen handtekening.
+
+# App-winkel van de gemeenschap
+store-loading = De app-lijst wordt geladen…
+store-resolving = De nieuwste release wordt opgezocht…
+store-downloading = Bezig met downloaden
+store-unknown-app = Onbekende app
+store-no-release = Geen downloadbare release voor deze app
+store-not-installable = geen release
+msg-no-apps = Geen apps gevonden.
+store-heading = App-winkel van de gemeenschap
+store-discontinued = Sony heeft de officiële PlayMemories Camera Apps-winkel gesloten; de servers antwoorden niet meer, dus er kunnen daar geen apps meer worden gekocht of gedownload.
+store-use-own-apk = U kunt nog steeds uw eigen .apk installeren: kies hieronder het bestand of sleep het naar dit venster. De app-winkel van de gemeenschap verderop werkt eveneens nog.
+btn-store-sync = Camera controleren
+btn-install-selected = Selectie installeren
+btn-store-stop = Na deze app stoppen
+btn-store-stopping = Stopt na deze app…
+btn-store-retry = Mislukte apps opnieuw proberen
+btn-continue = Doorgaan
+btn-reinstall = Opnieuw installeren
+btn-skip = Overslaan
+btn-confirm-updater = Herstarten en schrijven
+btn-confirm-tweaks = Aanpassingen schrijven
+btn-confirm-languages = Talen inschakelen
+btn-confirm-wifi = Toegangspunten vervangen
+btn-confirm-stream = Instellingen overschrijven
+btn-confirm-show-shells = Shells weergeven
+btn-confirm-discard = Vertaling verwerpen
+store-select-all = Alle apps selecteren
+store-col-app = App
+store-col-version = Versie
+store-col-author = Auteur
+store-col-camera = Versie op camera
+store-col-status = Status
+store-camera-absent = niet geïnstalleerd
+store-version-unknown = onbekend
+store-batch-query = Geïnstalleerde apps worden van de camera gelezen…
+store-sync-done = Camera gecontroleerd. Geïnstalleerde apps uit de lijst: { $count }
+store-batch-downloading = App { $current } van { $total } wordt gedownload…
+store-batch-installing = App { $current } van { $total }: { $name } wordt geïnstalleerd…
+store-reinstall-confirm = { $name } is al op de camera geïnstalleerd. Geïnstalleerde versie: { $installed }. Versie in de app-winkel: { $store }. Wilt u de app opnieuw installeren?
+store-state-queued = wacht
+store-state-installed = geïnstalleerd
+store-state-failed = mislukt
+store-state-skipped = overgeslagen
+store-state-not-run = niet uitgevoerd
+store-batch-summary = Geïnstalleerd: { $done } · mislukt: { $failed } · overgeslagen: { $skipped } · niet uitgevoerd: { $notrun }
+
+# Servicemodus (senser)
+usb-mode-advice = Zet voor tweaks, back-ups en de serviceshell de USB-verbindingsmodus van de camera op „Auto”, niet vast op massaopslag. Vraagt de camera na een sessie naar de modus, kies dan „Massaopslag (MSC)”. Met vaste massaopslag weigert de camera vaak de volgende overstap naar de servicemodus.
+service-switch-refused = De camera heeft de overstap naar de servicemodus niet voltooid en zich niet opnieuw via USB aangemeld; hij toont dan meestal „Controleer het aangesloten apparaat”. Koppel de USB-kabel los, sluit hem opnieuw aan en probeer het nog eens.
+service-switching = Overschakelen naar de servicemodus…
+service-switch-wait = Wachten tot de camera opnieuw verbinding maakt in de servicemodus…
+service-switch-timeout = De camera is niet in de servicemodus verschenen. Het toestel meldt zich daar als een apart USB-apparaat (product-id 0336) dat een eigen WinUSB-stuurprogramma toegewezen moet krijgen; controleer in Apparaatbeheer of er een Sony-apparaat zonder stuurprogramma staat. Schakel de camera uit en weer in om terug te keren naar de normale modus.
+service-authenticating = Bezig met verifiëren…
+# Wordt getoond wanneer de camera nog in de servicemodus staat van een eerdere
+# sessie, en wanneer dat niet ongedaan gemaakt kon worden.
+service-stranded-reset = De camera staat nog in de servicemodus van een eerdere sessie. Die sessie wordt eerst beëindigd…
+service-stranded-failed = De camera zit vast in de servicemodus van een eerdere sessie en reageerde niet op het verzoek om die te verlaten. Zet de camera uit en weer aan en probeer het opnieuw.
+service-bad-mode = De camera kan in deze modus niet worden gebruikt. Schakel het toestel naar de massaopslagmodus.
+service-driver-required = Directe USB-toegang is geweigerd en het WinUSB-stuurprogramma kon niet worden toegewezen. Een stuurprogramma toewijzen vereist beheerdersrechten.
+service-warning = Waarschuwing: de servicemodus geeft directe toegang tot het geheugen, het bestandssysteem en de kalibratiegegevens van de camera. Schrijfopdrachten kunnen uw camera blijvend beschadigen.
+service-shell-ready = Service-shell gereed. Typ 'help' voor opdrachten en 'exit' om te stoppen.
+service-shell-done = Sessie van de service-shell beëindigd.
+# Wordt bij het starten gemeld wanneer een eerdere sessie afbrak voordat zij
+# het toegewezen stuurprogramma kon vrijgeven.
+driver-swept = { $count } stuurprogrammatoewijzing(en) van een eerdere sessie verwijderd.
+# Wordt bij het opstarten gemeld wanneer diezelfde afgebroken sessie de camera
+# ook in de servicemodus achterliet, waar zij de volgende sessie zou weigeren.
+driver-swept-camera = Een camera die door een eerdere sessie in de servicemodus was achtergelaten, is teruggezet naar de normale modus.
+driver-release-replug = Windows wacht op de camera terwijl het stuurprogramma wordt vrijgegeven. Koppel de USB-kabel los en sluit hem opnieuw aan, zodat het opruimen kan worden afgerond.
+# Resultaten van de opdracht `driver`.
+driver-bound = { $id } gebruikt nu WinUSB (stuurprogrammapakket { $package }).
+driver-released = { $count } stuurprogrammatoewijzing(en) vrijgegeven; de camera gebruikt weer de stuurprogramma's die Windows meelevert.
+driver-needs-elevation = Een stuurprogramma toewijzen vereist beheerdersrechten. Voer deze opdracht uit in een console die als administrator is gestart.
+driver-leftover-needs-elevation = Een eerdere uitvoering heeft een stuurprogramma aan de camera toegewezen dat nog niet is vrijgegeven. Zolang het bestaat, vraagt de camera het aangesloten apparaat te controleren en werkt de massaopslag niet. Vrijgeven vereist beheerdersrechten; bevestig de vraag van Windows.
+driver-binding = WinUSB-stuurprogramma wordt aan de camera toegewezen…
+driver-bind-wait = Wachten tot de camera opnieuw verbinding maakt met het nieuwe stuurprogramma…
+driver-bind-timeout = De camera verscheen niet opnieuw na het toewijzen van het stuurprogramma. Koppel hem los, sluit hem opnieuw aan en probeer het nogmaals.
+driver-bind-failed = Het WinUSB-stuurprogramma kon niet worden toegewezen: { $detail }
+# Antwoorden van de shell. Ze komen uit de backend, zodat de console en het
+# venster dezelfde woorden gebruiken.
+service-usage = Gebruik: { $usage }
+service-bad-hex = Geen hexadecimale waarde: { $value }
+service-unknown-command = Onbekende opdracht: { $command }. Typ 'help' voor de lijst.
+service-unterminated-quote = De regel eindigt binnen een argument tussen aanhalingstekens.
+service-help = Overzicht van opdrachten:
+service-read-bytes = { $count } bytes gelezen.
+service-pulled = { $remote } van de camera naar { $local } gekopieerd.
+service-pushed = { $local } naar { $remote } op de camera gekopieerd.
+service-removed = { $remote } van de camera verwijderd.
+service-dumped = { $size } bytes vanaf { $offset } naar { $local } weggeschreven.
+service-backup-saved = Back-upbestand ({ $count } bytes) opgeslagen in { $local }.
+service-backup-text-saved = Back-upbestand ({ $count } bytes) opgeslagen in { $bin } en lijst in { $txt }.
+service-backup-status = Backupstatus, regio: { $region }
+service-backup-rewritten = Image ({ $count } bytes) ongewijzigd teruggeschreven en opnieuw gelezen; niet blijvend opgeslagen.
+service-backup-attrs-restored = Attributen van { $count } items teruggezet volgens { $local }.
+service-backup-written = Back-upvermelding { $id } geschreven.
+service-backup-persisted = Back-up van subsysteem { $id } naar flash weggeschreven.
+service-terminal-on = De debugterminal staat nu aan.
+service-terminal-off = De debugterminal staat nu uit.
+
+# De servicepagina zonder geavanceerde modus: hoe de shell via de console te
+# bereiken is en wat daarvoor klaar moet staan.
+service-console-heading = De service-shell in de console starten
+service-console-hint = Open een terminal in de map met pmca-console en voer deze opdracht uit:
+service-driver-heading = Voorbereiding
+service-driver-hint = De servicemodus heeft rechtstreekse USB-toegang nodig, die Windows via het stuurprogramma voor massaopslag niet verleent. De toepassing wijst het WinUSB-stuurprogramma zelf toe — twee keer, één keer terwijl de camera in massaopslagmodus staat en nog een keer nadat zij in servicemodus onder een tweede product-id terugkomt — en geeft beide toewijzingen aan het einde van de sessie weer vrij. Een stuurprogramma toewijzen vereist beheerdersrechten, start de console dus als administrator; een ander hulpprogramma is niet nodig.
+driver-note-linux = Hier hoeft niets te worden geïnstalleerd: libusb bereikt de camera rechtstreeks, zonder een kernelstuurprogramma te verdringen. Nodig zijn alleen het recht om het apparaat te openen en een bureaublad dat het niet al vasthoudt. Installeer een udev-regel voor Sony's fabrikant-id 054c en koppel het stuurprogramma usb-storage los voordat u de massaopslagmodus gebruikt. Het script scripts/linux-prepare.sh doet beide en stopt daarnaast de gvfs-volumemonitors.
+driver-note-macos = Voor rechtstreekse USB-toegang hoeft niets te worden geïnstalleerd: libusb bereikt de camera direct. De massaopslagmodus is de uitzondering, want die loopt via Sony's eigen Camera Driver, die apart moet worden geïnstalleerd. Dit platform is het minst beproefd van de drie; reken erop een probleem te melden in plaats van het al beschreven te vinden.
+service-advanced-hint = De shell kan ook hier worden weergegeven, onder Instellingen, Geavanceerde modus.
+btn-copy-command = Opdracht kopiëren
+msg-command-copied = Opdracht naar het klembord gekopieerd.
+
+# De servicepagina met de geavanceerde modus aan.
+btn-service-open = Verbinden
+btn-service-close = Verbreken
+btn-service-run = Uitvoeren
+btn-service-browse = Bestandspad invoegen…
+shell-path-quote = Dit pad kan niet worden ingevoegd: het bevat een dubbel aanhalingsteken, waarmee de opdrachtregel het begin en het einde van een argument bepaalt. Wijzig de bestandsnaam of verplaats het bestand naar een pad zonder dat teken.
+service-command-label = Opdracht
+service-not-connected = Niet verbonden.
+
+# Teksten die alleen in de grafische versie worden gebruikt
+install-apk-path = Pad naar een lokaal .apk-bestand (optioneel)
+install-drop-hint = Sleep hier een .apk-bestand naartoe
+
+# Beschrijving van de aanpassingen
+tweak-rec-limit = Video opnemen zonder tijdslimiet
+tweak-rec-limit-4k = 4K-video opnemen zonder tijdslimiet
+tweak-language = Alle menutalen weergeven
+tweak-pal-ntsc = PAL/NTSC-keuze en waarschuwing inschakelen
+tweak-pal-ntsc-mode = Videosysteem (PAL / NTSC)
+tweak-pal-ntsc-pal = PAL
+tweak-pal-ntsc-ntsc = NTSC
+tweak-pal-ntsc-note = Na het wijzigen van het videosysteem vraagt de camera om de geheugenkaart te formatteren. Maak eerst een back-up van alles — foto's, video's, LUT's. Het eenvoudigst is de kaart eruit te halen voordat u omschakelt.
+tweaks-set-malformed = --set ID=WAARDE verwacht, ontvangen: { $arg }
+tweaks-set-unknown-value = Onbekende waarde "{ $value }". Verwacht werd een van: { $options }
+tweaks-set-not-a-choice = { $id } is een schakelaar, geen keuze. Gebruik --enable of --disable.
+tweaks-needs-set = { $id } is een keuze, geen schakelaar. Gebruik --set { $id }=WAARDE met een van: { $options }
+tweak-usb-installer = USB-app-installatieprogramma inschakelen
+
+# Verloop van de aanpassingen
+tweaks-warning = Waarschuwing: het toepassen van aanpassingen herschrijft het back-upgeheugen van de camera. Een onderbroken schrijfactie kan uw camera blijvend beschadigen.
+tweaks-reading = Camera-instellingen worden gelezen…
+tweaks-writing = Camera-instellingen worden geschreven…
+tweaks-done = Camera-instellingen bijgewerkt.
+tweaks-write-failed = De camera heeft de nieuwe instellingen niet opgeslagen zoals ze zijn verzonden. Een deel kan toch zijn geschreven: lees de instellingen opnieuw en maak ze zo nodig ongedaan. Een back-up van vóór de wijziging is de veilige weg terug.
+tweaks-confirm-required = Er wordt zonder bevestiging niets geschreven. Voer de opdracht opnieuw uit met --confirm zodra u de bovenstaande waarschuwing hebt gelezen.
+tweaks-state-enabled = ingeschakeld
+tweaks-state-disabled = uitgeschakeld
+tweaks-full-read-failed = De camera heeft haar volledige back-up niet geleverd ({ $detail }). Daarna reageert ze vaak niet meer: schakel de camera uit, haal de accu enkele seconden uit, plaats hem terug en sluit opnieuw aan.
+tweaks-direct-mode = De back-up van deze camera is groter dan 1 MB, dus worden de instellingen één voor één gelezen en geschreven. De oude waarden worden voor elke wijziging bewaard en kunnen met „Wijzigingen ongedaan maken” worden teruggezet.
+tweaks-direct-forced = PMCA_TWEAKS_DIRECT dwingt de weg per waarde af, dus worden de instellingen één voor één gelezen en geschreven. De oude waarden worden voor elke wijziging bewaard en kunnen met „Wijzigingen ongedaan maken” worden teruggezet.
+tweaks-direct-refused = De camera heeft de wijziging geweigerd ({ $detail }). Reeds geschreven waarden zijn teruggezet; er is niets gewijzigd. Sommige modellen, vooral Japanse, staan deze instelling alleen toe via de volledige back-up.
+tweaks-direct-revert-failed = De camera heeft de wijziging geweigerd ({ $detail }) en niet alle reeds geschreven waarden konden worden teruggezet. De oude waarden zijn bewaard: probeer „Wijzigingen ongedaan maken”.
+tweaks-direct-restart = Camera-instellingen bijgewerkt. Zet de camera uit en weer aan om de wijziging te laten ingaan.
+tweaks-rollback-unsaved = De huidige waarden konden niet worden bewaard om ongedaan te maken; er is niets gewijzigd.
+tweaks-image-saved = De back-upimage van vóór de wijziging is opgeslagen: { $path }
+tweaks-whole-image-hint = Voer dezelfde opdracht opnieuw uit met --whole-image om de wijziging in plaats daarvan via de volledige back-upimage te schrijven. De image van vóór de wijziging wordt eerst bewaard.
+tweaks-whole-image-confirm = De wijziging via de volledige back-upimage schrijven? De camera weigerde haar als losse waarde. De hele image wordt met de wijziging teruggeschreven; de image van vóór de wijziging wordt eerst op deze computer bewaard.
+btn-whole-image = Volledige back-up schrijven
+tweaks-undo-none = Voor deze camera zijn geen bewaarde waarden aanwezig.
+tweaks-undo-confirm = De bewaarde waarden terugschrijven naar de camera? Dit maakt alle afzonderlijk geschreven wijzigingen sinds het bewaren ongedaan.
+tweaks-undo-done = De bewaarde waarden zijn teruggeschreven. Zet de camera uit en weer aan.
+tweaks-undo-available = De waarden van vóór de eerste wijziging zijn bewaard en kunnen worden teruggeschreven.
+btn-undo-tweaks = Wijzigingen ongedaan maken
+tweaks-identity-heading = Camera-identiteit (alleen lezen)
+tweaks-caution-languages = Twee talen — waarschijnlijk Chinees (vereenvoudigd) en Chinees (traditioneel) — kan deze camera niet weergeven. Het taalmenu begint opnieuw als je ernaartoe scrolt, dus ze blijven uit voorzorg uitgeschakeld.
+tweaks-caution-accept = Deze twee talen toch inschakelen (op eigen risico)
+tweaks-caution-confirm = Deze twee talen kunnen het taalmenu van de camera opnieuw laten starten. Er gaat niets kapot en de wijziging kan ongedaan worden gemaakt, maar je moet de instelling misschien opnieuw opzoeken. Toch inschakelen?
+
+# Instellingen
+settings-language = Taal
+settings-theme = Thema
+settings-theme-system = Systeem
+settings-theme-light = Licht
+settings-theme-dark = Donker
+
+# Geavanceerde modus. Bescherming tegen een misklik, niet tegen een aanvaller:
+# alles wat hij vrijgeeft, is via de console toch al bereikbaar.
+settings-advanced-heading = Geavanceerde modus
+settings-advanced-hint = De geavanceerde modus geeft de service-shell en de updater-shell weer op de gelijknamige pagina's. De servicemodus geeft rechtstreeks toegang tot het geheugen, het bestandssysteem en de kalibratiegegevens van de camera; één vertypte opdracht kan de camera onbruikbaar maken. Laat hem uit zolang u niet weet wat u gaat schrijven.
+settings-advanced-toggle = Service- en updater-shell weergeven
+settings-advanced-on = De geavanceerde modus staat aan. De pagina's Service-shell en Updater-shell bieden nu de shells zelf.
+settings-advanced-off = De geavanceerde modus staat uit. De pagina's Service-shell en Updater-shell leggen in plaats daarvan de weg via de console uit.
+settings-advanced-confirm = De service- en updater-shell kunnen uw camera blijvend beschadigen. Beide shells weergeven?
+
+# Een vertaling bewerken. Taalbestanden kunnen worden gedownload, in elke
+# teksteditor worden gewijzigd en weer worden geüpload; een geüpload bestand
+# wordt gecontroleerd voordat het wordt gebruikt.
+settings-catalog-heading = Vertaling bewerken
+settings-catalog-hint = Download een taalbestand, wijzig het in een willekeurige teksteditor en upload het weer. Alleen de tekst rechts van het isgelijkteken wordt vertaald; weggelaten regels behouden hun meegeleverde tekst. De hier gekozen taal wijzigt de taal van de toepassing niet.
+settings-catalog-locale = Taalbestand
+settings-catalog-builtin = De meegeleverde vertaling is in gebruik.
+settings-catalog-custom = Uw eigen vertaling is in gebruik:
+btn-catalog-export = Downloaden…
+btn-catalog-import = Uploaden…
+btn-catalog-reset = Meegeleverde herstellen
+catalog-exported = Weggeschreven naar
+catalog-imported = Vertaling toegepast.
+catalog-reset-done = De meegeleverde vertaling is hersteld.
+catalog-reset-none = Er was geen eigen vertaling om te herstellen.
+catalog-reset-confirm = Uw eigen vertaling voor deze taal verwerpen?
+catalog-rejected = Het bestand is niet toegepast. Corrigeer deze regels:
+catalog-count-accepted = Toegepaste regels
+catalog-count-missing = Uit de meegeleverde vertaling behouden regels
+catalog-count-untranslated = Regels die gelijk zijn aan het Engelse origineel
+catalog-line = Regel
+catalog-problem-syntax = geen regel van de vorm "id = tekst"
+catalog-problem-continuation = voortgezet op de volgende regel, wat niet wordt ondersteund
+catalog-problem-duplicate = meer dan eens gedefinieerd
+catalog-problem-unknown-key = geen regel die deze toepassing gebruikt
+catalog-problem-empty = heeft geen tekst
+catalog-problem-placeholder = plaatsaanduiding gewijzigd, verwacht:
+
+# Herkomst, dankbetuiging en licentie. Wordt getoond op de licentiepagina en
+# door `pmca-console license`. De licentietekst zelf wordt niet vertaald: dat is
+# een juridisch document en wordt woordelijk weergegeven.
+about-thanks-heading = Dank
+about-thanks-body-1 = Dit gereedschap bestaat dankzij ma1co, die uitzocht hoe de camera's van Sony via USB communiceren en Sony-PMCA-RE in 2015 uitbracht, en dankzij iedereen die er in de jaren daarna aan heeft bijgedragen en aan de OpenMemories-projecten.
+about-thanks-body-2 = De cameraherkenning, het protocol voor externe opdrachten, de procedure van de firmware-updater en de servicemodus zijn alle hun werk, en deze port zet dat werk voort. Dank daarvoor. Op dat fundament voegt PMCA-RE RELOADED veel nieuwe functies toe, bijgedragen door masterflai. De belangrijkste is het nu ingebouwde automatisch wisselen van het stuurprogramma onder Windows: de camera hoeft niet langer met de hand via een apart hulpmiddel een ander stuurprogramma toegewezen te krijgen, wat het geheel gemakkelijker, sneller en minder riskant maakt.
+about-contributors-heading = Bijdragers
+about-contributors-body = Naast ma1co hebben deze mensen bijgedragen aan Sony-PMCA-RE of in hun eigen kopieën wijzigingen gepubliceerd die in deze port zijn overgenomen:
+about-purpose-heading = Waarom deze port bestaat
+about-purpose-body-1 = De oorspronkelijke toepassing wordt niet meer ontwikkeld. Zij is geschreven voor Python 2, dat in 2020 het einde van zijn levensduur bereikte, en delen ervan steunen op diensten die Sony sindsdien heeft uitgezet, waardoor zij op huidige systemen niet meer zonder beperkingen werkt.
+about-purpose-body-2 = Het doel van deze port is behoud en geen vervanging, en evenzeer probleemloos gebruik vandaag: deze camera's bruikbaar houden en het programma zonder moeite laten werken op de huidige computers en met nieuwere cameramodellen. Alles wat het origineel kon, hoort dit ook te kunnen.
+about-origin-heading = Hoe zij tot stand kwam
+about-origin-body-1 = De port van Python naar Rust is met hulp van AI uitgevoerd.
+about-origin-body-2 = Wat dat niet betekent, is even duidelijk te noemen: het gedrag wordt gedekt door een geautomatiseerde testset en door een hardwaretestplan. Vooral de Windows-versie is grondig gecontroleerd, omdat de stuurprogramma's haar tot het meest complexe platform maken; macOS en Linux konden daarentegen niet volledig worden getest. Beschouw dit als experimentele software.
+about-license-heading = Licentie
+about-license-body = Deze port wordt uitgegeven onder de MIT-licentie, dezelfde licentie als het oorspronkelijke project. De oorspronkelijke copyrightvermelding blijft ongewijzigd behouden, zoals die licentie vereist.
+about-license-full = Licentietekst
+about-third-party-heading = Licenties van de gebruikte bibliotheken
+about-third-party-body = Dit programma is statisch gekoppeld: de code van elke gebruikte bibliotheek zit in het uitvoerbare bestand, en de licenties daarvan eisen dat de copyrightvermeldingen meereizen. Ze staan hieronder volledig weergegeven, één vermelding per pakket.
+about-third-party-toggle = Alle licentievermeldingen van derden tonen
+about-privacy-heading = Gegevens
+about-privacy-body-1 = Dit programma draait op uw eigen computer. Het verstuurt geen gebruiksgegevens, er is geen telemetrie en er is geen account nodig. Niets van wat u hier doet wordt ergens gemeld.
+about-privacy-body-2 = Twee functies leggen wel uit zichzelf verbinding, en de tegenpartij komt daarbij uw IP-adres te weten: de GPS-assistentiegegevens worden bij Sony opgehaald, en de app-lijst bij GitHub. Zonder die functies blijft het programma volledig offline.
+about-privacy-body-3 = Wat uit de camera wordt gelezen — waaronder het serienummer en opgeslagen wifi-wachtwoorden — verlaat uw computer niet. Schrijft u het naar een bestand, let dan op aan wie u dat bestand doorgeeft.
+about-privacy-body-4 = Achter dit programma draait geen dienst en er bereiken geen gegevens de makers ervan, dus valt hier niets op te vragen of te laten wissen. Wat de twee genoemde diensten doen met de adressen die zij zien, valt onder hun eigen privacyverklaringen, niet onder deze.
+about-legal-heading = Juridische kennisgevingen
+about-legal-trademark = Dit is een onafhankelijk project. Het is niet gemaakt door Sony, wordt niet door Sony onderschreven en heeft op geen enkele wijze een band met Sony. «Sony», «PlayMemories» en de namen van de cameramodellen zijn handelsmerken van Sony Group Corporation en worden hier uitsluitend genoemd om aan te geven met welke camera's dit gereedschap spreekt.
+about-legal-own-device = Dit programma is bedoeld voor gebruik met camera's die u zelf bezit.
+about-legal-warranty = Wat dit gereedschap doet valt buiten wat Sony met deze camera's voor ogen heeft en kan uw garantie beëindigen. De software zelf wordt zonder enige garantie geleverd en het gebruik is voor eigen risico. Of en in hoeverre reverse engineering van een apparaat dat u bezit is toegestaan, hangt af van het land.
+about-links-heading = Projecten
+about-link-original = Sony-PMCA-RE — het oorspronkelijke project
+about-link-fwtool = fwtool — de firmwaretools waarop het maken van update-images is gebaseerd
+about-link-tweak = OpenMemories: Tweak — de aanbevolen app voor camera's die deze ondersteunen
+about-link-applist = OpenMemories: App list — meer apps
+about-link-platform = OpenMemories: Platform — de meegeleverde updater-body
+about-link-devices = Ondersteunde cameramodellen
+about-link-nexhack = Nex-Hack — het gemeenschapsonderzoek waarop dit project voortbouwt
+about-link-zve10 = zv-e10-re — onderzoek naar de interfaces en het instellingengeheugen van de ZV-E10
+about-version = Versie
+btn-copy-url = Adres kopiëren
+msg-url-copied = Het adres is naar het klembord gekopieerd.
+
+# Veiligheidswaarschuwing
+notice-experimental = Dit is experimentele software. Gebruik op eigen risico.
+
+# Netwerkinstellingen (GPS-assistentie, toegangspunten en diensten voor livestreaming)
+gps-downloading = De GPS-assistentiegegevens worden gedownload…
+gps-writing = De GPS-assistentiegegevens worden naar de camera geschreven…
+gps-bad-size = De GPS-assistentiegegevens hebben een onverwachte grootte en zijn niet weggeschreven.
+wifi-read = De toegangspunten voor livestreaming worden van de camera gelezen…
+wifi-written = Toegangspunten voor livestreaming weggeschreven.
+stream-read = De instellingen voor livestreaming worden van de camera gelezen…
+stream-written = Instellingen voor livestreaming weggeschreven.
+net-secret-warning = Waarschuwing: dit bestand bevat Wi-Fi-wachtwoorden en toegangstokens in leesbare tekst.
+wifi-secret-warning = De camera bewaart deze wachtwoorden onversleuteld en ze worden hier precies zo getoond als ze zijn opgeslagen. Ze blijven op deze computer; slaat u ze op in een bestand, let dan op aan wie u dat doorgeeft.
+gps-heading = GPS-assistentiegegevens
+gps-hint = Sleep een bestand hierheen, voer een pad in of laat het veld leeg om de actuele gegevens bij Sony op te halen.
+btn-gps-devices = Compatibele apparaten
+btn-gps-devices-hide = Compatibele apparaten verbergen
+gps-devices-note = Deze modellen hebben een ingebouwde GPS-module. Bij veel ervan heeft alleen de variant waarvan de naam op V eindigt die module; varianten zonder V hebben geen GPS.
+gps-devices-compact = Compactcamera's (DSC)
+gps-devices-slt = SLT-camera's (A-vatting)
+gps-devices-action = Actiecamera's
+gps-devices-camcorder = Camcorders (Handycam)
+gps-col-variant = GPS-variant
+gps-col-arch = Architectuur
+gps-col-module = GPS-module
+gps-col-apps = App-ondersteuning
+gps-yes = ja
+gps-no = nee
+gps-unknown = onbekend
+gps-devices-untested = GPS aanwezig, ondersteuning niet getest
+gps-devices-untested-note = Deze modellen hebben een ingebouwde GPS-module, maar staan niet in de apparatenlijst van OpenMemories. Of deze toepassing ermee werkt, is niet getest; architectuur en app-ondersteuning zijn daarom onbekend.
+wifi-heading = Toegangspunten voor livestreaming
+wifi-hint = Dit zijn de toegangspunten die de livestreamfunctie van de camera gebruikt, niet de eigen Wi-Fi-instellingen van de camera. Een body zonder streamfunctie weigert dit.
+wifi-multi = Lijst met meerdere toegangspunten
+wifi-none = Geen toegangspunten opgeslagen.
+wifi-writing = De toegangspunten voor livestreaming worden naar de camera geschreven…
+wifi-confirm = Hiermee wordt elk op de camera opgeslagen toegangspunt vervangen. Doorgaan?
+wifi-empty-refused = Een lege lijst wordt niet weggeschreven, omdat daarmee elk opgeslagen toegangspunt zou worden gewist.
+stream-heading = Livestreaming
+stream-writing = De instellingen voor livestreaming worden naar de camera geschreven…
+stream-confirm = Hiermee worden de livestreaminstellingen van de camera overschreven. Doorgaan?
+stream-invalid-json = De instellingen zijn geen geldige JSON:
+
+# Firmware-update en de officiële winkel
+firmware-warning = Waarschuwing: hiermee wordt de firmware van de camera overschreven. Onderbreek de update niet zodra die is gestart: koppel de USB-kabel niet los en zet de camera niet uit. Gebruik alleen een firmwarebestand dat voor precies dit cameramodel bedoeld is, en zorg dat de accu voldoende is opgeladen. Anders kan de camera blijvend onbruikbaar worden.
+firmware-untested = Ongetest: het flashen van firmware is overgezet, maar nooit op een echte camera geprobeerd. Een mislukte of afgebroken schrijfbewerking is onomkeerbaar; beschouw alles op deze pagina daarom als onbewezen.
+firmware-confirm-required = Er wordt zonder --confirm niet geflasht.
+firmware-truncated = Het firmwarebestand is afgekapt: de FDAT-payload loopt door tot voorbij het einde van het bestand.
+firmware-updating = Firmware bijwerken:
+firmware-invalid = Het bestand is geen geldig Sony-firmware-image
+firmware-dat-path = Firmwarebestand (.dat)
+firmware-drop-hint = Sleep hier een .dat-firmwarebestand naartoe
+firmware-file-required = Kies eerst een firmwarebestand.
+firmware-check-ok = De camera accepteert dit image. Er is niets weggeschreven.
+firmware-cancelled = Flashen geannuleerd. De camera is niet gewijzigd.
+firmware-current-version = Geïnstalleerde versie
+firmware-new-version = Versie in dit image
+firmware-models-hint = Een camera is compatibel als de updater-shell hem kan bereiken.
+btn-firmware-check = Image controleren
+btn-firmware-flash = Firmware flashen
+firmware-own-device = Bevestig dat u zich bewust bent van deze risico's en uitsluitend uw eigen apparaat bijwerkt.
+btn-firmware-accept = Risico's begrepen – flashen
+
+# Bestandsgereedschap: de bewerkingen die helemaal geen camera nodig hebben.
+tools-hint = Deze bewerkingen werken op bestanden en raken de camera nooit aan, dus hier kan niets stukgaan. Het zijn dezelfde bewerkingen die pmca-console aanbiedt als apk2spk, spk2apk, print-backup, print-usagelog, guess-firmware en xpd-checksum.
+tools-operation = Bewerking
+tools-apk2spk = Een .apk in een .spk-container verpakken
+tools-spk2apk = Een .spk weer uitpakken naar .apk
+tools-print-backup = De inhoud van een Backup.bin tonen
+tools-print-usagelog = De inhoud van een Usagelog.bin tonen
+tools-guess-firmware = De payload in een firmwarebestand (.dat) vinden
+tools-xpd-checksum = De CIC-controlesom van een bestand berekenen
+tools-input = Invoerbestand
+tools-file-required = Kies eerst de bestanden die deze bewerking nodig heeft.
+tools-apk-invalid = Het bestand kon niet als .spk worden verpakt
+tools-spk-invalid = Het bestand is geen geldig .spk-pakket
+tools-backup-invalid = Het bestand is geen geldige Backup.bin
+tools-usagelog-invalid = Het bestand is geen geldig gebruikslogboek
+tools-reset-value = resetwaarde:
+tools-fdat-found = Payload gevonden op offset { $offset }, grootte { $size }.
+tools-checksum = Controlesom
+tools-written = Geschreven naar { $path }
+
+# Verwijzingen naar de projectdocumentatie
+docs-compatibility = Compatibiliteit van camera's
+docs-compatibility-hint = Het oorspronkelijke project bood een overzicht van geteste camera's. Het omvat vooral oudere cameramodellen en staat op dit adres:
+devices-note = Gegevens uit het overzicht van het oorspronkelijke project. Het getal bij app-ondersteuning is de versie van het app-platform van de camera.
+devices-more-note = De volgende camera's zijn niet uitdrukkelijk met dit programma getest. Een vinkje in de laatste kolom betekent dat de community over het gebruik ervan heeft bericht. Is daarnaast de service-shell met ✖ gemarkeerd, dan was dat gebruik niet succesvol.
+btn-more-models = Meer apparaten
+btn-more-models-hide = Meer apparaten verbergen
+check-updater-yes = Uw apparaat { $model } is compatibel: volgens de apparatenlijst kan de updater-shell het bereiken.
+check-updater-no = Uw apparaat { $model } is niet compatibel: volgens de apparatenlijst kan de updater-shell het niet bereiken.
+check-updater-unknown = De compatibiliteit van uw apparaat { $model } is onbekend: het staat in geen enkele apparatenlijst van dit programma, dus het is niet bekend of de updater-shell het kan bereiken.
+check-apps-no = Uw apparaat { $model } is niet compatibel: volgens de apparatenlijst ondersteunt het geen apps.
+check-apps-untested = De compatibiliteit van uw apparaat { $model } is onbekend: het staat in de apparatenlijst, maar app-ondersteuning is niet bevestigd.
+check-apps-unknown = De compatibiliteit van uw apparaat { $model } is onbekend: het staat in geen enkele apparatenlijst van dit programma, dus het is niet bekend of het apps ondersteunt.
+check-gps-no = Uw apparaat { $model } is niet compatibel: het staat niet in de lijst met apparaten met een GPS-ontvanger.
+check-gps-untested = De compatibiliteit van uw apparaat { $model } is onbekend: volgens de apparatenlijst heeft het een GPS-ontvanger, maar de overdracht naar dit model is niet getest.
+check-gps-unknown = De compatibiliteit van uw apparaat { $model } is onbekend: het staat in geen enkele apparatenlijst van dit programma, dus het is niet bekend of het een GPS-ontvanger heeft.
+check-unidentified = Het aangesloten apparaat kon niet worden geïdentificeerd, dus de compatibiliteit ervan is onbekend.
+check-proceed = Wilt u toch doorgaan?
+check-cancelled = Bewerking geannuleerd. Het apparaat is niet gewijzigd.
+devices-col-confirmed = Bevestigd
+devices-group-ilc = Systeemcamera's (E- en A-vatting)
+devices-group-remote = Live-View-afstandsbedieningen
+btn-copy-link = Koppeling kopiëren
+shutter-heading = Sluitertelling
+shutter-hint = De camera telt elke ontspanning van de sluiter en schrijft de actuele stand in elke foto die hij opslaat (ARW, JPEG of HEIF). Kies de meest recente foto om de actuele stand uit te lezen. Het bestand wordt alleen gelezen, nooit gewijzigd.
+shutter-source = Waar de teller in het bestand staat, verschilt per model. De posities komen uit openbaar gedocumenteerd onderzoek (ExifTool) en zijn niet voor elk model bevestigd.
+shutter-drop-hint = Sleep hier een foto (ARW, JPEG, HEIF) naartoe
+btn-shutter-read = Foto analyseren
+shutter-file-required = Kies eerst een foto.
+shutter-file = Bestand
+shutter-taken = Opnamedatum
+shutter-count = Sluiteracties
+shutter-type = Sluiter
+shutter-type-mechanical = Mechanisch
+shutter-type-electronic = Elektronisch
+shutter-electronic-hint = Deze foto is met de elektronische sluiter gemaakt. Bij veel modellen tellen zulke opnamen niet mee; de waarde toont dan de stand bij de laatste mechanische ontspanning.
+shutter-not-sony = De foto is niet met een Sony-camera gemaakt. Er valt geen sluitertelling uit te lezen.
+shutter-unknown-model = Van dit cameramodel is niet bekend waar de sluitertelling in het bestand staat; daarom wordt geen waarde getoond.
+shutter-not-recorded = Het bestand bevat geen leesbare sluitertelling. Dat komt voor bij foto's die door een fotobewerkingsprogramma zijn opgeslagen of geëxporteerd, en bij sommige modellen bij opnamen met de elektronische sluiter. Kies het originele bestand van de geheugenkaart.
+shutter-model-mismatch = De foto komt van een ander cameramodel dan de aangesloten camera.
+shutter-invalid = Het bestand is geen leesbare foto
+file-filter-photo = Foto's (ARW, JPEG, HEIF)
+usage-log-heading = Gebruikslogboek
+usage-log-hint = De camera houdt een intern logboek bij in een niet-gedocumenteerde indeling. Het wordt ongewijzigd opgeslagen; er wordt alleen van de camera gelezen.
+usage-log-written = Weggeschreven naar
+btn-usage-log-info = Over het gebruikslogboek
+btn-usage-log-info-hide = Uitleg verbergen
+usage-log-info-what-heading = Wat dit logboek is
+usage-log-info-what = Sony noemt het logboek intern "KikiLog". De camera schrijft het zelf; dit programma leest het alleen. Er is geen openbare beschrijving van het formaat bekend.
+usage-log-info-read = Lezen verandert niets: meerdere downloads na elkaar waren byte voor byte gelijk.
+usage-log-info-flush-heading = Waarom recente items ontbreken
+usage-log-info-flush = Nieuwe items verschijnen vaak niet meteen: de camera slaat ze mogelijk pas op bij het uitschakelen, soms verdeeld over meerdere aan/uit-cycli. Zet de camera uit en weer aan, laad opnieuw en herhaal dat tot er geen nieuwe items meer bijkomen.
+usage-log-info-content-heading = Wat je eruit kunt aflezen
+usage-log-info-shutter = Ontspanningen: sommige gebeurtenissen staan elk voor één opname. Hun aantal is echter niet de sluitertelling: het logboek heeft een vaste grootte en beslaat niet per se de hele levensduur van de camera. De camera houdt het totaal elders bij en schrijft het in de foto's die hij opslaat; het is uit te lezen in het onderdeel "Sluitertelling".
+usage-log-info-clock = Tijdstempels zijn maar zo betrouwbaar als de klok van de camera. Na het wisselen van de accu kan de klok terugvallen en items met de begindatum van de camera aanmaken.
+usage-log-info-unknown = Er is geen openbare beschrijving van de gebeurtenisnummers bekend. Het programma toont de nummers zonder ze te interpreteren.
+usage-log-info-privacy-heading = Privacy
+usage-log-info-privacy = Het bestand bevat de serienummers van geplaatste geheugenkaarten. Deel of publiceer het niet onbezonnen.
+btn-usage-log = Logboek opslaan
+usagelog-size = Logboekgebied
+usagelog-cursor = Schrijfpositie
+usagelog-spare = Tweede gebied
+usagelog-count = Items
+usagelog-events = Gebeurtenissen per nummer
+usagelog-entries = Items op volgorde
+msg-link-copied = Koppeling naar het klembord gekopieerd.
+
+# Foutmeldingen van de backend, gerangschikt op de stabiele code die de backend meldt.
+# Het variabele deel van een melding (een pad, een statusbyte, een apparaatfout)
+# wordt door de frontend toegevoegd; de teksten zijn daarom ook zonder dat deel
+# volledige zinnen. Er bestaat bewust geen `err-operation`: die code duidt een
+# melding aan die de backend al heeft vertaald en die ongewijzigd moet worden getoond.
+err-usb-no-device = Geen camera gevonden. Sluit een camera aan en schakel deze in.
+err-usb-camera-not-ready = De camera is aangesloten maar niet gereed: ze staat uit of wacht op haar scherm op de keuze van de USB-modus. Zet haar aan of kies „Massaopslag (MSC)” op de camera.
+camera-choose-usb-mode = De camera wacht op de keuze van de USB-modus. Kies „Massaopslag (MSC)” op de camera.
+err-usb-too-many-devices = Er is meer dan één camera aangesloten. Koppel alle toestellen los behalve het toestel waarmee u wilt werken.
+err-usb-transfer = De USB-overdracht is mislukt. Probeer een andere kabel of poort en vermijd USB-hubs.
+err-usb-stall = De camera heeft de USB-overdracht afgebroken.
+err-usb-protocol = De camera heeft een onverwacht antwoord gestuurd.
+err-usb-msc-status = De camera heeft een opslagopdracht geweigerd.
+cli-error-prefix = fout
+err-usb-driver = Windows heeft deze camera aan een stuurprogramma toegewezen dat geen directe toegang toestaat. Deze modus vereist het WinUSB-stuurprogramma, dat de toepassing zelf kan toewijzen — maar alleen met beheerdersrechten.
+err-needs-elevation = Voor het toewijzen of vrijgeven van een stuurprogramma zijn beheerdersrechten nodig, en de vraag van Windows is geweigerd. Probeer het opnieuw met „Stuurprogrammahulp starten”; aan de camera hoeft niets te veranderen.
+err-usb-no-mass-storage-volume = De camera is in massaopslagmodus aangesloten maar biedt geen station aan. Maak hem wakker, bevestig de USB-modus op zijn scherm als daarom wordt gevraagd en controleer of er een geheugenkaart in zit. Wissel het stuurprogramma niet: deze modus heeft juist het standaardstuurprogramma van Windows nodig.
+err-usb-msc-sense = De camera heeft een opslagfout gemeld.
+err-usb-ptp-response = De camera heeft de opdracht geweigerd.
+err-usb-unsupported = Dit cameramodel ondersteunt die functie niet.
+err-usb-updater-status = De firmware-updater op de camera heeft de bewerking geweigerd.
+err-usb-senser = Een opdracht in de servicemodus is mislukt.
+err-market-core = Een gegevensbestand van de camera kon niet worden gelezen.
+err-market-json = De ontvangen gegevens zijn onjuist opgebouwd.
+err-market-missing-field = Er ontbrak een verwacht veld in het antwoord.
+err-market-no-apk = Er is geen app geselecteerd om te installeren.
+err-market-http = Het netwerkverzoek is mislukt.
+err-market-io = De lokale installatieserver is mislukt.
+err-market-tls = De versleutelde verbinding met de camera kon niet tot stand worden gebracht.
+err-apk = Het app-bestand kon niet worden gelezen.
+err-io = Een bestand kon niet worden gelezen of geschreven.
+err-json = De camera heeft onjuist opgebouwde gegevens gestuurd.
+err-unknown-locale = Deze taal is niet beschikbaar.
+err-catalog-encoding = Het vertaalbestand is niet als UTF-8-tekst opgeslagen. Sla het opnieuw op met UTF-8-codering.
+err-internal = Er is een interne fout opgetreden. Dit is een fout in de toepassing.
+
+## Function analysis
+nav-analysis = Analyse
+analysis-title = Functieanalyse
+analysis-experimental = Experimenteel. Deze functie is nieuw en pas op enkele camera’s uitgeprobeerd.
+analysis-own-hardware = Alleen op uw eigen camera gebruiken. De servicemodus is al een ingreep die Sony niet voorziet; de verantwoordelijkheid ligt bij u.
+analysis-explanation-toggle = Uitleg: doel, verloop, risico’s
+analysis-purpose-heading = Waarvoor dient het?
+analysis-purpose = De functieanalyse documenteert in welke waarde van haar instellingengeheugen (back-up) de camera een van haar eigen menu-instellingen opslaat. Het resultaat beschrijft het instellingengeheugen van deze camera; het kan met andere camera's worden vergeleken, maar verandert niets aan wat een camera biedt.
+analysis-how-heading = Hoe verloopt het?
+analysis-how = Voor elke menuwaarde die u opgeeft, leest het programma het volledige instellingengeheugen één keer uit, telkens in een eigen korte sessie in de servicemodus. Daartussen trekt u de kabel los en wijzigt u de instelling in het cameramenu; de camera blijft aan. Tot slot wordt de eerste waarde nog eens gelezen. Waarden die het menu volgen en aan het eind weer op hun beginwaarde staan, zijn kandidaten. Waarden die vanzelf veranderen (tellers, klok) worden uitgesloten.
+analysis-requirements-heading = Vereisten
+analysis-requirements = De camera is via USB verbonden, de USB-modus staat op „Auto” en na elke sessie kiest u op de camera „Massaopslag (MSC)”. Onder Windows heeft het programma beheerdersrechten nodig, omdat het voor de servicemodus kort een stuurprogramma toewijst. Laad de accu op; elke sessie duurt ongeveer een minuut.
+analysis-read-heading = Lezende stappen
+analysis-read = De momentopnamen lezen alleen. Aan de instellingen van de camera verandert niets. Het risico is klein, maar niet nul: al het overschakelen naar de servicemodus is een ingreep die Sony niet voorziet.
+analysis-write-heading = Schrijvende stap (schrijftest)
+analysis-write = Alleen als u hem uitdrukkelijk inschakelt: het programma schrijft de gevonden waarde naar de camera, u controleert na een herstart in het menu of die werkt, en daarna wordt de oorspronkelijke waarde teruggeschreven. Er wordt alleen een waarde geschreven die de camera zelf heeft opgeslagen, en alleen als er precies één passende kandidaat is gevonden. De oude waarde wordt vooraf bewaard. Toch verandert deze stap de camera; een fout kan haar in een toestand brengen die alleen de service kan herstellen.
+analysis-legal-heading = Juridisch
+analysis-legal = De software wordt zonder enige garantie geleverd (MIT-licentie). Ingrepen in de camera kunnen de garantie raken. Gebruik de functie alleen op camera’s die van u zijn. Het analyserapport bevat geen serienummer en niets uit het instellingengeheugen behalve de gevonden kandidaten; het wordt nooit automatisch verzonden.
+analysis-start-heading = Nieuwe analyse
+analysis-setting-label = Menu-instelling, zoals de camera die noemt
+analysis-values-label = Menuwaarden, gescheiden door komma’s
+analysis-values-hint = De eerste waarde is de waarde die nu is ingesteld. Twee tot acht waarden; elke waarde kost één sessie in de servicemodus.
+analysis-write-option = Daarna schrijftest uitvoeren (verandert de camera)
+analysis-write-warning = De schrijftest verandert de camera: hij schrijft een waarde naar haar instellingengeheugen en schrijft daarna de oorspronkelijke waarde terug. Alleen op uw eigen camera, op eigen risico.
+analysis-write-consent = De camera is van mij en ik draag het risico.
+btn-analysis-write-enable = Schrijftest inschakelen
+btn-analysis-start = Analyse starten
+btn-analysis-snapshot = Back-up lezen
+btn-analysis-new = Nieuwe analyse
+analysis-discard-confirm = De lopende analyse verwerpen? Het rapport tot nu toe blijft bewaard.
+analysis-access-read = LEZEND
+analysis-access-write = SCHRIJVEND
+analysis-access-user = HANDMATIG
+analysis-access-local = PC
+analysis-step-snapshot = Back-up lezen, de instelling staat op „{ $value }”
+analysis-step-change = In het cameramenu op „{ $value }” zetten
+analysis-step-evaluate = Momentopnamen vergelijken
+analysis-step-write = Waarde voor „{ $value }” naar de camera schrijven
+analysis-step-check = Camera uit- en aanzetten, menu aflezen (verwacht: „{ $value }”)
+analysis-step-restore = Oorspronkelijke waarde voor „{ $value }” terugschrijven
+analysis-step-report = Analyserapport opslaan
+analysis-do-prepare = VOORBEREIDING: 1. Zet „{ $setting }” in het cameramenu op „{ $value }” en verlaat het menu met de MENU-knop, zodat de camera de instelling opslaat. 2. Laat de camera aan. 3. Sluit de kabel aan en kies op de camera „Massaopslag (MSC)”.
+analysis-do-change = UW BEURT: 1. Trek de kabel los. 2. De camera blijft aan. 3. Zet „{ $setting }” in het cameramenu op „{ $value }” en verlaat het menu met de MENU-knop, zodat de camera de instelling opslaat. 4. Sluit de kabel weer aan en kies „Massaopslag (MSC)”.
+analysis-do-check = UW BEURT: 1. Trek de kabel los. 2. Zet de camera uit en weer aan. 3. Kijk in het menu wat er bij „{ $setting }” staat.
+analysis-do-reconnect = Sluit de kabel weer aan en kies op de camera „Massaopslag (MSC)”.
+analysis-reading = Momentopname { $index } van { $total }: trek de kabel NIET los tijdens het lezen.
+analysis-cli-continue = Enter om door te gaan, q om te annuleren:
+analysis-confirm-word = ja
+analysis-cli-confirm = Typ „{ $word }” om te bevestigen:
+analysis-write-declined = Niet bevestigd. Er is niets geschreven.
+analysis-aborted = Geannuleerd. Er is niets geschreven.
+analysis-snapshot-done = Momentopname gelezen. De camera heeft de servicemodus verlaten.
+analysis-result = { $compared } waarden vergeleken: { $count } kandidaten, { $running } waarden zijn vanzelf veranderd.
+analysis-candidate-consistent = past eenduidig bij het menu
+analysis-candidate-inconsistent = past niet eenduidig
+analysis-write-preview-heading = Dit wordt geschreven
+analysis-write-preview = Waarde { $id } ({ $size } bytes): van { $old } („{ $old-label }”) naar { $new } („{ $new-label }”). De camera heeft de nieuwe waarde zelf opgeslagen toen „{ $new-label }” was ingesteld.
+btn-analysis-write = Schrijven
+btn-analysis-skip-write = Afronden zonder schrijftest
+analysis-written = Waarde geschreven, teruggelezen en blijvend opgeslagen.
+analysis-menu-question = Wat toont het menu nu?
+analysis-menu-other = iets anders
+btn-analysis-menu-confirm = Overnemen
+btn-analysis-restore = Oorspronkelijke waarde terugschrijven
+analysis-restored = Oorspronkelijke waarde teruggeschreven en blijvend opgeslagen.
+analysis-survived = De geschreven waarde was na de herstart nog opgeslagen.
+analysis-not-survived = De geschreven waarde was na de herstart niet meer opgeslagen.
+analysis-report-saved = Analyserapport opgeslagen: { $path }
+analysis-report-hint = Het rapport bevat geen serienummer en geen back-up. U kunt het doorgeven zodat de bevinding kan worden gecontroleerd en gedocumenteerd.
+btn-analysis-export = Rapport exporteren…
+file-filter-analysis = Analyserapport
+analysis-pending = Een schrijftest is niet afgerond. De oorspronkelijke waarde is bewaard en kan worden teruggeschreven.
+analysis-pending-none = Voor deze camera is geen onvoltooide schrijftest opgeslagen.
+analysis-invalid-setting = Geef de menu-instelling op zoals de camera die noemt.
+analysis-invalid-values = Geef twee tot { $max } verschillende menuwaarden op. De eerste is de waarde die nu is ingesteld.
+analysis-already-complete = Alle momentopnamen zijn al gelezen.
+analysis-other-camera = Dit is niet dezelfde camera als bij de eerste momentopname. De analyse is gestopt.
+analysis-write-not-allowed = De schrijftest is in deze toestand niet mogelijk.
+analysis-camera-changed = De camera bevat inmiddels een andere waarde dan bij de eerste momentopname. Er is niets geschreven.
+analysis-write-refused = De camera heeft de waarde geweigerd; alles is zoals voorheen. ({ $detail })
+analysis-refuse-none = Schrijftest niet mogelijk: geen enkele waarde volgde het menu.
+analysis-refuse-ambiguous = Schrijftest niet mogelijk: { $count } waarden volgden het menu, geen ervan is met zekerheid toe te wijzen.
+analysis-refuse-inconsistent = Schrijftest niet mogelijk: de waarde past niet eenduidig bij de menuwaarden.
+analysis-refuse-size = Schrijftest niet mogelijk: de waarde is { $size } bytes groot; alleen kleine waarden worden geschreven.
+analysis-refuse-read-only = Schrijftest niet mogelijk: de camera markeert de waarde als alleen-lezen.
+analysis-refuse-protected = Schrijftest niet mogelijk: de camera markeert de waarde als beveiligd.
+settings-analysis-heading = Functieanalyse
+settings-analysis-purpose = De functieanalyse documenteert in welke waarde van haar instellingengeheugen de camera een van haar eigen menu-instellingen opslaat. Ze is bedoeld voor wie het instellingengeheugen van het eigen model wil begrijpen en de resultaten wil delen.
+settings-analysis-why-off = Ze staat uit omdat normaal gebruik haar niet nodig heeft, omdat ze de camera meermaals in de servicemodus zet en omdat ze op verzoek ook naar de camera schrijft. Ze is experimenteel en pas op enkele modellen uitgeprobeerd.
+settings-analysis-toggle = Functieanalyse inschakelen (menu-item „Analyse”)
+settings-analysis-confirm = Functieanalyse inschakelen? Ze zet de camera meermaals in de servicemodus en kan op verzoek naar de camera schrijven. Alleen op uw eigen camera gebruiken.
+btn-analysis-enable = Inschakelen
+settings-analysis-on = De functieanalyse is ingeschakeld.
+settings-analysis-off = De functieanalyse staat uit.
+analysis-needs-admin = Elke momentopname heeft beheerdersrechten nodig voor de servicemodus. Windows vraagt daar eenmaal per programmasessie om; u kunt de stuurprogrammahulp nu starten of wachten tot de eerste momentopname erom vraagt.
+analysis-changed-hint = Controleer: er is geen kandidaat gevonden. De volgende waarden zijn veranderd maar niet teruggekeerd naar hun beginwaarde. Als een ervan maar één keer tussen twee waarden wisselt, stond de camera bij de eerste momentopname waarschijnlijk niet op de eerste menuwaarde. Herhaal de analyse dan met de juist ingestelde beginwaarde.
+analysis-changed-info = Info: waarden die tijdens de analyse vanzelf veranderden (bijv. tellers, klok), worden genegeerd. U hoeft niets te doen.
+elevation-admin = Beheerder
+elevation-standard = Standaardrechten
+elevation-admin-hint = Het programma draait met beheerdersrechten en kan het stuurprogramma toewijzen dat de servicemodus nodig heeft.
+elevation-standard-hint = Het programma draait met standaardrechten. Voor de servicemodus, tweaks en de functieanalyse start het zo nodig een stuurprogrammahulp met beheerdersrechten; Windows vraagt eenmaal per sessie. Klik om die te starten.
+driver-helper-declined = De vraag om beheerdersrechten is geweigerd. Zonder die rechten kan het stuurprogramma voor de servicemodus niet worden toegewezen; er is niets veranderd.
+elevation-helper = Stuurprogrammahulp actief
+elevation-helper-hint = Een hulp met beheerdersrechten wijst het stuurprogramma voor de servicemodus toe. Ze heeft geen venster en stopt met het programma; er volgt geen verdere vraag.
+elevation-helper-confirm = Stuurprogrammahulp nu starten? Windows vraagt eenmaal om beheerdersrechten en daarna niet meer tot het programma sluit.
+analysis-cross-heading = Controle op een andere camera
+analysis-cross-intro = Optioneel: controleert of een andere camera de gevonden waarde ook heeft en wat daar is ingesteld. Er wordt alleen gelezen. Hetzelfde nummer betekent niet zeker dezelfde functie; pas een blik in het menu van de andere camera bevestigt dat. Het resultaat komt in hetzelfde analyserapport.
+analysis-cross-do = 1. Trek de geanalyseerde camera los. 2. Zet de andere camera aan, zet de USB-modus op „Auto”, sluit de kabel aan en kies „Massaopslag (MSC)”.
+btn-analysis-cross = Andere camera controleren
+analysis-cross-present = aanwezig, waarde { $value }
+analysis-cross-match = komt overeen met „{ $label }”
+analysis-cross-nomatch = komt met geen enkele gemeten menuwaarde overeen
+analysis-cross-absent = niet aanwezig
+analysis-cross-same-camera = Dit is de geanalyseerde camera zelf. Sluit de andere camera aan.
+analysis-cross-not-now = De controle is pas mogelijk als alle momentopnamen gelezen zijn en geen geschreven waarde meer teruggeschreven moet worden.
+analysis-cross-none = Er is geen kandidaat om te controleren.
+analysis-wrong-camera = De aangesloten camera is niet de geanalyseerde. Sluit de { $model } aan; er is niets geschreven.
+keys-fetching = Bron wordt gedownload…
+keys-scanning = Zoeken naar sleutelmateriaal…
+keys-complete = Al het sleutelmateriaal is aanwezig.
+keys-incomplete = Een deel van het sleutelmateriaal ontbreekt nog.
+keys-present = aanwezig
+keys-missing = ontbreekt
+keys-class-senser = Servicemodus-sleutels (service-shell, tweaks, analyse)
+keys-class-cic = XPD-controlesomsleutel (app-installatie)
+keys-class-spk = SPK-sleutelmateriaal (app-installatie, apk2spk)
+keys-class-fdat = FDAT-sleutelmateriaal (updater-shell-firmware)
+plugin-heading = Plug-ins
+plugin-intro = Plug-ins breiden dit programma uit met talen, schakelaars voor camera-instellingen, compatibiliteitsgegevens, hulpmiddelen en diagnoses. Ze komen alleen uit bestanden die u zelf kiest; er is geen plug-inwinkel. Hun code draait in een sandbox zonder toegang tot uw bestanden, het netwerk of het sleutelmateriaal. Installeer alleen plug-ins van auteurs die u vertrouwt; wijzigingen gelden vanaf de volgende start.
+plugin-none = Geen plug-ins geïnstalleerd.
+plugin-inactive = (actief na een herstart)
+plugin-author = Auteur
+plugin-restart = Start het programma opnieuw om de wijziging door te voeren.
+btn-plugin-install = Plug-in installeren…
+plugin-install-confirm = Deze plug-in mag:
+btn-confirm-plugin-install = Plug-in installeren
+plugin-installed = De plug-in is geïnstalleerd.
+plugin-remove-confirm = De plug-in ‘{ $name }’ verwijderen?
+plugin-removed = De plug-in { $id } is verwijderd.
+plugin-perm-languages = talen aan het programma toevoegen
+plugin-perm-camera-settings = camera-instellingen wijzigen (alleen tussen de twee waarden die hij noemt, en pas na uw bevestiging)
+plugin-perm-compatibility = vermeldingen aan het compatibiliteitsoverzicht toevoegen
+plugin-perm-code = eigen code in de sandbox uitvoeren (hulpmiddelen of diagnoses)
+plugin-perm-host-os = opvragen welk besturingssysteem dit is
+plugin-perm-host-cameras = zien welke Sony-camera’s in welke modus zijn aangesloten
+plugin-invalid = Dit is geen bruikbare plug-in: { $reason }
+plugin-no-folder = De map voor gebruikersgegevens kon niet worden bepaald, dus plug-ins kunnen niet worden geïnstalleerd.
+plugin-not-installed = Er is geen plug-in met de id { $id } geïnstalleerd.
+plugin-failed = De plug-in is mislukt: { $reason }
+plugin-unknown-entry = Geen geladen plug-in biedt { $id }.
+plugin-run-done = De plug-in is klaar.
+plugin-run-warning = De plug-in is klaar, met opmerkingen.
+plugin-run-error = De plug-in heeft een fout gemeld.
+plugin-tools-heading = Plug-in-hulpmiddelen
+plugin-tools-hint = Deze komen uit geïnstalleerde plug-ins en draaien in een sandbox. Een plug-in krijgt alleen wat u hem geeft en wat hij heeft aangemeld, en kan de camera niet wijzigen.
+plugin-diagnostics-heading = Plug-in-diagnoses
+plugin-compat-heading = Uit een plug-in
+plugin-col-note = Opmerking
+file-filter-plugin = Plug-inbestand
+keys-not-set-up = Het sleutelmateriaal dat deze bewerking nodig heeft, is niet ingesteld.
+err-missing-keys = Het sleutelmateriaal dat deze bewerking nodig heeft, is niet ingesteld.
+keys-heading = Sleutelmateriaal nodig
+keys-intro = De servicemodus-sleutels, de XPD-controlesomsleutel en het SPK-sleutelmateriaal maken geen deel uit van dit programma. Voer het adres in van een bron die u hebt — een repository, een archief of een bestand — en het programma vindt en importeert de onderdelen die het herkent. Er wordt niets uitgevoerd en het materiaal blijft alleen op deze computer.
+keys-law-notice = Houd u aan de wetten die gelden waar u bent, en werk alleen met camera's en gegevens die van u zijn.
+keys-url-label = Bronadres (één per regel)
+keys-url-required = Voer ten minste één bronadres in.
+btn-keys-import = Importeren
+btn-import-keys = Sleutelmateriaal instellen

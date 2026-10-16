@@ -1,0 +1,818 @@
+# Norsk (bokmål) oversettelse av PMCA-RE RELOADED.
+# Én melding per linje: <id> = <tekst>. Oversett kun teksten til høyre for
+# likhetstegnet; ID-ene skal aldri endres.
+
+app-title = PMCA-RE RELOADED – kameraverktøykasse
+
+# Navigasjon / faner
+nav-camera-info = Kamerainfo
+nav-install-app = Apper
+nav-tweaks = Tilpasninger
+nav-network = Nettverk
+nav-firmware = Fastvare
+nav-updater = Updater-konsoll
+nav-service = Servicekonsoll
+nav-tools = Filverktøy
+nav-settings = Innstillinger
+nav-license = Lisens
+
+# Velkomstside: siden vinduet åpner på.
+nav-welcome = Velkommen
+welcome-intro-heading = Hva dette programmet gjør
+welcome-intro-body = Dette programmet hjelper deg å bevare funksjonene i Sony-kameraet ditt og tilpasse det til dine behov. Etter at Sony stengte butikken for PlayMemories Camera Apps, fantes det ingen måte å sikkerhetskopiere kjøpte eller allerede installerte apper på, eller å installere dem på nytt. En tilbakestilling av kameraet sletter de installerte appene for godt. Dette programmet gjør det mulig å sikkerhetskopiere eksisterende apper og installere dem på nytt, og det kan i tillegg tilby fritt tilgjengelige fellesskapsapper. Du kan også installere dine egne apper (*.apk-filer). Ved problemer leser programmet kamerainformasjon og interne logger for analyse. Innstillinger som kameraet allerede har, men ikke tilbyr i menyen, kan slås av og på og tilbakestilles igjen. Programmet snakker direkte med kameraet gjennom USB-kabelen. Hvilke modeller som støttes, står oppført på siden Kamerainfo.
+welcome-start-heading = Det første steget
+welcome-start-body = Slå kameraet på først, og sett «USB-tilkobling» i menyen til Masselagring eller MTP mens kabelen fremdeles er ute. «Auto» virker som regel også, fordi kameraet da velger en av de to selv. Rekkefølgen betyr noe: når kabelen først sitter i, er ikke kameraets meny lenger tilgjengelig. Først deretter kobler du kameraet til med USB, åpner Kamerainfo og trykker på «Hent kamerainfo». Så snart modellen og fastvareversjonen dukker opp, er forbindelsen i orden og alle programmets øvrige funksjoner er tilgjengelige.
+welcome-start-driver = Dukker det i stedet opp en drivermelding, følg den først. På Windows legger en systemdriver beslag på kameraet, og den må erstattes før den direkte USB-tilgangen denne verktøykassen trenger er mulig. Programmet gjør det selv, men å tildele en driver er en rett Windows bare gir en administrator. I så fall gir programmet deg mulighet til å starte det på nytt som administrator, og Windows ber deg bekrefte handlingen. Tildelingen oppheves igjen når økten er slutt. På Linux og macOS er dette ikke nødvendig.
+welcome-start-driver-linux = Dukker det i stedet opp en drivermelding, følg den først. På Linux må ingenting erstattes: kameraet nås direkte. Det som trengs én gang, er retten til å åpne enheten — en udev-regel for Sonys produsentkjennetegn — og, for masselagringsmodus, å løsne kjernedriveren usb-storage. Begge deler settes opp utenfor dette programmet med root-rettigheter; skriptet scripts/linux-prepare.sh i kildekoden gjør begge. Dette vinduet ber aldri selv om slike rettigheter.
+welcome-start-driver-macos = Dukker det i stedet opp en drivermelding, følg den først. På macOS må ingenting erstattes for den direkte USB-tilgangen. Bare masselagringsmodus går gjennom Sonys egen Camera Driver, som installeres separat og da ber om et administratorpassord slik ethvert installasjonsprogram gjør. Dette vinduet ber aldri selv om slike rettigheter.
+welcome-tweaks-heading = Tilpasninger og språk
+welcome-tweaks-body = Tilpasninger er innstillinger kameraet allerede har, men ikke tilbyr i menyen sin: opptakstidsgrensen, 4K-opptaksgrensen, valget mellom PAL og NTSC, USB-appinstallatøren — og menyspråkene.
+welcome-tweaks-languages-heading = Kameraets språk
+welcome-tweaks-languages-body = Sony-kameraer viser bare menyspråkene som er vanlige i salgsregionen deres. Bor du i utlandet, finner du derfor ofte ikke ditt eget språk og må klare deg med et fremmed. Flere språk ligger likevel allerede i fastvaren. Dette programmet henter dem inn i menyen, slik at du kan betjene kameraet på et kjent språk.
+welcome-tweaks-ui-heading = Språket i dette programmet
+welcome-tweaks-ui-body = Helt atskilt fra alt dette er velgeren øverst. Den endrer bare språket i dette programmet og rører aldri kameraet.
+welcome-tweaks-safety = Hver tilpasning skrives inn i kameraets sikkerhetskopiminne, og hver enkelt kan tas tilbake med den samme bryteren. En avbrutt skriving kan skade kameraet permanent, så trekk verken ut kabelen eller batteriet mens en pågår.
+welcome-privacy-heading = Dine data
+welcome-privacy-where = Siden «Lisens» gjentar alt dette i sin helhet, sammen med lisensene til alle bibliotekene dette programmet er bygd av.
+welcome-where-heading = Hvor finner jeg hva
+welcome-where-info = Modell, serienummer og fastvareversjon. Samtidig tilkoblingstesten.
+welcome-where-install = Apper fra fellesskapets liste, eller din egen .apk-fil.
+welcome-where-tweaks = Innstillingene kameramenyen ikke når, språkene blant dem.
+welcome-where-network = GPS-assistansedata, og tilgangspunktene og tjenestene som brukes til direktestrømming.
+welcome-where-firmware = Skrive et Sony-fastvarebilde til kameraet.
+welcome-where-tools = Pakke ut og se på fastvare- og pakkefiler. Uten kamera.
+welcome-where-shells = Direkte tilgang til kameraets minne og filsystem. Vises først når de er slått på under Innstillinger.
+welcome-where-settings = Tema, avansert modus og redigering av oversettelsen av dette programmet.
+welcome-where-license = Hvor denne porteringen kommer fra, hvem sitt arbeid den bygger på, og hvilke vilkår den står under.
+welcome-where-hint = Ingen side gjør noe med kameraet av seg selv. Ingenting leses eller skrives før du trykker på en knapp som sier det.
+
+# Knapper
+btn-get-info = Hent kamerainfo
+btn-refresh = Oppdater
+btn-load-apps = Last inn tilgjengelige apper
+btn-list-tweaks = Vis tilgjengelige tilpasninger
+btn-install = Installer valgt app
+btn-install-file = Installer .apk-fil …
+btn-apply = Bruk
+btn-save = Lagre på kameraet
+btn-add = Legg til
+btn-remove = Fjern
+btn-reveal = Vis
+btn-update-gps = Overfør GPS-assistansedata til enheten
+btn-cancel = Avbryt
+btn-browse = Bla gjennom …
+btn-switch-msc = Bytt til masselagringsmodus
+btn-start-driver-helper = Start driverhjelper
+
+# Navn på filtypefiltrene i fildialogene
+file-filter-apk = Android-program (*.apk)
+file-filter-firmware = Sony-fastvarebilde (*.dat)
+file-filter-usage-log = Bruksloggen (*.bin)
+file-filter-catalog = Oversettelsesfil (*.ftl)
+file-filter-spk = Sony-apppakke (*.spk)
+file-filter-any = Alle filer
+file-filter-gps = GPS-assistansedata (*.dat)
+
+# Status / meldinger
+msg-connecting = Kobler til …
+msg-usage-log-written = Brukslogg skrevet til { $path }
+msg-apps-found = Fant { $count } apper
+msg-switch-mode = Sett kameraet i MTP- eller masselagringsmodus.
+msg-no-tweaks = Ingen tilpasninger er tilgjengelige for dette kameraet.
+msg-done = Ferdig.
+
+# Bytte av USB-modus på kameraet (MTP -> masselagring). Tilbys under en
+# «feil modus»-melding; det finnes ingen USB-kommando for motsatt vei.
+mode-switching = Ber kameraet bytte til masselagringsmodus …
+mode-switch-wait = Venter på at kameraet kobler seg til på nytt …
+camera-confirm-hint = Meldinger på kameraet (f.eks. om www.sony.net/pm) kan lukkes; de forstyrrer ikke prosessen.
+mode-switch-done = Kameraet er nå i masselagringsmodus.
+mode-switch-timeout = Kameraet dukket ikke opp igjen i masselagringsmodus. Slå det av og på igjen, og prøv på nytt.
+mode-switch-impossible = Denne modusen kan ikke endres over USB. Slå kameraet av og på igjen.
+mode-switch-hint = Bare et kamera i MTP-modus kan byttes om over USB. Endringen er midlertidig: USB-modusen som er valgt i kameraets egen meny, forblir uendret, så å slå kameraet av og på igjen — eller koble kabelen fra og til — gjenoppretter forrige modus. Det finnes ingen USB-kommando for veien tilbake.
+
+# Felter i kamerainfoen
+info-model = Modell
+info-product-code = Produktkode
+info-serial = Serienummer
+info-firmware = Fastvareversjon
+info-lens = Objektiv
+info-region = Region
+info-mode = Modus
+mode-mass-storage = Masselagring
+mode-mtp = MTP
+mode-updater = Updater-modus
+mode-app-install = Appinstallasjonsmodus
+mode-service = Servicemodus
+mode-unknown = Ukjent
+info-android-version = Android-plattformversjon
+info-photographer = Fotograf
+info-copyright = Opphavsrett
+info-photographer-1 = Fotograf (oppføring 1)
+info-photographer-2 = Fotograf (oppføring 2)
+info-copyright-1 = Opphavsrett (oppføring 1)
+info-copyright-2 = Opphavsrett (oppføring 2)
+diagnose-services-heading = Når du ikke kameraet?
+diagnose-services-hint = Noen Windows-tjenester kan holde på et kamera i MTP-modus, slik at dette programmet ikke når det. Kontrollen spør bare Windows hvilke tjenester som kjører; den endrer ingenting.
+btn-diagnose-services = Kontroller Windows-tjenester
+diagnose-services-none = Ingen kjent forstyrrende tjeneste kjører.
+diagnose-services-found = Disse kjørende tjenestene kan forstyrre tilgangen til kameraet:
+diagnose-services-advice = Stopp tjenesten under Tjenester (services.msc) eller med følgende kommando som administrator, og koble deretter til kameraet på nytt:
+
+# Fastvareoppdatering / konsoll
+updater-model = Kameramodell
+updater-firmware-current = Gjeldende fastvareversjon
+updater-guard-ok = Fastvarebildet passer til dette kameraet.
+updater-no-fdat = Det følger ikke med noen oppdateringsfastvare for modellen { $model }.
+updater-model-required = Kameraet er allerede i oppdateringsmodus og kan ikke oppgi modellen sin der. Slå kameraet av og på igjen slik at det starter i normal modus, og prøv deretter på nytt. Alternativt kan du oppgi en payload-fil (--fdat-file) eller, i konsollen, modellen (--model <MODELL>).
+updater-already-updater = Kameraet er allerede i oppdateringsmodus.
+updater-flash-required = Nekter å endre kameraet uten bekreftelse. Kjør på nytt med --flash for å bytte til oppdateringsmodus og skrive payloaden.
+updater-flashing = Skriver oppdaterings-payloaden til kameraet …
+updater-switch-wait = Følg instruksjonene på kameraskjermen. Venter på at kameraet bytter til oppdateringsmodus …
+updater-switch-timeout = Tidsavbrudd under venting på kameraet. Kjør kommandoen på nytt når det har koblet seg til igjen.
+updater-shell-ready = Oppdaterings-payloaden kjører. Skriv «help» for kommandoer og «exit» for å avslutte.
+updater-shell-done = Konsolløkten er avsluttet.
+updater-session-panic = Updater-økten ble avsluttet uventet. Slå kameraet av og på igjen før du prøver på nytt.
+
+# Det updater-konsollen svarer. Feilene ved lesing av en linje er formulert bare
+# én gang, i service-*-nøklene: de to konsollene deler tolkeren, så en sti i
+# anførselstegn og en feil heksadesimalverdi feiler likt i begge.
+updater-backup-synced = Sikkerhetskopien er skrevet til flash-minnet.
+updater-backup-locked = De beskyttede sikkerhetskopiinnstillingene er nå låst.
+updater-backup-writable = De beskyttede sikkerhetskopiinnstillingene kan nå skrives til.
+updater-shell-console-only = Root-konsollen trenger en terminal og finnes bare på kommandolinjen: kjør pmca-console updatershell --flash og skriv «shell» der.
+
+# Siden for updater-konsollen.
+updater-warning = Advarsel: for å nå denne konsollen starter kameraet på nytt i updater-modus, og en payload skrives til det – et lite program fra dette prosjektet som kameraet tar imot som en fastvareoppdatering, og som deretter svarer på kommandoene i denne konsollen. Payloaden forsvinner så snart kameraet slås av, men kommandoene den tilbyr skriver til kameraets permanente innstillingsminne, og en avbrutt skriving kan ødelegge kameraet for godt. I tillegg tilbakestilles alle kameraets innstillinger underveis – i motsetning til servicekonsollen.
+updater-console-heading = Kjøre updater-konsollen på kommandolinjen
+updater-driver-hint = Updater-konsollen krever at kameraet blir stående på Windows' egen masselagringsdriver, USBSTOR, for det er den veien payloaden sendes. Det er det motsatte av hva servicekonsollen krever. Programmet tildeler og frigir WinUSB-driveren selv, så ingenting må forberedes for hånd — men en driver som et annet verktøy har tildelt, må angres først. Et kamera i updater-modus melder seg med sin egen produkt-id og skal heller ikke bindes om.
+updater-fdat-label = Payload-fil (valgfritt)
+updater-confirm = Kameraet starter på nytt i updater-modus, og en payload skrives til det. Vil du fortsette?
+updater-cancelled = Avbrutt. Kameraet ble ikke endret.
+
+btn-shell-primer = Verdt å vite om dette skallet
+btn-shell-primer-hide = Skjul forklaringen
+shell-primer-compare-heading = To skall, to protokoller
+shell-primer-compare = Begge sidene tilbyr en kommandolinje til kameraet, men det er ikke det samme skallet. Servicskallet snakker Sonys egen fabrikkserviceprotokoll, som kameraet selv svarer på når du er godkjent; det skrives ingenting til kameraet for å komme dit. Oppdateringsskallet finnes bare fordi dette prosjektet skriver sitt eget program inn i kameraet: kameraet starter på nytt i oppdateringsmodus, tar imot payloaden som om den var fastvare, og den payloaden svarer så på kommandoene nedenfor. Bare ett av de to kan være åpent om gangen.
+shell-primer-payload = «Payload» (engelsk for nyttelast) betegner det egentlige innholdet en transportvei frakter. For oppdateringsskallet er det et lite program fra dette prosjektet: kameraet tar imot det på samme måte som en fastvareoppdatering, men beholder det bare til det slås av. Servicskallet trenger ingen payload, fordi kameraet svarer på kommandoene med sin egen fastvare. For fastvarefiler betyr begrepet det samme: selve fastvarebildet i containeren til .dat-filen.
+shell-primer-when-service = Servicskallet brukes til alt som leser eller endrer kameraets lagrede innstillinger mens det fortsatt kjører sin egen fastvare: lese HASP-blokken, lagre en tilbakerullingskopi av sikkerhetsområdet, endre enkeltoppføringer, hente filer ut av kameraet. Det er også det siden Tilpasninger bruker under; alt derfra kan gjøres her for hånd.
+shell-primer-when-updater = Oppdateringsskallet er valget når kameraet ikke kan nås på annen måte, eller når du trenger et skall på systemet som kjører i stedet for enkeltkommandoer. Bare denne veien gir et ekte root-skall, og den virker fortsatt på et kamera som nekter servicemodus. Den koster en omstart, en skriving og kameraets innstillinger, så den er andrevalget, ikke førstevalget.
+shell-primer-driver-heading = Drivere: de to krever hvert sitt motsatte
+shell-primer-driver = Servicskallet snakker rå USB og krever på Windows et kamera bundet til WinUSB. Programmet tildeler selv denne driveren på vei inn i servicemodus og frigir den igjen når økten avsluttes; ingen egne verktøy er involvert. Oppdateringsskallet går gjennom USBSTOR, Windows' egen driver for masselagring, og virker ikke så lenge kameraet er bundet til WinUSB — derfor hører frigivelsen med til å avslutte en serviceøkt. Å tilordne en driver krever administratorrettigheter. På Linux trengs ingen driverbytte, bare tilgang til enhetsnoden.
+shell-primer-risk-heading = Hva som kan gå galt
+shell-primer-risk = Kommandoene som er merket nedenfor, skriver til kameraets permanente innstillingsminne. En avbrutt skriving kan gjøre at kameraet ikke starter, og ingenting av det kan angres — nettopp derfor finnes bk d: lagre en kopi av sikkerhetsområdet før du endrer noe. Selve oppdaterings-payloaden blir ikke liggende på kameraet; den forsvinner når kameraet slås av. Veien gjennom updater-modus tilbakestiller likevel alle kameraets innstillinger.
+shell-primer-commands-heading = Kommandoer i dette skallet
+shell-primer-writes = Kommandoer merket (WRITES) endrer kameraet. Alt annet bare leser.
+shell-cmd-hasp = Leser HASP-blokken, kameraets beskyttede identitetsområde.
+shell-cmd-pull = Henter en fil fra kameraet. Uten et lokalt navn beholdes navnet på kameraet.
+shell-cmd-push = Kopierer en lokal fil til kameraet og erstatter det som ligger der. (WRITES)
+shell-cmd-rm = Sletter en fil på kameraet. (WRITES)
+shell-cmd-rmem = Skriver et område av enhetsminnet til en lokal fil. Forskyvning og lengde er heksadesimale.
+shell-cmd-bk-r = Leser én oppføring i sikkerhetsområdet og viser den som heksdump.
+shell-cmd-bk-d = Lagrer hele sikkerhetsområdet i en fil. Gjør dette før du endrer noe: det er den eneste veien tilbake.
+shell-cmd-bk-dump-txt = Lagrer hele sikkerhetsområdet som <file>.bin og en lesbar oversikt som <file>.txt.
+shell-cmd-bk-stat = Viser kameraets statusblokk for sikkerhetskopien, inkludert regionen.
+shell-cmd-bk-w = Skriver én oppføring i sikkerhetsområdet, oppgitt som heksadesimale byte atskilt med mellomrom. (WRITES)
+shell-cmd-bk-s-sub = Fester ett delsystems sikkerhetsområde i flash, slik at endringen overlever en omstart. (WRITES)
+shell-cmd-bk-s = Fester sikkerhetsområdet i flash, slik at endringen overlever en omstart. (WRITES)
+shell-cmd-bk-lock = Slår skrivebeskyttelsen for de beskyttede sikkerhetsoppføringene på eller av; enkelte innstillinger nekter å endres mens den er på. (WRITES)
+shell-cmd-term = Slår kameraets feilsøkingsterminal på eller av. (WRITES)
+shell-cmd-info = Leser statusblokken for sikkerhetskopien, som sier om området i det hele tatt kan skrives til.
+shell-cmd-shell = Åpner et root-skall på kameraet. Det krever en terminal og finnes derfor bare i konsollen; shell tcp <port> tilbyr det i stedet på 127.0.0.1 til en annen klient. (WRITES)
+shell-cmd-help = Lister opp kommandoene dette skallet tar imot.
+shell-cmd-exit = Avslutter økten og forlater skallet.
+shell-primer-diagnostics-heading = Diagnose og reparasjon
+shell-cmd-bk-trace = Registrerer pakke for pakke i en fil hvordan kameraet sender hele sikkerhetsområdet over USB. For å undersøke store sikkerhetskopier; kan la kameraet henge midt i svaret. Koble da fra kabelen og slå kameraet av og på, om nødvendig ved å ta ut batteriet.
+shell-cmd-bk-rewrite = Leser sikkerhetsområdet, skriver det uendret tilbake og leser det på nytt. Viser om kameraet godtar et helt image, uten å endre noen innstilling. (WRITES)
+shell-cmd-bk-restore-attrs = Setter attributtene til alle sikkerhetsoppføringer, for eksempel skrivebeskyttelsen, tilbake til dem i en kopi lagret med bk d eller bk dump-txt. Verdiene forblir uendret. Bruk bare en kopi fra det samme kameraet. (WRITES)
+shell-primer-diagnostics-env = Tre miljøvariabler virker på både konsollen og det grafiske grensesnittet hvis de settes før start, for eksempel i PowerShell med $env:PMCA_TWEAKS_DIRECT = "1". PMCA_TWEAKS_DIRECT får tweaks til å skrive enkeltverdier, også når sikkerhetskopien er mindre enn 1 MB. PMCA_TWEAKS_IMAGE får dem til å skrive hele imaget, også når det er større enn 1 MB; er begge satt, gjelder PMCA_TWEAKS_DIRECT. PMCA_TLS_DUMP=<fil> lagrer kameraets første TLS-melding (ClientHello) under en app-installasjon, slik at en mislykket tilkobling kan undersøkes.
+
+# Appinstallasjon
+install-switching = Bytter til appinstallasjonsmodus …
+install-disabled = Kameraet nektet å gå inn i appinstallasjonsmodus. Vanligvis skyldes det innstillingen «Aktiver USB-appinstallerer»: den må slås på under «Tilpasninger».
+install-stays-app-mode = Kameraet blir værende i appinstallasjonsmodus, der flere apper kan installeres. For alle andre funksjoner kobler du fra USB-kabelen og slår kameraet av og på igjen.
+err-usb-app-install-mode = Kameraet er fortsatt i appinstallasjonsmodus og godtar der bare appinstallasjoner. Koble fra USB-kabelen, og slå deretter kameraet av og på igjen — starter du det på nytt mens kabelen står i, havner det rett tilbake i denne modusen.
+install-switch-wait = Venter på at kameraet kobler seg til igjen i appinstallasjonsmodus …
+install-switch-timeout = Tidsavbrudd under venting på at kameraet går inn i appinstallasjonsmodus. Kjør kommandoen på nytt når det har koblet seg til igjen.
+install-bad-mode = Kameraet kan ikke brukes i denne modusen. Sett det i MTP- eller masselagringsmodus.
+install-starting = Starter installasjonen …
+install-error = Kommunikasjonsfeil under installasjonen
+install-server-failed = Den lokale installasjonstjeneren godtok ikke tilkoblingen fra kameraet:
+install-done = Oppgaven ble fullført.
+
+# Kontroll av APK-filen
+apk-package = Pakke:
+apk-unreadable = Advarsel: .apk-filen kunne ikke analyseres.
+apk-incompatible = Advarsel: denne appen krever et minste SDK-nivå som kameraet kanskje ikke tilbyr.
+apk-unsigned = Advarsel: .apk-filen har ingen signatur.
+
+# Appbutikk fra fellesskapet
+store-loading = Laster inn applisten …
+store-resolving = Slår opp nyeste utgivelse …
+store-downloading = Laster ned
+store-unknown-app = Ukjent app
+store-no-release = Ingen nedlastbar utgivelse for denne appen
+store-not-installable = ingen utgivelse
+msg-no-apps = Fant ingen apper.
+store-heading = Appbutikk fra fellesskapet
+store-discontinued = Sony har lagt ned den offisielle PlayMemories Camera Apps-butikken; tjenerne svarer ikke lenger, så apper kan ikke lenger kjøpes eller lastes ned derfra.
+store-use-own-apk = Du kan fortsatt installere din egen .apk: velg filen nedenfor eller dra den inn i dette vinduet. Appbutikken fra fellesskapet lenger nede fungerer også fortsatt.
+btn-store-sync = Sjekk kameraet
+btn-install-selected = Installer valgte
+btn-store-stop = Stopp etter denne appen
+btn-store-stopping = Stopper etter denne appen …
+btn-store-retry = Prøv mislykkede på nytt
+btn-continue = Fortsett
+btn-reinstall = Installer på nytt
+btn-skip = Hopp over
+btn-confirm-updater = Start på nytt og skriv
+btn-confirm-tweaks = Skriv tilpasninger
+btn-confirm-languages = Aktiver språkene
+btn-confirm-wifi = Erstatt tilgangspunktene
+btn-confirm-stream = Overskriv innstillingene
+btn-confirm-show-shells = Vis konsollene
+btn-confirm-discard = Forkast oversettelsen
+store-select-all = Velg alle apper
+store-col-app = App
+store-col-version = Versjon
+store-col-author = Forfatter
+store-col-camera = Versjon på kameraet
+store-col-status = Status
+store-camera-absent = ikke installert
+store-version-unknown = ukjent
+store-batch-query = Leser de installerte appene fra kameraet …
+store-sync-done = Kameraet er sjekket. Installerte apper fra listen: { $count }
+store-batch-downloading = Laster ned app { $current } av { $total } …
+store-batch-installing = App { $current } av { $total }: installerer { $name } …
+store-reinstall-confirm = { $name } er allerede installert på kameraet. Installert versjon: { $installed }. Versjon i appbutikken: { $store }. Vil du installere appen på nytt?
+store-state-queued = venter
+store-state-installed = installert
+store-state-failed = mislyktes
+store-state-skipped = hoppet over
+store-state-not-run = ikke utført
+store-batch-summary = Installert: { $done } · mislyktes: { $failed } · hoppet over: { $skipped } · ikke utført: { $notrun }
+
+# Servicemodus (senser)
+usb-mode-advice = For tweaks, sikkerhetskopier og serviceskallet må kameraets USB-tilkoblingsmodus stå på «Auto», ikke fast på masselagring. Når kameraet spør om modus etter en økt, velg «Masselagring (MSC)». Med fast masselagring avviser kameraet ofte neste bytte til servicemodus.
+service-switch-refused = Kameraet fullførte ikke byttet til servicemodus og koblet seg ikke til USB på nytt; det viser da som regel «Kontroller den tilkoblede enheten». Trekk ut USB-kabelen, koble den til igjen og prøv på nytt.
+service-switching = Bytter til servicemodus …
+service-switch-wait = Venter på at kameraet kobler seg til igjen i servicemodus …
+service-switch-timeout = Kameraet dukket ikke opp i servicemodus. Det melder seg på nytt som en egen USB-enhet (produkt-ID 0336), som trenger sin egen WinUSB-drivertilordning; se etter en Sony-enhet uten driver i enhetsbehandlingen. Slå kameraet av og på igjen for å få det tilbake i normal modus.
+service-authenticating = Autentiserer …
+# Vises når kameraet fortsatt står i servicemodus fra en tidligere kjøring, og
+# når dette ikke lot seg oppheve.
+service-stranded-reset = Kameraet står fortsatt i servicemodus fra en tidligere kjøring. Avslutter den økten først …
+service-stranded-failed = Kameraet har satt seg fast i servicemodus fra en tidligere kjøring og svarte ikke på forespørselen om å forlate den. Slå kameraet av og på igjen, og prøv på nytt.
+service-bad-mode = Kameraet kan ikke brukes i denne modusen. Sett det i masselagringsmodus.
+service-driver-required = Direkte USB-tilgang ble nektet, og WinUSB-driveren kunne ikke tilordnes. Å tilordne en driver krever administratorrettigheter.
+service-warning = Advarsel: servicemodus gir direkte tilgang til kameraets minne, filsystem og kalibreringsdata. Skrivekommandoer kan skade kameraet permanent.
+service-shell-ready = Servicekonsollen er klar. Skriv «help» for kommandoer og «exit» for å avslutte.
+service-shell-done = Servicekonsolløkten er avsluttet.
+# Rapporteres ved oppstart når en tidligere kjøring ble avbrutt før den fikk
+# frigjort driveren den hadde tildelt.
+driver-swept = Fjernet { $count } drivertilordning(er) som en tidligere kjøring etterlot.
+# Rapporteres ved oppstart når den samme avbrutte kjøringen også etterlot
+# kameraet i servicemodus, der det ville avvise den neste økten.
+driver-swept-camera = Et kamera som en tidligere kjøring etterlot i servicemodus, er satt tilbake til normal modus.
+driver-release-replug = Windows venter på kameraet mens driveren frigis. Trekk ut USB-kabelen og koble den til igjen, slik at oppryddingen kan fullføres.
+# Resultater av kommandoen `driver`.
+driver-bound = { $id } bruker nå WinUSB (driverpakken { $package }).
+driver-released = Frigjorde { $count } drivertilordning(er); kameraet bruker igjen driverne som følger med Windows.
+driver-needs-elevation = Å tilordne en driver krever administratorrettigheter. Kjør denne kommandoen i et konsollvindu startet som administrator.
+driver-leftover-needs-elevation = En tidligere kjøring har tildelt kameraet en driver som ennå ikke er frigitt. Så lenge den finnes, ber kameraet om å kontrollere den tilkoblede enheten, og masselagringen virker ikke. Frigivelsen krever administratorrettigheter; bekreft Windows-forespørselen.
+driver-binding = WinUSB-driveren tilordnes kameraet…
+driver-bind-wait = Venter på at kameraet kobler seg til igjen med den nye driveren…
+driver-bind-timeout = Kameraet dukket ikke opp igjen etter at driveren ble tilordnet. Koble det fra, koble det til igjen og prøv på nytt.
+driver-bind-failed = WinUSB-driveren kunne ikke tilordnes: { $detail }
+# Svarene fra konsollen. De kommer fra bakstykket, slik at konsollprogrammet
+# og vinduet bruker de samme ordene.
+service-usage = Bruk: { $usage }
+service-bad-hex = Ikke en heksadesimal verdi: { $value }
+service-unknown-command = Ukjent kommando: { $command }. Skriv 'help' for listen.
+service-unterminated-quote = Linjen slutter inne i et argument i anførselstegn.
+service-help = Kommandooversikt:
+service-read-bytes = { $count } byte lest.
+service-pulled = { $remote } kopiert fra kameraet til { $local }.
+service-pushed = { $local } kopiert til { $remote } på kameraet.
+service-removed = { $remote } slettet fra kameraet.
+service-dumped = { $size } byte fra { $offset } lagret i { $local }.
+service-backup-saved = Sikkerhetskopien ({ $count } byte) er lagret i { $local }.
+service-backup-text-saved = Sikkerhetskopien ({ $count } byte) er lagret i { $bin } og oversikten i { $txt }.
+service-backup-status = Status for sikkerhetskopien, region: { $region }
+service-backup-rewritten = Bildet ({ $count } byte) ble skrevet tilbake uændret og lest på nytt; det er ikke lagret permanent.
+service-backup-attrs-restored = Attributtene for { $count } oppføringer er satt tilbake etter { $local }.
+service-backup-written = Sikkerhetskopioppføring { $id } skrevet.
+service-backup-persisted = Sikkerhetskopien av delsystem { $id } er skrevet til flash.
+service-terminal-on = Feilsøkingsterminalen er nå slått på.
+service-terminal-off = Feilsøkingsterminalen er nå slått av.
+
+# Servicesiden uten avansert modus: hvordan konsollen nås, og hva som må være
+# på plass først.
+service-console-heading = Kjør servicekonsollen i konsollen
+service-console-hint = Åpne en terminal i mappen med pmca-console, og kjør denne kommandoen:
+service-driver-heading = Før du begynner
+service-driver-hint = Servicemodus krever direkte USB-tilgang, som Windows ikke gir gjennom masselagringsdriveren. Programmet tilordner selv WinUSB-driveren — to ganger, én gang mens kameraet er i masselagringsmodus, og en gang til når det dukker opp igjen i servicemodus under en annen produkt-ID — og frigir begge tilordningene når økten avsluttes. Å tilordne en driver krever administratorrettigheter, så start konsollen som administrator; ingen andre verktøy trengs.
+driver-note-linux = Her trenger ingenting å installeres: libusb når kameraet direkte, uten å fortrenge en kjernedriver. Det som trengs, er bare rett til å åpne enheten og et skrivebord som ikke allerede holder på den. Legg inn en udev-regel for Sonys produsent-id 054c, og koble fra driveren usb-storage før du bruker masselagringsmodus. Skriptet scripts/linux-prepare.sh gjør begge deler og stopper i tillegg gvfs-volumovervåkerne.
+driver-note-macos = For direkte USB-tilgang trenger ingenting å installeres: libusb når kameraet direkte. Masselagringsmodus er unntaket, for den går gjennom Sonys egen Camera Driver, som må installeres separat. Denne plattformen er den minst utprøvde av de tre; regn med å melde fra om et problem heller enn å finne det allerede beskrevet.
+service-advanced-hint = Konsollen kan også vises her, under Innstillinger, Avansert modus.
+btn-copy-command = Kopier kommandoen
+msg-command-copied = Kommandoen er kopiert til utklippstavlen.
+
+# Servicesiden med avansert modus slått på.
+btn-service-open = Koble til
+btn-service-close = Koble fra
+btn-service-run = Kjør
+btn-service-browse = Sett inn filbane…
+shell-path-quote = Denne banen kan ikke settes inn: den inneholder et anførselstegn, som kommandolinjen bruker til å markere hvor et argument begynner og slutter. Gi filen et nytt navn, eller flytt den til en bane uten dette tegnet.
+service-command-label = Kommando
+service-not-connected = Ikke tilkoblet.
+
+# Tekster som bare brukes i det grafiske grensesnittet
+install-apk-path = Bane til en lokal .apk-fil (valgfritt)
+install-drop-hint = Slipp en .apk-fil her
+
+# Beskrivelser av tilpasningene
+tweak-rec-limit = Videoopptak uten tidsgrense
+tweak-rec-limit-4k = 4K-videoopptak uten tidsgrense
+tweak-language = Vis alle menyspråk
+tweak-pal-ntsc = Slå på PAL/NTSC-valg og advarsel
+tweak-pal-ntsc-mode = Videosystem (PAL / NTSC)
+tweak-pal-ntsc-pal = PAL
+tweak-pal-ntsc-ntsc = NTSC
+tweak-pal-ntsc-note = Etter et bytte av videosystem krever kameraet at minnekortet formateres. Ta først sikkerhetskopi av alt — bilder, videoer, LUT-er. Enklest er å ta ut kortet før du bytter.
+tweaks-set-malformed = Forventet --set ID=VERDI, fikk: { $arg }
+tweaks-set-unknown-value = Ukjent verdi «{ $value }». Forventet en av: { $options }
+tweaks-set-not-a-choice = { $id } er en bryter, ikke et valg. Bruk --enable eller --disable.
+tweaks-needs-set = { $id } er et valg, ikke en bryter. Bruk --set { $id }=VERDI med en av: { $options }
+tweak-usb-installer = Slå på USB-appinstallerer
+
+# Tilpasningsforløpet
+tweaks-warning = Advarsel: å ta i bruk tilpasninger skriver om kameraets sikkerhetskopiminne. En avbrutt skriving kan skade kameraet permanent.
+tweaks-reading = Leser kamerainnstillingene …
+tweaks-writing = Skriver kamerainnstillingene …
+tweaks-done = Kamerainnstillingene er oppdatert.
+tweaks-write-failed = Kameraet lagret ikke de nye innstillingene slik de ble sendt. En del kan likevel være skrevet: les innstillingene på nytt og angre dem ved behov. En sikkerhetskopi tatt før endringen er den sikre veien tilbake.
+tweaks-confirm-required = Nekter å skrive uten bekreftelse. Kjør på nytt med --confirm når du har lest advarselen ovenfor.
+tweaks-state-enabled = på
+tweaks-state-disabled = av
+tweaks-full-read-failed = Kameraet leverte ikke hele sikkerhetskopien ({ $detail }). Etterpå svarer det ofte ikke lenger: slå av kameraet, ta ut batteriet noen sekunder, sett det inn igjen og koble til på nytt.
+tweaks-direct-mode = Sikkerhetskopien til dette kameraet er større enn 1 MB, så innstillingene leses og skrives én om gangen. De gamle verdiene lagres før hver endring og kan skrives tilbake med «Angre endringer».
+tweaks-direct-forced = PMCA_TWEAKS_DIRECT tvinger frem veien med enkeltverdier, så innstillingene leses og skrives én om gangen. De gamle verdiene lagres før hver endring og kan skrives tilbake med «Angre endringer».
+tweaks-direct-refused = Kameraet avviste endringen ({ $detail }). Verdier som allerede var skrevet, er satt tilbake; ingenting er endret. Noen modeller, særlig japanske, tillater denne innstillingen bare via den fullstendige sikkerhetskopien.
+tweaks-direct-revert-failed = Kameraet avviste endringen ({ $detail }), og ikke alle allerede skrevne verdier kunne settes tilbake. De gamle verdiene er lagret: prøv «Angre endringer».
+tweaks-direct-restart = Kamerainnstillingene er oppdatert. Slå kameraet av og på igjen for at endringen skal tre i kraft.
+tweaks-rollback-unsaved = De gjeldende verdiene kunne ikke lagres for angring; ingenting er endret.
+tweaks-image-saved = Sikkerhetskopibildet fra før endringen er lagret: { $path }
+tweaks-whole-image-hint = Kjør den samme kommandoen på nytt med --whole-image for i stedet å skrive endringen via hele sikkerhetskopibildet. Bildet fra før endringen lagres først.
+tweaks-whole-image-confirm = Skrive endringen via hele sikkerhetskopibildet? Kameraet avviste den som enkeltverdi. Hele bildet skrives tilbake med endringen; bildet fra før endringen lagres først på denne datamaskinen.
+btn-whole-image = Skriv hele sikkerhetskopien
+tweaks-undo-none = Det finnes ingen lagrede verdier for dette kameraet.
+tweaks-undo-confirm = Skrive de lagrede verdiene tilbake til kameraet? Det angrer alle endringer som er skrevet én om gangen siden de ble lagret.
+tweaks-undo-done = De lagrede verdiene er skrevet tilbake. Slå kameraet av og på igjen.
+tweaks-undo-available = Verdiene fra før den første endringen er lagret og kan skrives tilbake.
+btn-undo-tweaks = Angre endringer
+tweaks-identity-heading = Kameraets identitet (skrivebeskyttet)
+tweaks-caution-languages = To språk — sannsynligvis kinesisk (forenklet) og kinesisk (tradisjonell) — kan ikke vises av dette kameraet. Språkmenyen starter på nytt når du blar til dem, så de blir stående av for sikkerhets skyld.
+tweaks-caution-accept = Aktiver disse to språkene likevel (på eget ansvar)
+tweaks-caution-confirm = Disse to språkene kan få språkmenyen i kameraet til å starte på nytt. Ingenting blir ødelagt og endringen kan angres, men du må kanskje finne innstillingen på nytt. Aktivere likevel?
+
+# Innstillinger
+settings-language = Språk
+settings-theme = Tema
+settings-theme-system = System
+settings-theme-light = Lyst
+settings-theme-dark = Mørkt
+
+# Avansert modus. En beskyttelse mot et feilklikk, ikke mot en angriper: alt
+# den viser, er uansett tilgjengelig fra konsollen.
+settings-advanced-heading = Avansert modus
+settings-advanced-hint = Avansert modus viser servicekonsollen og updater-konsollen på sidene med samme navn. Servicemodus gir direkte tilgang til kameraets minne, filsystem og kalibreringsdata; en feilskrevet kommando kan gjøre kameraet ubrukelig. La den være av inntil du vet hva du skal skrive.
+settings-advanced-toggle = Vis service- og updater-konsollen
+settings-advanced-on = Avansert modus er på. Sidene Servicekonsoll og Updater-konsoll tilbyr nå selve konsollene.
+settings-advanced-off = Avansert modus er av. Sidene Servicekonsoll og Updater-konsoll forklarer i stedet veien gjennom konsollprogrammet.
+settings-advanced-confirm = Service- og updater-konsollen kan skade kameraet permanent. Vil du vise begge konsollene?
+
+# Redigering av en oversettelse. Språkfiler kan lastes ned, endres i et
+# hvilket som helst tekstredigeringsprogram og lastes opp igjen; en opplastet
+# fil kontrolleres før den tas i bruk.
+settings-catalog-heading = Rediger oversettelse
+settings-catalog-hint = Last ned en språkfil, endre den i et hvilket som helst tekstredigeringsprogram og last den opp igjen. Bare teksten til høyre for likhetstegnet oversettes, og oppføringer du utelater, beholder den innebygde ordlyden. Språket du velger her, endrer ikke språket i programmet.
+settings-catalog-locale = Språkfil
+settings-catalog-builtin = Den innebygde oversettelsen er i bruk.
+settings-catalog-custom = Din egen oversettelse er i bruk:
+btn-catalog-export = Last ned …
+btn-catalog-import = Last opp …
+btn-catalog-reset = Gjenopprett innebygd
+catalog-exported = Skrevet til
+catalog-imported = Oversettelsen er tatt i bruk.
+catalog-reset-done = Den innebygde oversettelsen er gjenopprettet.
+catalog-reset-none = Det fantes ingen egen oversettelse å gjenopprette fra.
+catalog-reset-confirm = Vil du forkaste din egen oversettelse for dette språket?
+catalog-rejected = Filen ble ikke tatt i bruk. Rett opp disse linjene:
+catalog-count-accepted = Oppføringer tatt i bruk
+catalog-count-missing = Oppføringer beholdt fra den innebygde oversettelsen
+catalog-count-untranslated = Oppføringer som er identiske med den engelske originalen
+catalog-line = Linje
+catalog-problem-syntax = ikke en oppføring på formen «id = tekst»
+catalog-problem-continuation = fortsatt på neste linje, noe som ikke støttes
+catalog-problem-duplicate = definert mer enn én gang
+catalog-problem-unknown-key = ikke en oppføring dette programmet bruker
+catalog-problem-empty = mangler tekst
+catalog-problem-placeholder = plassholder endret, forventet:
+
+# Opphav, takk og lisens. Vises på lisenssiden og av
+# `pmca-console license`. Selve lisensteksten oversettes ikke: den er et
+# juridisk dokument og gjengis ordrett.
+about-thanks-heading = Takk
+about-thanks-body-1 = Dette verktøyet finnes på grunn av ma1co, som fant ut hvordan Sonys kameraer kommuniserer over USB, og ga ut Sony-PMCA-RE i 2015, og på grunn av alle som har bidratt til det og til OpenMemories-prosjektene i årene etterpå.
+about-thanks-body-2 = Kameragjenkjenningen, protokollen for eksterne kommandoer, prosedyren for fastvareoppdatering og servicemodus er alt sammen deres arbeid, og denne porteringen fører det arbeidet videre. Takk. På dette grunnlaget tilfører PMCA-RE RELOADED mange nye funksjoner som masterflai har bidratt med. Viktigst er det nå innebygde automatiske byttet av enhetsdriver i Windows: kameraet trenger ikke lenger få tildelt en annen driver for hånd med et eget verktøy, noe som gjør prosessen enklere, raskere og mindre risikabel.
+about-contributors-heading = Bidragsytere
+about-contributors-body = I tillegg til ma1co har disse personene bidratt til Sony-PMCA-RE eller publisert endringer i egne kopier av det som er tatt inn i denne porteringen:
+about-purpose-heading = Hvorfor denne porteringen finnes
+about-purpose-body-1 = Det opprinnelige programmet utvikles ikke lenger. Det ble skrevet for Python 2, som nådde slutten av sin levetid i 2020, og deler av det bygger på tjenester som Sony siden har lagt ned, så det kjører ikke lenger uten begrensninger på dagens systemer.
+about-purpose-body-2 = Formålet med denne porteringen er bevaring framfor erstatning, og like mye problemfri bruk i dag: å holde disse kameraene brukbare og få programmet til å fungere uten problemer på dagens datamaskiner og med nyere kameramodeller. Alt originalen kunne gjøre, bør denne fortsatt kunne gjøre.
+about-origin-heading = Hvordan den ble laget
+about-origin-body-1 = Porteringen fra Python til Rust ble utført med hjelp fra KI.
+about-origin-body-2 = Hva det ikke betyr, er verdt å si like tydelig: oppførselen er dekket av en automatisert testpakke og av en maskinvaretestplan. Særlig Windows-versjonen er grundig testet, fordi enhetsdriverne gjør den til den mest komplekse plattformen; macOS og Linux kunne derimot ikke testes fullt ut. Behandle dette som eksperimentell programvare.
+about-license-heading = Lisens
+about-license-body = Denne porteringen er utgitt under MIT-lisensen, den samme lisensen som det opprinnelige prosjektet. Den opprinnelige opphavsrettserklæringen beholdes uendret, slik lisensen krever.
+about-license-full = Lisenstekst
+about-third-party-heading = Lisenser for bibliotekene som brukes
+about-third-party-body = Dette programmet er statisk lenket: koden til hvert bibliotek det bruker ligger inne i den kjørbare filen, og lisensene deres krever at opphavsrettsmerknadene følger med. De er gjengitt i sin helhet nedenfor, én oppføring per pakke.
+about-third-party-toggle = Vis alle tredjepartsmerknader
+about-privacy-heading = Data
+about-privacy-body-1 = Dette programmet kjører på din egen maskin. Det sender ingen bruksdata, det finnes ingen telemetri, og ingen konto kreves. Ingenting av det du gjør her rapporteres noe sted.
+about-privacy-body-2 = To funksjoner kobler seg likevel opp av seg selv, og motparten får da vite IP-adressen din: GPS-assistansedataene hentes fra Sony, og applisten fra GitHub. Uten disse funksjonene forblir programmet helt frakoblet.
+about-privacy-body-3 = Det som leses ut av kameraet — blant annet serienummeret og lagrede Wi-Fi-passord — forlater ikke maskinen din. Skriver du det til en fil, så vær oppmerksom på hvem du gir filen videre til.
+about-privacy-body-4 = Det drives ingen tjeneste bak dette programmet, og ingen data når fram til opphavspersonene, så det finnes ingenting her å be om innsyn i eller få slettet. Hva de to nevnte tjenestene gjør med adressene de ser, følger deres egne personvernerklæringer, ikke denne.
+about-legal-heading = Juridiske merknader
+about-legal-trademark = Dette er et uavhengig prosjekt. Det er ikke laget av, godkjent av eller på noen måte knyttet til Sony. «Sony», «PlayMemories» og kameramodellnavnene er varemerker som tilhører Sony Group Corporation, og nevnes her utelukkende for å angi hvilke kameraer dette verktøyet snakker med.
+about-legal-own-device = Dette programmet er ment for bruk med kameraer du eier selv.
+about-legal-warranty = Det dette verktøyet gjør, ligger utenfor det Sony har ment for disse kameraene, og kan avslutte garantien din. Programvaren selv leveres uten noen garanti, og du bruker den på eget ansvar. Om og i hvilken grad omvendt utvikling av utstyr du eier er tillatt, avhenger av hvor du befinner deg.
+about-links-heading = Prosjekter
+about-link-original = Sony-PMCA-RE — det opprinnelige prosjektet
+about-link-fwtool = fwtool — fastvareverktøyene som genereringen av oppdateringsbilder bygger på
+about-link-tweak = OpenMemories: Tweak — appen som anbefales for kameraer som støtter den
+about-link-applist = OpenMemories: App list — flere apper
+about-link-platform = OpenMemories: Platform — den medfølgende updater-kroppen
+about-link-devices = Støttede kameramodeller
+about-link-nexhack = Nex-Hack — fellesskapets forskning som dette prosjektet bygger på
+about-link-zve10 = zv-e10-re — undersøkelser av ZV-E10s grensesnitt og innstillingsminne
+about-version = Versjon
+btn-copy-url = Kopier adresse
+msg-url-copied = Adressen er kopiert til utklippstavlen.
+
+# Sikkerhetsmerknad
+notice-experimental = Dette er eksperimentell programvare. Bruk på eget ansvar.
+
+# Nettverksinnstillinger (GPS-assistanse, tilgangspunkter og tjenester for direktesending)
+gps-downloading = Laster ned GPS-assistansedataene …
+gps-writing = Skriver GPS-assistansedataene til kameraet …
+gps-bad-size = GPS-assistansedataene har uventet størrelse og ble ikke skrevet.
+wifi-read = Leser tilgangspunktene for direktesending fra kameraet …
+wifi-written = Tilgangspunktene for direktesending er skrevet.
+stream-read = Leser innstillingene for direktesending fra kameraet …
+stream-written = Innstillingene for direktesending er skrevet.
+net-secret-warning = Advarsel: denne filen inneholder Wi-Fi-passord og tilgangstokener i klartekst.
+wifi-secret-warning = Kameraet lagrer disse passordene ukryptert, og de vises her nøyaktig slik de er lagret. De blir værende på denne maskinen; lagrer du dem i en fil, så vær oppmerksom på hvem du gir den videre til.
+gps-heading = GPS-assistansedata
+gps-hint = Dra en fil hit, skriv inn en bane, eller la feltet stå tomt for å hente de nyeste dataene fra Sony.
+btn-gps-devices = Kompatible enheter
+btn-gps-devices-hide = Skjul kompatible enheter
+gps-devices-note = Disse modellene har en innebygd GPS-modul. For mange av dem er det bare varianten med navn som slutter på V, som har den; varianter uten V har ikke GPS.
+gps-devices-compact = Kompaktkameraer (DSC)
+gps-devices-slt = SLT-kameraer (A-fatning)
+gps-devices-action = Actionkameraer
+gps-devices-camcorder = Videokameraer (Handycam)
+gps-col-variant = GPS-variant
+gps-col-arch = Arkitektur
+gps-col-module = GPS-modul
+gps-col-apps = App-støtte
+gps-yes = ja
+gps-no = nei
+gps-unknown = ukjent
+gps-devices-untested = GPS finnes, støtte ikke testet
+gps-devices-untested-note = Disse modellene har en innebygd GPS-modul, men står ikke på enhetslisten til OpenMemories. Det er ikke testet om dette programmet fungerer med dem, så arkitektur og app-støtte er ukjent.
+wifi-heading = Tilgangspunkter for direktesending
+wifi-hint = Dette er tilgangspunktene som kameraets direktesendingsfunksjon bruker, ikke kameraets egne Wi-Fi-innstillinger. Et kamerahus uten direktesendingsfunksjon avviser dette.
+wifi-multi = Liste over flere tilgangspunkter
+wifi-none = Ingen tilgangspunkter er lagret.
+wifi-writing = Skriver tilgangspunktene for direktesending til kameraet …
+wifi-confirm = Dette erstatter alle tilgangspunktene som er lagret på kameraet. Vil du fortsette?
+wifi-empty-refused = Nekter å skrive en tom liste, siden det ville slettet alle lagrede tilgangspunkter.
+stream-heading = Direktesending
+stream-writing = Skriver innstillingene for direktesending til kameraet …
+stream-confirm = Dette overskriver kameraets innstillinger for direktesending. Vil du fortsette?
+stream-invalid-json = Innstillingene er ikke gyldig JSON:
+
+# Fastvareoppdatering og den offisielle butikken
+firmware-warning = Advarsel: dette overskriver kameraets fastvare. Ikke avbryt oppdateringen når den har startet: ikke trekk ut USB-kabelen, og ikke slå av kameraet. Bruk bare en fastvarefil som er beregnet for akkurat denne kameramodellen, og sørg for at batteriet er tilstrekkelig ladet. Ellers kan kameraet bli permanent ubrukelig.
+firmware-untested = Utestet: flashing av fastvare er portert, men aldri prøvd på et ekte kamera. En mislykket eller avbrutt skriving kan ikke angres, så betrakt alt på denne siden som ubekreftet.
+firmware-confirm-required = Nekter å skrive fastvare uten --confirm.
+firmware-truncated = Fastvarefilen er avkortet: FDAT-payloaden strekker seg forbi slutten av filen.
+firmware-updating = Oppdaterer fastvare:
+firmware-invalid = Filen er ikke et gyldig Sony-fastvarebilde
+firmware-dat-path = Fastvarefil (.dat)
+firmware-drop-hint = Slipp en .dat-fastvarefil her
+firmware-file-required = Velg en fastvarefil først.
+firmware-check-ok = Kameraet godtar dette bildet. Ingenting er skrevet.
+firmware-cancelled = Skrivingen ble avbrutt. Kameraet ble ikke endret.
+firmware-current-version = Installert versjon
+firmware-new-version = Versjon i dette bildet
+firmware-models-hint = Et kamera er kompatibelt hvis updater-konsollen kan nå det.
+btn-firmware-check = Kontroller bildet
+btn-firmware-flash = Skriv fastvare
+firmware-own-device = Bekreft at du er klar over disse risikoene og bare oppdaterer din egen enhet.
+btn-firmware-accept = Risikoene forstått – skriv
+
+# Filverktøy: operasjonene som ikke trenger noe kamera i det hele tatt.
+tools-hint = Disse operasjonene arbeider på filer og rører aldri kameraet, så ingenting her kan skade det. Det er de samme operasjonene som pmca-console tilbyr som apk2spk, spk2apk, print-backup, print-usagelog, guess-firmware og xpd-checksum.
+tools-operation = Operasjon
+tools-apk2spk = Pakk en .apk inn i en .spk-container
+tools-spk2apk = Pakk en .spk ut til .apk igjen
+tools-print-backup = Vis innholdet i en Backup.bin
+tools-print-usagelog = Vis innholdet i en Usagelog.bin
+tools-guess-firmware = Finn payloaden inne i en fastvarefil (.dat)
+tools-xpd-checksum = Beregn CIC-sjekksummen til en fil
+tools-input = Inndatafil
+tools-file-required = Velg først filene denne operasjonen trenger.
+tools-apk-invalid = Filen kunne ikke pakkes som .spk
+tools-spk-invalid = Filen er ikke en gyldig .spk-pakke
+tools-backup-invalid = Filen er ikke et gyldig Backup.bin-bilde
+tools-usagelog-invalid = Filen er ikke en gyldig brukslogg
+tools-reset-value = tilbakestillingsverdi:
+tools-fdat-found = Payload funnet på offset { $offset }, størrelse { $size }.
+tools-checksum = Sjekksum
+tools-written = Skrevet til { $path }
+
+# Henvisninger til prosjektdokumentasjonen
+docs-compatibility = Kamerakompatibilitet
+docs-compatibility-hint = Det opprinnelige prosjektet ga en oversikt over testede kameraer. Den omfatter hovedsakelig eldre kameramodeller og finnes på denne adressen:
+devices-note = Opplysninger fra oversikten i det opprinnelige prosjektet. Tallet ved app-støtte er versjonen av kameraets app-plattform.
+devices-more-note = Følgende kameraer er ikke uttrykkelig testet med dette programmet. En hake i siste kolonne betyr at fellesskapet har meldt om bruk av dem. Er servicekonsollen i tillegg merket med ✖, mislyktes bruken.
+btn-more-models = Flere enheter
+btn-more-models-hide = Skjul flere enheter
+check-updater-yes = Enheten din { $model } er kompatibel: ifølge enhetslisten kan updater-konsollen nå den.
+check-updater-no = Enheten din { $model } er ikke kompatibel: ifølge enhetslisten kan updater-konsollen ikke nå den.
+check-updater-unknown = Kompatibiliteten til enheten din { $model } er ukjent: den står ikke på noen av programmets enhetslister, så det er ikke kjent om updater-konsollen kan nå den.
+check-apps-no = Enheten din { $model } er ikke kompatibel: ifølge enhetslisten støtter den ikke apper.
+check-apps-untested = Kompatibiliteten til enheten din { $model } er ukjent: den står på enhetslisten, men app-støtte er ikke bekreftet.
+check-apps-unknown = Kompatibiliteten til enheten din { $model } er ukjent: den står ikke på noen av programmets enhetslister, så det er ikke kjent om den støtter apper.
+check-gps-no = Enheten din { $model } er ikke kompatibel: den står ikke på listen over enheter med GPS-mottaker.
+check-gps-untested = Kompatibiliteten til enheten din { $model } er ukjent: ifølge enhetslisten har den en GPS-mottaker, men overføringen til denne modellen er ikke testet.
+check-gps-unknown = Kompatibiliteten til enheten din { $model } er ukjent: den står ikke på noen av programmets enhetslister, så det er ikke kjent om den har en GPS-mottaker.
+check-unidentified = Den tilkoblede enheten kunne ikke identifiseres, så kompatibiliteten er ukjent.
+check-proceed = Vil du fortsette likevel?
+check-cancelled = Handlingen ble avbrutt. Enheten ble ikke endret.
+devices-col-confirmed = Bekreftet
+devices-group-ilc = Systemkameraer (E- og A-fatning)
+devices-group-remote = Live-View-fjernkontroller
+btn-copy-link = Kopier lenke
+shutter-heading = Lukkerteller
+shutter-hint = Kameraet teller hver utløsning av lukkeren og skriver gjeldende stand inn i hvert bilde det lagrer (ARW, JPEG eller HEIF). Velg det sist tatte bildet for å lese av gjeldende stand. Filen blir bare lest, aldri endret.
+shutter-source = Hvor telleren står i filen, varierer fra modell til modell. Posisjonene kommer fra offentlig dokumenterte undersøkelser (ExifTool) og er ikke bekreftet for alle modeller.
+shutter-drop-hint = Slipp et bilde (ARW, JPEG, HEIF) her
+btn-shutter-read = Analyser bilde
+shutter-file-required = Velg et bilde først.
+shutter-file = Fil
+shutter-taken = Opptaksdato
+shutter-count = Utløsninger
+shutter-type = Lukker
+shutter-type-mechanical = Mekanisk
+shutter-type-electronic = Elektronisk
+shutter-electronic-hint = Dette bildet ble tatt med elektronisk lukker. På mange modeller telles slike opptak ikke med; verdien viser da standen ved siste mekaniske utløsning.
+shutter-not-sony = Bildet er ikke tatt med et Sony-kamera. Det kan ikke leses av noen lukkerteller fra det.
+shutter-unknown-model = Det er ikke kjent hvor denne kameramodellen lagrer lukkertelleren i filen, så ingen verdi vises.
+shutter-not-recorded = Filen inneholder ingen lesbar lukkerteller. Det skjer med bilder som er lagret eller eksportert av et bilderedigeringsprogram, og på noen modeller med opptak tatt med elektronisk lukker. Velg originalfilen fra minnekortet.
+shutter-model-mismatch = Bildet kommer fra en annen kameramodell enn det tilkoblede kameraet.
+shutter-invalid = Filen er ikke et lesbart bilde
+file-filter-photo = Bilder (ARW, JPEG, HEIF)
+usage-log-heading = Brukslogg
+usage-log-hint = Kameraet fører en intern logg i et udokumentert format. Den lagres ordrett; kameraet blir bare lest fra.
+usage-log-written = Skrevet til
+btn-usage-log-info = Om bruksloggen
+btn-usage-log-info-hide = Skjul forklaringen
+usage-log-info-what-heading = Hva loggen er
+usage-log-info-what = Sony kaller loggen internt «KikiLog». Kameraet skriver den selv; dette programmet leser den bare. Ingen offentlig beskrivelse av formatet er kjent.
+usage-log-info-read = Lesing endrer ingenting: flere nedlastinger på rad var byte for byte like.
+usage-log-info-flush-heading = Hvorfor nye oppføringer mangler
+usage-log-info-flush = Nye oppføringer dukker ofte ikke opp med en gang: kameraet lagrer dem kanskje først når det slås av, noen ganger fordelt over flere av/på-sykluser. Slå kameraet av og på, last ned på nytt, og gjenta til det ikke kommer flere nye oppføringer.
+usage-log-info-content-heading = Hva man kan lese av
+usage-log-info-shutter = Utløsninger: noen hendelser står hver for ett opptak. Antallet av dem er likevel ikke lukkertelleren: loggen har fast størrelse og dekker ikke nødvendigvis hele kameraets levetid. Kameraet holder totalen et annet sted og skriver den inn i bildene det lagrer; den kan leses av i delen «Lukkerteller».
+usage-log-info-clock = Tidsstempler er bare så gode som kameraklokken. Etter et batteribytte kan klokken falle tilbake og lage oppføringer med kameraets startdato.
+usage-log-info-unknown = Ingen offentlig beskrivelse av hendelsesnumrene er kjent. Programmet viser numrene uten å tolke dem.
+usage-log-info-privacy-heading = Personvern
+usage-log-info-privacy = Filen inneholder serienumrene til innsatte minnekort. Ikke del eller publiser den ukritisk.
+btn-usage-log = Lagre logg
+usagelog-size = Loggområde
+usagelog-cursor = Skriveposisjon
+usagelog-spare = Andre område
+usagelog-count = Oppføringer
+usagelog-events = Hendelser etter nummer
+usagelog-entries = Oppføringer i rekkefølge
+msg-link-copied = Lenken er kopiert til utklippstavlen.
+
+# Feilmeldinger fra bakstykket, slått opp med den stabile koden det melder fra om.
+# Den variable delen av en melding (en bane, en statusbyte, en enhetsfeil)
+# legges til av grensesnittet, så tekstene er hele setninger også uten den.
+# Det finnes med vilje ingen `err-operation`: den koden merker en melding
+# bakstykket allerede har oversatt, og som må vises ordrett.
+err-usb-no-device = Fant ingen kameraer. Koble til et kamera og slå det på.
+err-usb-camera-not-ready = Kameraet er tilkoblet, men ikke klart: Det er slått av eller venter på skjermen på at USB-modus skal velges. Slå det på, eller velg «Masselagring (MSC)» på kameraet.
+camera-choose-usb-mode = Kameraet venter på at USB-modus skal velges. Velg «Masselagring (MSC)» på kameraet.
+err-usb-too-many-devices = Mer enn ett kamera er tilkoblet. Koble fra alle unntatt det du vil arbeide med.
+err-usb-transfer = USB-overføringen mislyktes. Prøv en annen kabel eller port, og unngå USB-huber.
+err-usb-stall = Kameraet avbrøt USB-overføringen.
+err-usb-protocol = Kameraet sendte et uventet svar.
+err-usb-msc-status = Kameraet avviste en lagringskommando.
+cli-error-prefix = feil
+err-usb-driver = Windows har tilordnet dette kameraet en driver som ikke tillater direkte tilgang. Denne modusen krever WinUSB-driveren, som programmet kan tilordne selv — men bare med administratorrettigheter.
+err-needs-elevation = Tildeling eller frigivelse av en driver krever administratorrettigheter, og Windows-forespørselen ble avvist. Prøv igjen med «Start driverhjelper»; ingenting på kameraet må endres.
+err-usb-no-mass-storage-volume = Kameraet er koblet til i masselagringsmodus, men tilbyr ingen stasjon. Vekk det, bekreft USB-modusen på skjermen hvis det spør, og kontroller at det står et minnekort i. Ikke bytt driver: denne modusen trenger nettopp standarddriveren fra Windows.
+err-usb-msc-sense = Kameraet meldte om en lagringsfeil.
+err-usb-ptp-response = Kameraet avviste kommandoen.
+err-usb-unsupported = Denne kameramodellen støtter ikke den funksjonen.
+err-usb-updater-status = Fastvareoppdatereren på kameraet avviste operasjonen.
+err-usb-senser = En kommando i servicemodus mislyktes.
+err-market-core = En datafil fra kameraet kunne ikke leses.
+err-market-json = Dataene som ble mottatt, var ugyldige.
+err-market-missing-field = Et forventet felt manglet i svaret.
+err-market-no-apk = Ingen app er valgt for installasjon.
+err-market-http = Nettverksforespørselen mislyktes.
+err-market-io = Den lokale installasjonstjeneren mislyktes.
+err-market-tls = Den krypterte forbindelsen til kameraet kunne ikke opprettes.
+err-apk = Appfilen kunne ikke leses.
+err-io = En fil kunne ikke leses eller skrives.
+err-json = Kameraet sendte ugyldige data.
+err-unknown-locale = Dette språket er ikke tilgjengelig.
+err-catalog-encoding = Oversettelsesfilen er ikke lagret som UTF-8-tekst. Lagre den på nytt med UTF-8-koding.
+err-internal = Det oppsto en intern feil. Dette er en feil i programmet.
+
+## Function analysis
+nav-analysis = Analyse
+analysis-title = Funksjonsanalyse
+analysis-experimental = Eksperimentell. Funksjonen er ny og bare prøvd på noen få kameraer.
+analysis-own-hardware = Bruk den bare på ditt eget kamera. Allerede servicemodus er et inngrep Sony ikke har tenkt; ansvaret er ditt.
+analysis-explanation-toggle = Forklaring: formål, forløp, risikoer
+analysis-purpose-heading = Hva er den til?
+analysis-purpose = Funksjonsanalysen dokumenterer i hvilken verdi i innstillingsminnet (sikkerhetskopien) kameraet lagrer en av sine egne menyinnstillinger. Resultatet beskriver dette kameraets innstillingsminne; det kan sammenlignes med andre kameraer, men endrer ikke hva et kamera tilbyr.
+analysis-how-heading = Hvordan foregår den?
+analysis-how = For hver menyverdi du oppgir, leser programmet hele innstillingsminnet én gang, hver gang i en egen kort økt i servicemodus. Mellom lesingene trekker du ut kabelen og endrer innstillingen i kameramenyen; kameraet forblir på. Til slutt leses den første verdien én gang til. Verdier som følger menyen og til slutt er tilbake på startverdien, er kandidater. Verdier som endrer seg av seg selv (tellere, klokke), sorteres bort.
+analysis-requirements-heading = Forutsetninger
+analysis-requirements = Kameraet er koblet til via USB, USB-modusen står på «Auto», og etter hver økt velger du «Masselagring (MSC)» på kameraet. På Windows trenger programmet administratorrettigheter, fordi det kortvarig tildeler en driver for servicemodus. Lad batteriet; hver økt tar omtrent ett minutt.
+analysis-read-heading = Lesende trinn
+analysis-read = Øyeblikksbildene leser bare. Ingenting i kameraets innstillinger endres. Risikoen er liten, men ikke null: allerede byttet til servicemodus er et inngrep Sony ikke har tenkt.
+analysis-write-heading = Skrivende trinn (skrivetest)
+analysis-write = Bare hvis du slår den på uttrykkelig: programmet skriver den funnede verdien til kameraet, du kontrollerer etter en omstart i menyen om den virker, og deretter skrives den opprinnelige verdien tilbake. Det skrives bare en verdi kameraet selv har lagret, og bare hvis nøyaktig én passende kandidat ble funnet. Den gamle verdien lagres først. Likevel endrer dette trinnet kameraet; en feil kan etterlate det i en tilstand bare service kan rette.
+analysis-legal-heading = Juridisk
+analysis-legal = Programvaren leveres uten noen garanti (MIT-lisens). Inngrep i kameraet kan påvirke garantien. Bruk funksjonen bare på kameraer du eier. Analyserapporten inneholder ikke serienummer og ingenting fra innstillingsminnet utover kandidatene som ble funnet; den sendes aldri automatisk.
+analysis-start-heading = Ny analyse
+analysis-setting-label = Menyinnstilling, slik kameraet kaller den
+analysis-values-label = Menyverdier, atskilt med komma
+analysis-values-hint = Den første verdien er den som er innstilt nå. To til åtte verdier; hver koster én økt i servicemodus.
+analysis-write-option = Utfør deretter skrivetest (endrer kameraet)
+analysis-write-warning = Skrivetesten endrer kameraet: den skriver en verdi i innstillingsminnet og skriver deretter den opprinnelige verdien tilbake. Bare på ditt eget kamera, på egen risiko.
+analysis-write-consent = Kameraet er mitt, og jeg bærer risikoen.
+btn-analysis-write-enable = Slå på skrivetest
+btn-analysis-start = Start analyse
+btn-analysis-snapshot = Les sikkerhetskopi
+btn-analysis-new = Ny analyse
+analysis-discard-confirm = Forkaste analysen som pågår? Rapporten så langt forblir lagret.
+analysis-access-read = LESER
+analysis-access-write = SKRIVER
+analysis-access-user = MANUELT
+analysis-access-local = PC
+analysis-step-snapshot = Les sikkerhetskopi, innstillingen står på «{ $value }»
+analysis-step-change = Bytt til «{ $value }» i kameramenyen
+analysis-step-evaluate = Sammenlign øyeblikksbildene
+analysis-step-write = Skriv verdien for «{ $value }» til kameraet
+analysis-step-check = Slå kameraet av og på, les av menyen (forventet: «{ $value }»)
+analysis-step-restore = Skriv tilbake den opprinnelige verdien for «{ $value }»
+analysis-step-report = Lagre analyserapporten
+analysis-do-prepare = FORBEREDELSE: 1. Sett «{ $setting }» til «{ $value }» i kameramenyen, og gå ut av menyen med MENU-knappen så kameraet lagrer innstillingen. 2. La kameraet være på. 3. Koble til kabelen og velg «Masselagring (MSC)» på kameraet.
+analysis-do-change = DIN TUR: 1. Trekk ut kabelen. 2. Kameraet forblir på. 3. Sett «{ $setting }» til «{ $value }» i kameramenyen, og gå ut av menyen med MENU-knappen så kameraet lagrer innstillingen. 4. Koble til kabelen igjen og velg «Masselagring (MSC)».
+analysis-do-check = DIN TUR: 1. Trekk ut kabelen. 2. Slå kameraet av og på igjen. 3. Se i menyen hva som står ved «{ $setting }».
+analysis-do-reconnect = Koble til kabelen igjen og velg «Masselagring (MSC)» på kameraet.
+analysis-reading = Øyeblikksbilde { $index } av { $total }: IKKE trekk ut kabelen mens det leses.
+analysis-cli-continue = Enter for å fortsette, q for å avbryte:
+analysis-confirm-word = ja
+analysis-cli-confirm = Skriv «{ $word }» for å bekrefte:
+analysis-write-declined = Ikke bekreftet. Ingenting ble skrevet.
+analysis-aborted = Avbrutt. Ingenting ble skrevet.
+analysis-snapshot-done = Øyeblikksbilde lest. Kameraet har forlatt servicemodus.
+analysis-result = { $compared } verdier sammenlignet: { $count } kandidater, { $running } verdier endret seg av seg selv.
+analysis-candidate-consistent = passer entydig til menyen
+analysis-candidate-inconsistent = passer ikke entydig
+analysis-write-preview-heading = Dette blir skrevet
+analysis-write-preview = Verdi { $id } ({ $size } byte): fra { $old } («{ $old-label }») til { $new } («{ $new-label }»). Kameraet lagret selv den nye verdien mens «{ $new-label }» var innstilt.
+btn-analysis-write = Skriv
+btn-analysis-skip-write = Avslutt uten skrivetest
+analysis-written = Verdi skrevet, lest tilbake og lagret permanent.
+analysis-menu-question = Hva viser menyen nå?
+analysis-menu-other = noe annet
+btn-analysis-menu-confirm = Bruk
+btn-analysis-restore = Skriv tilbake den opprinnelige verdien
+analysis-restored = Den opprinnelige verdien er skrevet tilbake og lagret permanent.
+analysis-survived = Den skrevne verdien var fortsatt lagret etter omstarten.
+analysis-not-survived = Den skrevne verdien var ikke lenger lagret etter omstarten.
+analysis-report-saved = Analyserapport lagret: { $path }
+analysis-report-hint = Rapporten inneholder verken serienummer eller sikkerhetskopi. Du kan gi den videre slik at funnet kan kontrolleres og dokumenteres.
+btn-analysis-export = Eksporter rapport…
+file-filter-analysis = Analyserapport
+analysis-pending = En skrivetest ble ikke fullført. Den opprinnelige verdien er lagret og kan skrives tilbake.
+analysis-pending-none = Det er ingen ufullført skrivetest lagret for dette kameraet.
+analysis-invalid-setting = Oppgi menyinnstillingen slik kameraet kaller den.
+analysis-invalid-values = Oppgi to til { $max } forskjellige menyverdier. Den første er den som er innstilt nå.
+analysis-already-complete = Alle øyeblikksbilder er allerede lest.
+analysis-other-camera = Dette er ikke det samme kameraet som ved det første øyeblikksbildet. Analysen ble stoppet.
+analysis-write-not-allowed = Skrivetesten er ikke mulig i denne tilstanden.
+analysis-camera-changed = Kameraet har nå en annen verdi enn ved det første øyeblikksbildet. Ingenting ble skrevet.
+analysis-write-refused = Kameraet avviste verdien; alt er som før. ({ $detail })
+analysis-refuse-none = Skrivetest ikke mulig: ingen verdi fulgte menyen.
+analysis-refuse-ambiguous = Skrivetest ikke mulig: { $count } verdier fulgte menyen, ingen kan tildeles med sikkerhet.
+analysis-refuse-inconsistent = Skrivetest ikke mulig: verdien passer ikke entydig til menyverdiene.
+analysis-refuse-size = Skrivetest ikke mulig: verdien er { $size } byte; bare små verdier skrives.
+analysis-refuse-read-only = Skrivetest ikke mulig: kameraet merker verdien som skrivebeskyttet.
+analysis-refuse-protected = Skrivetest ikke mulig: kameraet merker verdien som beskyttet.
+settings-analysis-heading = Funksjonsanalyse
+settings-analysis-purpose = Funksjonsanalysen dokumenterer i hvilken verdi i innstillingsminnet kameraet lagrer en av sine egne menyinnstillinger. Den er ment for dem som vil forstå innstillingsminnet til sin modell og dele resultatene.
+settings-analysis-why-off = Den er slått av fordi vanlig bruk ikke trenger den, fordi den setter kameraet i servicemodus flere ganger, og fordi den på forespørsel også skriver til kameraet. Den er eksperimentell og bare prøvd på noen få modeller.
+settings-analysis-toggle = Slå på funksjonsanalysen (punktet «Analyse» i menyen)
+settings-analysis-confirm = Slå på funksjonsanalysen? Den setter kameraet i servicemodus flere ganger og kan på forespørsel skrive til kameraet. Bruk den bare på ditt eget kamera.
+btn-analysis-enable = Slå på
+settings-analysis-on = Funksjonsanalysen er slått på.
+settings-analysis-off = Funksjonsanalysen er slått av.
+analysis-needs-admin = Hvert øyeblikksbilde trenger administratorrettigheter for servicemodus. Windows spør én gang per programøkt; du kan starte driverhjelperen nå eller vente til det første øyeblikksbildet ber om den.
+analysis-changed-hint = Kontroller: ingen kandidat ble funnet. Følgende verdier endret seg, men gikk ikke tilbake til startverdien. Hvis en av dem bare skifter én gang mellom to verdier, sto kameraet trolig ikke på den første menyverdien ved det første øyeblikksbildet. Gjenta da analysen med riktig innstilt startverdi.
+analysis-changed-info = Info: verdier som endret seg av seg selv under analysen (f.eks. tellere, klokke), ignoreres. Du trenger ikke gjøre noe.
+elevation-admin = Administrator
+elevation-standard = Standardrettigheter
+elevation-admin-hint = Programmet kjører med administratorrettigheter og kan tildele driveren som servicemodus trenger.
+elevation-standard-hint = Programmet kjører med standardrettigheter. For servicemodus, tweaks og funksjonsanalysen starter det ved behov en driverhjelper med administratorrettigheter; Windows spør én gang per økt. Klikk for å starte den.
+driver-helper-declined = Forespørselen om administratorrettigheter ble avvist. Uten dem kan driveren for servicemodus ikke tildeles; ingenting ble endret.
+elevation-helper = Driverhjelper aktiv
+elevation-helper-hint = En hjelper med administratorrettigheter tildeler driveren for servicemodus. Den har ikke noe vindu og avsluttes med programmet; det kommer ingen flere forespørsler.
+elevation-helper-confirm = Starte driverhjelperen nå? Windows ber om administratorrettigheter én gang og ikke igjen før programmet avsluttes.
+analysis-cross-heading = Kontroll på et annet kamera
+analysis-cross-intro = Valgfritt: kontrollerer om et annet kamera også har verdien som ble funnet, og hva som er innstilt der. Det leses bare. Samme nummer betyr ikke nødvendigvis samme funksjon; bare en titt i menyen på det andre kameraet bekrefter det. Resultatet havner i samme analyserapport.
+analysis-cross-do = 1. Koble fra det analyserte kameraet. 2. Slå på det andre kameraet, sett USB-modusen til «Auto», koble til kabelen og velg «Masselagring (MSC)».
+btn-analysis-cross = Kontroller annet kamera
+analysis-cross-present = finnes, verdi { $value }
+analysis-cross-match = tilsvarer «{ $label }»
+analysis-cross-nomatch = tilsvarer ingen målt menyverdi
+analysis-cross-absent = finnes ikke
+analysis-cross-same-camera = Dette er selve det analyserte kameraet. Koble til det andre kameraet.
+analysis-cross-not-now = Kontrollen er først mulig når alle øyeblikksbilder er lest og ingen skrevet verdi venter på å bli skrevet tilbake.
+analysis-cross-none = Det finnes ingen kandidat å kontrollere.
+analysis-wrong-camera = Det tilkoblede kameraet er ikke det analyserte. Koble til { $model }; ingenting ble skrevet.
+keys-fetching = Laster ned kilden…
+keys-scanning = Søker etter nøkkelmateriale…
+keys-complete = Alt nøkkelmateriale er til stede.
+keys-incomplete = Noe nøkkelmateriale mangler fortsatt.
+keys-present = til stede
+keys-missing = mangler
+keys-class-senser = Servicemodus-nøkler (serviceskall, justeringer, analyse)
+keys-class-cic = XPD-kontrollsumnøkkel (appinstallasjon)
+keys-class-spk = SPK-nøkkelmateriale (appinstallasjon, apk2spk)
+keys-class-fdat = FDAT-nøkkelmateriale (updater-shell-fastvare)
+plugin-heading = Programtillegg
+plugin-intro = Programtillegg utvider programmet med språk, brytere for kamerainnstillinger, kompatibilitetsopplysninger, verktøy og diagnoser. De kommer bare fra filer du velger selv – det finnes ingen butikk for programtillegg. Koden deres kjører i en sandkasse uten tilgang til filene dine, nettverket eller nøkkelmaterialet. Installer bare programtillegg fra forfattere du stoler på; endringer gjelder fra neste oppstart.
+plugin-none = Ingen programtillegg installert.
+plugin-inactive = (aktivt etter en omstart)
+plugin-author = Forfatter
+plugin-restart = Start programmet på nytt for at endringen skal tre i kraft.
+btn-plugin-install = Installer programtillegg…
+plugin-install-confirm = Dette programtillegget kan:
+btn-confirm-plugin-install = Installer programtillegg
+plugin-installed = Programtillegget er installert.
+plugin-remove-confirm = Fjerne programtillegget «{ $name }»?
+plugin-removed = Programtillegget { $id } er fjernet.
+plugin-perm-languages = legge til språk i programmet
+plugin-perm-camera-settings = endre kamerainnstillinger (bare mellom de to verdiene det oppgir, og først etter at du har bekreftet)
+plugin-perm-compatibility = legge til oppføringer i kompatibilitetsoversikten
+plugin-perm-code = kjøre egen kode i sandkassen (verktøy eller diagnoser)
+plugin-perm-host-os = spørre hvilket operativsystem dette er
+plugin-perm-host-cameras = se hvilke Sony-kameraer som er tilkoblet og i hvilken modus
+plugin-invalid = Dette er ikke et brukbart programtillegg: { $reason }
+plugin-no-folder = Mappen for brukerdata kunne ikke fastslås, så programtillegg kan ikke installeres.
+plugin-not-installed = Ingen programtillegg med ID-en { $id } er installert.
+plugin-failed = Programtillegget mislyktes: { $reason }
+plugin-unknown-entry = Ingen innlastet programtillegg tilbyr { $id }.
+plugin-run-done = Programtillegget er ferdig.
+plugin-run-warning = Programtillegget er ferdig, med merknader.
+plugin-run-error = Programtillegget meldte en feil.
+plugin-tools-heading = Verktøy fra programtillegg
+plugin-tools-hint = Disse kommer fra installerte programtillegg og kjører i en sandkasse. Et programtillegg får bare det du gir det og det det har oppgitt, og kan ikke endre kameraet.
+plugin-diagnostics-heading = Diagnoser fra programtillegg
+plugin-compat-heading = Fra et programtillegg
+plugin-col-note = Merknad
+file-filter-plugin = Programtilleggsfil
+keys-not-set-up = Nøkkelmaterialet denne operasjonen trenger, er ikke satt opp.
+err-missing-keys = Nøkkelmaterialet denne operasjonen trenger, er ikke satt opp.
+keys-heading = Nøkkelmateriale kreves
+keys-intro = Servicemodus-nøklene, XPD-kontrollsumnøkkelen og SPK-nøkkelmaterialet er ikke en del av dette programmet. Oppgi adressen til en kilde du har — et repository, et arkiv eller en fil — og programmet finner og importerer delene det kjenner igjen. Ingenting kjøres, og materialet oppbevares bare på denne datamaskinen.
+keys-law-notice = Følg lovene som gjelder der du er, og arbeid bare med kameraer og data som er dine egne.
+keys-url-label = Kildeadresse (én per linje)
+keys-url-required = Oppgi minst én kildeadresse.
+btn-keys-import = Importer
+btn-import-keys = Sett opp nøkkelmateriale

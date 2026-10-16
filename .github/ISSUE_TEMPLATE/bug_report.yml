@@ -1,0 +1,49 @@
+name: Bug report
+description: Something does not work with your camera or the program.
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time. Please **do not post serial numbers** or key material;
+        replace a serial number with `XXXXXXXX` if it appears in a log.
+  - type: input
+    id: camera
+    attributes:
+      label: Camera model and firmware
+      placeholder: ILCE-7M3, firmware 3.01
+    validations:
+      required: true
+  - type: dropdown
+    id: os
+    attributes:
+      label: Operating system
+      options: [Windows 11, Windows 10, macOS, Linux]
+    validations:
+      required: true
+  - type: dropdown
+    id: frontend
+    attributes:
+      label: Used with
+      options: [Desktop app (pmca-gui), Command line (pmca-console)]
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Program version
+      placeholder: "1.0.0"
+    validations:
+      required: true
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened, and what did you expect?
+    validations:
+      required: true
+  - type: textarea
+    id: log
+    attributes:
+      label: Output or error message
+      description: For the command line, the full output of the failing command.
+      render: text

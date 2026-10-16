@@ -1,0 +1,1255 @@
+/*
+ * Fluent-inspired theme for the PMCA GUI, matching the UniGetUI aesthetic:
+ * translucent surfaces, an accent color, rounded corners, and full light/dark
+ * support driven by the `data-theme` attribute on <html>.
+ */
+
+:root {
+  --accent: #0067c0;
+  --radius: 8px;
+  --nav-width: 220px;
+  font-family: "Segoe UI Variable", "Segoe UI", system-ui, sans-serif;
+}
+
+/* Light theme (default) */
+html[data-theme="light"],
+html[data-theme="system"] {
+  --bg: #f3f3f3;
+  --surface: #ffffffcc;
+  --surface-solid: #ffffff;
+  --text: #1b1b1b;
+  --text-muted: #5c5c5c;
+  --border: #00000014;
+  --control: #f6f6f6;
+  --control-hover: #ededed;
+  --control-active: #e4e4e4;
+  --control-border: #00000026;
+  --success: #0f7b0f;
+  --danger: #c42b1c;
+  --warning: #b26b00;
+}
+
+/* Dark theme */
+html[data-theme="dark"] {
+  --bg: #202020;
+  --surface: #2b2b2bcc;
+  --surface-solid: #2b2b2b;
+  --text: #f5f5f5;
+  --text-muted: #b0b0b0;
+  --border: #ffffff14;
+  --control: #383838;
+  --control-hover: #414141;
+  --control-active: #323232;
+  --control-border: #ffffff1f;
+  --success: #6ccb5f;
+  --danger: #ff99a4;
+  /* The light-mode amber turns muddy and unreadable on a dark surface. */
+  --warning: #fce100;
+}
+
+@media (prefers-color-scheme: dark) {
+  html[data-theme="system"] {
+    --bg: #202020;
+    --surface: #2b2b2bcc;
+    --surface-solid: #2b2b2b;
+    --text: #f5f5f5;
+    --text-muted: #b0b0b0;
+    --border: #ffffff14;
+    --control: #383838;
+    --control-hover: #414141;
+    --control-active: #323232;
+    --control-border: #ffffff1f;
+    --success: #6ccb5f;
+    --danger: #ff99a4;
+    --warning: #fce100;
+  }
+}
+
+* { box-sizing: border-box; }
+
+/*
+ * `hidden` must hide, whatever else applies.
+ *
+ * The attribute only maps to the browser's own `display: none`, so any class
+ * that sets `display` — `.row`, `.field-label`, `.dropzone` — silently
+ * outranks it and the element stays on screen. The code toggles `hidden` and
+ * means it.
+ */
+[hidden] { display: none !important; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+}
+
+.app {
+  display: grid;
+  grid-template-columns: var(--nav-width) 1fr;
+  height: 100vh;
+}
+
+/* Left navigation rail */
+.nav-rail {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 12px 8px;
+  background: var(--surface);
+  backdrop-filter: blur(30px) saturate(150%);
+  border-inline-end: 1px solid var(--border);
+}
+
+.nav-title {
+  font-weight: 600;
+  padding: 8px 12px 16px;
+  font-size: 1.05rem;
+}
+
+.nav-item {
+  text-align: start;
+  padding: 10px 12px;
+  border: none;
+  border-radius: var(--radius);
+  background: transparent;
+  color: var(--text);
+  font: inherit;
+  cursor: pointer;
+}
+
+.nav-item:hover { background: var(--border); }
+
+.nav-item.active {
+  background: var(--surface-solid);
+  box-shadow: inset 3px 0 0 0 var(--accent);
+  font-weight: 600;
+}
+
+.nav-spacer { flex: 1; }
+
+.nav-version {
+  padding: 8px 12px 0;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  user-select: text;
+}
+
+/*
+ * Content area. `position: relative` makes it the containing block of the
+ * absolutely positioned screen-reader texts (`.visually-hidden`) in the device
+ * tables; without it they belong to the window, escape this scroller and give
+ * the whole window a second scrollbar into empty space.
+ */
+.content {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  padding: 24px 32px;
+  overflow: auto;
+}
+
+.content-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.content-header h1 { font-size: 1.4rem; margin: 0; }
+
+/* Header controls: language on the left, theme switch on the right. */
+.header-controls { display: flex; align-items: center; gap: 16px; }
+
+.lang-picker { display: flex; align-items: center; gap: 8px; color: var(--text-muted); }
+
+/*
+ * Whether the window runs with administrator rights. By id for the same reason
+ * as the theme switch below: the generic `.content button` rules come later.
+ * Filled in the accent colour when elevated, outlined and muted when not.
+ */
+#elevation-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  font: inherit;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  background: var(--control);
+  border: 1px solid var(--control-border);
+  border-radius: 999px;
+  cursor: pointer;
+}
+
+#elevation-badge:hover { color: var(--text); background: var(--control-hover); }
+
+#elevation-badge.admin,
+#elevation-badge.admin:hover {
+  color: #fff;
+  background: var(--accent);
+  border-color: transparent;
+  cursor: default;
+}
+
+#elevation-badge svg {
+  width: 14px;
+  height: 14px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.6;
+  stroke-linejoin: round;
+}
+
+/*
+ * Theme switch: three segments (system / light / dark) rather than a two-state
+ * toggle, because "follow the OS" is a distinct choice and a toggle cannot
+ * express it -- it would silently pin the theme the moment it is touched.
+ * Icon-only, so it needs no room for translated words; the label lives in the
+ * tooltip and the accessible name.
+ */
+.theme-switch {
+  display: flex;
+  gap: 2px;
+  padding: 2px;
+  border-radius: var(--radius);
+  border: 1px solid var(--control-border);
+  background: var(--control);
+}
+
+/* By id: the switch sits inside `.content`, whose generic button padding and
+   hover rules come later and would otherwise win and push the icon off-centre. */
+#theme-switch button {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 28px;
+  padding: 0;
+  border: 0;
+  border-radius: calc(var(--radius) - 3px);
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+}
+
+#theme-switch button:hover { background: var(--control-hover); color: var(--text); }
+
+#theme-switch button[aria-checked="true"] {
+  background: var(--accent);
+  color: #fff;
+}
+
+.theme-switch svg {
+  width: 16px;
+  height: 16px;
+  /* One stroke definition for all three glyphs keeps them optically equal. */
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+select {
+  padding: 8px 10px;
+  font: inherit;
+  border-radius: var(--radius);
+  border: 1px solid var(--control-border);
+  background: var(--control);
+  color: var(--text);
+  cursor: pointer;
+}
+
+.view {
+  margin-top: 20px;
+  flex: 1;
+}
+
+.card {
+  background: var(--surface-solid);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px;
+  margin-bottom: 16px;
+}
+
+/*
+ * Buttons.
+ *
+ * Every button inside the content area shares one geometry, so a row of them
+ * lines up regardless of role; only the fill distinguishes the card's accent
+ * action from its secondary controls. Scoping to `.content` keeps the nav-rail
+ * buttons on their own flat style without needing an override.
+ *
+ * Leaving secondary buttons unstyled would fall back to the platform default,
+ * which in a WebView is a grey 3D box that matches nothing else on screen.
+ */
+.content button {
+  padding: 10px 16px;
+  font: inherit;
+  color: var(--text);
+  background: var(--control);
+  border: 1px solid var(--control-border);
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: background-color 100ms ease, border-color 100ms ease;
+}
+
+.content button:not(.primary):not(:disabled):hover {
+  background: var(--control-hover);
+}
+
+.content button:not(.primary):not(:disabled):active {
+  color: var(--text-muted);
+  background: var(--control-active);
+}
+
+/* The accent action. One per card: the thing the card exists to do. */
+.content button.primary {
+  color: #fff;
+  background: var(--accent);
+  border-color: transparent;
+}
+
+.content button.primary:not(:disabled):hover {
+  background: color-mix(in srgb, var(--accent) 90%, #fff);
+}
+
+.content button.primary:not(:disabled):active {
+  color: #ffffffc0;
+  background: color-mix(in srgb, var(--accent) 85%, #000);
+}
+
+/* Keyboard focus must stay visible on the accent fill too, hence the offset
+   ring rather than a border colour change. */
+button:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+button:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+/* Horizontal group of related controls. */
+.row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+  margin-bottom: 12px;
+}
+
+.path-input {
+  width: 100%;
+  box-sizing: border-box;
+  margin: 6px 0 12px;
+  padding: 10px;
+  font: inherit;
+  color: var(--text);
+  background: var(--surface-solid);
+  border: 1px solid var(--control-border);
+  border-radius: var(--radius);
+}
+
+/* Paired with its buttons on one line: `width: 100%` would claim the whole row
+   and push them onto the next, so the field flexes instead and keeps a width
+   that still shows the tail of a long path. */
+.row > .path-input {
+  flex: 1;
+  min-width: 14rem;
+  margin: 0;
+}
+
+/*
+ * Verdict on an uploaded translation file.
+ *
+ * The list of refused lines is set in the monospaced face because it is read
+ * side by side with the file in a text editor: line numbers and message ids
+ * line up when the digits do, and the ids are identifiers rather than prose.
+ */
+.catalog-counts,
+.catalog-problems {
+  margin: 8px 0 0;
+  padding-inline-start: 1.25rem;
+  line-height: 1.7;
+}
+
+.catalog-problems {
+  font-family: ui-monospace, "Cascadia Mono", Consolas, monospace;
+  font-size: 0.9em;
+  color: var(--danger);
+}
+
+/*
+ * The licence, reproduced verbatim.
+ *
+ * `pre` keeps the original line breaks, which a legal text is entitled to; the
+ * box scrolls rather than growing so the sections below it stay reachable.
+ */
+.license-text {
+  max-height: 18rem;
+  margin: 8px 0 0;
+  padding: 12px;
+  overflow: auto;
+  font-family: ui-monospace, "Cascadia Mono", Consolas, monospace;
+  font-size: 0.85em;
+  line-height: 1.5;
+  white-space: pre-wrap;
+  background: var(--surface-solid);
+  border: 1px solid var(--control-border);
+  border-radius: var(--radius);
+}
+
+/*
+ * The disclosure that hides the several hundred dependency notices.
+ *
+ * Only the pointer and the accent are set; the triangle and the open/closed
+ * behaviour are the browser's, and they are already what a reader expects.
+ */
+summary {
+  cursor: pointer;
+  color: var(--accent);
+}
+
+/* A project, its address, and the button that copies the address. */
+.link-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 8px 0;
+}
+
+.link-row + .link-row {
+  border-top: 1px solid var(--control-border);
+}
+
+.link-row code {
+  font-size: 0.9em;
+  color: var(--text-muted);
+  user-select: all;
+}
+
+/*
+ * The service shell's transcript.
+ *
+ * Fixed height rather than growing: the session is a conversation, and a card
+ * that gets taller with every command would push its own prompt off the
+ * screen. Selectable, because a hex dump is worth copying out.
+ */
+.shell-output {
+  height: 20rem;
+  margin: 12px 0;
+  padding: 12px;
+  overflow: auto;
+  font-family: ui-monospace, "Cascadia Mono", Consolas, monospace;
+  font-size: 0.85em;
+  line-height: 1.45;
+  white-space: pre;
+  background: var(--surface-solid);
+  border: 1px solid var(--control-border);
+  border-radius: var(--radius);
+}
+
+/* The line as it was typed, so the transcript reads back as a session. */
+.shell-echo {
+  color: var(--text-muted);
+}
+
+.shell-error {
+  color: var(--danger);
+}
+
+.shell-input {
+  flex: 1;
+  font-family: ui-monospace, "Cascadia Mono", Consolas, monospace;
+}
+
+/*
+ * A label that introduces the control on the line below it.
+ *
+ * Most path fields are `width: 100%` and so break the line by themselves; a
+ * `<select>` and a field inside a `.row` do not, which left the label, the
+ * picker and the next label sharing one line with nothing between them.
+ */
+.field-label {
+  display: block;
+  margin-bottom: 6px;
+}
+
+/* The picker a `.field-label` introduces; `.path-input` brings its own gap. */
+.field-select {
+  margin-bottom: 16px;
+}
+
+/*
+ * The folded-away explanation of a shell.
+ *
+ * It scrolls rather than grows, so opening it cannot push the shell it
+ * describes off the screen — the point of reading it is to then go and use the
+ * thing above it.
+ */
+.primer {
+  max-height: 24rem;
+  margin-top: 16px;
+  padding: 4px 16px 4px 0;
+  overflow-y: auto;
+}
+
+.primer h3:first-child {
+  margin-top: 0;
+}
+
+/*
+ * The command reference.
+ *
+ * The syntax is set in the monospaced face because it is text to be typed
+ * literally, and indenting the explanation under it keeps the two apart
+ * without a table's alignment problems in languages that need more words.
+ */
+.primer-commands dt {
+  margin-top: 10px;
+  font-family: ui-monospace, "Cascadia Mono", Consolas, monospace;
+  font-size: 0.85em;
+}
+
+.primer-commands dd {
+  margin: 2px 0 0;
+  color: var(--text-muted);
+}
+
+/*
+ * Result / progress line shared by every view.
+ *
+ * One paragraph per card reports, in turn, that work has started, how far it
+ * got and how it ended. Which of those it currently shows lives in
+ * `data-state`, so the icon, the colour and the progress bar are all derived
+ * from a single attribute and cannot drift apart.
+ *
+ * Both indicators are pseudo-elements rather than real nodes because the text
+ * is written with `textContent`, which would delete any child on the next
+ * message. `flex-wrap` plus a full-width bar puts the bar on its own line.
+ */
+.status {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px 8px;
+  min-height: 1.2em;
+  margin: 8px 0;
+  color: var(--text-muted);
+}
+
+.status[data-state="ok"] {
+  color: var(--text);
+}
+
+.status[data-state="error"] {
+  color: var(--danger);
+}
+
+/* State icon. The three rules are mutually exclusive, so `busy` can use the
+   same pseudo-element for a spinner that the others use for a glyph. */
+.status[data-state]::before {
+  flex: none;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.status[data-state="ok"]::before {
+  content: "\2713";
+  color: var(--success);
+}
+
+.status[data-state="error"]::before {
+  content: "\2715";
+  color: var(--danger);
+}
+
+.status[data-state="busy"]::before {
+  content: "";
+  width: 12px;
+  height: 12px;
+  border: 2px solid color-mix(in srgb, var(--accent) 25%, transparent);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: pmca-spin 800ms linear infinite;
+}
+
+/*
+ * Progress bar, shown only while something is running.
+ *
+ * A known percentage fills the bar; an unknown one sweeps a highlight across
+ * it. The distinction matters: an operation that cannot report a percentage
+ * must not look like one that is stuck at 0 %.
+ */
+.status[data-state="busy"]::after {
+  content: "";
+  flex: none;
+  width: 100%;
+  height: 4px;
+  border-radius: 999px;
+  background-color: var(--control-active);
+  background-image: linear-gradient(90deg, transparent, var(--accent), transparent);
+  background-repeat: no-repeat;
+  background-size: 40% 100%;
+  animation: pmca-indeterminate 1.4s ease-in-out infinite;
+}
+
+.status[data-state="busy"][data-progress]::after {
+  background-image: linear-gradient(var(--accent), var(--accent));
+  background-size: var(--progress, 0%) 100%;
+  background-position: 0 0;
+  animation: none;
+  transition: background-size 150ms ease-out;
+}
+
+@keyframes pmca-spin {
+  to { transform: rotate(1turn); }
+}
+
+@keyframes pmca-indeterminate {
+  from { background-position: -60% 0; }
+  to { background-position: 160% 0; }
+}
+
+/* Motion here is decoration: the text says the same thing without it. */
+@media (prefers-reduced-motion: reduce) {
+  .status[data-state="busy"]::before,
+  .status[data-state="busy"]::after {
+    animation: none;
+  }
+
+  .status[data-state="busy"][data-progress]::after {
+    transition: none;
+  }
+}
+
+/*
+ * The action offered below a failure the user can resolve from here.
+ *
+ * Indented against the status line above it so it reads as belonging to that
+ * message rather than to the card as a whole.
+ */
+.recovery {
+  margin: 0 0 8px;
+  padding: 10px 12px;
+  background: color-mix(in srgb, var(--danger) 8%, transparent);
+  border-inline-start: 3px solid var(--danger);
+  border-radius: var(--radius);
+}
+
+.recovery .hint {
+  margin: 8px 0 0;
+  font-size: 0.9em;
+  color: var(--text-muted);
+}
+
+.warning {
+  color: var(--warning);
+}
+
+/* Standing notice inside a card, e.g. that a remote service is retired. */
+.notice-block {
+  margin: 0 0 14px;
+  padding: 10px 12px;
+  color: var(--warning);
+  background: color-mix(in srgb, var(--warning) 10%, transparent);
+  border-inline-start: 3px solid var(--warning);
+  border-radius: var(--radius);
+}
+
+.notice-block p {
+  margin: 0;
+}
+
+.notice-block p + p {
+  margin-top: 6px;
+}
+
+/* The key-material import: a status list of the three classes, and a URL box. */
+.key-status {
+  margin: 0 0 12px;
+}
+
+.key-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 4px 0;
+  border-bottom: 1px solid var(--control-border);
+}
+
+.key-present {
+  color: var(--ok, #2e7d32);
+  font-weight: 600;
+}
+
+.key-missing {
+  color: var(--danger);
+  font-weight: 600;
+}
+
+.key-urls {
+  font-family: ui-monospace, "Cascadia Code", Consolas, monospace;
+  resize: vertical;
+}
+
+/* Installed plugins on the settings page: one block per plugin. */
+.plugin-row {
+  padding: 8px 0;
+  border-bottom: 1px solid var(--control-border);
+}
+
+.plugin-row .row {
+  align-items: baseline;
+}
+
+.plugin-row p,
+.plugin-row ul {
+  margin: 4px 0;
+}
+
+.plugin-row .row button {
+  margin-inline-start: auto;
+}
+
+.plugin-list .error-text {
+  color: var(--danger);
+}
+
+.plugin-list {
+  margin-bottom: 16px;
+}
+
+/* A notice raised by the running operation, shown under its status line. */
+.status-notice {
+  margin: 8px 0 0;
+}
+
+/* Target for dragging a file onto the window. */
+.dropzone {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 12px;
+  padding: 18px 12px;
+  text-align: center;
+  color: var(--text-muted);
+  border: 1px dashed var(--border);
+  border-radius: var(--radius);
+  transition: border-color 120ms ease, color 120ms ease;
+}
+
+.dropzone.active {
+  color: var(--accent);
+  border-color: var(--accent);
+  border-style: solid;
+}
+
+/*
+ * A drop target that is also the field: it shows the hint while empty and the
+ * chosen path once there is one, with its two buttons at the end of the line.
+ * Wrapping keeps the buttons reachable when a long path claims the width.
+ */
+.dropzone.file-picker {
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 8px 12px;
+  padding: 12px;
+  text-align: start;
+}
+
+.file-picker-hint,
+.file-picker-path {
+  flex: 1 1 16rem;
+  min-width: 0;
+}
+
+/* The whole path, since the name alone does not tell two files apart. */
+.file-picker-path {
+  color: var(--text);
+  font-family: ui-monospace, "Cascadia Mono", Consolas, monospace;
+  font-size: 0.9em;
+  word-break: break-all;
+  user-select: text;
+}
+
+.file-picker-actions {
+  display: flex;
+  gap: 8px;
+}
+
+/*
+ * The GPS card's drop target holds a path field of its own. Leaving the field
+ * empty is the usual answer there, so it stays typeable. Hint and field share
+ * one line, as the hint and buttons of the .apk picker do, so both boxes end
+ * up the same height.
+ */
+.gps-picker-field {
+  display: flex;
+  flex: 0 1 24rem;
+  gap: 8px;
+  align-items: center;
+}
+
+.gps-picker-field > .path-input {
+  flex: 1;
+  min-width: 8rem;
+  margin: 0;
+}
+
+.gps-devices {
+  margin-top: 12px;
+}
+
+.gps-devices h3 {
+  margin: 16px 0 6px;
+}
+
+/*
+ * The device tables are stacked one per group and read as one list, so their
+ * columns must line up. A fixed layout with the same share per column makes
+ * every table split its width identically, whatever its contents.
+ */
+.device-table {
+  width: 100%;
+  table-layout: fixed;
+  border-collapse: collapse;
+}
+
+.device-table th:nth-child(1) { width: 20%; }
+.device-table th:nth-child(2) { width: 20%; }
+.device-table th:nth-child(3) { width: 18%; }
+.device-table th:nth-child(4) { width: 20%; }
+.device-table th:nth-child(5) { width: 22%; }
+
+/*
+ * The two compatibility lists share their first five columns; the second adds
+ * a sixth. Their shares are of the full width (18/16/16/16/16/18), so the
+ * five-column table is 82% wide and scales its shares to match.
+ */
+.device-table.compat { width: 82%; }
+.device-table.compat th:nth-child(1) { width: 21.95%; }
+.device-table.compat th:nth-child(n + 2) { width: 19.51%; }
+
+.device-table.more th:nth-child(1),
+.device-table.more th:nth-child(6) { width: 18%; }
+.device-table.more th:nth-child(n + 2):nth-child(-n + 5) { width: 16%; }
+
+.device-table th,
+.device-table td {
+  padding: 4px 8px;
+  text-align: start;
+  overflow-wrap: anywhere;
+  border-bottom: 1px solid var(--border);
+}
+
+.device-table thead th {
+  color: var(--text-muted);
+  font-weight: 600;
+}
+
+.device-table tbody th {
+  font-weight: normal;
+}
+
+.mark.yes {
+  color: var(--success);
+}
+
+.mark.no {
+  color: var(--danger);
+}
+
+.mark.unknown {
+  color: var(--text-muted);
+  font-weight: 600;
+}
+
+/* The app-platform version beside a tick. */
+.mark-detail {
+  color: var(--text-muted);
+}
+
+/* Read by screen readers, not shown. */
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* A URL shown for copying, since the webview cannot open external links. */
+.doc-url {
+  margin: 0 0 12px;
+  font-family: ui-monospace, "Cascadia Mono", Consolas, monospace;
+  font-size: 12px;
+  word-break: break-all;
+  user-select: text;
+}
+
+/* `label: value` grid used for camera and device details. */
+.fields {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: 6px 16px;
+  margin: 8px 0 0;
+}
+
+.fields dt {
+  color: var(--text-muted);
+}
+
+.fields dd {
+  margin: 0;
+}
+
+/* The welcome page's map of the navigation rail.
+ *
+ * A field label names a value the eye has already found; here the term *is*
+ * what the eye is scanning for, so it is neither muted nor lighter than the
+ * sentence beside it. The rest of the `.fields` geometry still applies. */
+.welcome-map dt {
+  color: var(--text);
+  font-weight: 600;
+}
+
+/* The read-only camera values sit directly above the tweak list. Without a gap
+   the last value and the first checkbox read as one continuous list, so the
+   block that holds them keeps a margin below itself. The `:not(:empty)` guard
+   is what makes that safe: before a camera has been read the block has no
+   children, and the margin would otherwise open a hole under the buttons. */
+.tweak-identity:not(:empty) {
+  margin-bottom: 16px;
+}
+
+/* Scrollable list of store apps or firmware models. */
+.app-list {
+  display: flex;
+  flex-direction: column;
+  max-height: 320px;
+  overflow-y: auto;
+}
+
+/*
+ * Community store: one row per app with a status of its own, so a batch shows
+ * at a glance what is done, what is running and what is still waiting. The
+ * header stays in view while the list scrolls.
+ */
+.store-list {
+  max-height: 420px;
+  overflow-y: auto;
+}
+
+.store-table {
+  width: 100%;
+  table-layout: fixed;
+  border-collapse: collapse;
+}
+
+.store-table th:nth-child(1) { width: 2.5rem; }
+.store-table th:nth-child(2) { width: 26%; }
+.store-table th:nth-child(3) { width: 11%; }
+.store-table th:nth-child(4) { width: 16%; }
+.store-table th:nth-child(5) { width: 14%; }
+
+.store-table th,
+.store-table td {
+  padding: 6px 8px;
+  text-align: start;
+  vertical-align: middle;
+  overflow-wrap: anywhere;
+  border-bottom: 1px solid var(--border);
+}
+
+.store-table thead th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  color: var(--text-muted);
+  font-weight: 600;
+  background: var(--surface-solid);
+}
+
+.store-table tbody th {
+  font-weight: normal;
+}
+
+.store-table label {
+  cursor: pointer;
+}
+
+.store-table input[type="checkbox"] {
+  margin: 0;
+}
+
+.store-table tr.unavailable {
+  color: var(--text-muted);
+}
+
+.store-table tr.unavailable label {
+  cursor: default;
+}
+
+/* The status line of one row: compact, but with the same icons and bar. */
+.row-status {
+  margin: 0;
+  font-size: 0.9em;
+}
+
+.status[data-state="queued"]::before {
+  content: "\25CB";
+  color: var(--text-muted);
+}
+
+.status[data-state="skipped"]::before {
+  content: "\21B7";
+  color: var(--text-muted);
+}
+
+.status[data-state="idle"]::before {
+  content: "\2013";
+  color: var(--text-muted);
+}
+
+.app-entry {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 8px 4px;
+  border-bottom: 1px solid var(--border);
+}
+
+.app-entry .price {
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+/* Tweak rows are labels wrapping a checkbox, so the text must not be squeezed
+   out by the trailing value column. */
+label.app-entry {
+  align-items: center;
+  cursor: pointer;
+}
+
+label.app-entry span:first-of-type {
+  flex: 1;
+}
+
+label.app-entry input[type="checkbox"] {
+  flex: none;
+  margin: 0;
+}
+
+/* A tweak that needs the user's consent unfolds its warning under its own row.
+   The indent and the missing border tie it to the entry above rather than
+   letting it read as a list item of its own, and its checkbox has no trailing
+   value column, so the text is free to wrap across the full width. */
+.tweak-caution {
+  padding-left: 24px;
+  border-bottom: 1px solid var(--border);
+}
+
+.tweak-caution .warning {
+  margin: 4px 0;
+}
+
+.tweak-caution .app-entry {
+  align-items: flex-start;
+  border-bottom: none;
+}
+
+/* A setting that is a choice rather than a switch puts its alternatives where
+   the value column of the other rows sits, so the eye still finds the current
+   state at the right edge. Each alternative carries its own label, which is
+   why this is a span of labels and not one label around the whole row. */
+.tweak-choice {
+  display: flex;
+  gap: 16px;
+  color: var(--muted);
+}
+
+.tweak-choice label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+}
+
+/* A note is not a warning: nothing here is refused or gated, the user is only
+   being told what the camera will ask for afterwards. It therefore keeps the
+   muted colour of ordinary secondary text instead of the warning colour, which
+   is reserved for the decisions that actually need one. Indented like the
+   caution block so it reads as belonging to the row above. */
+.tweak-note {
+  margin: 4px 0;
+  padding: 0 4px 8px 24px;
+  color: var(--text-muted);
+}
+
+/* A tweak with a note or a caution is several elements that are one item. The
+   row's own separator has to go, or the extra text would appear below the line
+   and read as an introduction to the *next* tweak; the group's last child
+   carries the separator instead. */
+.tweak-row > .app-entry {
+  border-bottom: none;
+}
+
+.tweak-row > :last-child {
+  border-bottom: 1px solid var(--border);
+}
+
+/*
+ * Function analysis. Every step carries a badge saying what it does to the
+ * camera, so reading and writing can be told apart without reading the text;
+ * writing is the only one in the danger colour.
+ */
+.access-badge {
+  display: inline-block;
+  flex: none;
+  min-width: 7.5em;
+  padding: 1px 6px;
+  font-size: 0.75em;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-align: center;
+  border: 1px solid currentColor;
+  border-radius: 4px;
+}
+
+.access-read { color: var(--accent); }
+.access-user,
+.access-local { color: var(--text-muted); }
+
+.access-write {
+  color: var(--danger);
+  background: color-mix(in srgb, var(--danger) 12%, transparent);
+}
+
+/* A camera-changing button with its write badge in front of it. */
+.write-action {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.write-action .access-badge {
+  min-width: 0;
+}
+
+.write-action:has(> button[hidden]) {
+  display: none;
+}
+
+.analysis-plan {
+  margin: 0 0 14px;
+  padding: 0;
+  list-style: none;
+}
+
+.analysis-plan li {
+  display: flex;
+  gap: 10px;
+  align-items: baseline;
+  padding: 3px 0;
+}
+
+.analysis-plan li.done { opacity: 0.55; }
+.analysis-plan li.current { font-weight: 600; }
+
+.analysis-text { white-space: pre-line; }
+
+/* Instructions for the user; multi-line text from the catalogue. */
+.analysis-box {
+  margin: 0 0 12px;
+  padding: 12px 14px;
+  white-space: pre-line;
+  background: color-mix(in srgb, var(--accent) 8%, transparent);
+  border-inline-start: 3px solid var(--accent);
+  border-radius: var(--radius);
+}
+
+.analysis-box.write {
+  background: color-mix(in srgb, var(--danger) 8%, transparent);
+  border-inline-start-color: var(--danger);
+}
+
+.analysis-table {
+  margin: 2px 0 14px;
+  border-collapse: collapse;
+}
+
+.analysis-caption {
+  font-weight: 600;
+}
+
+.analysis-info > summary {
+  cursor: pointer;
+  color: var(--text-muted);
+}
+
+.analysis-info[open] > summary {
+  margin-bottom: 8px;
+}
+
+.analysis-table th,
+.analysis-table td {
+  padding: 2px 16px 2px 0;
+  font-weight: normal;
+  text-align: start;
+}
+
+.analysis-table .mono {
+  font-family: ui-monospace, "Cascadia Mono", Consolas, monospace;
+}
+
+.consent-dialog {
+  max-width: 34rem;
+  padding: 20px 24px;
+  color: var(--text);
+  background: var(--surface-solid);
+  border: 1px solid var(--control-border);
+  border-radius: var(--radius);
+}
+
+.consent-dialog::backdrop {
+  background: #0008;
+}
+
+/* Wi-Fi rows pair two free-text fields with their buttons; the text fields
+   share the available width instead of collapsing to their default size, and
+   match the button height so the row does not look ragged. */
+.app-entry input[type="text"],
+.app-entry input[type="password"] {
+  flex: 1;
+  min-width: 0;
+  padding: 10px;
+  font: inherit;
+  color: var(--text);
+  background: var(--surface-solid);
+  border: 1px solid var(--control-border);
+  border-radius: var(--radius);
+}
+
+/* Raw settings editor used by the live-streaming card. */
+.json-editor {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 8px 10px;
+  font-family: ui-monospace, "Cascadia Mono", Consolas, monospace;
+  font-size: 0.9em;
+  color: var(--text);
+  background: var(--surface-solid);
+  border: 1px solid var(--control-border);
+  border-radius: var(--radius);
+  resize: vertical;
+}
+
+.notice {
+  color: var(--text-muted);
+  font-size: 0.85rem;
+  padding-top: 16px;
+}

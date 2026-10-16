@@ -1,0 +1,66 @@
+[package]
+name = "pmca-usb"
+description = "USB transport abstraction (MSC/MTP/vendor-specific) for PMCA-RE RELOADED."
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+
+[dependencies]
+pmca-core = { path = "../pmca-core" }
+sha2.workspace = true
+thiserror.workspace = true
+
+# Real hardware backend. `nusb` is pure-Rust and cross-platform. It is optional
+# so the crate (and its hardware-independent tests) can build without any USB
+# system libraries present.
+nusb = { version = "0.2", optional = true }
+
+# Windows Portable Devices transport. Cameras in MTP and application-install
+# mode are bound to the in-box `WUDFWpdMtp` driver, which denies raw endpoint
+# access; WPD reaches them through supported COM interfaces instead, so no
+# driver replacement is needed.
+[target.'cfg(windows)'.dependencies]
+windows = { version = "0.62", optional = true, features = [
+    "Win32_Devices_DeviceAndDriverInstallation",
+    "Win32_Devices_PortableDevices",
+    "Win32_Foundation",
+    "Win32_Security",
+    "Win32_Security_Authorization",
+    "Win32_Security_Cryptography",
+    "Win32_Security_Cryptography_Catalog",
+    "Win32_Security_Cryptography_Sip",
+    "Win32_Storage_FileSystem",
+    "Win32_System_Com",
+    "Win32_System_Com_StructuredStorage",
+    "Win32_System_IO",
+    "Win32_System_Pipes",
+    "Win32_System_Registry",
+    "Win32_System_Services",
+    "Win32_System_Threading",
+    "Win32_System_Time",
+    "Win32_System_Variant",
+    "Win32_UI_Shell",
+    "Win32_UI_WindowsAndMessaging",
+] }
+
+[features]
+# Enabled by default for real use; disable (e.g. `--no-default-features`) to
+# build/test only the hardware-independent logic and the in-memory mock.
+default = ["hardware"]
+hardware = ["dep:nusb", "dep:windows"]
+
+[dev-dependencies]
+# Lets the senser tests stand in fabricated service-mode keys.
+pmca-core = { path = "../pmca-core", features = ["test-keys"] }
+
+# The probe talks to a camera, so it needs the hardware backend. Declaring that
+# here keeps `--all-targets --no-default-features` building: without it Cargo
+# tries to compile the example against a crate that has no `discovery` module.
+[[example]]
+name = "probe_extcmd"
+required-features = ["hardware"]
+
+[[example]]
+name = "probe_appinstall"
+required-features = ["hardware"]

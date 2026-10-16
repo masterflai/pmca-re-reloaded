@@ -1,0 +1,23 @@
+[package]
+name = "pmca-cli"
+description = "Command-line front-end for PMCA-RE RELOADED."
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+
+[[bin]]
+name = "pmca-console"
+path = "src/main.rs"
+
+[dependencies]
+pmca-i18n = { path = "../pmca-i18n" }
+pmca-usb = { path = "../pmca-usb" }
+pmca-market = { path = "../pmca-market" }
+pmca-app = { path = "../pmca-app" }
+clap.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+
+[build-dependencies]
+winresource = { version = "0.1.34", default-features = false }

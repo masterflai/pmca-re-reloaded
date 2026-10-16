@@ -1,0 +1,10 @@
+# The same version that `rust-version` in Cargo.toml names, so that an older
+# installation fails with a sentence about this project instead of with syntax
+# errors from a dependency. rustup installs it on the first cargo call.
+#
+# CI deliberately looks past this file: its jobs set RUSTUP_TOOLCHAIN, which
+# takes precedence, so `stable` keeps being tested and the MSRV job keeps
+# meaning something.
+[toolchain]
+channel = "1.90"
+components = ["rustfmt", "clippy"]

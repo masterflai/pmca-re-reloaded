@@ -1,0 +1,283 @@
+name: CI
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+  workflow_dispatch:
+
+env:
+  CARGO_TERM_COLOR: always
+  RUSTFLAGS: -D warnings
+  # rust-toolchain.toml pins contributors to the MSRV; it would also pin CI,
+  # which is the opposite of what these jobs are for. RUSTUP_TOOLCHAIN outranks
+  # the file, so `stable` stays `stable`. The MSRV job overrides it below.
+  RUSTUP_TOOLCHAIN: stable
+
+# The workflow only needs to read the repository; no token write scope.
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  lint:
+    name: Format & Clippy
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt, clippy
+
+      - uses: Swatinem/rust-cache@v2
+
+      - name: Install libudev (required by nusb on Linux)
+        run: sudo apt-get update && sudo apt-get install -y libudev-dev
+
+      - name: cargo fmt
+        run: cargo fmt --all --check
+
+      - name: cargo clippy
+        run: cargo clippy --workspace --all-targets -- -D warnings
+
+  test:
+    name: Test (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+
+      - uses: Swatinem/rust-cache@v2
+
+      - name: Install libudev (required by nusb on Linux)
+        if: runner.os == 'Linux'
+        run: sudo apt-get update && sudo apt-get install -y libudev-dev
+
+      - name: cargo test
+        run: cargo test --workspace --all-targets
+
+      # The tests regenerate the window's TypeScript bindings (ts-rs). A Rust
+      # DTO changed without committing the regenerated file fails here.
+      - name: TypeScript bindings are up to date
+        if: runner.os == 'Linux'
+        run: |
+          git add -N crates/pmca-gui/src/bindings
+          git diff --exit-code -- crates/pmca-gui/src/bindings
+
+      - name: cargo test (doc tests)
+        run: cargo test --workspace --doc
+
+  no-hardware:
+    name: Hardware-free build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+
+      - uses: Swatinem/rust-cache@v2
+
+      # Proves that the protocol/logic layers compile and pass their tests
+      # without the `nusb` backend, i.e. on targets with no USB access.
+      - name: cargo test --no-default-features
+        run: cargo test -p pmca-usb --no-default-features
+
+  msrv:
+    name: MSRV (1.90)
+    runs-on: ubuntu-latest
+    env:
+      RUSTUP_TOOLCHAIN: 1.90.0
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Rust 1.90
+        uses: dtolnay/rust-toolchain@1.90.0
+
+      - uses: Swatinem/rust-cache@v2
+
+      - name: Install libudev (required by nusb on Linux)
+        run: sudo apt-get update && sudo apt-get install -y libudev-dev
+
+      - name: cargo check
+        run: cargo check --workspace --all-targets
+
+  audit:
+    name: Security audit
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Install cargo-audit
+        run: cargo install cargo-audit --locked
+
+      - name: cargo audit
+        run: cargo audit --deny warnings
+
+      # The Tauri shell is a separate workspace with its own lock file, and its
+      # dependencies ship in the installers just the same. Both ignored IDs come
+      # from Tauri's Linux-only gtk3 stack (glib 0.18, proc-macro-error via
+      # glib-macros) and have no fix while Tauri 2 targets gtk3.
+      - name: cargo audit (src-tauri)
+        run: >
+          cargo audit --deny warnings
+          --file crates/pmca-gui/src-tauri/Cargo.lock
+          --ignore RUSTSEC-2024-0429
+          --ignore RUSTSEC-2024-0370
+
+      # The frontend's npm packages build the bundle that ships in every
+      # installer, so a known vulnerability there matters as much as one in a
+      # crate. Only the lock file is read; nothing is installed.
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: npm audit
+        working-directory: crates/pmca-gui
+        run: npm audit --audit-level=high
+  secrets:
+    name: Secret scan
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # gitleaks walks the commit history, and the default shallow clone
+          # would hide exactly the interesting case: a credential committed
+          # once and deleted in the next commit is still in the history, and
+          # still compromised. A scan of the working tree alone cannot see it.
+          fetch-depth: 0
+
+      # Pinned to a version and a checksum rather than a floating action. A
+      # secret scanner runs over every line of the repository, so the one thing
+      # it must not be is a binary that changes under us between runs.
+      - name: Install gitleaks
+        env:
+          GITLEAKS_VERSION: 8.30.1
+          GITLEAKS_SHA256: 551f6fc83ea457d62a0d98237cbad105af8d557003051f41f3e7ca7b3f2470eb
+        run: |
+          set -euo pipefail
+          url="https://github.com/gitleaks/gitleaks/releases/download/v${GITLEAKS_VERSION}/gitleaks_${GITLEAKS_VERSION}_linux_x64.tar.gz"
+          curl -fsSL "$url" -o gitleaks.tar.gz
+          echo "${GITLEAKS_SHA256}  gitleaks.tar.gz" | sha256sum --check --strict
+          tar -xzf gitleaks.tar.gz gitleaks
+          sudo install -m 0755 gitleaks /usr/local/bin/gitleaks
+          gitleaks version
+
+      # --redact matters on a public repository: without it a genuine finding
+      # is printed verbatim into a world-readable build log, which turns the
+      # alarm into a second disclosure.
+      #
+      # `git`, not the `detect` seen in most examples online: that subcommand
+      # was removed in gitleaks 8.19 and split into `git`, `dir` and `stdin`.
+      # A workflow copied from an older tutorial fails here with "unknown
+      # command" and looks like a broken scan rather than a broken invocation.
+      - name: gitleaks
+        run: gitleaks git . --config .gitleaks.toml --redact --verbose
+
+  licenses:
+    name: Licences & attribution
+    # windows-latest, not ubuntu: the generator resolves the second workspace
+    # with a backslash path and is written for PowerShell. Running it on the
+    # same platform the checked-in file was generated on also removes any
+    # chance of a platform-dependent difference showing up as a false failure.
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+
+      - uses: Swatinem/rust-cache@v2
+
+      - name: Install cargo-deny
+        run: cargo install cargo-deny --locked
+
+      # Both workspaces, because the Tauri shell pulls in packages the CLI does
+      # not and its dependencies ship in the installers just the same.
+      - name: cargo deny (workspace)
+        run: cargo deny check licenses bans sources
+
+      - name: cargo deny (src-tauri)
+        run: >
+          cargo deny --manifest-path crates/pmca-gui/src-tauri/Cargo.toml
+          --config deny.toml check licenses bans sources
+
+      # The check that actually keeps the attribution honest: regenerate and
+      # compare. A dependency added without re-running the generator fails
+      # here, which is the failure mode a licence allow-list cannot see.
+      - name: THIRD-PARTY.md is up to date
+        shell: pwsh
+        run: |
+          $fresh = Join-Path $env:RUNNER_TEMP 'THIRD-PARTY.md'
+          ./tools/gen-third-party.ps1 -OutFile $fresh
+          # The generation date is the one line that is expected to differ.
+          $filter = { $_ -notmatch '^Generated: ' }
+          $old = Get-Content -LiteralPath THIRD-PARTY.md | Where-Object $filter
+          $new = Get-Content -LiteralPath $fresh | Where-Object $filter
+          $diff = Compare-Object -ReferenceObject $old -DifferenceObject $new
+          if ($diff) {
+            Write-Host '::error::THIRD-PARTY.md is stale. Run tools/gen-third-party.ps1 and commit the result.'
+            $diff | Select-Object -First 40 |
+              ForEach-Object { '{0} {1}' -f $_.SideIndicator, $_.InputObject }
+            exit 1
+          }
+          Write-Host 'THIRD-PARTY.md matches the current dependency graph.'
+
+  gui:
+    name: GUI (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt, clippy
+
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: crates/pmca-gui/src-tauri -> ../../../target
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install Tauri system dependencies
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libwebkit2gtk-4.1-dev libappindicator3-dev \
+            librsvg2-dev patchelf libudev-dev
+
+      - name: Build frontend
+        working-directory: crates/pmca-gui
+        run: |
+          npm ci
+          npm run build
+
+      # No bundle here — packaging belongs to the release workflow. This job
+      # exists so that a macOS-only or Windows-only compile error surfaces on
+      # the commit that caused it instead of at release time.
+      - name: cargo check (src-tauri)
+        working-directory: crates/pmca-gui/src-tauri
+        run: |
+          cargo fmt --all --check
+          cargo clippy --all-targets -- -D warnings

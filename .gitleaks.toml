@@ -1,0 +1,50 @@
+# gitleaks configuration.
+#
+# Reviewed findings are declared here, with the reasoning, so a scan finding
+# them can be closed as reviewed instead of investigated again by the next
+# person. There are none at present: the PlayMemories CDN credentials that used
+# to be listed here went away together with the client for Sony's shut-down
+# store.
+#
+# Note the double brackets on `[[allowlists]]`. That is the current form and it
+# composes: several blocks may sit side by side, each with its own description.
+# Singular `[allowlist]`, which most tutorials still show, is one object that a
+# later edit can only overwrite.
+#
+# Redefining a built-in rule to hang an allowlist off it is the tempting
+# alternative and is a trap: a `[[rules]]` block whose id matches a default
+# rule replaces that rule, which disables the check instead of narrowing it.
+#
+# Verified against gitleaks 8.30.1 rather than assumed. With this file the scan
+# reports exactly what a default scan reports — nothing here suppresses a real
+# finding — and adding a known token to a `regexes` list in the allowlist below
+# does make that token disappear from the report, so the mechanism is live
+# rather than decorative.
+
+[extend]
+# Keep every default rule. This file subtracts specific known findings, nothing
+# else.
+useDefault = true
+
+[[allowlists]]
+description = "Build output and vendored dependency sources."
+
+paths = [
+  # Build artefacts and vendored dependency sources. Both are ignored by git,
+  # so a history scan never reaches them; these two lines only matter if
+  # somebody runs `gitleaks dir .` by hand, where they save several minutes.
+  #
+  # Deliberately no source files here. Exempting a path exempts everything that
+  # will ever be written into it, and a scanner that is quiet about
+  # crates/pmca-core/src/spk.rs is no use on the day a real key is pasted into
+  # crates/pmca-core/src/spk.rs. Checked with gitleaks 8.30.1: neither that
+  # file's public RSA modulus nor the runtime key generator in
+  # crates/pmca-market/src/tls10/selfsigned.rs produces a finding, so there was
+  # nothing to exempt and no reason to accept the blind spot.
+  #
+  # `target` is matched at any depth: the GUI backend is its own workspace
+  # with its own crates/pmca-gui/src-tauri/target, and either separator is
+  # accepted because `gitleaks dir` reports Windows paths with backslashes.
+  '''(^|[\\/])target[\\/]''',
+  '''node_modules[\\/]''',
+]

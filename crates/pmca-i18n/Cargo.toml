@@ -1,0 +1,16 @@
+[package]
+name = "pmca-i18n"
+description = "Fluent-based localization loader with standalone per-language files."
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+
+[dependencies]
+fluent.workspace = true
+fluent-langneg.workspace = true
+unic-langid.workspace = true
+rust-embed.workspace = true
+# The catalogue validation report crosses the GUI's IPC boundary, so it is
+# serialized here rather than restated in a second set of structs there.
+serde.workspace = true

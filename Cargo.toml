@@ -1,0 +1,76 @@
+# Rust workspace for PMCA-RE RELOADED, a modernized continuation of
+# ma1co/Sony-PMCA-RE.
+#
+# The workspace is split into focused crates so that the security-critical,
+# hardware-independent logic (crypto + binary parsers) lives in `pmca-core`
+# and can be unit-tested without any camera attached. ARCHITECTURE.md gives
+# the overview.
+[workspace]
+resolver = "3"
+members = [
+    "crates/pmca-core",
+    "crates/pmca-i18n",
+    "crates/pmca-apk",
+    "crates/pmca-usb",
+    "crates/pmca-market",
+    "crates/pmca-platform",
+    "crates/pmca-app",
+    "crates/pmca-cli",
+    "crates/pmca-plugin-sdk",
+]
+# Fuzz targets need nightly and libFuzzer; they live in their own workspace so
+# the normal build never touches them. See fuzz/README.md.
+exclude = ["fuzz"]
+
+[workspace.package]
+version = "1.0.0"
+edition = "2024"
+# Dictated by the dependency tree rather than by this code: Tauri 2.12 in the
+# GUI requires 1.90, and both workspaces are kept on the same toolchain. Here
+# alone, `zip` 8 would need 1.88 and RustCrypto 0.11, `ureq` 3 and `nusb` 0.2
+# 1.85.
+rust-version = "1.90"
+license = "MIT"
+repository = "https://github.com/masterflai/pmca-re-reloaded"
+
+[workspace.dependencies]
+thiserror = "2"
+num-bigint = "0.5"
+aes = "0.9"
+# cbc 0.2 is the release that pairs with cipher 0.5 / aes 0.9.
+cbc = "0.2"
+cipher = "0.5"
+hmac = "0.13"
+sha2 = "0.11"
+sha1 = "0.11"
+md-5 = "0.11"
+getrandom = "0.4"
+fluent = "0.17"
+# fluent-langneg stays on 0.13: 0.14 swapped its language-identifier type from
+# `unic-langid` to `icu_locid`, while `fluent` itself still speaks
+# `unic-langid`. Taking 0.14 would mean converting between two identifier types
+# for no gain.
+fluent-langneg = "0.13"
+unic-langid = "0.9"
+rust-embed = { version = "8", features = ["interpolate-folder-path"] }
+clap = { version = "4", features = ["derive"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+# The camera-facing install server speaks TLS 1.0, which rustls will not do, so
+# it is implemented in `pmca-market::tls10`. rustls is still used for the public
+# internet, but only transitively through `ureq`.
+#
+# The PEM parser comes from `rustls-pki-types` rather than `rustls-pemfile`,
+# which is unmaintained (RUSTSEC-2025-0134). `ureq` already pulls this crate in,
+# so using it directly costs no extra dependency.
+rustls-pki-types = { version = "1", features = ["std"] }
+ureq = { version = "3", default-features = false, features = ["rustls"] }
+zip = { version = "9", default-features = false, features = ["deflate"] }
+# Reads the Exif block out of JPEG, TIFF-based raw (ARW) and HEIF containers.
+# Sony's maker note inside it is decoded by `pmca-core::photo` itself.
+kamadak-exif = "0.6"
+
+[profile.release]
+lto = true
+strip = true
+codegen-units = 1

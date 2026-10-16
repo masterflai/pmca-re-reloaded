@@ -1,0 +1,13 @@
+{
+  "api": 1,
+  "id": "example",
+  "name": "Example plugin",
+  "version": "1.0.0",
+  "author": "PMCA-RE RELOADED",
+  "description": "Shows what a plugin can bring: a tool, a diagnostic, a compatibility row and a translation.",
+  "compatibility": [
+    { "model": "ILCE-5100", "arch": "CXD90014", "apps": true, "service": true, "updater": true, "note": "Example row from a plugin" }
+  ],
+  "tools": [{ "id": "hexdump", "module": "hexdump.wasm" }],
+  "diagnostics": [{ "id": "system", "module": "system-check.wasm", "host": ["os", "cameras"] }]
+}

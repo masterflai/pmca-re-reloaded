@@ -1,0 +1,6 @@
+# ts-rs writes the TypeScript shapes of pmca-app's DTOs here when the tests
+# run (`cargo test -p pmca-app`). The window imports them from
+# crates/pmca-gui/src/bindings, so a changed Rust type shows up as a type error
+# in the frontend instead of as a wrong value at runtime.
+[env]
+TS_RS_EXPORT_DIR = { value = "crates/pmca-gui/src/bindings", relative = true }

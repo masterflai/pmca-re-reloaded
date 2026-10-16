@@ -1,0 +1,8 @@
+# Formatting rules for the Rust workspace.
+#
+# The codebase was written with compact struct literals (`Self { a, b, c }` on
+# one line where it fits). `use_small_heuristics = "Max"` lets rustfmt keep
+# them instead of exploding every literal to one field per line, so enforcing
+# `cargo fmt --check` in CI does not require reformatting the whole tree.
+edition = "2024"
+use_small_heuristics = "Max"

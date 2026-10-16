@@ -1,0 +1,61 @@
+[package]
+name = "pmca-market"
+description = "PlayMemories market layer: local HTTPS install server and community app-store client for PMCA-RE RELOADED."
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+
+[dependencies]
+pmca-core = { path = "../pmca-core" }
+thiserror.workspace = true
+
+# Pure protocol/parsing dependencies (always compiled): JSON handling for the
+# camera install protocol and the community store's GitHub responses.
+serde = { workspace = true }
+serde_json = { workspace = true }
+
+# Real TLS server (behind the `server` feature): terminates the SSL connection
+# the camera opens during app installation.
+#
+# PlayMemories cameras only speak TLS 1.0 with RSA key exchange and AES-CBC-SHA1
+# (see `tls10`), which no maintained TLS library will negotiate, so the
+# handshake is implemented here on top of primitive crates.
+rustls-pki-types = { workspace = true, optional = true }
+num-bigint = { workspace = true, optional = true }
+aes = { workspace = true, optional = true }
+cbc = { workspace = true, optional = true }
+hmac = { workspace = true, optional = true }
+sha1 = { workspace = true, optional = true }
+# Only for signing the self-signed certificate the server generates at start-up;
+# the handshake itself never uses SHA-2.
+sha2 = { workspace = true, optional = true }
+md-5 = { workspace = true, optional = true }
+getrandom = { workspace = true, optional = true }
+
+# Real HTTP client (behind the `client` feature): fetches the community app
+# list, APKs and GPS assist data over HTTPS. Pure-Rust via ureq + rustls.
+ureq = { workspace = true, optional = true }
+
+[features]
+# Enabled by default for real use. Disable (e.g. `--no-default-features`) to
+# build/test only the hardware- and network-independent protocol logic.
+default = ["server", "client"]
+# Local HTTPS server used to drive on-camera app installation.
+server = [
+    "dep:rustls-pki-types",
+    "dep:num-bigint",
+    "dep:aes",
+    "dep:cbc",
+    "dep:hmac",
+    "dep:sha1",
+    "dep:sha2",
+    "dep:md-5",
+    "dep:getrandom",
+]
+# ureq-based HTTPS downloads (community app store, GPS assist data).
+client = ["dep:ureq"]
+
+[dev-dependencies]
+# Lets the server tests stand in fabricated key material.
+pmca-core = { path = "../pmca-core", features = ["test-keys"] }

@@ -1,0 +1,3 @@
+# Share the root `target/` so the crates both workspaces use are stored once.
+[build]
+target-dir = "../../../target"

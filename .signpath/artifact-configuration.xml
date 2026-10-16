@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  SignPath artifact configuration for the Windows downloads, uploaded by the
+  `sign` job of .github/workflows/release.yml as one ZIP. SignPath keeps its
+  own copy of this configuration; this file is the reviewed source for it.
+  Before the first signing run, check it in SignPath against an uploaded
+  `signpath-input` artifact.
+-->
+<artifact-configuration xmlns="http://signpath.io/artifact-configuration/v1">
+  <parameters>
+    <parameter name="version" required="true" />
+  </parameters>
+  <zip-file>
+    <pe-file-set product-name="PMCA-RE RELOADED" product-version="${version}">
+      <include path="pmca-gui.exe" />
+      <include path="pmca-console.exe" />
+      <include path="PMCA-RE RELOADED_*_x64-setup.exe" />
+      <for-each>
+        <authenticode-sign />
+      </for-each>
+    </pe-file-set>
+    <msi-file path="PMCA-RE RELOADED_*_x64_en-US.msi">
+      <pe-file path="pmca-gui.exe" product-name="PMCA-RE RELOADED" product-version="${version}">
+        <authenticode-sign />
+      </pe-file>
+      <authenticode-sign />
+    </msi-file>
+  </zip-file>
+</artifact-configuration>

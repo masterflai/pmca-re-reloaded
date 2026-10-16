@@ -1,0 +1,18 @@
+# APK inspection: ZIP container + binary AndroidManifest.xml.
+#
+# Deliberately hardware- and network-free so the parsers can be fuzz-/unit-tested
+# in isolation. `zip` provides the container reader (stored + deflate); the
+# Android binary-XML decoder is implemented here because no maintained crate
+# covers it.
+[package]
+name = "pmca-apk"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+description = "APK container and binary AndroidManifest.xml parsing for PMCA-RE RELOADED"
+
+[dependencies]
+thiserror.workspace = true
+zip.workspace = true

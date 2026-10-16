@@ -1,0 +1,816 @@
+# PMCA-RE RELOADED の日本語ローカライズ。
+# = の右側のみを翻訳してください。ID は変更しないでください。
+
+app-title = PMCA-RE RELOADED – カメラツールキット
+
+# ナビゲーション / タブ
+nav-camera-info = カメラ情報
+nav-install-app = アプリ
+nav-tweaks = 調整
+nav-network = ネットワーク
+nav-firmware = ファームウェア
+nav-updater = アップデーターシェル
+nav-service = サービスシェル
+nav-tools = ファイルツール
+nav-settings = 設定
+nav-license = ライセンス
+
+# ようこそページ：ウィンドウを開いたときに最初に表示されるページ。
+nav-welcome = ようこそ
+welcome-intro-heading = このプログラムでできること
+welcome-intro-body = このプログラムは、お使いのソニー製カメラの機能を維持し、ニーズに合わせて調整するのに役立ちます。ソニーが PlayMemories Camera Apps のストアを閉鎖してから、購入済みやインストール済みのアプリをバックアップしたり再インストールしたりする手段はありませんでした。カメラをリセットすると、インストール済みのアプリは元に戻せない形で消去されます。このプログラムを使えば、既存のアプリをバックアップして再インストールできるほか、自由に入手できるコミュニティのアプリを提供することもできます。独自のアプリ（*.apk ファイル）をインストールすることもできます。問題が起きたときは、このプログラムが分析のためにカメラ情報と内部ログを読み出します。カメラが備えていながらメニューには現れない設定を切り替え、元に戻すこともできます。USB ケーブルを通じてカメラと直接やりとりします。対応機種の一覧は「カメラ情報」ページに掲載しています。
+welcome-start-heading = 最初にすること
+welcome-start-body = まずカメラの電源を入れ、ケーブルをつなぐ前にメニューの「USB接続」をマスストレージまたは MTP に設定してください。「オート」でもたいていはうまくいきます。カメラがそのいずれかを自分で選ぶからです。順序が大切です。ケーブルをつないだ後では、カメラのメニューにはもう到達できません。その後にはじめてカメラを USB で接続し、「カメラ情報」を開いて「カメラ情報を取得」を押します。機種名とファームウェアのバージョンが表示されれば接続は正常で、このプログラムの他の機能もすべて利用できます。
+welcome-start-driver = 代わりにドライバーの案内が出た場合は、まずそちらに従ってください。Windows ではシステムのドライバーがカメラを占有しており、このツールキットが必要とする直接 USB アクセスのためにはそれを置き換える必要があります。この操作はプログラム自身が行いますが、ドライバーの割り当ては Windows が管理者にのみ認める権限です。この場合、プログラムを管理者として再起動する選択肢が示され、Windows がその操作の確認を求めます。割り当てはセッションの終了時に解除されます。Linux と macOS では必要ありません。
+welcome-start-driver-linux = 代わりにドライバーの案内が出た場合は、まずそちらに従ってください。Linux では何かを置き換える必要はなく、カメラへ直接届きます。一度だけ必要なのは、デバイスを開く権限 — ソニーのベンダー ID に対する udev ルール — と、マスストレージモードのためにカーネルドライバー usb-storage を解放することです。どちらもこのプログラムの外で root 権限を用いて用意します。ソースツリーの scripts/linux-prepare.sh がその両方を行います。このウィンドウ自身がそうした権限を求めることはありません。
+welcome-start-driver-macos = 代わりにドライバーの案内が出た場合は、まずそちらに従ってください。macOS では直接 USB アクセスのために何かを置き換える必要はありません。マスストレージモードだけがソニー独自の Camera Driver を通り、これは別途インストールし、その際に他のインストーラーと同じく管理者パスワードを求めます。このウィンドウ自身がそうした権限を求めることはありません。
+welcome-tweaks-heading = 調整と言語
+welcome-tweaks-body = 調整とは、カメラがすでに持っていながらメニューには出てこない設定のことです。録画時間の制限、4K 録画の制限、PAL と NTSC の切り替え、USB アプリインストーラー——そしてメニューの言語です。
+welcome-tweaks-languages-heading = カメラの言語
+welcome-tweaks-languages-body = ソニー製カメラのメニューには、販売地域で一般的な言語しか表示されません。そのため海外で暮らす人は自分の言語を見つけられず、慣れない言語で操作せざるを得ないことがよくあります。しかし、ほかの言語もファームウェアにはすでに含まれています。このプログラムはそれらをメニューに表示させ、なじみのある言語でカメラを操作できるようにします。
+welcome-tweaks-ui-heading = このプログラムの言語
+welcome-tweaks-ui-body = それとは別に、上部の選択リストがあります。これはこのプログラムの表示言語を変えるだけで、カメラには一切触れません。
+welcome-tweaks-safety = 調整はいずれもカメラのバックアップ領域に書き込まれ、同じスイッチで元に戻せます。書き込みが途中で途切れるとカメラが回復不能になるおそれがあります。実行中はケーブルを抜いたりバッテリーを外したりしないでください。
+welcome-privacy-heading = あなたのデータ
+welcome-privacy-where = 「ライセンス」のページには、この内容が改めて全文で記されており、本プログラムを構成するすべてのライブラリのライセンスも併せて掲載されています。
+welcome-where-heading = どこに何があるか
+welcome-where-info = 機種名、シリアル番号、ファームウェアのバージョン。接続確認も兼ねます。
+welcome-where-install = コミュニティの一覧にあるアプリ、または手元の .apk ファイル。
+welcome-where-tweaks = カメラのメニューからは届かない設定。言語もここにあります。
+welcome-where-network = GPS アシストデータ、およびライブ配信用のアクセスポイントとサービス。
+welcome-where-firmware = ソニーのファームウェアイメージをカメラに書き込みます。
+welcome-where-tools = ファームウェアやパッケージのファイルを展開して調べます。カメラは不要です。
+welcome-where-shells = カメラのメモリとファイルシステムへの直接アクセス。先に「設定」で表示を有効にしてください。
+welcome-where-settings = テーマ、高度なモード、このプログラムの翻訳の編集。
+welcome-where-license = この移植版の出所、どなたの仕事に基づいているか、そしてどのような条件で公開されているか。
+welcome-where-hint = どのページも勝手にカメラを操作することはありません。その旨を示すボタンを押すまで、読み取りも書き込みも行われません。
+
+# ボタン
+btn-get-info = カメラ情報を取得
+btn-refresh = 更新
+btn-load-apps = 利用可能なアプリを読み込む
+btn-list-tweaks = 利用可能な調整を表示
+btn-install = 選択したアプリをインストール
+btn-install-file = .apk ファイルをインストール…
+btn-apply = 適用
+btn-save = カメラに保存
+btn-add = 追加
+btn-remove = 削除
+btn-reveal = 表示
+btn-update-gps = GPSアシストデータをデバイスに転送
+btn-cancel = キャンセル
+btn-browse = 参照…
+btn-switch-msc = マスストレージモードに切り替える
+btn-start-driver-helper = ドライバーヘルパーを起動
+
+# ファイルダイアログで表示されるファイル種別フィルターの名称
+file-filter-apk = Android アプリケーション (*.apk)
+file-filter-firmware = ソニー製ファームウェアイメージ (*.dat)
+file-filter-usage-log = 使用ログ (*.bin)
+file-filter-catalog = 翻訳ファイル (*.ftl)
+file-filter-spk = ソニーのアプリパッケージ (*.spk)
+file-filter-any = すべてのファイル
+file-filter-gps = GPSアシストデータ (*.dat)
+
+# ステータス / メッセージ
+msg-usage-log-written = 使用ログを { $path } に書き出しました
+msg-connecting = 接続中…
+msg-apps-found = { $count } 個のアプリが見つかりました
+msg-switch-mode = カメラを MTP またはマスストレージモードに切り替えてください。
+msg-no-tweaks = このカメラで利用できる調整はありません。
+msg-done = 完了。
+
+# カメラの USB モード切り替え（MTP → マスストレージ）。「モードが違う」
+# エラーの下に表示される。逆方向の USB コマンドは存在しない。
+mode-switching = カメラをマスストレージモードに切り替えています…
+mode-switch-wait = カメラの再接続を待っています…
+camera-confirm-hint = カメラに表示されるメッセージ（www.sony.net/pm の案内など）は閉じてかまいません。処理には影響しません。
+mode-switch-done = カメラはマスストレージモードになりました。
+mode-switch-timeout = カメラがマスストレージモードで見つかりませんでした。電源を入れ直してからもう一度お試しください。
+mode-switch-impossible = このモードは USB では切り替えられません。カメラの電源を入れ直してください。
+mode-switch-hint = USB で切り替えられるのは MTP モードのカメラのみです。切り替えは一時的で、カメラのメニューで設定した USB 接続方式は変わりません。電源を入れ直すかケーブルを接続し直すと元のモードに戻ります。戻すための USB コマンドはありません。
+
+# カメラ情報フィールド
+info-model = モデル
+info-product-code = 製品コード
+info-serial = シリアル番号
+info-firmware = ファームウェアバージョン
+info-lens = レンズ
+info-region = 地域
+info-mode = モード
+mode-mass-storage = マスストレージ
+mode-mtp = MTP
+mode-updater = アップデーターモード
+mode-app-install = アプリインストールモード
+mode-service = サービスモード
+mode-unknown = 不明
+info-android-version = Android プラットフォームバージョン
+info-photographer = 撮影者
+info-copyright = 著作権者
+info-photographer-1 = 撮影者 (項目 1)
+info-photographer-2 = 撮影者 (項目 2)
+info-copyright-1 = 著作権者 (項目 1)
+info-copyright-2 = 著作権者 (項目 2)
+diagnose-services-heading = カメラに接続できませんか?
+diagnose-services-hint = Windows のサービスの中には MTP モードのカメラを占有するものがあり、その場合このアプリケーションはカメラに接続できません。この確認は実行中のサービスを Windows に問い合わせるだけで、何も変更しません。
+btn-diagnose-services = Windows サービスを確認
+diagnose-services-none = 妨げになることが知られているサービスは実行されていません。
+diagnose-services-found = 次の実行中のサービスがカメラへのアクセスを妨げる可能性があります:
+diagnose-services-advice = 「サービス」(services.msc) で停止するか、管理者として次のコマンドを実行し、その後カメラを接続し直してください:
+
+# ファームウェアアップデーター / シェル
+updater-model = カメラモデル
+updater-firmware-current = 現在のファームウェアバージョン
+updater-guard-ok = ファームウェアイメージはこのカメラに適合しています。
+updater-no-fdat = モデル { $model } 用の同梱アップデーターファームウェアはありません。
+updater-model-required = カメラはすでにアップデーターモードにあり、そこではモデルを取得できません。カメラの電源をいったん切ってから入れ直し、通常モードで起動させてから再度お試しください。あるいは、ペイロードファイル（--fdat-file）を指定するか、コンソールでモデル（--model <モデル>）を指定してください。
+updater-already-updater = カメラはすでにアップデーターモードです。
+updater-flash-required = 確認なしでのカメラの変更を拒否しました。--flash を付けて再実行すると、アップデーターモードに切り替えてペイロードを書き込みます。
+updater-flashing = アップデーターペイロードをカメラに書き込んでいます…
+updater-switch-wait = カメラ画面の指示に従ってください。アップデーターモードへの切り替えを待機しています…
+updater-switch-timeout = カメラの待機がタイムアウトしました。再接続後にコマンドを再実行してください。
+updater-shell-ready = アップデーターペイロードが実行中です。'help' でコマンド一覧、'exit' で終了します。
+updater-shell-done = シェルセッションが終了しました。
+updater-session-panic = アップデーターセッションが予期せず終了しました。やり直す前にカメラの電源を入れ直してください。
+
+# アップデーターシェルの応答。行の解釈失敗は service-* のキーに一度だけ
+# 書かれています。両方のシェルが同じパーサーを共有するため、引用符付きのパスも
+# 誤った16進数も、どちらでも同じように失敗します。
+updater-backup-synced = バックアップをフラッシュメモリに書き込みました。
+updater-backup-locked = 保護されたバックアップ設定をロックしました。
+updater-backup-writable = 保護されたバックアップ設定に書き込めるようになりました。
+updater-shell-console-only = root シェルには端末が必要で、コマンドラインからしか使えません。pmca-console updatershell --flash を実行し、そこで「shell」と入力してください。
+
+# アップデーターシェルのページ。
+updater-warning = 警告：このシェルに到達するにはカメラをアップデーターモードで再起動し、ペイロードを書き込みます。ペイロードとはこのプロジェクトの小さなプログラムで、カメラはこれをファームウェア更新と同じように受け入れ、その後このシェルのコマンドに応答します。このペイロード自体はカメラの電源を切れば消えますが、提供されるコマンドはカメラの永続的な設定メモリに書き込みます。書き込みが中断されるとカメラが回復不能になるおそれがあります。また、その際にカメラのすべての設定がリセットされます（サービスシェルではリセットされません）。
+updater-console-heading = コマンドラインでアップデーターシェルを実行する
+updater-driver-hint = アップデーターシェルは、ペイロードを送る経路として Windows 標準のマスストレージドライバー USBSTOR を使います。これはサービスシェルの要件とは正反対です。アプリケーションは WinUSB ドライバーを自分で割り当て、自分で解除しますので、手作業で準備することは何もありません。ただし、他のツールで割り当てたドライバーは先に元に戻してください。アップデーターモードのカメラは別の製品 ID で列挙されますが、そちらも割り当てを変えないでください。
+updater-fdat-label = ペイロードファイル（任意）
+updater-confirm = カメラをアップデーターモードで再起動し、ペイロードを書き込みます。続けますか？
+updater-cancelled = 中止しました。カメラは変更されていません。
+
+btn-shell-primer = このシェルについて知っておくこと
+btn-shell-primer-hide = 説明を隠す
+shell-primer-compare-heading = 二つのシェル、二つのプロトコル
+shell-primer-compare = どちらのページもカメラへのコマンドラインを提供しますが、同じシェルではありません。サービスシェルはソニー自身の工場サービスプロトコルを話し、認証が済めばカメラ本体が応答します。そこへ至るためにカメラへ書き込むものは何もありません。アップデーターシェルは、このプロジェクトが独自のプログラムをカメラへ書き込むからこそ存在します。カメラはアップデーターモードで再起動し、そのペイロードをファームウェアであるかのように受け入れ、以降は下記のコマンドにそのペイロードが応答します。同時に開けるのは二つのうち一方だけです。
+shell-primer-payload = 「ペイロード」（英語で「積荷」の意）とは、ある伝送経路が運ぶ中身そのものを指します。アップデーターシェルの場合、それはこのプロジェクトの小さなプログラムです。カメラはこれをファームウェア更新と同じ経路で受け入れますが、保持するのは電源を切るまでです。サービスシェルにペイロードは不要です。カメラが自身のファームウェアでそのコマンドに応答するためです。ファームウェアファイルでも意味は同じで、.dat ファイルのコンテナ内にあるファームウェアイメージそのものを指します。
+shell-primer-when-service = サービスシェルは、カメラが自身のファームウェアを動かしたまま、保存された設定を読み書きするあらゆる用途に使います。HASP ブロックの読み出し、バックアップ領域の復元用コピーの保存、個々のエントリーの変更、カメラからのファイル取り出しなどです。「調整」ページも内部でこれを使っており、そこでできることは手動でここでも行えます。
+shell-primer-when-updater = アップデーターシェルは、ほかの方法でカメラに到達できないとき、あるいは個々のコマンドではなく動作中のシステム上のシェルが必要なときに選びます。本物の root シェルを得られるのはこの経路だけで、サービスモードを拒むカメラでも動きます。再起動、一度の書き込み、そしてカメラの設定という代償があるため、第一の選択肢ではなく第二の選択肢です。
+shell-primer-driver-heading = ドライバー: 両者は正反対を要求する
+shell-primer-driver = サービスシェルは生の USB を話し、Windows ではカメラが WinUSB に結び付けられている必要があります。アプリケーションはサービスモードへ移る際にそのドライバーを自分で割り当て、セッション終了時に自分で解除します。別のツールは一切使いません。アップデーターシェルは Windows 自身のマスストレージドライバー USBSTOR を通って届くため、カメラが WinUSB に結び付いている間は動きません。だから割り当ての解除はサービスセッションを終える手順の一部です。ドライバーの割り当てには管理者権限が必要です。Linux ではどちらもドライバーの入れ替えは不要で、デバイスノードへのアクセス権だけが必要です。
+shell-primer-risk-heading = 何が起こりうるか
+shell-primer-risk = 下で印の付いたコマンドはカメラの永続設定メモリーへ書き込みます。書き込みが中断されるとカメラが起動しなくなることがあり、取り消しはできません。bk d があるのはまさにそのためです。何かを変更する前にバックアップ領域のコピーを保存してください。アップデーターのペイロード自体はカメラに残らず、電源を切れば消えます。ただし、アップデーターモードを経由するとカメラのすべての設定がリセットされます。
+shell-primer-commands-heading = このシェルのコマンド
+shell-primer-writes = (WRITES) の付いたコマンドはカメラを変更します。それ以外は読み出すだけです。
+shell-cmd-hasp = カメラの保護された識別領域である HASP ブロックを読み出します。
+shell-cmd-pull = カメラからファイルを取り出します。ローカル名を省くとカメラ側の名前が使われます。
+shell-cmd-push = ローカルファイルをカメラへコピーし、そこにあるものを置き換えます。(WRITES)
+shell-cmd-rm = カメラ上のファイルを削除します。(WRITES)
+shell-cmd-rmem = デバイスメモリーの一部をローカルファイルへ書き出します。オフセットと長さは十六進数です。
+shell-cmd-bk-r = バックアップ領域のエントリーを一つ読み出し、十六進ダンプで表示します。
+shell-cmd-bk-d = バックアップ領域全体をファイルへ保存します。何かを変える前に行ってください。戻る手段はこれだけです。
+shell-cmd-bk-dump-txt = バックアップ領域全体を <file>.bin に、読みやすい一覧を <file>.txt に保存します。
+shell-cmd-bk-stat = カメラのバックアップ状態ブロックを、地域を含めて表示します。
+shell-cmd-bk-w = バックアップ領域のエントリーを一つ、空白区切りの十六進バイトとして書き込みます。(WRITES)
+shell-cmd-bk-s-sub = 指定サブシステムのバックアップ領域をフラッシュへ確定し、変更が再起動後も残るようにします。(WRITES)
+shell-cmd-bk-s = バックアップ領域をフラッシュへ確定し、変更が再起動後も残るようにします。(WRITES)
+shell-cmd-bk-lock = 保護されたバックアップエントリーの書き込み保護を設定または解除します。書き込み保護中は変更できない設定があります。(WRITES)
+shell-cmd-term = カメラのデバッグ端末を有効または無効にします。(WRITES)
+shell-cmd-info = バックアップの状態ブロックを読み出し、そもそも書き込み可能かどうかを示します。
+shell-cmd-shell = カメラ上で root シェルを開きます。端末が必要なためコンソールでのみ利用でき、shell tcp <port> は代わりに 127.0.0.1 上で別のクライアント向けに提供します。(WRITES)
+shell-cmd-help = このシェルが受け付けるコマンドを一覧表示します。
+shell-cmd-exit = セッションを終了してシェルを抜けます。
+shell-primer-diagnostics-heading = 診断と修復
+shell-cmd-bk-trace = カメラがバックアップ領域全体を USB でどのように送るかを、パケットごとにファイルへ記録します。大きなバックアップの調査用です。応答の途中でカメラが止まったままになることがあります。その場合はケーブルを外し、カメラの電源を入れ直してください。必要ならバッテリーを抜きます。
+shell-cmd-bk-rewrite = バックアップ領域を読み取り、変更せずに書き戻し、もう一度読み取ります。設定を変えずに、カメラがイメージ全体を受け付けるかを確認します。(WRITES)
+shell-cmd-bk-restore-attrs = すべてのバックアップエントリーの属性（書き込み保護など）を、bk d または bk dump-txt で保存したコピーの状態に戻します。値は変わりません。同じカメラのコピーだけを使ってください。(WRITES)
+shell-primer-diagnostics-env = 次の 3 つの環境変数は、起動前に設定するとコンソールとグラフィカル画面の両方に効きます。例: PowerShell で $env:PMCA_TWEAKS_DIRECT = "1"。PMCA_TWEAKS_DIRECT は、バックアップが 1 MB 未満でも Tweaks に値を 1 つずつ書き込ませます。PMCA_TWEAKS_IMAGE は、1 MB を超えていてもイメージ全体を書き込ませます。両方が設定されている場合は PMCA_TWEAKS_DIRECT が優先されます。PMCA_TLS_DUMP=<ファイル> は、アプリのインストール中にカメラの最初の TLS メッセージ（ClientHello）を保存し、接続の失敗を調べられるようにします。
+
+# アプリのインストール
+install-switching = アプリインストールモードに切り替えています…
+install-disabled = カメラがアプリインストールモードへの切り替えを拒否しました。多くは「USB アプリインストーラーを有効化」の設定が原因です。「調整」で有効にしてください。
+install-stays-app-mode = カメラはアプリインストールモードのままで、このモードでは引き続きアプリをインストールできます。その他の機能を使うには、USB ケーブルを抜いてからカメラの電源を入れ直してください。
+err-usb-app-install-mode = カメラはまだアプリインストールモードのままで、このモードではアプリのインストールしか受け付けません。USB ケーブルを抜いてから電源を入れ直してください。接続したまま再起動すると、再びこのモードになります。
+install-switch-wait = カメラがアプリインストールモードで再接続するのを待っています…
+install-switch-timeout = アプリインストールモードへの切り替えがタイムアウトしました。カメラが再接続したらコマンドを再実行してください。
+install-bad-mode = このモードではカメラを使用できません。MTP またはマスストレージモードに切り替えてください。
+install-starting = インストールを開始しています…
+install-error = インストール通信エラー
+install-server-failed = ローカルインストールサーバーがカメラの接続を受け付けませんでした:
+install-done = タスクが正常に完了しました。
+
+# APK の確認
+apk-package = パッケージ:
+apk-unreadable = 警告: .apk ファイルを解析できませんでした。
+apk-incompatible = 警告: このアプリはカメラが提供しない可能性のある SDK レベルを要求しています。
+apk-unsigned = 警告: .apk ファイルに署名がありません。
+
+# コミュニティアプリストア
+store-loading = アプリ一覧を読み込んでいます…
+store-resolving = 最新リリースを検索しています…
+store-downloading = ダウンロード中
+store-unknown-app = 不明なアプリ
+store-no-release = このアプリにダウンロード可能なリリースはありません
+store-not-installable = リリースなし
+msg-no-apps = アプリが見つかりません。
+store-heading = コミュニティアプリストア
+store-discontinued = ソニーは公式の PlayMemories Camera Apps ストアを終了しました。サーバーは応答しないため、アプリの購入やダウンロードはできません。
+store-use-own-apk = 独自の .apk は引き続きインストールできます: 下でファイルを指定するか、このウィンドウにドラッグしてください。下のコミュニティアプリストアも引き続き利用できます。
+btn-store-sync = カメラと照合
+btn-install-selected = 選択したアプリをインストール
+btn-store-stop = このアプリの後で停止
+btn-store-stopping = このアプリの後で停止します…
+btn-store-retry = 失敗したアプリを再試行
+btn-continue = 続行
+btn-reinstall = 再インストール
+btn-skip = スキップ
+btn-confirm-updater = 再起動して書き込む
+btn-confirm-tweaks = 調整を書き込む
+btn-confirm-languages = 言語を有効にする
+btn-confirm-wifi = アクセスポイントを置き換える
+btn-confirm-stream = 設定を上書きする
+btn-confirm-show-shells = シェルを表示する
+btn-confirm-discard = 翻訳を破棄する
+store-select-all = すべてのアプリを選択
+store-col-app = アプリ
+store-col-version = バージョン
+store-col-author = 作者
+store-col-camera = カメラ上のバージョン
+store-col-status = 状態
+store-camera-absent = 未インストール
+store-version-unknown = 不明
+store-batch-query = カメラからインストール済みアプリを読み取っています…
+store-sync-done = カメラと照合しました。リスト中のインストール済みアプリ: { $count }
+store-batch-downloading = アプリ { $current }/{ $total } をダウンロードしています…
+store-batch-installing = アプリ { $current }/{ $total }: { $name } をインストールしています…
+store-reinstall-confirm = { $name } はすでにカメラにインストールされています。インストール済みのバージョン: { $installed }。アプリストアのバージョン: { $store }。再インストールしますか？
+store-state-queued = 待機中
+store-state-installed = インストール済み
+store-state-failed = 失敗
+store-state-skipped = スキップ
+store-state-not-run = 未実行
+store-batch-summary = インストール済み: { $done } · 失敗: { $failed } · スキップ: { $skipped } · 未実行: { $notrun }
+
+# サービスモード (senser)
+usb-mode-advice = 調整・バックアップ・サービスシェルを使うときは、カメラの USB 接続モードを「オート」にし、マスストレージに固定しないでください。セッション後にカメラがモードを尋ねたら「マスストレージ (MSC)」を選んでください。マスストレージに固定していると、次のサービスモードへの切り替えをカメラが拒否することがよくあります。
+service-switch-refused = カメラがサービスモードへの切り替えを完了せず、USB に再接続しませんでした。このときカメラには通常「接続した機器を確認してください」と表示されます。USB ケーブルを抜いて差し直し、もう一度お試しください。
+service-switching = サービスモードに切り替えています…
+service-switch-wait = カメラがサービスモードで再接続されるのを待機しています…
+service-switch-timeout = カメラがサービスモードで検出されませんでした。サービスモードでは別の USB デバイス（製品 ID 0336）として列挙され、そちらにも WinUSB ドライバーの割り当てが必要です。デバイスマネージャーでドライバーのない Sony デバイスを確認してください。カメラの電源を入れ直すと通常モードに戻ります。
+service-authenticating = 認証しています…
+# 前回の実行からカメラがサービスモードのままのとき、およびそれを解除できなかった
+# ときに表示されます。
+service-stranded-reset = カメラは前回の実行からサービスモードのままです。先にそのセッションを終了します…
+service-stranded-failed = カメラが前回の実行からサービスモードで固まっており、終了要求に応答しませんでした。カメラの電源を入れ直してからやり直してください。
+service-bad-mode = このモードではカメラを使用できません。マスストレージモードに切り替えてください。
+service-driver-required = USB への直接アクセスが拒否され、WinUSB ドライバーを割り当てられませんでした。ドライバーの割り当てには管理者権限が必要です。
+service-warning = 警告: サービスモードではメモリ・ファイルシステム・調整データに直接アクセスできます。書き込みコマンドはカメラを永久的に損傷させる恐れがあります。
+service-shell-ready = サービスシェルの準備ができました。'help' でコマンド一覧、'exit' で終了。
+service-shell-done = サービスシェルのセッションを終了しました。
+# 前回の実行が、割り当てたドライバーを解放する前に終了した場合に、起動時に
+# 報告されます。
+driver-swept = 前回の実行で残っていたドライバー割り当てを { $count } 件削除しました。
+# 同じ中断された実行がカメラをサービスモードのまま残した場合に起動時に
+# 報告されます。そのままでは次のセッションが拒否されます。
+driver-swept-camera = 前回の実行でサービスモードのまま残っていたカメラを通常モードに戻しました。
+driver-release-replug = ドライバーの解放中に Windows がカメラを待っています。後片付けを完了させるため、USB ケーブルを抜いて差し直してください。
+# `driver` コマンドの結果。
+driver-bound = { $id } は WinUSB を使用するようになりました（ドライバーパッケージ { $package }）。
+driver-released = ドライバー割り当てを { $count } 件解除しました。カメラは Windows 標準のドライバーに戻っています。
+driver-needs-elevation = ドライバーの割り当てには管理者権限が必要です。管理者として起動したコンソールでこのコマンドを実行してください。
+driver-leftover-needs-elevation = 以前の実行で割り当てられたドライバーが、まだカメラから解除されていません。そのままだとカメラは接続機器の確認を求め、マスストレージが機能しません。解除には管理者権限が必要です。Windows の確認を承認してください。
+driver-binding = カメラに WinUSB ドライバーを割り当てています…
+driver-bind-wait = カメラが新しいドライバーで再接続するのを待っています…
+driver-bind-timeout = ドライバーの割り当て後にカメラが再検出されませんでした。ケーブルを抜き差ししてからやり直してください。
+driver-bind-failed = WinUSB ドライバーを割り当てられませんでした: { $detail }
+# シェルの応答。コンソールとウィンドウが同じ言葉を使うよう、バックエンドから
+# 提供されます。
+service-usage = 使い方: { $usage }
+service-bad-hex = 16 進数の値ではありません: { $value }
+service-unknown-command = 不明なコマンドです: { $command }。'help' で一覧を表示します。
+service-unterminated-quote = 行が引用符で囲まれた引数の途中で終わっています。
+service-help = コマンド一覧:
+service-read-bytes = { $count } バイトを読み取りました。
+service-pulled = { $remote } をカメラから { $local } にコピーしました。
+service-pushed = { $local } をカメラの { $remote } にコピーしました。
+service-removed = { $remote } をカメラから削除しました。
+service-dumped = { $offset } から { $size } バイトを { $local } に保存しました。
+service-backup-saved = バックアップイメージ ({ $count } バイト) を { $local } に保存しました。
+service-backup-text-saved = バックアップイメージ ({ $count } バイト) を { $bin } に、一覧を { $txt } に保存しました。
+service-backup-status = バックアップ状態、地域: { $region }
+service-backup-rewritten = イメージ ({ $count } バイト) を変更せずに書き戻し、再度読み取りました。永続的には保存していません。
+service-backup-attrs-restored = { $count } 件のエントリの属性を { $local } の内容に戻しました。
+service-backup-written = バックアップ項目 { $id } を書き込みました。
+service-backup-persisted = サブシステム { $id } のバックアップをフラッシュメモリに書き込みました。
+service-terminal-on = デバッグ端末を有効にしました。
+service-terminal-off = デバッグ端末を無効にしました。
+
+# 拡張モードが無効なときのサービスページ。コンソールからシェルに到達する方法と、
+# そのために必要な準備を示します。
+service-console-heading = コンソールでサービスシェルを起動する
+service-console-hint = pmca-console があるフォルダーでコマンドプロンプトを開き、次のコマンドを実行します:
+service-driver-heading = はじめる前に
+service-driver-hint = サービスモードには USB への直接アクセスが必要ですが、Windows のマスストレージドライバー経由では許可されません。アプリケーションは WinUSB ドライバーを自分で割り当てます。カメラがマスストレージモードのときに 1 回、サービスモードで別の製品 ID として再度認識された後にもう 1 回の計 2 回行い、セッション終了時にその両方を解除します。ドライバーの割り当てには管理者権限が必要なため、コンソールを管理者として起動してください。他のツールは必要ありません。
+driver-note-linux = ここでは何もインストールする必要はありません。libusb はカーネルドライバーを置き換えることなく、カメラに直接到達します。必要なのはデバイスを開く権限と、デバイスを掴んでいないデスクトップだけです。ソニーのベンダー ID 054c に対する udev ルールを追加し、マスストレージモードを使う前に usb-storage ドライバーを切り離してください。ソースツリーの scripts/linux-prepare.sh はその両方を行い、あわせて gvfs のボリューム監視も停止します。
+driver-note-macos = USB への直接アクセスに必要なインストールはありません。libusb がカメラに直接到達します。例外はマスストレージモードで、これはソニー独自の Camera Driver を経由するため、別途インストールが必要です。この環境は三つのうち最も検証が進んでいません。すでに書かれた説明を見つけるよりも、問題を報告することになるとお考えください。
+service-advanced-hint = シェルはここでも表示できます。設定の拡張モードをご覧ください。
+btn-copy-command = コマンドをコピー
+msg-command-copied = コマンドをクリップボードにコピーしました。
+
+# 拡張モードが有効なときのサービスページ。
+btn-service-open = 接続
+btn-service-close = 切断
+btn-service-run = 実行
+btn-service-browse = ファイルパスを挿入…
+shell-path-quote = このパスは挿入できません。引数の開始と終了をコマンドラインが判断するために使う二重引用符が含まれています。ファイル名を変更するか、この文字を含まないパスへ移動してください。
+service-command-label = コマンド
+service-not-connected = 接続されていません。
+
+# GUI 専用の文字列
+install-apk-path = ローカルの .apk ファイルのパス (省略可)
+install-drop-hint = .apk ファイルをここにドロップ
+
+# 調整の説明
+tweak-rec-limit = 動画を時間制限なしで記録
+tweak-rec-limit-4k = 4K 動画を時間制限なしで記録
+tweak-language = すべてのメニュー言語を表示
+tweak-pal-ntsc = PAL / NTSC セレクターと警告を有効化
+tweak-pal-ntsc-mode = 映像方式（PAL / NTSC）
+tweak-pal-ntsc-pal = PAL
+tweak-pal-ntsc-ntsc = NTSC
+tweak-pal-ntsc-note = ビデオ方式を切り替えると、カメラはメモリーカードのフォーマットを要求します。写真・動画・LUT など、中身をすべて先にバックアップしてください。切り替える前にカードを抜いておくのが最も簡単です。
+tweaks-set-malformed = --set ID=VALUE の形式が必要です。入力: { $arg }
+tweaks-set-unknown-value = 不明な値「{ $value }」です。次のいずれかを指定してください: { $options }
+tweaks-set-not-a-choice = { $id } は選択肢ではなくスイッチです。--enable または --disable を使用してください。
+tweaks-needs-set = { $id } はスイッチではなく選択肢です。--set { $id }=VALUE で次のいずれかを指定してください: { $options }
+tweak-usb-installer = USB アプリインストーラーを有効化
+
+# 調整の流れ
+tweaks-warning = 警告: 調整の適用はカメラのバックアップメモリーを書き換えます。書き込みが中断されるとカメラが恒久的に損傷する可能性があります。
+tweaks-reading = カメラの設定を読み取っています…
+tweaks-writing = カメラの設定を書き込んでいます…
+tweaks-done = カメラの設定を更新しました。
+tweaks-write-failed = カメラは新しい設定を送信したとおりに保存しませんでした。それでも一部が書き込まれている可能性があります。設定を読み直し、必要に応じて元に戻してください。変更前に取ったバックアップが確実な戻し方です。
+tweaks-confirm-required = 確認なしでの書き込みは拒否されました。上記の警告を読んだうえで --confirm を付けて再実行してください。
+tweaks-state-enabled = 有効
+tweaks-state-disabled = 無効
+tweaks-full-read-failed = カメラがバックアップ全体を送信しませんでした ({ $detail })。この後は応答しなくなることが多いため、カメラの電源を切り、バッテリーを数秒間取り外してから戻し、接続し直してください。
+tweaks-direct-mode = このカメラのバックアップは 1 MB を超えるため、設定を 1 つずつ読み書きします。変更のたびに元の値を保存し、「変更を元に戻す」で書き戻せます。
+tweaks-direct-forced = PMCA_TWEAKS_DIRECT により値ごとの方式が強制されているため、設定を 1 つずつ読み書きします。変更のたびに元の値を保存し、「変更を元に戻す」で書き戻せます。
+tweaks-direct-refused = カメラが変更を拒否しました ({ $detail })。書き込み済みの値は元に戻したので、何も変更されていません。一部のモデル、特に日本向けモデルでは、この設定はバックアップ全体を通してしか変更できません。
+tweaks-direct-revert-failed = カメラが変更を拒否しました ({ $detail })。書き込み済みの値をすべては元に戻せませんでした。元の値は保存されているので、「変更を元に戻す」をお試しください。
+tweaks-direct-restart = カメラの設定を更新しました。変更を反映するにはカメラの電源を入れ直してください。
+tweaks-rollback-unsaved = 元に戻すための現在の値を保存できなかったため、何も変更していません。
+tweaks-image-saved = 変更前のバックアップイメージを保存しました: { $path }
+tweaks-whole-image-hint = 代わりにバックアップイメージ全体で変更を書き込むには、同じコマンドを --whole-image を付けて再実行してください。変更前のイメージは先に保存されます。
+tweaks-whole-image-confirm = バックアップイメージ全体で変更を書き込みますか？カメラは単一の値としての変更を拒否しました。イメージ全体が変更とともに書き戻されます。変更前のイメージは先にこのコンピューターに保存されます。
+btn-whole-image = バックアップ全体を書き込む
+tweaks-undo-none = このカメラの保存済みの値はありません。
+tweaks-undo-confirm = 保存した値をカメラに書き戻しますか? 保存後に 1 つずつ書き込んだ変更がすべて元に戻ります。
+tweaks-undo-done = 保存した値を書き戻しました。カメラの電源を入れ直してください。
+tweaks-undo-available = 最初の変更前の値が保存されており、書き戻すことができます。
+btn-undo-tweaks = 変更を元に戻す
+tweaks-identity-heading = カメラの識別情報（読み取り専用）
+tweaks-caution-languages = このカメラでは 2 つの言語（おそらく中国語（簡体字）と中国語（繁体字））を表示できません。その言語までスクロールすると言語メニューが最初に戻るため、念のため無効のままにします。
+tweaks-caution-accept = それでもこの 2 つの言語を有効にする（自己責任）
+tweaks-caution-confirm = この 2 つの言語はカメラの言語メニューを再起動させることがあります。故障はせず設定は元に戻せますが、設定画面を最初から探し直す必要があるかもしれません。それでも有効にしますか？
+
+# 設定
+settings-language = 言語
+settings-theme = テーマ
+settings-theme-system = システム
+settings-theme-light = ライト
+settings-theme-dark = ダーク
+
+# 拡張モード。攻撃者への対策ではなく、誤操作を防ぐためのものです。ここで開く
+# 機能はいずれもコンソールから利用できます。
+settings-advanced-heading = 拡張モード
+settings-advanced-hint = 拡張モードは、「サービスシェル」と「アップデーターシェル」の各ページでシェルを表示します。サービスモードはカメラのメモリ、ファイルシステム、調整データに直接アクセスできます。コマンドの入力を一度間違えるだけでカメラが使えなくなるおそれがあります。何を書き込むか確信がない間は無効のままにしてください。
+settings-advanced-toggle = サービスシェルとアップデーターシェルを表示する
+settings-advanced-on = 拡張モードは有効です。「サービスシェル」と「アップデーターシェル」の各ページでシェル自体を使えます。
+settings-advanced-off = 拡張モードは無効です。「サービスシェル」と「アップデーターシェル」の各ページにはコンソールからの手順が表示されます。
+settings-advanced-confirm = サービスシェルとアップデーターシェルはカメラを永久的に損傷させるおそれがあります。両方のシェルを表示しますか？
+
+# 翻訳の編集。言語ファイルはダウンロードして任意のテキストエディタで編集し、
+# 再度アップロードできます。アップロードされたファイルは使用前に検査されます。
+settings-catalog-heading = 翻訳を編集
+settings-catalog-hint = 言語ファイルをダウンロードし、お好みのテキストエディタで編集してから再度アップロードしてください。翻訳するのは等号の右側のテキストだけで、省いた項目は内蔵の文言のままです。ここで選んだ言語はアプリの表示言語を変更しません。
+settings-catalog-locale = 言語ファイル
+settings-catalog-builtin = 内蔵の翻訳を使用しています。
+settings-catalog-custom = ご自身の翻訳を使用しています:
+btn-catalog-export = ダウンロード…
+btn-catalog-import = アップロード…
+btn-catalog-reset = 内蔵の翻訳に戻す
+catalog-exported = 書き込み先
+catalog-imported = 翻訳を適用しました。
+catalog-reset-done = 内蔵の翻訳に戻しました。
+catalog-reset-none = 戻すべき独自の翻訳はありませんでした。
+catalog-reset-confirm = この言語の独自の翻訳を破棄しますか？
+catalog-rejected = ファイルは適用されませんでした。次の行を修正してください:
+catalog-count-accepted = 適用された項目
+catalog-count-missing = 内蔵の翻訳から引き継いだ項目
+catalog-count-untranslated = 英語の原文と同じ項目
+catalog-line = 行
+catalog-problem-syntax = 「id = テキスト」の形式の項目ではありません
+catalog-problem-continuation = 次の行に続いていますが、これはサポートされていません
+catalog-problem-duplicate = 複数回定義されています
+catalog-problem-unknown-key = このアプリが使用しない項目です
+catalog-problem-empty = テキストがありません
+catalog-problem-placeholder = プレースホルダーが変更されています。正しくは:
+
+# 来歴、謝辞、ライセンス。ライセンスページおよび
+# `pmca-console license` で表示されます。ライセンス本文そのものは翻訳しません。
+# 法的な文書であり、原文のまま掲載しています。
+about-thanks-heading = 謝辞
+about-thanks-body-1 = このツールが存在するのは、ソニー製カメラが USB でどのように通信するのかを解明し、2015 年に Sony-PMCA-RE を公開した ma1co のおかげであり、その後の年月に同プロジェクトと OpenMemories の各プロジェクトへ貢献したすべての人のおかげです。
+about-thanks-body-2 = カメラの検出、外部コマンドのプロトコル、ファームウェアアップデーターの手順、サービスモードは、いずれも彼らの成果であり、この移植版はその成果を引き継いでいます。ありがとうございます。この土台の上に、PMCA-RE RELOADED には masterflai による多くの新機能が加わっています。中でも重要なのは、新たに組み込まれた Windows でのデバイスドライバーの自動切り替えです。別のツールを使って手作業でカメラに別のドライバーを割り当てる必要がなくなり、作業がより手軽に、より速く、より安全になりました。
+about-contributors-heading = 貢献者
+about-contributors-body = ma1co のほかに、次の方々が Sony-PMCA-RE に貢献したか、自身のコピーで公開した変更がこの移植版に取り込まれています。
+about-purpose-heading = この移植版が存在する理由
+about-purpose-body-1 = 元のアプリケーションはすでに開発が続けられていません。Python 2 向けに書かれていますが、Python 2 は 2020 年にサポートが終了しました。また一部は Sony がその後停止したサービスに依存しているため、現在のシステムでは制限なく動作しません。
+about-purpose-body-2 = この移植版の目的は置き換えではなく保存であり、同じく今日の環境で問題なく使えることです。これらのカメラを使い続けられるようにし、現在のコンピューターでも新しいカメラ機種でも支障なく動作させることを目指しています。元のアプリケーションにできたことは、すべてこちらでもできるはずです。
+about-origin-heading = 制作の経緯
+about-origin-body-1 = Python から Rust への移植は AI の助けを借りて行いました。
+about-origin-body-2 = それが意味しないことも同じくはっきり述べておきます。動作は自動テストスイートとハードウェアテスト計画によって検証されています。特に Windows 版は、デバイスドライバーのために最も複雑なプラットフォームとなるため、入念に検証しました。一方、macOS と Linux は十分に網羅的なテストができていません。実験的なソフトウェアとしてお取り扱いください。
+about-license-heading = ライセンス
+about-license-body = この移植版は、元のプロジェクトと同じ MIT ライセンスで公開しています。元の著作権表示は、そのライセンスが求めるとおり変更せずに残しています。
+about-license-full = ライセンス本文
+about-third-party-heading = 使用しているライブラリのライセンス
+about-third-party-body = 本プログラムは静的にリンクされています。使用している各ライブラリのコードは実行ファイルの中にあり、それらのライセンスは著作権表示を実行ファイルとともに配布することを求めています。以下にパッケージごとに一件ずつ、全文を掲載しています。
+about-third-party-toggle = 第三者のライセンス表示をすべて表示
+about-privacy-heading = データ
+about-privacy-body-1 = 本プログラムはお使いのコンピューター上で動作します。利用状況の送信はなく、テレメトリーもアカウント登録も必要ありません。ここでの操作がどこかへ報告されることはありません。
+about-privacy-body-2 = ただし二つの機能は自らネットワークに接続し、その際に接続先へ IP アドレスが伝わります。GPS アシストデータはソニーから、アプリ一覧は GitHub から取得されます。これらの機能を使わなければ、本プログラムは完全にオフラインのままです。
+about-privacy-body-3 = カメラから読み出した内容 — シリアル番号や保存された Wi-Fi のパスワードを含みます — がコンピューターの外へ出ることはありません。ファイルに書き出す場合は、そのファイルを誰に渡すかにご注意ください。
+about-privacy-body-4 = 本プログラムの背後で運用されているサービスはなく、作者にデータが届くこともありません。したがって、ここには開示を求めたり削除を求めたりする対象がありません。上記の二つのサービスが自ら見たアドレスをどう扱うかは、本記載ではなく各サービスのプライバシーポリシーによります。
+about-legal-heading = 法的な注意
+about-legal-trademark = 本プロジェクトは独立したものであり、ソニーが制作したものでも、承認したものでも、何らかの関係があるものでもありません。「Sony」「PlayMemories」およびカメラの機種名は Sony Group Corporation の商標であり、ここでは本ツールがどのカメラと通信するかを示す目的でのみ用いています。
+about-legal-own-device = 本プログラムは、ご自身が所有するカメラでの使用を目的としています。
+about-legal-warranty = 本ツールが行うことはソニーがこれらのカメラに想定した範囲の外にあり、実行すると保証が終了する場合があります。ソフトウェア自体はいかなる保証もなく提供され、利用は自己責任となります。自身が所有する機器のリバースエンジニアリングがどこまで許されるかは、国によって異なります。
+about-links-heading = プロジェクト
+about-link-original = Sony-PMCA-RE — 元のプロジェクト
+about-link-fwtool = fwtool — アップデートイメージ生成の基になったファームウェアツール
+about-link-tweak = OpenMemories: Tweak — 対応するカメラに推奨されるアプリ
+about-link-applist = OpenMemories: App list — その他のアプリ
+about-link-platform = OpenMemories: Platform — 同梱のアップデーターボディ
+about-link-devices = 対応するカメラ機種
+about-link-nexhack = Nex-Hack — このプロジェクトの基盤となったコミュニティの調査
+about-link-zve10 = zv-e10-re — ZV-E10 のインターフェースと設定メモリに関する調査
+about-version = バージョン
+btn-copy-url = アドレスをコピー
+msg-url-copied = アドレスをクリップボードにコピーしました。
+
+# 安全に関する注意
+notice-experimental = これは実験的なソフトウェアです。自己責任でご使用ください。
+
+# ネットワーク設定 (GPS / Wi-Fi / ライブ配信)
+gps-downloading = GPS アシストデータをダウンロードしています…
+gps-writing = GPS アシストデータをカメラに書き込んでいます…
+gps-bad-size = GPS アシストデータのサイズが想定と異なるため、書き込みませんでした。
+wifi-read = カメラからライブストリーミング用アクセスポイントを読み取っています…
+wifi-written = ライブストリーミング用アクセスポイントを書き込みました。
+stream-read = カメラからライブ配信設定を読み取っています…
+stream-written = ライブ配信設定を書き込みました。
+net-secret-warning = 警告: このファイルには Wi-Fi パスワードとアクセストークンが平文で含まれます。
+wifi-secret-warning = カメラはこれらのパスワードを暗号化せずに保存しており、ここでは保存されているとおりに表示されます。これらがこのコンピューターから出ることはありません。ファイルに保存する場合は、そのファイルを誰に渡すかにご注意ください。
+gps-heading = GPS アシストデータ
+gps-hint = ファイルをここにドラッグするか、パスを入力してください。空欄のままにすると、最新のデータをソニーから取得します。
+btn-gps-devices = 対応機種
+btn-gps-devices-hide = 対応機種を隠す
+gps-devices-note = 以下の機種はGPSモジュールを内蔵しています。多くの機種では、型番の末尾がVのモデルにのみ搭載されており、VのないモデルにはGPSがありません。
+gps-devices-compact = コンパクトカメラ (DSC)
+gps-devices-slt = SLTカメラ (Aマウント)
+gps-devices-action = アクションカム
+gps-devices-camcorder = ビデオカメラ (ハンディカム)
+gps-col-variant = GPS搭載モデル
+gps-col-arch = アーキテクチャ
+gps-col-module = GPSモジュール
+gps-col-apps = アプリ対応
+gps-yes = はい
+gps-no = いいえ
+gps-unknown = 不明
+gps-devices-untested = GPS搭載、動作未確認
+gps-devices-untested-note = 以下の機種はGPSモジュールを内蔵していますが、OpenMemoriesの機器リストには載っていません。このアプリケーションでの動作は確認されていないため、アーキテクチャとアプリ対応は不明です。
+wifi-heading = ライブストリーミング用アクセスポイント
+wifi-hint = これはライブストリーミング機能が使うアクセスポイントであり、カメラ本体の Wi-Fi 設定ではありません。ストリーミング機能のない機種はこの操作を受け付けません。
+wifi-multi = 複数アクセスポイントのリスト
+wifi-none = 保存されたアクセスポイントはありません。
+wifi-writing = ライブストリーミング用アクセスポイントをカメラに書き込んでいます…
+wifi-confirm = カメラに保存されたすべてのアクセスポイントを置き換えます。続けますか?
+wifi-empty-refused = 空のリストは書き込みません。保存済みのアクセスポイントがすべて消去されるためです。
+stream-heading = ライブ配信
+stream-writing = ライブ配信設定をカメラに書き込んでいます…
+stream-confirm = カメラのライブ配信設定を上書きします。続けますか?
+stream-invalid-json = 設定が有効な JSON ではありません:
+
+# ファームウェア更新と公式ストア
+firmware-warning = 警告: カメラのファームウェアを上書きします。開始後は更新を中断しないでください。USB ケーブルを抜いたり、カメラの電源を切ったりしないでください。必ずこのカメラの機種専用のファームウェアファイルを使用し、バッテリーが十分に充電されていることを確認してください。そうしないと、カメラが永久に使用できなくなるおそれがあります。
+firmware-untested = 未検証: ファームウェアの書き込みは移植されていますが、実機のカメラでは一度も試されていません。書き込みの失敗や中断は元に戻せません。このページの内容はすべて未確認のものとしてお取り扱いください。
+firmware-confirm-required = --confirm なしでは書き込みません。
+firmware-truncated = ファームウェアファイルが不完全です: FDAT ペイロードがファイル末尾を超えています。
+firmware-updating = ファームウェア更新:
+firmware-invalid = このファイルは有効なソニーのファームウェアイメージではありません
+firmware-dat-path = ファームウェアファイル (.dat)
+firmware-drop-hint = .dat ファームウェアファイルをここにドロップ
+firmware-file-required = 先にファームウェアファイルを選択してください。
+firmware-check-ok = カメラはこのイメージを受け入れます。まだ何も書き込まれていません。
+firmware-cancelled = 書き込みを中止しました。カメラは変更されていません。
+firmware-current-version = インストール済みバージョン
+firmware-new-version = このイメージのバージョン
+firmware-models-hint = アップデーターシェルで接続できるカメラが対応機種です。
+btn-firmware-check = イメージを確認
+btn-firmware-flash = ファームウェアを書き込む
+firmware-own-device = これらのリスクを理解し、ご自身のデバイスのみを更新することを確認してください。
+btn-firmware-accept = リスクを理解して書き込む
+
+# ファイルツール：カメラを全く必要としない操作。
+tools-hint = これらの操作はファイルだけを扱い、カメラには一切触れません。したがってここでカメラを壊すことはありません。pmca-console が apk2spk、spk2apk、print-backup、print-usagelog、guess-firmware、xpd-checksum として提供するのと同じ操作です。
+tools-operation = 操作
+tools-apk2spk = .apk を .spk コンテナに包む
+tools-spk2apk = .spk を .apk に戻す
+tools-print-backup = Backup.bin の内容を表示する
+tools-print-usagelog = Usagelog.bin の内容を表示する
+tools-guess-firmware = ファームウェア .dat 内のペイロードを探す
+tools-xpd-checksum = ファイルの CIC チェックサムを計算する
+tools-input = 入力ファイル
+tools-file-required = まずこの操作に必要なファイルを選んでください。
+tools-apk-invalid = このファイルは .spk として包めませんでした
+tools-spk-invalid = このファイルは有効な .spk パッケージではありません
+tools-backup-invalid = このファイルは有効な Backup.bin イメージではありません
+tools-usagelog-invalid = このファイルは有効な使用ログではありません
+tools-reset-value = リセット値:
+tools-fdat-found = ペイロードをオフセット { $offset }、サイズ { $size } で見つけました。
+tools-checksum = チェックサム
+tools-written = { $path } に書き出しました
+
+# プロジェクトドキュメントへの案内
+docs-compatibility = カメラの対応状況
+docs-compatibility-hint = 元のプロジェクトは、動作確認済みカメラの一覧を公開していました。主に旧型のモデルが対象で、次のアドレスにあります:
+devices-note = 元のプロジェクトの一覧に基づくデータです。アプリ対応の横の数字は、カメラのアプリプラットフォームのバージョンです。
+devices-more-note = 以下のカメラは、このプログラムで明示的にテストされていません。最後の列のチェックは、コミュニティから使用の報告があることを示します。さらにサービスシェルに ✖ が付いている場合、その使用は失敗しています。
+btn-more-models = その他の機種
+btn-more-models-hide = その他の機種を隠す
+check-updater-yes = お使いのデバイス { $model } は対応しています。デバイス一覧によると、アップデーターシェルで接続できます。
+check-updater-no = お使いのデバイス { $model } は対応していません。デバイス一覧によると、アップデーターシェルで接続できません。
+check-updater-unknown = お使いのデバイス { $model } の対応状況は不明です。このプログラムのどのデバイス一覧にも載っていないため、アップデーターシェルで接続できるかどうかはわかりません。
+check-apps-no = お使いのデバイス { $model } は対応していません。デバイス一覧によると、アプリに対応していません。
+check-apps-untested = お使いのデバイス { $model } の対応状況は不明です。デバイス一覧には載っていますが、アプリ対応は確認されていません。
+check-apps-unknown = お使いのデバイス { $model } の対応状況は不明です。このプログラムのどのデバイス一覧にも載っていないため、アプリに対応しているかどうかはわかりません。
+check-gps-no = お使いのデバイス { $model } は対応していません。GPS受信機を搭載したデバイスの一覧に載っていません。
+check-gps-untested = お使いのデバイス { $model } の対応状況は不明です。デバイス一覧によるとGPS受信機を搭載していますが、この機種への転送はテストされていません。
+check-gps-unknown = お使いのデバイス { $model } の対応状況は不明です。このプログラムのどのデバイス一覧にも載っていないため、GPS受信機を搭載しているかどうかはわかりません。
+check-unidentified = 接続されたデバイスを識別できなかったため、対応状況は不明です。
+check-proceed = それでも続行しますか？
+check-cancelled = 操作を中止しました。デバイスは変更されていません。
+devices-col-confirmed = 確認済み
+devices-group-ilc = レンズ交換式カメラ（Eマウント・Aマウント）
+devices-group-remote = ライブビューリモコン
+shutter-heading = シャッター回数
+shutter-hint = カメラはシャッターが切られるたびに回数を数え、保存するすべての写真（ARW、JPEG、HEIF）に現在の値を書き込みます。現在の値を読み取るには、最後に撮影した写真を選択してください。ファイルは読み取るだけで、変更されることはありません。
+shutter-source = ファイル内でカウンターが格納される位置はモデルによって異なります。位置は公開された調査（ExifTool）に基づくもので、すべてのモデルで確認されているわけではありません。
+shutter-drop-hint = 写真（ARW、JPEG、HEIF）をここにドロップ
+btn-shutter-read = 写真を解析
+shutter-file-required = 先に写真を選択してください。
+shutter-file = ファイル
+shutter-taken = 撮影日時
+shutter-count = シャッター回数
+shutter-type = シャッター
+shutter-type-mechanical = メカシャッター
+shutter-type-electronic = 電子シャッター
+shutter-electronic-hint = この写真は電子シャッターで撮影されています。多くのモデルではこうした撮影は回数に含まれず、値は最後にメカシャッターで撮影した時点の回数を示します。
+shutter-not-sony = この写真はソニーのカメラで撮影されたものではありません。シャッター回数は読み取れません。
+shutter-unknown-model = このカメラモデルがファイル内のどこにシャッター回数を記録しているかは不明なため、値は表示されません。
+shutter-not-recorded = このファイルには読み取れるシャッター回数が含まれていません。画像編集ソフトで保存・書き出しした写真や、一部のモデルで電子シャッターを使って撮影した写真ではこうなります。メモリーカード上の元のファイルを選択してください。
+shutter-model-mismatch = この写真は、接続中のカメラとは別のモデルで撮影されています。
+shutter-invalid = このファイルは読み取り可能な写真ではありません
+file-filter-photo = 写真 (ARW、JPEG、HEIF)
+usage-log-heading = 使用ログ
+usage-log-hint = カメラは形式が公開されていない内部ログを保持しています。そのまま保存され、カメラは読み取りのみ行われます。
+usage-log-written = 保存先
+btn-usage-log-info = 使用ログについて
+btn-usage-log-info-hide = 説明を隠す
+usage-log-info-what-heading = このログとは
+usage-log-info-what = ソニーはこのログを社内で「KikiLog」と呼んでいます。ログはカメラ自身が書き込み、このプログラムは読み取るだけです。形式の公開された説明は知られていません。
+usage-log-info-read = 読み取りでは何も変わりません。連続して何度かダウンロードした結果はバイト単位で同一でした。
+usage-log-info-flush-heading = 新しい記録が見つからない理由
+usage-log-info-flush = 新しい記録はすぐには現れないことがよくあります。カメラは電源を切るときに初めて保存することがあり、複数回の電源オン/オフに分けて保存される場合もあります。カメラの電源を入れ直して再度ダウンロードし、新しい記録が増えなくなるまで繰り返してください。
+usage-log-info-content-heading = 読み取れること
+usage-log-info-shutter = シャッターのレリーズ：一部のイベントはそれぞれ 1 回の撮影に対応します。ただし、その件数はシャッター回数ではありません。ログのサイズは固定されており、カメラの使用期間全体をカバーしているとは限りません。カメラは合計値を別の場所に保持し、保存する写真に書き込みます。この値は「シャッター回数」セクションで読み取れます。
+usage-log-info-clock = 日時はカメラの時計と同じ程度にしか正確ではありません。バッテリー交換後に時計が戻り、カメラの初期日付を持つ記録が作られることがあります。
+usage-log-info-unknown = イベント番号の公開された説明は知られていません。プログラムは番号を解釈せずにそのまま表示します。
+usage-log-info-privacy-heading = プライバシー
+usage-log-info-privacy = このファイルには、挿入されたメモリーカードのシリアル番号が含まれています。安易に共有したり公開したりしないでください。
+btn-usage-log = ログを保存
+usagelog-size = ログ領域
+usagelog-cursor = 書き込み位置
+usagelog-spare = 第二領域
+usagelog-count = エントリ数
+usagelog-events = 番号別のイベント
+usagelog-entries = 順番に並んだエントリ
+btn-copy-link = リンクをコピー
+msg-link-copied = リンクをクリップボードにコピーしました。
+
+# バックエンドのエラーメッセージ。安定したエラーコードで参照する。
+# 可変部分（パス、ステータスバイト、機器のメッセージ）はフロントエンドが
+# 付加するため、以下の文はそれが無くても完結した文になっている。
+# `err-operation` は意図的に存在しない。このコードは翻訳済みのメッセージを
+# 表すため、そのまま表示する必要がある。
+err-usb-no-device = カメラが見つかりません。カメラを接続して電源を入れてください。
+err-usb-camera-not-ready = カメラは接続されていますが準備ができていません。電源が切れているか、画面で USB モードの選択を待っています。電源を入れるか、カメラで「マスストレージ (MSC)」を選んでください。
+camera-choose-usb-mode = カメラが USB モードの選択を待っています。カメラで「マスストレージ (MSC)」を選んでください。
+err-usb-too-many-devices = 複数のカメラが接続されています。対象の 1 台だけを残して取り外してください。
+err-usb-transfer = USB 転送に失敗しました。別のケーブルやポートを試し、USB ハブは使用しないでください。
+err-usb-stall = カメラが USB 転送を中断しました。
+err-usb-protocol = カメラが予期しない応答を返しました。
+err-usb-msc-status = カメラがストレージコマンドを拒否しました。
+cli-error-prefix = エラー
+err-usb-driver = Windows はこのカメラを直接アクセスできないドライバーに割り当てています。このモードには WinUSB ドライバーが必要で、アプリケーションが自分で割り当てられます。ただし管理者権限で実行している場合に限ります。
+err-needs-elevation = ドライバーの割り当てや解除には管理者権限が必要ですが、Windows の確認が拒否されました。「ドライバーヘルパーを起動」でもう一度試してください。カメラ側で変更する必要はありません。
+err-usb-no-mass-storage-volume = カメラはマスストレージモードで接続されていますが、ドライブを提供していません。カメラをスリープから復帰させ、画面に USB モードの確認が出ていれば応答し、メモリーカードが入っているか確認してください。ドライバーは変更しないでください。このモードには Windows 標準のものが必要です。
+err-usb-msc-sense = カメラがストレージエラーを報告しました。
+err-usb-ptp-response = カメラがコマンドを拒否しました。
+err-usb-unsupported = このカメラはこの機能に対応していません。
+err-usb-updater-status = カメラのファームウェア更新プログラムが操作を拒否しました。
+err-usb-senser = サービスモードのコマンドが失敗しました。
+err-market-core = カメラのデータファイルを読み取れませんでした。
+err-market-json = 受信したデータの形式が正しくありません。
+err-market-missing-field = 応答に必要なフィールドがありません。
+err-market-no-apk = インストールするアプリが選択されていません。
+err-market-http = ネットワーク要求に失敗しました。
+err-market-io = ローカルのインストールサーバーが失敗しました。
+err-market-tls = カメラとの暗号化接続を確立できませんでした。
+err-apk = アプリファイルを読み取れませんでした。
+err-io = ファイルの読み書きに失敗しました。
+err-json = カメラが不正なデータを送信しました。
+err-unknown-locale = この言語は利用できません。
+err-catalog-encoding = 翻訳ファイルが UTF-8 テキストとして保存されていません。UTF-8 で保存し直してください。
+err-internal = 内部エラーが発生しました。これはアプリケーションの不具合です。
+
+## Function analysis
+nav-analysis = 解析
+analysis-title = 機能解析
+analysis-experimental = 実験的機能です。新しい機能で、試したカメラはまだ少数です。
+analysis-own-hardware = ご自身のカメラでのみ使用してください。サービスモード自体が Sony の想定しない操作であり、責任はご自身にあります。
+analysis-explanation-toggle = 説明: 目的、手順、リスク
+analysis-purpose-heading = 何のための機能ですか?
+analysis-purpose = 機能解析は、カメラが自身のメニュー設定の一つを設定メモリー (バックアップ) のどの値に保存しているかを記録します。結果はこのカメラの設定メモリーを説明するもので、他のカメラと比較できますが、カメラが提供する機能を変えるものではありません。
+analysis-how-heading = どのように進みますか?
+analysis-how = 入力したメニュー値ごとに、プログラムは設定メモリー全体を一度読み取ります。毎回それぞれ短いサービスモードのセッションで行います。読み取りの合間にケーブルを抜き、カメラのメニューで設定を変更します。カメラの電源は入れたままです。最後に最初の値をもう一度読み取ります。メニューに追従し、最後に初期値に戻った値が候補です。勝手に変わる値 (カウンター、時計) は除外されます。
+analysis-requirements-heading = 前提条件
+analysis-requirements = カメラが USB で接続され、USB モードが「オート」に設定され、各セッションの後にカメラで「マスストレージ (MSC)」を選ぶこと。Windows では、サービスモードのために一時的にドライバーを割り当てるため、管理者権限が必要です。バッテリーを充電してください。各セッションは約 1 分かかります。
+analysis-read-heading = 読み取りの手順
+analysis-read = スナップショットは読み取るだけです。カメラの設定は何も変わりません。リスクは小さいもののゼロではありません。サービスモードへの切り替え自体が Sony の想定しない操作です。
+analysis-write-heading = 書き込みの手順 (書き込みテスト)
+analysis-write = 明示的に有効にした場合のみ: プログラムが見つけた値をカメラに書き込み、再起動後にメニューで効いているか確認し、その後元の値を書き戻します。書き込むのはカメラ自身が保存した値だけで、該当する候補がちょうど 1 つ見つかった場合に限ります。古い値は事前に保存されます。それでもこの手順はカメラを変更します。不具合によってはサービスでしか直せない状態になる可能性があります。
+analysis-legal-heading = 法的事項
+analysis-legal = 本ソフトウェアは一切の保証なしに提供されます (MIT ライセンス)。カメラへの操作は保証に影響する場合があります。ご自身が所有するカメラでのみ使用してください。解析レポートにはシリアル番号も、見つかった候補以外の設定メモリーの内容も含まれません。自動で送信されることはありません。
+analysis-start-heading = 新しい解析
+analysis-setting-label = カメラでの名称どおりのメニュー設定
+analysis-values-label = メニュー値 (カンマ区切り)
+analysis-values-hint = 最初の値は現在設定されている値です。2 〜 8 個。値ごとにサービスモードのセッションが 1 回必要です。
+analysis-write-option = その後、書き込みテストを行う (カメラを変更します)
+analysis-write-warning = 書き込みテストはカメラを変更します。設定メモリーに値を書き込み、その後元の値を書き戻します。ご自身のカメラでのみ、自己責任で行ってください。
+analysis-write-consent = このカメラは私のもので、リスクは私が負います。
+btn-analysis-write-enable = 書き込みテストを有効にする
+btn-analysis-start = 解析を開始
+btn-analysis-snapshot = バックアップを読み取る
+btn-analysis-new = 新しい解析
+analysis-discard-confirm = 実行中の解析を破棄しますか? これまでのレポートは保存されたままです。
+analysis-access-read = 読み取り
+analysis-access-write = 書き込み
+analysis-access-user = 手動
+analysis-access-local = PC
+analysis-step-snapshot = バックアップを読み取る (設定は「{ $value }」)
+analysis-step-change = カメラのメニューで「{ $value }」に変更
+analysis-step-evaluate = スナップショットを比較
+analysis-step-write = 「{ $value }」の値をカメラに書き込む
+analysis-step-check = カメラの電源を入れ直し、メニューを確認 (期待値:「{ $value }」)
+analysis-step-restore = 「{ $value }」の元の値を書き戻す
+analysis-step-report = 解析レポートを保存
+analysis-do-prepare = 準備: 1. カメラのメニューで「{ $setting }」を「{ $value }」に設定し、MENU ボタンでメニューを閉じて設定を保存します。 2. カメラの電源は入れたままにします。 3. ケーブルを接続し、カメラで「マスストレージ (MSC)」を選びます。
+analysis-do-change = あなたの番: 1. ケーブルを抜きます。 2. カメラの電源は入れたままです。 3. カメラのメニューで「{ $setting }」を「{ $value }」に設定し、MENU ボタンでメニューを閉じて設定を保存します。 4. ケーブルを再接続し、「マスストレージ (MSC)」を選びます。
+analysis-do-check = あなたの番: 1. ケーブルを抜きます。 2. カメラの電源を切って入れ直します。 3. メニューで「{ $setting }」の表示を確認します。
+analysis-do-reconnect = ケーブルを再接続し、カメラで「マスストレージ (MSC)」を選んでください。
+analysis-reading = スナップショット { $index } / { $total }: 読み取り中はケーブルを抜かないでください。
+analysis-cli-continue = Enter で続行、q で中止:
+analysis-confirm-word = はい
+analysis-cli-confirm = 確認するには「{ $word }」と入力してください:
+analysis-write-declined = 確認されませんでした。何も書き込まれていません。
+analysis-aborted = 中止しました。何も書き込まれていません。
+analysis-snapshot-done = スナップショットを読み取りました。カメラはサービスモードを終了しました。
+analysis-result = 比較した値: { $compared }、候補: { $count }、勝手に変わった値: { $running }。
+analysis-candidate-consistent = メニューと明確に一致
+analysis-candidate-inconsistent = 明確には一致しない
+analysis-write-preview-heading = 書き込まれる内容
+analysis-write-preview = 値 { $id } ({ $size } バイト): { $old } (「{ $old-label }」) から { $new } (「{ $new-label }」) へ。新しい値は、「{ $new-label }」が設定されていたときにカメラ自身が保存したものです。
+btn-analysis-write = 書き込む
+btn-analysis-skip-write = 書き込みテストなしで終了
+analysis-written = 値を書き込み、読み戻して、永続的に保存しました。
+analysis-menu-question = メニューには今何が表示されていますか?
+analysis-menu-other = その他
+btn-analysis-menu-confirm = 確定
+btn-analysis-restore = 元の値を書き戻す
+analysis-restored = 元の値を書き戻し、永続的に保存しました。
+analysis-survived = 書き込んだ値は再起動後も保存されていました。
+analysis-not-survived = 書き込んだ値は再起動後には保存されていませんでした。
+analysis-report-saved = 解析レポートを保存しました: { $path }
+analysis-report-hint = レポートにはシリアル番号もバックアップも含まれません。結果を確認・記録してもらうために共有できます。
+btn-analysis-export = レポートをエクスポート…
+file-filter-analysis = 解析レポート
+analysis-pending = 書き込みテストが完了していません。元の値は保存されており、書き戻すことができます。
+analysis-pending-none = このカメラについて未完了の書き込みテストは保存されていません。
+analysis-invalid-setting = メニュー設定をカメラでの名称どおりに入力してください。
+analysis-invalid-values = 異なるメニュー値を 2 〜 { $max } 個入力してください。最初の値は現在設定されている値です。
+analysis-already-complete = すべてのスナップショットは読み取り済みです。
+analysis-other-camera = 最初のスナップショットと同じカメラではありません。解析を中止しました。
+analysis-write-not-allowed = この状態では書き込みテストはできません。
+analysis-camera-changed = カメラの値が最初のスナップショットと異なっています。何も書き込まれていません。
+analysis-write-refused = カメラが値を拒否しました。すべて元のままです。({ $detail })
+analysis-refuse-none = 書き込みテスト不可: メニューに追従した値はありません。
+analysis-refuse-ambiguous = 書き込みテスト不可: メニューに追従した値が { $count } 個あり、どれか 1 つに確定できません。
+analysis-refuse-inconsistent = 書き込みテスト不可: 値がメニュー値と明確に一致しません。
+analysis-refuse-size = 書き込みテスト不可: 値の大きさは { $size } バイトです。書き込むのは小さな値だけです。
+analysis-refuse-read-only = 書き込みテスト不可: カメラはこの値を読み取り専用としています。
+analysis-refuse-protected = 書き込みテスト不可: カメラはこの値を保護対象としています。
+settings-analysis-heading = 機能解析
+settings-analysis-purpose = 機能解析は、カメラが自身のメニュー設定の一つを設定メモリーのどの値に保存しているかを記録します。自分の機種の設定メモリーを理解し、結果を共有したい方を対象としています。
+settings-analysis-why-off = 通常の使用には不要で、カメラを何度もサービスモードに切り替え、要求に応じてカメラへの書き込みも行うため、オフになっています。実験的な機能で、試した機種はまだ少数です。
+settings-analysis-toggle = 機能解析を有効にする (メニューに「解析」を表示)
+settings-analysis-confirm = 機能解析を有効にしますか? カメラを何度もサービスモードに切り替え、要求に応じてカメラに書き込むことがあります。ご自身のカメラでのみ使用してください。
+btn-analysis-enable = 有効にする
+settings-analysis-on = 機能解析は有効です。
+settings-analysis-off = 機能解析はオフです。
+analysis-needs-admin = スナップショットごとにサービスモード用の管理者権限が必要です。Windows はプログラムのセッションごとに一度だけ確認します。今すぐドライバーヘルパーを起動するか、最初のスナップショットが要求するまで待つことができます。
+analysis-changed-hint = 確認してください: 候補は見つかりませんでした。以下の値は変化しましたが、初期値に戻りませんでした。どれかが 2 つの値の間で一度だけ変わっている場合、最初のスナップショットの時点でカメラは最初のメニュー値になっていなかった可能性が高いです。その場合は初期値を正しく設定して解析をやり直してください。
+analysis-changed-info = 情報: 解析中に勝手に変化した値 (カウンター、時計など) は無視されます。操作は不要です。
+elevation-admin = 管理者
+elevation-standard = 標準権限
+elevation-admin-hint = プログラムは管理者権限で実行されており、サービスモードに必要なドライバーを割り当てられます。
+elevation-standard-hint = プログラムは標準権限で実行されています。サービスモード、調整、機能解析のために、必要に応じて管理者権限のドライバーヘルパーを起動します。Windows の確認はセッションごとに一度です。クリックで起動します。
+driver-helper-declined = 管理者権限の確認が拒否されました。権限がないとサービスモード用のドライバーを割り当てられません。何も変更されていません。
+elevation-helper = ドライバーヘルパー動作中
+elevation-helper-hint = 管理者権限を持つヘルパーがサービスモード用のドライバーを割り当てます。ウィンドウはなく、プログラムの終了とともに終わります。これ以上の確認はありません。
+elevation-helper-confirm = ドライバーヘルパーを今すぐ起動しますか? Windows は管理者権限を一度だけ確認し、プログラムを閉じるまで再び確認しません。
+analysis-cross-heading = 別のカメラで照合
+analysis-cross-intro = オプション: 別のカメラにも見つかった値があるか、そこで何が設定されているかを確認します。読み取りのみです。同じ番号が必ずしも同じ機能を意味するわけではありません。それを確かめられるのは、もう一方のカメラのメニューを見たときだけです。結果は同じ解析レポートに追加されます。
+analysis-cross-do = 1. 解析したカメラを外します。 2. 別のカメラの電源を入れ、USB モードを「オート」にし、ケーブルを接続して「マスストレージ (MSC)」を選びます。
+btn-analysis-cross = 別のカメラを確認
+analysis-cross-present = あり、値 { $value }
+analysis-cross-match = 「{ $label }」と一致
+analysis-cross-nomatch = 測定したどのメニュー値とも一致しない
+analysis-cross-absent = なし
+analysis-cross-same-camera = これは解析したカメラそのものです。別のカメラを接続してください。
+analysis-cross-not-now = 照合は、すべてのスナップショットを読み取り、書き戻しを待つ書き込み値がなくなってから行えます。
+analysis-cross-none = 照合する候補がありません。
+analysis-wrong-camera = 接続されているのは解析したカメラではありません。{ $model } を接続してください。何も書き込まれていません。
+keys-fetching = ソースをダウンロードしています…
+keys-scanning = 鍵データを検索しています…
+keys-complete = すべての鍵データが揃っています。
+keys-incomplete = 一部の鍵データがまだ不足しています。
+keys-present = あり
+keys-missing = なし
+keys-class-senser = サービスモードの鍵（サービスシェル、調整、解析）
+keys-class-cic = XPD チェックサム鍵（アプリのインストール）
+keys-class-spk = SPK 鍵データ（アプリのインストール、apk2spk）
+keys-class-fdat = FDAT 鍵データ（アップデーターシェルのファームウェア）
+plugin-heading = プラグイン
+plugin-intro = プラグインは、言語、カメラ設定のスイッチ、互換性情報、ツール、診断をこのプログラムに追加します。プラグインはご自身で選んだファイルからのみ導入され、プラグインストアはありません。プラグインのコードはサンドボックス内で実行され、ファイル、ネットワーク、鍵データにはアクセスできません。信頼できる作成者のプラグインだけをインストールしてください。変更は次回の起動時に反映されます。
+plugin-none = インストールされているプラグインはありません。
+plugin-inactive = （再起動後に有効）
+plugin-author = 作成者
+plugin-restart = 変更を反映するには、プログラムを再起動してください。
+btn-plugin-install = プラグインをインストール…
+plugin-install-confirm = このプラグインができること：
+btn-confirm-plugin-install = プラグインをインストール
+plugin-installed = プラグインをインストールしました。
+plugin-remove-confirm = プラグイン「{ $name }」を削除しますか？
+plugin-removed = プラグイン { $id } を削除しました。
+plugin-perm-languages = プログラムに言語を追加する
+plugin-perm-camera-settings = カメラの設定を変更する（指定された 2 つの値の間のみ、確認後に限る）
+plugin-perm-compatibility = 互換性一覧に項目を追加する
+plugin-perm-code = サンドボックス内で独自のコードを実行する（ツールまたは診断）
+plugin-perm-host-os = オペレーティングシステムの種類を問い合わせる
+plugin-perm-host-cameras = 接続されている Sony カメラとそのモードを確認する
+plugin-invalid = 使用できるプラグインではありません：{ $reason }
+plugin-no-folder = ユーザーデータフォルダーを特定できないため、プラグインをインストールできません。
+plugin-not-installed = ID が { $id } のプラグインはインストールされていません。
+plugin-failed = プラグインが失敗しました：{ $reason }
+plugin-unknown-entry = { $id } を提供する読み込み済みのプラグインはありません。
+plugin-run-done = プラグインの処理が完了しました。
+plugin-run-warning = プラグインの処理が完了しました（注意事項あり）。
+plugin-run-error = プラグインがエラーを報告しました。
+plugin-tools-heading = プラグインのツール
+plugin-tools-hint = これらはインストール済みのプラグインに由来し、サンドボックス内で実行されます。プラグインが受け取るのは、渡されたものと宣言した内容だけで、カメラを変更することはできません。
+plugin-diagnostics-heading = プラグインの診断
+plugin-compat-heading = プラグインより
+plugin-col-note = 備考
+file-filter-plugin = プラグインファイル
+keys-not-set-up = この操作に必要な鍵データが設定されていません。
+err-missing-keys = この操作に必要な鍵データが設定されていません。
+keys-heading = 鍵データが必要です
+keys-intro = サービスモードの鍵、XPD チェックサム鍵、SPK 鍵データはこのプログラムには含まれていません。お持ちのソース（リポジトリ、アーカイブ、またはファイル）のアドレスを入力すると、認識できた部分を検出してインポートします。何も実行されず、データはこのコンピューター内にのみ保持されます。
+keys-law-notice = お住まいの地域の法律を守り、ご自分のカメラとデータに対してのみ作業してください。
+keys-url-label = ソースアドレス（1 行に 1 つ）
+keys-url-required = 少なくとも 1 つのソースアドレスを入力してください。
+btn-keys-import = インポート
+btn-import-keys = 鍵データを設定

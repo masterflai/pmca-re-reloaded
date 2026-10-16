@@ -1,0 +1,12 @@
+{
+  "$schema": "../gen/schemas/desktop-schema.json",
+  "identifier": "default",
+  "description": "Lets the frontend subscribe to backend events. Progress updates and the drag-and-drop notifications for .apk files both travel over the core event system, which is gated by the access control list. Commands defined by this crate itself are not listed here because they are not subject to the list. The dialog plugin is listed because the file pickers are opened from this crate's own commands, which run with the window's permissions.",
+  "windows": ["main"],
+  "permissions": [
+    "core:event:allow-listen",
+    "core:event:allow-unlisten",
+    "dialog:allow-open",
+    "dialog:allow-save"
+  ]
+}

@@ -1,0 +1,87 @@
+# cargo-deny configuration.
+#
+# THIRD-PARTY.md is generated, and a generated file rots quietly: someone adds
+# a dependency, the file still looks plausible, and the release ships an
+# attribution list that is missing a package. CI regenerates the file and
+# compares, which catches that directly. This config catches the other half —
+# a dependency arriving under a licence nobody agreed to distribute under.
+#
+# Run locally with:
+#   cargo deny check licenses bans sources
+#   cargo deny --manifest-path crates/pmca-gui/src-tauri/Cargo.toml check licenses bans sources
+#
+# `advisories` is deliberately not in that list: the CI `audit` job already
+# runs cargo-audit against the same database for both lock files, and two
+# tools reporting the same CVE twice makes the failure harder to read, not
+# easier.
+
+[graph]
+# THIRD-PARTY.md is generated from `cargo metadata --all-features`, so the
+# licence check has to see the same set of packages. Without this, an optional
+# dependency could ship in a release binary without ever being checked here.
+all-features = true
+
+[licenses]
+# Every licence below is one this project may distribute a statically linked
+# binary under. A package offering a choice (`MIT OR Apache-2.0`) passes if any
+# one of its options is listed, which is why the permissive option is all that
+# is needed for the several dozen crates that also offer GPL or LGPL.
+#
+# Adding an entry here is a decision, not a formality: it says the obligations
+# of that licence are understood and met. THIRD-PARTY.md is where they are met
+# for MIT and Apache-2.0 — both require the copyright notice to travel with the
+# binary.
+allow = [
+    "MIT",
+    "Apache-2.0",
+    "Apache-2.0 WITH LLVM-exception",
+    "BSD-2-Clause",
+    "BSD-3-Clause",
+    "ISC",
+    "Zlib",
+    "0BSD",
+    "Unlicense",
+    # The ICU/`icu_*` crates and `unicode-ident`. Permissive, with an attribution
+    # requirement that THIRD-PARTY.md satisfies.
+    "Unicode-3.0",
+    # `webpki-roots` ships Mozilla's CA bundle under this.
+    "CDLA-Permissive-2.0",
+    # The only copyleft licence in the tree (5 packages). It is file-based: it
+    # obliges whoever *modifies* those files to publish the changes, and reaches
+    # no further into a work that merely links them. None of them is modified
+    # here. If that ever stops being true, the modified files have to be
+    # published — which is the reason this comment exists. Unmodified, one duty
+    # remains: a binary distribution must say where the source is (section 3.2),
+    # which the `Source` link in THIRD-PARTY.md does. Four of the five are
+    # build-time only (proc-macros); `option-ext` ships in the GUI via
+    # `tauri -> dirs`.
+    "MPL-2.0",
+]
+
+# The default is 0.8. Left explicit because the licence texts in the registry
+# are not always byte-identical to the SPDX originals, and a silent drop to a
+# lower threshold would weaken the check without anyone noticing.
+confidence-threshold = 0.8
+
+[bans]
+# Duplicate versions of the same crate are normal in a tree this size and are
+# not a licensing or security problem; failing on them would train people to
+# ignore this job.
+multiple-versions = "allow"
+# A wildcard version requirement would make a dependency unreproducible. In
+# practice this check has nothing to find here and one thing to trip over: the
+# only wildcards in the graph are this workspace's own `pmca-core = { path =
+# ... }` entries, which cannot carry a version and are not third-party packages
+# at all. `allow-wildcard-paths` does not help, because it only exempts crates
+# marked `publish = false`. Third-party versions come from Cargo.lock and the
+# root `[workspace.dependencies]`, so reproducibility is already settled
+# elsewhere; leaving this on would only teach people to ignore a red job.
+wildcards = "allow"
+
+[sources]
+# Everything must come from crates.io. A git or path dependency slipping in
+# would not be picked up by the THIRD-PARTY.md generator, which reads the
+# registry source directories.
+unknown-registry = "deny"
+unknown-git = "deny"
+allow-registry = ["https://github.com/rust-lang/crates.io-index"]

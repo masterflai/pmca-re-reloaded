@@ -1,0 +1,388 @@
+name: Release
+
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+
+env:
+  CARGO_TERM_COLOR: always
+  # Release artefacts are built with current stable, not with the MSRV that
+  # rust-toolchain.toml pins for contributors.
+  RUSTUP_TOOLCHAIN: stable
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: Build ${{ matrix.target }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-latest
+            target: x86_64-unknown-linux-gnu
+            archive: pmca-console-x86_64-linux.tar.gz
+          - os: windows-latest
+            target: x86_64-pc-windows-msvc
+            archive: pmca-console-x86_64-windows.zip
+          - os: macos-latest
+            target: aarch64-apple-darwin
+            archive: pmca-console-aarch64-macos.tar.gz
+          # `macos-13` was retired by GitHub; `macos-15-intel` is the current
+          # x86_64 label. Cross-compiling this from the arm runner would build
+          # fine but could not run the `--help` smoke test, because the arm
+          # images have no Rosetta.
+          - os: macos-15-intel
+            target: x86_64-apple-darwin
+            archive: pmca-console-x86_64-macos.tar.gz
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ matrix.target }}
+
+      - uses: Swatinem/rust-cache@v2
+        with:
+          key: ${{ matrix.target }}
+
+      - name: Install libudev (required by nusb on Linux)
+        if: runner.os == 'Linux'
+        run: sudo apt-get update && sudo apt-get install -y libudev-dev
+
+      - name: Build release binary
+        run: cargo build --release --locked -p pmca-cli --target ${{ matrix.target }}
+
+      - name: Smoke test
+        shell: bash
+        run: |
+          BIN="target/${{ matrix.target }}/release/pmca-console"
+          [ "${{ runner.os }}" = "Windows" ] && BIN="$BIN.exe"
+          "$BIN" --help
+
+      - name: Package
+        shell: bash
+        run: |
+          mkdir -p staging
+          if [ "${{ runner.os }}" = "Windows" ]; then
+            cp "target/${{ matrix.target }}/release/pmca-console.exe" staging/
+          else
+            cp "target/${{ matrix.target }}/release/pmca-console" staging/
+          fi
+          cp LICENSE.txt README.md THIRD-PARTY.md staging/
+          cd staging
+          if [ "${{ runner.os }}" = "Windows" ]; then
+            7z a "../${{ matrix.archive }}" ./*
+          else
+            tar czf "../${{ matrix.archive }}" ./*
+          fi
+
+      - name: Checksum
+        shell: bash
+        run: |
+          if command -v sha256sum >/dev/null; then
+            sha256sum "${{ matrix.archive }}" > "${{ matrix.archive }}.sha256"
+          else
+            shasum -a 256 "${{ matrix.archive }}" > "${{ matrix.archive }}.sha256"
+          fi
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.archive }}
+          path: |
+            ${{ matrix.archive }}
+            ${{ matrix.archive }}.sha256
+          if-no-files-found: error
+
+  gui:
+    name: GUI ${{ matrix.label }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-latest
+            label: windows
+            bundles: msi,nsis
+            targets: ""
+            bundle-dir: target/release/bundle
+          # One universal binary instead of two builds: `lipo` puts both
+          # architectures into the same .dmg, so there is one download for
+          # Apple silicon and Intel alike.
+          - os: macos-latest
+            label: macos
+            bundles: dmg
+            targets: aarch64-apple-darwin,x86_64-apple-darwin
+            tauri-target: universal-apple-darwin
+            bundle-dir: target/universal-apple-darwin/release/bundle
+          # Deliberately not `ubuntu-latest`: packages built against a newer
+          # glibc refuse to start on older distributions, and the reverse
+          # holds. The oldest supported image is therefore the widest reach.
+          - os: ubuntu-22.04
+            label: linux
+            bundles: deb,appimage
+            targets: ""
+            bundle-dir: target/release/bundle
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ matrix.targets }}
+
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: crates/pmca-gui/src-tauri -> ../../../target
+          key: ${{ matrix.label }}
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install Tauri system dependencies
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libwebkit2gtk-4.1-dev libappindicator3-dev \
+            librsvg2-dev patchelf libudev-dev
+
+      - name: Install frontend dependencies
+        working-directory: crates/pmca-gui
+        run: npm ci
+
+      # `tauri build` runs the frontend build itself through
+      # `beforeBuildCommand` and adds the `custom-protocol` feature.
+      - name: Build bundle
+        working-directory: crates/pmca-gui
+        run: npm run tauri -- build --bundles ${{ matrix.bundles }} ${{ matrix.tauri-target && format('--target {0}', matrix.tauri-target) || '' }}
+
+      - name: Collect bundles
+        shell: bash
+        run: |
+          mkdir -p gui-artifacts
+          find "${{ matrix.bundle-dir }}" -type f \
+            \( -name '*.msi' -o -name '*-setup.exe' -o -name '*.dmg' \
+               -o -name '*.deb' -o -name '*.AppImage' \) \
+            -exec cp {} gui-artifacts/ \;
+          # An empty directory here means the bundler silently produced
+          # nothing, which is easy to miss in a green log. This runs before
+          # the portable archive is added, so that archive cannot mask it.
+          [ -n "$(ls -A gui-artifacts)" ] || { echo "no bundle was produced"; exit 1; }
+
+      # Windows is the one platform where "portable" is not the default: both
+      # bundles above install. macOS ships a .app and Linux an AppImage, which
+      # already run from wherever they are put.
+      #
+      # The executable alone is not enough. `resolve_resource` looks for two
+      # resources beside it and otherwise falls back to a compiled-in path from
+      # the build machine, which exists nowhere else — the window then opens and
+      # the firmware view fails with a file-not-found error naming a directory
+      # the user has never seen. So they travel with it, in the same layout the
+      # installers use. The enclosing directory keeps an extraction into a
+      # shared folder from separating them again.
+      - name: Assemble portable archive
+        if: matrix.label == 'windows'
+        shell: bash
+        run: |
+          DIR=pmca-gui-portable
+          mkdir -p "$DIR"
+          cp target/release/pmca-gui.exe "$DIR/"
+          cp -r updatershell/bodyfs "$DIR/bodyfs"
+          cp LICENSE.txt README.md THIRD-PARTY.md "$DIR/"
+          7z a gui-artifacts/pmca-gui-portable-x86_64-windows.zip "$DIR"
+
+      - name: Checksum
+        shell: bash
+        working-directory: gui-artifacts
+        run: |
+          for f in *; do
+            if command -v sha256sum >/dev/null; then
+              sha256sum "$f" > "$f.sha256"
+            else
+              shasum -a 256 "$f" > "$f.sha256"
+            fi
+          done
+          ls -l
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: pmca-gui-${{ matrix.label }}
+          path: gui-artifacts/*
+          if-no-files-found: error
+
+  # Authenticode signing of the Windows downloads through SignPath.io (free for
+  # open source, certificate by SignPath Foundation). Runs only once the
+  # repository variable SIGNPATH_ORGANIZATION_ID is set; until then releases
+  # stay unsigned. Every signing request waits for a manual approval in
+  # SignPath. The artifact configuration is in .signpath/.
+  sign:
+    name: Sign Windows downloads
+    needs: [build, gui]
+    if: vars.SIGNPATH_ORGANIZATION_ID != ''
+    runs-on: windows-latest
+    timeout-minutes: 360
+    permissions:
+      actions: read
+      contents: read
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: pmca-console-x86_64-windows.zip
+          path: unsigned/console
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: pmca-gui-windows
+          path: unsigned/gui
+
+      - name: Collect the files to sign
+        id: collect
+        shell: bash
+        run: |
+          mkdir -p signpath-input work
+          7z x unsigned/console/pmca-console-x86_64-windows.zip -owork/console
+          7z x unsigned/gui/pmca-gui-portable-x86_64-windows.zip -owork
+          cp work/console/pmca-console.exe work/pmca-gui-portable/pmca-gui.exe signpath-input/
+          cp unsigned/gui/*.msi unsigned/gui/*-setup.exe signpath-input/
+          ls -l signpath-input
+          # SignPath checks the product version in every executable against this.
+          msi=$(basename signpath-input/*.msi)
+          version=${msi#*_}
+          echo "version=${version%%_*}" >> "$GITHUB_OUTPUT"
+
+      - name: Upload unsigned files
+        id: upload-unsigned
+        uses: actions/upload-artifact@v4
+        with:
+          name: signpath-input
+          path: signpath-input/*
+          if-no-files-found: error
+
+      - name: Sign
+        uses: signpath/github-action-submit-signing-request@v3
+        with:
+          api-token: ${{ secrets.SIGNPATH_API_TOKEN }}
+          organization-id: ${{ vars.SIGNPATH_ORGANIZATION_ID }}
+          project-slug: ${{ vars.SIGNPATH_PROJECT_SLUG }}
+          signing-policy-slug: ${{ vars.SIGNPATH_POLICY_SLUG }}
+          github-artifact-id: ${{ steps.upload-unsigned.outputs.artifact-id }}
+          wait-for-completion: true
+          # Leaves room for the manual approval within the 6-hour job limit.
+          wait-for-completion-timeout-in-seconds: 20000
+          output-artifact-directory: signed
+          parameters: |
+            version: ${{ toJSON(steps.collect.outputs.version) }}
+
+      # Same file names as the unsigned downloads, so the release job can
+      # simply put these in their place.
+      - name: Repackage with the signed files
+        shell: bash
+        run: |
+          mkdir -p out
+          cp signed/*.msi signed/*-setup.exe out/
+          cp signed/pmca-console.exe work/console/pmca-console.exe
+          (cd work/console && 7z a ../../out/pmca-console-x86_64-windows.zip ./*)
+          cp signed/pmca-gui.exe work/pmca-gui-portable/pmca-gui.exe
+          (cd work && 7z a ../out/pmca-gui-portable-x86_64-windows.zip pmca-gui-portable)
+          cd out
+          for f in *; do sha256sum "$f" > "$f.sha256"; done
+          ls -l
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: windows-signed
+          path: out/*
+          if-no-files-found: error
+
+  release:
+    name: Publish release
+    needs: [build, gui, sign]
+    runs-on: ubuntu-latest
+    # `sign` is skipped while signing is not set up; that must not stop the release.
+    if: >-
+      always() && startsWith(github.ref, 'refs/tags/v')
+      && needs.build.result == 'success' && needs.gui.result == 'success'
+      && (needs.sign.result == 'success' || needs.sign.result == 'skipped')
+    permissions:
+      contents: write
+    steps:
+      - name: Download artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+
+      # One folder per artifact. The signed Windows files replace their
+      # unsigned namesakes; the input to the signing request is not published.
+      - name: Assemble release files
+        shell: bash
+        run: |
+          mkdir -p release
+          for dir in artifacts/*/; do
+            case "$dir" in
+              artifacts/windows-signed/|artifacts/signpath-input/) ;;
+              *) cp "$dir"* release/ ;;
+            esac
+          done
+          if [ -d artifacts/windows-signed ]; then
+            cp artifacts/windows-signed/* release/
+            echo "SIGNED=1" >> "$GITHUB_ENV"
+          fi
+          ls -l release
+
+      - name: Release notes
+        shell: bash
+        run: |
+          {
+            cat <<'EOF'
+          ### Which file do I need?
+
+          | System | Desktop app | Command line |
+          |---|---|---|
+          | **Windows** (x64) | `…_x64-setup.exe` (installer) · `…_x64_en-US.msi` · `pmca-gui-portable-x86_64-windows.zip` (no installation) | `pmca-console-x86_64-windows.zip` |
+          | **macOS** (Apple silicon and Intel) | `…_universal.dmg` | `pmca-console-aarch64-macos.tar.gz` · `pmca-console-x86_64-macos.tar.gz` |
+          | **Linux** (x64) | `….AppImage` (portable) · `…_amd64.deb` | `pmca-console-x86_64-linux.tar.gz` |
+
+          ### Signatures
+
+          EOF
+            if [ -n "$SIGNED" ]; then
+              echo 'The Windows downloads are signed. Free code signing provided by'
+              echo '[SignPath.io](https://about.signpath.io/), certificate by'
+              echo '[SignPath Foundation](https://signpath.org/). See the'
+              echo '[code signing policy](https://github.com/masterflai/pmca-re-reloaded#code-signing-policy).'
+            else
+              echo 'The Windows downloads of this release are not signed. Windows shows a'
+              echo 'SmartScreen warning; choose *More info* → *Run anyway*.'
+            fi
+            cat <<'EOF'
+
+          macOS downloads are not signed. macOS will claim the application is
+          damaged. It is not — the file carries a quarantine flag. Right-click it
+          and choose *Open*, or run
+          `xattr -dr com.apple.quarantine "/Applications/PMCA-RE RELOADED.app"`.
+          Linux packages start without complaint.
+
+          Each file has a `.sha256` beside it. That confirms the download
+          arrived intact, not who produced it.
+          EOF
+          } > notes.md
+          cat notes.md
+
+      - name: Create GitHub release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: release/*
+          name: PMCA-RE RELOADED ${{ github.ref_name }}
+          draft: true
+          generate_release_notes: true
+          # Prepended to the generated notes. Every release repeats this,
+          # because whoever downloads a release rarely reads the README first,
+          # and macOS phrases the quarantine flag as file corruption.
+          body_path: notes.md

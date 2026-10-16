@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<!--
+  Modern Fluent-styled shell for the PMCA toolkit GUI.
+
+  The look and feel intentionally mirrors UniGetUI: a left navigation rail,
+  Fluent design surfaces (Mica-like translucency, accent color, light/dark
+  themes) and rounded controls, all from hand-written CSS in src/styles.css.
+
+  The light/dark choice lives on the `data-theme` attribute below; `system`
+  defers to the OS via `prefers-color-scheme`.
+
+  All user-visible strings are referenced by i18n key via `data-i18n` and are
+  filled in at runtime from the shared Fluent (.ftl) language files, so the
+  GUI and CLI stay perfectly in sync and translators only edit /locales.
+-->
+<html lang="en" data-theme="system">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title data-i18n="app-title">PMCA-RE RELOADED – Camera Toolkit</title>
+    <link rel="stylesheet" href="/src/styles.css" />
+  </head>
+  <body>
+    <div class="app">
+      <nav class="nav-rail" aria-label="main">
+        <div class="nav-title" data-i18n="app-title">PMCA-RE RELOADED</div>
+        <button class="nav-item active" data-view="welcome" data-i18n="nav-welcome">Welcome</button>
+        <button class="nav-item" data-view="info" data-i18n="nav-camera-info">Camera info</button>
+        <button class="nav-item" data-view="install" data-i18n="nav-install-app">Apps</button>
+        <button class="nav-item" data-view="tweaks" data-i18n="nav-tweaks">Tweaks</button>
+        <!-- Shown only once unlocked in the settings; see applyAnalysisNav. -->
+        <button class="nav-item" data-view="analysis" data-i18n="nav-analysis" hidden>Analysis</button>
+        <button class="nav-item" data-view="network" data-i18n="nav-network">Network</button>
+        <button class="nav-item" data-view="firmware" data-i18n="nav-firmware">Update firmware</button>
+        <button class="nav-item" data-view="service" data-i18n="nav-service">Service shell</button>
+        <button class="nav-item" data-view="updater" data-i18n="nav-updater">Updater shell</button>
+        <button class="nav-item" data-view="tools" data-i18n="nav-tools">File tools</button>
+        <div class="nav-spacer"></div>
+        <button class="nav-item" data-view="settings" data-i18n="nav-settings">Settings</button>
+        <button class="nav-item" data-view="license" data-i18n="nav-license">License</button>
+        <!-- Filled in by main.ts from the running build, never typed in here. -->
+        <div class="nav-version"><span data-i18n="about-version">Version</span> <span id="app-version"></span></div>
+      </nav>
+
+      <main class="content">
+        <header class="content-header">
+          <h1 data-i18n="app-title">PMCA-RE RELOADED – Camera Toolkit</h1>
+          <div class="header-controls">
+            <!-- Windows only; filled in by setupElevationBadge in main.ts. -->
+            <button type="button" id="elevation-badge" class="elevation-badge" hidden></button>
+            <div class="lang-picker">
+              <label data-i18n="settings-language" for="lang-select">Language</label>
+              <select id="lang-select"></select>
+            </div>
+            <!-- Segments are filled in by main.ts so the icons and the
+                 translated labels stay in one place. -->
+            <div
+              id="theme-switch"
+              class="theme-switch"
+              role="radiogroup"
+            ></div>
+          </div>
+        </header>
+
+        <section id="view" class="view"></section>
+
+        <footer class="notice" data-i18n="notice-experimental">
+          This is experimental software. Use at your own risk.
+        </footer>
+      </main>
+    </div>
+
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

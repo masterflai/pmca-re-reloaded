@@ -1,0 +1,33 @@
+[package]
+name = "pmca-app"
+description = "Application-level orchestration shared by the PMCA-RE RELOADED CLI and GUI front-ends."
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+
+[dependencies]
+pmca-core = { path = "../pmca-core" }
+pmca-i18n = { path = "../pmca-i18n" }
+pmca-apk = { path = "../pmca-apk" }
+pmca-usb = { path = "../pmca-usb" }
+pmca-market = { path = "../pmca-market" }
+pmca-platform = { path = "../pmca-platform" }
+serde.workspace = true
+serde_json.workspace = true
+thiserror.workspace = true
+# Reads the archive a key source may come as (e.g. a repository zip).
+zip.workspace = true
+# Runs plugin tools and diagnostics in a sandbox. An interpreter rather than a
+# JIT: no generated machine code, and no WebAssembly text parser in a release.
+wasmi = { version = "2", default-features = false, features = ["std", "validate", "stable", "auto-dispatch"] }
+
+[dev-dependencies]
+# The plugin tests write their small WebAssembly modules as text.
+wasmi = { version = "2", features = ["wat"] }
+wat = "1"
+# Writes the TypeScript shapes of the DTOs the window receives to
+# crates/pmca-gui/src/bindings when the tests run (see .cargo/config.toml).
+ts-rs = "11"
+# Lets the file-tool tests stand in fabricated key material.
+pmca-core = { path = "../pmca-core", features = ["test-keys"] }

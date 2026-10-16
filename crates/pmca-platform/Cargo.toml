@@ -1,0 +1,11 @@
+[package]
+name = "pmca-platform"
+description = "Camera settings (backup property) and tweak layer for PMCA-RE RELOADED."
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+
+[dependencies]
+pmca-core = { path = "../pmca-core" }
+thiserror.workspace = true
