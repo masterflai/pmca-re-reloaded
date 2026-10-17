@@ -6,6 +6,20 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+## [1.1.3-rc.3] - 2026-10-17
+
+Third pre-release. The program is unchanged since 1.1.3-rc.2; it contains the
+macOS fixes of 1.1.3-rc.1 and the installer artwork of 1.1.3-rc.2 (see below).
+Reports from a Mac are still welcome: please say whether the camera can be
+read in MTP mode, and include the exact error message if it cannot.
+
+### Changed
+
+- The demo animation in the README now follows the reader's light or dark
+  colour scheme, like the screenshots.
+- Releases are published as soon as they are built; pre-releases are marked
+  as such.
+
 ## [1.1.3-rc.2] - 2026-10-17
 
 Second pre-release. It contains the macOS fixes of 1.1.3-rc.1 (see below),
