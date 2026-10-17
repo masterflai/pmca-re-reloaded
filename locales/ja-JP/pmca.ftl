@@ -621,6 +621,7 @@ camera-choose-usb-mode = カメラが USB モードの選択を待っていま�
 err-usb-too-many-devices = 複数のカメラが接続されています。対象の 1 台だけを残して取り外してください。
 err-usb-transfer = USB 転送に失敗しました。別のケーブルやポートを試し、USB ハブは使用しないでください。
 err-usb-permission = プログラムはカメラを USB で開く権限がありません。Linux ではこの権限は、ソニーのベンダー ID に対する udev ルールによって一度だけ与えられます。ソースツリーの scripts/linux-prepare.sh がそれを導入します。その後、カメラを抜き差ししてください。
+err-usb-busy = 別のプログラムがカメラを使用しているため、開けませんでした。カメラにアクセスし得る他のプログラムを閉じてください。Linux ではデスクトップのメディア監視がカメラを掴むことがあり、scripts/linux-prepare.sh がそれを停止します。
 err-usb-stall = カメラが USB 転送を中断しました。
 err-usb-protocol = カメラが予期しない応答を返しました。
 err-usb-msc-status = カメラがストレージコマンドを拒否しました。

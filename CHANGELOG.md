@@ -6,6 +6,18 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+## [1.1.2] - 2026-10-17
+
+### Fixed
+
+- Linux: in mass-storage mode the kernel's `usb-storage` driver held the
+  camera, so opening it failed with “interface is busy” and the app wrongly
+  suggested another cable. The program now detaches that driver itself when it
+  claims the interface, so no manual step is needed.
+- Linux: if another program still holds the camera (for example the desktop's
+  media monitor), the error now says so and points to `scripts/linux-prepare.sh`
+  instead of suggesting a cable change.
+
 ## [1.1.1] - 2026-10-17
 
 ### Fixed

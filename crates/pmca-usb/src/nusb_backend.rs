@@ -234,13 +234,25 @@ fn is_permission_denied(message: &str) -> bool {
     lower.contains("permission denied") || lower.contains("access denied")
 }
 
+/// Recognises an open failure caused by another holder of the interface.
+///
+/// On Linux a kernel driver (`usb-storage` in mass-storage mode) or a desktop
+/// media monitor can hold interface 0, so claiming it fails with `EBUSY`. The
+/// kernel-driver case is handled by claiming with a detach, so what is left is
+/// a userspace holder; either way it is not a transfer fault and must not send
+/// the user cable-hunting. A pure function so it can be tested without hardware.
+fn is_busy(message: &str) -> bool {
+    message.to_ascii_lowercase().contains("busy")
+}
+
 /// Classifies a device-open failure.
 ///
 /// Windows binds cameras in mass-storage mode to `USBSTOR`, and cameras in MTP
 /// mode to `WUDFWpdMtp`; both refuse the raw transfers the service and updater
 /// modes need. That is not a transfer fault, and reporting it as one sends the
 /// user looking for a bad cable, so it gets its own variant. A Linux `EACCES`
-/// is the same trap from the other direction and gets [`Error::Permission`].
+/// (permission) and `EBUSY` (another holder) are the same trap from the other
+/// direction and get [`Error::Permission`] and [`Error::Busy`].
 ///
 /// The driver detail carries the name of the driver actually bound rather than
 /// the backend's sentence: it identifies the culprit, and being a Windows
@@ -252,6 +264,8 @@ fn map_open_error<E: std::fmt::Display>(device: &DiscoveredDevice, e: E) -> Erro
         Error::Driver(device.os_driver().unwrap_or(message))
     } else if is_permission_denied(&message) {
         Error::Permission(message)
+    } else if is_busy(&message) {
+        Error::Busy(message)
     } else {
         Error::Transfer(message)
     }
@@ -287,7 +301,7 @@ impl NusbBackend {
     pub fn open(device: &DiscoveredDevice, interface_number: u8) -> Result<Self> {
         let handle = device.info.open().wait().map_err(|e| map_open_error(device, e))?;
         let interface = handle
-            .claim_interface(interface_number)
+            .detach_and_claim_interface(interface_number)
             .wait()
             .map_err(|e| map_open_error(device, e))?;
         Ok(Self::new(interface, interface_number))
@@ -301,7 +315,7 @@ impl NusbBackend {
         let config = handle.active_configuration().map_err(|e| Error::Transfer(e.to_string()))?;
         let iface = find_bulk_interface(&config, class).ok_or(Error::NoDevice)?;
         let interface = handle
-            .claim_interface(iface.interface_number)
+            .detach_and_claim_interface(iface.interface_number)
             .wait()
             .map_err(|e| map_open_error(device, e))?;
         Ok((Self::new(interface, iface.interface_number), iface))
@@ -318,7 +332,7 @@ impl NusbBackend {
         let config = handle.active_configuration().map_err(|e| Error::Transfer(e.to_string()))?;
         let eps = find_all_bulk_endpoints(&config, class).ok_or(Error::NoDevice)?;
         let interface = handle
-            .claim_interface(eps.interface_number)
+            .detach_and_claim_interface(eps.interface_number)
             .wait()
             .map_err(|e| map_open_error(device, e))?;
         Ok((Self::new(interface, eps.interface_number), eps))
@@ -468,7 +482,7 @@ fn map_transfer_error(e: nusb::transfer::TransferError) -> Error {
 
 #[cfg(test)]
 mod tests {
-    use super::{is_driver_refusal, is_permission_denied};
+    use super::{is_busy, is_driver_refusal, is_permission_denied};
 
     #[test]
     fn a_driver_refusal_is_recognised_in_every_known_wording() {
@@ -498,5 +512,17 @@ mod tests {
     fn a_genuine_transfer_fault_is_not_mistaken_for_a_permission_failure() {
         assert!(!is_permission_denied("device disconnected"));
         assert!(!is_permission_denied("timed out"));
+    }
+
+    #[test]
+    fn a_busy_interface_is_recognised() {
+        assert!(is_busy("Interface is busy (os error 16)"));
+        assert!(is_busy("Device or resource busy"));
+    }
+
+    #[test]
+    fn a_genuine_transfer_fault_is_not_mistaken_for_a_busy_interface() {
+        assert!(!is_busy("device disconnected"));
+        assert!(!is_busy("permission denied"));
     }
 }

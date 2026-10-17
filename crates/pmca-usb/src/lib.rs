@@ -109,6 +109,14 @@ pub enum Error {
     /// [`Error::Transfer`] whose message sends the user cable-hunting.
     #[error("permission to open the USB device was denied: {0}")]
     Permission(String),
+    /// Another holder has claimed the interface.
+    ///
+    /// On Linux a userspace holder (a desktop media monitor, another program)
+    /// keeps the interface, so claiming it fails with `EBUSY`. Kept apart from
+    /// [`Error::Transfer`] whose message would send the user cable-hunting; the
+    /// kernel-driver case is already resolved by claiming with a detach.
+    #[error("the USB interface is held by another program: {0}")]
+    Busy(String),
     /// A mass-storage camera is bound to `USBSTOR` but has no drive letter.
     ///
     /// Deliberately not folded into [`Error::Driver`], whose advice is to bind
@@ -224,6 +232,7 @@ impl Error {
             Error::Transfer(_) => "usb-transfer",
             Error::Driver(_) => "usb-driver",
             Error::Permission(_) => "usb-permission",
+            Error::Busy(_) => "usb-busy",
             Error::NoMassStorageVolume => "usb-no-mass-storage-volume",
             Error::AppInstallMode => "usb-app-install-mode",
             Error::Stall => "usb-stall",
@@ -251,7 +260,8 @@ impl Error {
             | Error::UpdaterStatus(s)
             | Error::Senser(s)
             | Error::Driver(s)
-            | Error::Permission(s) => Some(s.clone()),
+            | Error::Permission(s)
+            | Error::Busy(s) => Some(s.clone()),
             Error::Protocol(s) => Some((*s).to_string()),
             Error::MscStatus { status } => Some(status.to_string()),
             Error::MscSense { key, asc, ascq } => {

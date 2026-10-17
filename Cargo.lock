@@ -773,7 +773,7 @@ checksum = "a89322df9ebe1c1578d689c92318e070967d1042b512afbe49518723f4e6d5cd"
 
 [[package]]
 name = "pmca-apk"
-version = "1.1.1"
+version = "1.1.2"
 dependencies = [
  "thiserror",
  "zip",
@@ -781,7 +781,7 @@ dependencies = [
 
 [[package]]
 name = "pmca-app"
-version = "1.1.1"
+version = "1.1.2"
 dependencies = [
  "pmca-apk",
  "pmca-core",
@@ -800,7 +800,7 @@ dependencies = [
 
 [[package]]
 name = "pmca-cli"
-version = "1.1.1"
+version = "1.1.2"
 dependencies = [
  "clap",
  "pmca-app",
@@ -814,7 +814,7 @@ dependencies = [
 
 [[package]]
 name = "pmca-core"
-version = "1.1.1"
+version = "1.1.2"
 dependencies = [
  "aes",
  "cipher",
@@ -827,7 +827,7 @@ dependencies = [
 
 [[package]]
 name = "pmca-i18n"
-version = "1.1.1"
+version = "1.1.2"
 dependencies = [
  "fluent",
  "fluent-langneg",
@@ -838,7 +838,7 @@ dependencies = [
 
 [[package]]
 name = "pmca-market"
-version = "1.1.1"
+version = "1.1.2"
 dependencies = [
  "aes",
  "cbc",
@@ -858,7 +858,7 @@ dependencies = [
 
 [[package]]
 name = "pmca-platform"
-version = "1.1.1"
+version = "1.1.2"
 dependencies = [
  "pmca-core",
  "thiserror",
@@ -866,7 +866,7 @@ dependencies = [
 
 [[package]]
 name = "pmca-plugin-sdk"
-version = "1.1.1"
+version = "1.1.2"
 dependencies = [
  "serde",
  "serde_json",
@@ -874,7 +874,7 @@ dependencies = [
 
 [[package]]
 name = "pmca-usb"
-version = "1.1.1"
+version = "1.1.2"
 dependencies = [
  "nusb",
  "pmca-core",

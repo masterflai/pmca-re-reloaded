@@ -623,6 +623,7 @@ camera-choose-usb-mode = L'appareil attend le choix du mode USB. Choisissez « 
 err-usb-too-many-devices = Plusieurs appareils sont connectés. Déconnectez tous les autres.
 err-usb-transfer = Le transfert USB a échoué. Essayez un autre câble ou port, et évitez les concentrateurs USB.
 err-usb-permission = Le programme n'est pas autorisé à ouvrir l'appareil photo par USB. Sous Linux, ce droit s'accorde une fois pour toutes par une règle udev pour l'identifiant fabricant de Sony ; le script scripts/linux-prepare.sh des sources l'installe. Débranchez ensuite l'appareil, puis rebranchez-le.
+err-usb-busy = Un autre programme utilise l'appareil photo, il n'a donc pas pu être ouvert. Fermez les autres programmes susceptibles d'y accéder ; sous Linux, le moniteur de médias du bureau peut le retenir, ce que scripts/linux-prepare.sh arrête.
 err-usb-stall = L'appareil a interrompu le transfert USB.
 err-usb-protocol = L'appareil a envoyé une réponse inattendue.
 err-usb-msc-status = L'appareil a rejeté une commande de stockage.

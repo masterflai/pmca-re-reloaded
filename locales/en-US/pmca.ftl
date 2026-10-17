@@ -634,6 +634,7 @@ camera-choose-usb-mode = The camera is waiting for the USB mode to be chosen. Pl
 err-usb-too-many-devices = More than one camera is connected. Disconnect all but the one you want to work with.
 err-usb-transfer = The USB transfer failed. Try a different cable or port, and avoid USB hubs.
 err-usb-permission = The program is not allowed to open the camera over USB. On Linux this permission is granted once by a udev rule for Sony's vendor id; the script scripts/linux-prepare.sh in the source tree installs it. Then unplug the camera and plug it back in.
+err-usb-busy = Another program is using the camera, so it could not be opened. Close other programs that might access it; on Linux the desktop's media monitor can hold it, which scripts/linux-prepare.sh stops.
 err-usb-stall = The camera aborted the USB transfer.
 err-usb-protocol = The camera sent an unexpected response.
 err-usb-msc-status = The camera rejected a storage command.

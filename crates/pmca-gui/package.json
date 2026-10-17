@@ -1,6 +1,6 @@
 {
   "name": "pmca-gui",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "private": true,
   "description": "Modern Fluent-style GUI for PMCA-RE RELOADED (Tauri front-end).",
   "type": "module",

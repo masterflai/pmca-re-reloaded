@@ -622,6 +622,7 @@ camera-choose-usb-mode = Fotoaparat čeka odabir USB načina. Na fotoaparatu oda
 err-usb-too-many-devices = Priključen je više od jednog fotoaparata. Odspojite sve osim onoga s kojim želite raditi.
 err-usb-transfer = USB prijenos nije uspio. Pokušajte s drugim kabelom ili priključkom i izbjegavajte USB razdjelnike.
 err-usb-permission = Program ne smije otvoriti fotoaparat putem USB-a. Na Linuxu se to pravo dodjeljuje jednokratno udev pravilom za Sonyjevu oznaku proizvođača; skripta scripts/linux-prepare.sh u izvornom kodu ga instalira. Zatim odspojite fotoaparat i ponovno ga priključite.
+err-usb-busy = Fotoaparat koristi drugi program pa ga nije bilo moguće otvoriti. Zatvorite druge programe koji bi mu mogli pristupati; na Linuxu ga može držati monitor medija radne površine, što zaustavlja skripta scripts/linux-prepare.sh.
 err-usb-stall = Fotoaparat je prekinuo USB prijenos.
 err-usb-protocol = Fotoaparat je poslao neočekivan odgovor.
 err-usb-msc-status = Fotoaparat je odbio naredbu za pohranu.

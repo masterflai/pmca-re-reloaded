@@ -615,6 +615,7 @@ camera-choose-usb-mode = 相机正在等待选择 USB 模式。请在相机上�
 err-usb-too-many-devices = 连接了多台相机。请只保留您要操作的那一台。
 err-usb-transfer = USB 传输失败。请更换数据线或接口，并避免使用 USB 集线器。
 err-usb-permission = 程序无权通过 USB 打开相机。在 Linux 上，此权限通过一条针对索尼厂商 ID 的 udev 规则一次性授予；源码树中的 scripts/linux-prepare.sh 会安装该规则。之后请拔下相机并重新接入。
+err-usb-busy = 另一个程序正在使用相机，因此无法打开。请关闭其他可能访问它的程序；在 Linux 上，桌面的媒体监视器可能占用它，scripts/linux-prepare.sh 会将其停止。
 err-usb-stall = 相机中止了 USB 传输。
 err-usb-protocol = 相机返回了意外的响应。
 err-usb-msc-status = 相机拒绝了一条存储命令。

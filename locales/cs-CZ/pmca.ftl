@@ -622,6 +622,7 @@ camera-choose-usb-mode = Fotoaparát čeká na volbu režimu USB. Na fotoaparát
 err-usb-too-many-devices = Je připojen více než jeden fotoaparát. Odpojte všechny kromě toho, se kterým chcete pracovat.
 err-usb-transfer = Přenos přes USB se nezdařil. Zkuste jiný kabel nebo port a nepoužívejte rozbočovače USB.
 err-usb-permission = Program nesmí otevřít fotoaparát přes USB. V Linuxu se toto právo udělí jednorázově pravidlem udev pro identifikátor výrobce Sony; skript scripts/linux-prepare.sh ve zdrojovém stromu je nainstaluje. Poté fotoaparát odpojte a znovu připojte.
+err-usb-busy = Fotoaparát používá jiný program, takže jej nešlo otevřít. Zavřete ostatní programy, které by k němu mohly přistupovat; v Linuxu jej může držet monitor médií prostředí, který zastaví skript scripts/linux-prepare.sh.
 err-usb-stall = Fotoaparát přerušil přenos přes USB.
 err-usb-protocol = Fotoaparát odeslal neočekávanou odpověď.
 err-usb-msc-status = Fotoaparát odmítl příkaz úložiště.
