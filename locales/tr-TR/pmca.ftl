@@ -622,6 +622,7 @@ err-usb-camera-not-ready = Kamera bağlı ama hazır değil: Kapalı ya da ekran
 camera-choose-usb-mode = Kamera USB modunun seçilmesini bekliyor. Lütfen kamerada “Yığın Depolama (MSC)” seçin.
 err-usb-too-many-devices = Birden fazla kamera bağlı. Kullanmak istediğiniz dışındakileri çıkarın.
 err-usb-transfer = USB aktarımı başarısız oldu. Farklı bir kablo ya da bağlantı noktası deneyin ve USB göbeklerinden kaçının.
+err-usb-permission = Programın kamerayı USB üzerinden açma izni yok. Linux'ta bu hak, Sony'nin üretici kimliği için bir udev kuralıyla bir kez verilir; kaynak ağacındaki scripts/linux-prepare.sh betiği onu kurar. Ardından kamerayı çıkarıp yeniden takın.
 err-usb-stall = Kamera USB aktarımını durdurdu.
 err-usb-protocol = Kamera beklenmedik bir yanıt gönderdi.
 err-usb-msc-status = Kamera bir depolama komutunu reddetti.

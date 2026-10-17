@@ -101,6 +101,14 @@ pub enum Error {
     /// simply has to hand the device to a driver that allows raw access.
     #[error("the device is claimed by a driver that does not allow raw USB access: {0}")]
     Driver(String),
+    /// The OS refused to open the device for lack of permission.
+    ///
+    /// On Linux the raw USB node is root-only by default, so opening it as an
+    /// ordinary user fails with `EACCES`. The remedy is a one-off udev rule,
+    /// not a different cable, which is why this is kept apart from
+    /// [`Error::Transfer`] whose message sends the user cable-hunting.
+    #[error("permission to open the USB device was denied: {0}")]
+    Permission(String),
     /// A mass-storage camera is bound to `USBSTOR` but has no drive letter.
     ///
     /// Deliberately not folded into [`Error::Driver`], whose advice is to bind
@@ -215,6 +223,7 @@ impl Error {
         match self {
             Error::Transfer(_) => "usb-transfer",
             Error::Driver(_) => "usb-driver",
+            Error::Permission(_) => "usb-permission",
             Error::NoMassStorageVolume => "usb-no-mass-storage-volume",
             Error::AppInstallMode => "usb-app-install-mode",
             Error::Stall => "usb-stall",
@@ -238,9 +247,11 @@ impl Error {
     /// appended verbatim so that diagnostics survive translation.
     pub fn detail(&self) -> Option<String> {
         match self {
-            Error::Transfer(s) | Error::UpdaterStatus(s) | Error::Senser(s) | Error::Driver(s) => {
-                Some(s.clone())
-            }
+            Error::Transfer(s)
+            | Error::UpdaterStatus(s)
+            | Error::Senser(s)
+            | Error::Driver(s)
+            | Error::Permission(s) => Some(s.clone()),
             Error::Protocol(s) => Some((*s).to_string()),
             Error::MscStatus { status } => Some(status.to_string()),
             Error::MscSense { key, asc, ascq } => {

@@ -621,6 +621,7 @@ err-usb-camera-not-ready = Aparat jest podłączony, ale nie jest gotowy: jest w
 camera-choose-usb-mode = Aparat czeka na wybór trybu USB. Wybierz w aparacie „Pamięć masowa (MSC)”.
 err-usb-too-many-devices = Podłączono więcej niż jeden aparat. Odłącz wszystkie oprócz tego, z którym chcesz pracować.
 err-usb-transfer = Transfer USB nie powiódł się. Spróbuj innego kabla lub portu i unikaj koncentratorów USB.
+err-usb-permission = Program nie ma uprawnień do otwarcia aparatu przez USB. W systemie Linux to prawo nadaje się jednorazowo regułą udev dla identyfikatora producenta Sony; skrypt scripts/linux-prepare.sh w źródłach ją instaluje. Następnie odłącz aparat i podłącz go ponownie.
 err-usb-stall = Aparat przerwał transfer USB.
 err-usb-protocol = Aparat odesłał nieoczekiwaną odpowiedź.
 err-usb-msc-status = Aparat odrzucił polecenie pamięci masowej.

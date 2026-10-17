@@ -6,6 +6,19 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+## [1.1.1] - 2026-10-17
+
+### Fixed
+
+- Linux: when the program was not allowed to open the camera over USB, it
+  wrongly suggested trying another cable or port. It now explains that this is
+  a permission question, solved once with a udev rule, and points to
+  `scripts/linux-prepare.sh`.
+- Linux: `scripts/linux-prepare.sh` installed its udev rule under a name that
+  sorted too late for the access-granting `uaccess` tag to take effect, so
+  opening the camera still failed. The rule is now installed where it works,
+  and an earlier, wrongly named copy is removed.
+
 ## [1.1.0] - 2026-10-16
 
 ### Added

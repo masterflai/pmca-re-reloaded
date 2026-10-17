@@ -621,6 +621,7 @@ err-usb-camera-not-ready = Fotoaparát je připojen, ale není připraven: je vy
 camera-choose-usb-mode = Fotoaparát čeká na volbu režimu USB. Na fotoaparátu zvolte „Hromadné ukládání (MSC)“.
 err-usb-too-many-devices = Je připojen více než jeden fotoaparát. Odpojte všechny kromě toho, se kterým chcete pracovat.
 err-usb-transfer = Přenos přes USB se nezdařil. Zkuste jiný kabel nebo port a nepoužívejte rozbočovače USB.
+err-usb-permission = Program nesmí otevřít fotoaparát přes USB. V Linuxu se toto právo udělí jednorázově pravidlem udev pro identifikátor výrobce Sony; skript scripts/linux-prepare.sh ve zdrojovém stromu je nainstaluje. Poté fotoaparát odpojte a znovu připojte.
 err-usb-stall = Fotoaparát přerušil přenos přes USB.
 err-usb-protocol = Fotoaparát odeslal neočekávanou odpověď.
 err-usb-msc-status = Fotoaparát odmítl příkaz úložiště.

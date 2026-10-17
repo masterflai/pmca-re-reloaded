@@ -16,10 +16,17 @@
 set -eu
 
 VENDOR=054c
-RULES=/etc/udev/rules.d/99-pmca-re-reloaded.rules
+# The number must sort before systemd's 70-uaccess.rules: that rule runs the
+# `uaccess` builtin which sets the ACL, and it only sees a TAG+="uaccess" that an
+# earlier rule has already added. A 99- file would be applied too late and leave
+# the node root-only.
+RULES=/etc/udev/rules.d/60-pmca-re-reloaded.rules
+LEGACY_RULES=/etc/udev/rules.d/99-pmca-re-reloaded.rules
 
 install_rules() {
 	echo "==> installing $RULES"
+	# Drop the earlier, wrongly-ordered file so a stale copy cannot linger.
+	sudo rm -f "$LEGACY_RULES"
 	# `uaccess` is what gives the seat's active user access; MODE alone would
 	# only widen the permissions for a group nobody is in.
 	printf 'SUBSYSTEM=="usb", ATTR{idVendor}=="%s", MODE="0660", TAG+="uaccess"\n' "$VENDOR" \

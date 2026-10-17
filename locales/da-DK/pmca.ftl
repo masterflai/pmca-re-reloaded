@@ -621,6 +621,7 @@ err-usb-camera-not-ready = Kameraet er tilsluttet, men ikke klar: Det er slukket
 camera-choose-usb-mode = Kameraet venter på, at USB-tilstanden vælges. Vælg „Masselager (MSC)“ på kameraet.
 err-usb-too-many-devices = Der er tilsluttet mere end ét kamera. Frakobl alle undtagen det, du vil arbejde med.
 err-usb-transfer = USB-overførslen mislykkedes. Prøv et andet kabel eller en anden port, og undgå USB-hubs.
+err-usb-permission = Programmet har ikke lov til at åbne kameraet over USB. På Linux gives denne ret én gang med en udev-regel for Sonys producentkendetegn; scriptet scripts/linux-prepare.sh i kildeteksten installerer den. Tag derefter kameraet ud, og tilslut det igen.
 err-usb-stall = Kameraet afbrød USB-overførslen.
 err-usb-protocol = Kameraet sendte et uventet svar.
 err-usb-msc-status = Kameraet afviste en lagerkommando.

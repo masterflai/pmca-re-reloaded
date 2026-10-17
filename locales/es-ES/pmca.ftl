@@ -622,6 +622,7 @@ err-usb-camera-not-ready = La cámara está conectada pero no lista: está apaga
 camera-choose-usb-mode = La cámara espera que se elija el modo USB. Elige «Almacenamiento masivo (MSC)» en la cámara.
 err-usb-too-many-devices = Hay más de una cámara conectada. Desconecta todas salvo la que quieras usar.
 err-usb-transfer = Falló la transferencia USB. Prueba otro cable u otro puerto y evita los concentradores USB.
+err-usb-permission = El programa no tiene permiso para abrir la cámara por USB. En Linux este derecho se concede una sola vez mediante una regla udev para el identificador de fabricante de Sony; el script scripts/linux-prepare.sh del código fuente la instala. Después, desconecta la cámara y vuelve a conectarla.
 err-usb-stall = La cámara canceló la transferencia USB.
 err-usb-protocol = La cámara envió una respuesta inesperada.
 err-usb-msc-status = La cámara rechazó un comando de almacenamiento.

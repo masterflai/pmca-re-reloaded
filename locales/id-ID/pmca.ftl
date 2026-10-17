@@ -622,6 +622,7 @@ err-usb-camera-not-ready = Kamera terhubung tetapi belum siap: kamera mati atau 
 camera-choose-usb-mode = Kamera menunggu pemilihan mode USB. Pilih “Penyimpanan Massal (MSC)” di kamera.
 err-usb-too-many-devices = Lebih dari satu kamera terhubung. Cabut semuanya kecuali yang ingin Anda gunakan.
 err-usb-transfer = Transfer USB gagal. Coba kabel atau port lain, dan hindari hub USB.
+err-usb-permission = Program tidak diizinkan membuka kamera melalui USB. Di Linux hak ini diberikan sekali melalui aturan udev untuk kode produsen Sony; skrip scripts/linux-prepare.sh dalam kode sumber memasangnya. Setelah itu cabut kamera lalu colokkan kembali.
 err-usb-stall = Kamera membatalkan transfer USB.
 err-usb-protocol = Kamera mengirim respons yang tidak terduga.
 err-usb-msc-status = Kamera menolak sebuah perintah penyimpanan.

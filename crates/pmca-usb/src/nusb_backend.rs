@@ -221,21 +221,37 @@ fn is_driver_refusal(message: &str) -> bool {
         || message.to_ascii_lowercase().contains("incompatible driver")
 }
 
+/// Recognises an open failure caused by missing permission on the USB node.
+///
+/// On Linux the node is root-only by default, so opening it as an ordinary
+/// user fails with `EACCES`; the backend surfaces that as a message containing
+/// "permission denied" (or, on some platforms, "access denied"). Left in
+/// [`Error::Transfer`] it would tell the user to swap cables, when the real
+/// fix is a one-off udev rule — hence its own variant. A pure function so it
+/// can be tested without hardware.
+fn is_permission_denied(message: &str) -> bool {
+    let lower = message.to_ascii_lowercase();
+    lower.contains("permission denied") || lower.contains("access denied")
+}
+
 /// Classifies a device-open failure.
 ///
 /// Windows binds cameras in mass-storage mode to `USBSTOR`, and cameras in MTP
 /// mode to `WUDFWpdMtp`; both refuse the raw transfers the service and updater
 /// modes need. That is not a transfer fault, and reporting it as one sends the
-/// user looking for a bad cable, so it gets its own variant.
+/// user looking for a bad cable, so it gets its own variant. A Linux `EACCES`
+/// is the same trap from the other direction and gets [`Error::Permission`].
 ///
-/// The detail carries the name of the driver actually bound rather than the
-/// backend's sentence: it identifies the culprit, and being a Windows driver
-/// name it reads the same in every language — the backend's sentence would
-/// appear in English underneath a translated message.
+/// The driver detail carries the name of the driver actually bound rather than
+/// the backend's sentence: it identifies the culprit, and being a Windows
+/// driver name it reads the same in every language — the backend's sentence
+/// would appear in English underneath a translated message.
 fn map_open_error<E: std::fmt::Display>(device: &DiscoveredDevice, e: E) -> Error {
     let message = e.to_string();
     if is_driver_refusal(&message) {
         Error::Driver(device.os_driver().unwrap_or(message))
+    } else if is_permission_denied(&message) {
+        Error::Permission(message)
     } else {
         Error::Transfer(message)
     }
@@ -452,7 +468,7 @@ fn map_transfer_error(e: nusb::transfer::TransferError) -> Error {
 
 #[cfg(test)]
 mod tests {
-    use super::is_driver_refusal;
+    use super::{is_driver_refusal, is_permission_denied};
 
     #[test]
     fn a_driver_refusal_is_recognised_in_every_known_wording() {
@@ -469,5 +485,18 @@ mod tests {
         assert!(!is_driver_refusal("device disconnected"));
         assert!(!is_driver_refusal("timed out"));
         assert!(!is_driver_refusal("Access denied (insufficient permissions)"));
+    }
+
+    #[test]
+    fn a_permission_failure_is_recognised_in_every_known_wording() {
+        assert!(is_permission_denied("permission denied (os error 13)"));
+        assert!(is_permission_denied("Permission denied"));
+        assert!(is_permission_denied("Access denied (insufficient permissions)"));
+    }
+
+    #[test]
+    fn a_genuine_transfer_fault_is_not_mistaken_for_a_permission_failure() {
+        assert!(!is_permission_denied("device disconnected"));
+        assert!(!is_permission_denied("timed out"));
     }
 }

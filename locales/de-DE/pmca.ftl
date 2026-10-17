@@ -628,6 +628,7 @@ err-usb-camera-not-ready = Die Kamera ist angeschlossen, aber nicht bereit: Sie 
 camera-choose-usb-mode = Die Kamera wartet auf die Auswahl des USB-Modus. Bitte an der Kamera „Bildübertragung (MSC)“ bzw. „Massenspeicher“ wählen.
 err-usb-too-many-devices = Es ist mehr als eine Kamera angeschlossen. Bitte alle bis auf die gewünschte trennen.
 err-usb-transfer = Die USB-Übertragung ist fehlgeschlagen. Bitte ein anderes Kabel oder einen anderen Anschluss verwenden und USB-Hubs vermeiden.
+err-usb-permission = Das Programm darf die Kamera nicht über USB öffnen. Unter Linux wird dieses Recht einmalig durch eine udev-Regel für Sonys Hersteller-Kennung erteilt; das Skript scripts/linux-prepare.sh im Quelltext richtet sie ein. Danach die Kamera ab- und wieder anstecken.
 err-usb-stall = Die Kamera hat die USB-Übertragung abgebrochen.
 err-usb-protocol = Die Kamera hat unerwartet geantwortet.
 err-usb-msc-status = Die Kamera hat einen Speicherbefehl abgelehnt.
