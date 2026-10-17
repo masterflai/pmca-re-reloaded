@@ -405,7 +405,10 @@ jobs:
         with:
           files: release/*
           name: PMCA-RE RELOADED ${{ github.ref_name }}
-          draft: true
+          # Pre-release tags (v1.2.3-rc.1) are published at once as pre-releases;
+          # final releases stay drafts for a last look before they become latest.
+          draft: ${{ !contains(github.ref_name, '-') }}
+          prerelease: ${{ contains(github.ref_name, '-') }}
           # The curated CHANGELOG section replaces GitHub's commit list.
           generate_release_notes: false
           # The download table follows it in every release, because whoever
