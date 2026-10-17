@@ -6,6 +6,18 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+## [1.1.3-rc.2] - 2026-10-17
+
+Second pre-release. It contains the macOS fixes of 1.1.3-rc.1 (see below),
+which still wait for a report from a Mac: please say whether the camera can be
+read in MTP mode, and include the exact error message if it cannot.
+
+### Changed
+
+- Windows: the installers now look like the app. The setup file has its own
+  icon instead of the generic NSIS one, and the NSIS and MSI pages show the
+  app's colours, camera and wordmark.
+
 ## [1.1.3-rc.1] - 2026-10-17
 
 Pre-release for testing on macOS. Please report whether the camera can be
