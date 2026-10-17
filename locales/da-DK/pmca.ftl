@@ -304,6 +304,12 @@ service-backup-written = Sikkerhedskopipost { $id } skrevet.
 service-backup-persisted = Sikkerhedskopien af undersystem { $id } er skrevet til flash.
 service-terminal-on = Fejlsøgningsterminalen er nu slået til.
 service-terminal-off = Fejlsøgningsterminalen er nu slået fra.
+btn-service-terminal-open = Åbn seriel konsol
+btn-service-terminal-close = Luk seriel konsol
+service-terminal-heading = Seriel konsol
+service-terminal-hint = På Linux-kameraer er fejlfindingsterminalen en root-shell over USB. Åbn den, og skriv kommandoer som i en terminal.
+service-terminal-label = Konsol
+service-terminal-interactive = Seriel konsol åben. Skriv kommandoer; skriv 'exit' for at vende tilbage til service-shellen.
 
 # Servicesiden uden avanceret tilstand: hvordan skallen nås fra konsollen, og
 # hvad der skal være på plads først.

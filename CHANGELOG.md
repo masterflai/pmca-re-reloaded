@@ -6,6 +6,15 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+### Added
+
+- Service mode now offers the camera's interactive serial console (a root
+  BusyBox shell over USB on modern Linux models). In `pmca-console` type `term`
+  in the service shell; in the app a console panel sits on the service page.
+  From there, remounting `/usr` read-write and editing files in the camera's
+  Linux userland are ordinary shell commands. The console still needs the
+  service-mode keys, exactly as the rest of service mode does.
+
 ## [1.1.3-rc.3] - 2026-10-17
 
 Third pre-release. The program is unchanged since 1.1.3-rc.2; it contains the

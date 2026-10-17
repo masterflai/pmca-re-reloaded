@@ -305,6 +305,12 @@ service-backup-written = Zapisano wpis kopii zapasowej { $id }.
 service-backup-persisted = Kopię zapasową podsystemu { $id } zapisano w pamięci flash.
 service-terminal-on = Terminal diagnostyczny jest teraz włączony.
 service-terminal-off = Terminal diagnostyczny jest teraz wyłączony.
+btn-service-terminal-open = Otwórz konsolę szeregową
+btn-service-terminal-close = Zamknij konsolę szeregową
+service-terminal-heading = Konsola szeregowa
+service-terminal-hint = W aparatach z Linuksem terminal diagnostyczny to powłoka roota przez USB. Otwórz ją i wpisuj polecenia jak w terminalu.
+service-terminal-label = Konsola
+service-terminal-interactive = Konsola szeregowa otwarta. Wpisuj polecenia; wpisz „exit”, aby wrócić do powłoki serwisowej.
 
 # Strona serwisowa bez trybu zaawansowanego: jak dostać się do powłoki z
 # konsoli i co trzeba wcześniej przygotować.

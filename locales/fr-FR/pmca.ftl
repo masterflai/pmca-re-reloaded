@@ -305,6 +305,12 @@ service-backup-written = Entrée de sauvegarde { $id } écrite.
 service-backup-persisted = Sauvegarde du sous-système { $id } écrite en mémoire flash.
 service-terminal-on = Le terminal de débogage est maintenant activé.
 service-terminal-off = Le terminal de débogage est maintenant désactivé.
+btn-service-terminal-open = Ouvrir la console série
+btn-service-terminal-close = Fermer la console série
+service-terminal-heading = Console série
+service-terminal-hint = Sur les appareils Linux, le terminal de débogage est un shell root par USB. Ouvrez-le, puis tapez des commandes comme dans un terminal.
+service-terminal-label = Console
+service-terminal-interactive = Console série ouverte. Tapez des commandes ; tapez « exit » pour revenir au shell de service.
 
 # La page Service sans le mode avancé : comment atteindre le shell depuis la
 # console et ce qu'il faut avoir préparé.

@@ -55,6 +55,7 @@ bk stat                           show the backup status block
 bk w <hexid> <hex...>             write a backup entry (WRITES)
 bk s <hexsubsystem>               persist a subsystem's backup (WRITES)
 bk lock | bk unlock               toggle protected backup settings (WRITES)
+term                              open the interactive serial console (WRITES)
 term on | term off                toggle the debug terminal (WRITES)
 help                              show this help
 exit                              leave the shell
@@ -648,6 +649,37 @@ impl ServiceSession {
             Some(request) => self.execute(l, &request).map(Some),
             None => Ok(None),
         }
+    }
+
+    /// Turn the camera's debug terminal on, exposing the BusyBox serial console.
+    ///
+    /// The follow-up adjustment inside [`set_terminal_enable`] is best-effort,
+    /// so this cannot promise the console is live — only that the request went
+    /// through. On the Linux models that carry one, a prompt follows on the
+    /// next [`read_terminal`](Self::read_terminal).
+    ///
+    /// [`set_terminal_enable`]: pmca_usb::senser_camera::SenserCamera::set_terminal_enable
+    pub fn enable_terminal(&mut self) -> Result<()> {
+        self.cam.set_terminal_enable(true).map_err(Into::into)
+    }
+
+    /// Turn the camera's debug terminal off.
+    pub fn disable_terminal(&mut self) -> Result<()> {
+        self.cam.set_terminal_enable(false).map_err(Into::into)
+    }
+
+    /// Poll the debug terminal for any output the console has produced.
+    ///
+    /// Non-blocking: an empty result means nothing was waiting, not an error.
+    /// The caller drives the loop, so a front-end stays responsive while the
+    /// console is idle.
+    pub fn read_terminal(&mut self) -> Vec<u8> {
+        self.cam.device_mut().read_terminal()
+    }
+
+    /// Send `data` to the debug terminal (a typed line, newline included).
+    pub fn write_terminal(&mut self, data: &[u8]) -> Result<()> {
+        self.cam.device_mut().write_terminal(data).map_err(Into::into)
     }
 
     /// Leave service mode and release the driver binding that reached it.

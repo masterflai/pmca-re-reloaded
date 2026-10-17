@@ -304,6 +304,12 @@ service-backup-written = تمت كتابة مدخل النسخة الاحتيا�
 service-backup-persisted = تمت كتابة النسخة الاحتياطية للنظام الفرعي { $id } في ذاكرة الفلاش.
 service-terminal-on = طرفية التصحيح مُفعّلة الآن.
 service-terminal-off = طرفية التصحيح مُعطّلة الآن.
+btn-service-terminal-open = فتح الطرفية التسلسلية
+btn-service-terminal-close = إغلاق الطرفية التسلسلية
+service-terminal-heading = الطرفية التسلسلية
+service-terminal-hint = في كاميرات لينكس تكون طرفية التصحيح صدفةَ جذرٍ عبر USB. افتحها ثم اكتب الأوامر كما تفعل في أي طرفية.
+service-terminal-label = الطرفية
+service-terminal-interactive = فُتحت الطرفية التسلسلية. اكتب الأوامر؛ واكتب ‘exit’ للعودة إلى صدفة الخدمة.
 
 # صفحة الخدمة دون الوضع المتقدم: كيف يُوصل إلى الصدفة من سطر الأوامر، وما
 # يجب تجهيزه قبل ذلك.

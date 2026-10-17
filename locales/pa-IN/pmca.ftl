@@ -304,6 +304,12 @@ service-backup-written = ਬੈਕਅੱਪ ਇੰਦਰਾਜ { $id } ਲਿਖ
 service-backup-persisted = ਉਪਪ੍ਰਣਾਲੀ { $id } ਦਾ ਬੈਕਅੱਪ ਫਲੈਸ਼ ਮੈਮਰੀ ਵਿੱਚ ਲਿਖ ਦਿੱਤਾ ਗਿਆ।
 service-terminal-on = ਡੀਬੱਗ ਟਰਮਿਨਲ ਹੁਣ ਚਾਲੂ ਹੈ।
 service-terminal-off = ਡੀਬੱਗ ਟਰਮਿਨਲ ਹੁਣ ਬੰਦ ਹੈ।
+btn-service-terminal-open = ਸੀਰੀਅਲ ਕੰਸੋਲ ਖੋਲ੍ਹੋ
+btn-service-terminal-close = ਸੀਰੀਅਲ ਕੰਸੋਲ ਬੰਦ ਕਰੋ
+service-terminal-heading = ਸੀਰੀਅਲ ਕੰਸੋਲ
+service-terminal-hint = Linux ਕੈਮਰਿਆਂ ਵਿੱਚ ਡੀਬੱਗ ਟਰਮੀਨਲ USB ਉੱਤੇ ਇੱਕ ਰੂਟ ਸ਼ੈੱਲ ਹੈ। ਇਸਨੂੰ ਖੋਲ੍ਹੋ, ਫਿਰ ਕਿਸੇ ਟਰਮੀਨਲ ਵਾਂਗ ਕਮਾਂਡਾਂ ਟਾਈਪ ਕਰੋ।
+service-terminal-label = ਕੰਸੋਲ
+service-terminal-interactive = ਸੀਰੀਅਲ ਕੰਸੋਲ ਖੁੱਲ੍ਹ ਗਿਆ। ਕਮਾਂਡਾਂ ਟਾਈਪ ਕਰੋ; ਸੇਵਾ ਸ਼ੈੱਲ ਉੱਤੇ ਵਾਪਸ ਆਉਣ ਲਈ 'exit' ਟਾਈਪ ਕਰੋ।
 
 # ਬਿਨਾਂ ਐਡਵਾਂਸਡ ਮੋਡ ਦੇ ਸਰਵਿਸ ਪੰਨਾ: ਕੰਸੋਲ ਤੋਂ ਸ਼ੈੱਲ ਤੱਕ ਕਿਵੇਂ ਪਹੁੰਚਣਾ ਹੈ ਅਤੇ
 # ਉਸ ਤੋਂ ਪਹਿਲਾਂ ਕੀ ਤਿਆਰ ਹੋਣਾ ਚਾਹੀਦਾ ਹੈ।

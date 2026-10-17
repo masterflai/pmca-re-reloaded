@@ -305,6 +305,12 @@ service-backup-written = Položka zálohy { $id } zapsána.
 service-backup-persisted = Záloha podsystému { $id } byla zapsána do paměti flash.
 service-terminal-on = Ladící terminál je nyní zapnutý.
 service-terminal-off = Ladící terminál je nyní vypnutý.
+btn-service-terminal-open = Otevřít sériovou konzoli
+btn-service-terminal-close = Zavřít sériovou konzoli
+service-terminal-heading = Sériová konzole
+service-terminal-hint = U fotoaparátů s Linuxem je ladicí terminál rootovský shell přes USB. Otevřete jej a zadávejte příkazy jako v terminálu.
+service-terminal-label = Konzole
+service-terminal-interactive = Sériová konzole otevřena. Zadávejte příkazy; příkazem „exit“ se vrátíte do servisního shellu.
 
 # Servisní stránka bez rozšířeného režimu: jak se k shellu dostat z konzole a
 # co je třeba připravit.

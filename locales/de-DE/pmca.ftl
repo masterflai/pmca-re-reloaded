@@ -311,6 +311,12 @@ service-backup-written = Backup-Eintrag { $id } geschrieben.
 service-backup-persisted = Backup des Subsystems { $id } dauerhaft gespeichert.
 service-terminal-on = Das Debug-Terminal ist jetzt eingeschaltet.
 service-terminal-off = Das Debug-Terminal ist jetzt ausgeschaltet.
+btn-service-terminal-open = Serielle Konsole öffnen
+btn-service-terminal-close = Serielle Konsole schließen
+service-terminal-heading = Serielle Konsole
+service-terminal-hint = Bei Linux-Kameras ist das Debug-Terminal eine Root-Shell über USB. Öffnen Sie es und geben Sie Befehle ein wie in einem Terminal.
+service-terminal-label = Konsole
+service-terminal-interactive = Serielle Konsole geöffnet. Geben Sie Befehle ein; „exit“ kehrt zur Service-Shell zurück.
 
 # Die Service-Seite ohne erweiterten Modus: wie die Shell über die Konsole
 # erreichbar ist und was dafür vorbereitet sein muss.

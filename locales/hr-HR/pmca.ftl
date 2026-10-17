@@ -305,6 +305,12 @@ service-backup-written = Zapis sigurnosne kopije { $id } upisan.
 service-backup-persisted = Sigurnosna kopija podsustava { $id } upisana je u flash memoriju.
 service-terminal-on = Terminal za ispravljanje pogrešaka sada je uključen.
 service-terminal-off = Terminal za ispravljanje pogrešaka sada je isključen.
+btn-service-terminal-open = Otvori serijsku konzolu
+btn-service-terminal-close = Zatvori serijsku konzolu
+service-terminal-heading = Serijska konzola
+service-terminal-hint = Na fotoaparatima s Linuxom terminal za otklanjanje pogrešaka root je ljuska preko USB-a. Otvorite ga i upisujte naredbe kao u terminalu.
+service-terminal-label = Konzola
+service-terminal-interactive = Serijska konzola otvorena. Upisujte naredbe; upišite „exit” za povratak u servisnu ljusku.
 
 # Servisna stranica bez naprednog načina rada: kako doći do ljuske iz konzole i
 # što prije toga mora biti pripremljeno.

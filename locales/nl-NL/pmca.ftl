@@ -307,6 +307,12 @@ service-backup-written = Back-upvermelding { $id } geschreven.
 service-backup-persisted = Back-up van subsysteem { $id } naar flash weggeschreven.
 service-terminal-on = De debugterminal staat nu aan.
 service-terminal-off = De debugterminal staat nu uit.
+btn-service-terminal-open = Seriële console openen
+btn-service-terminal-close = Seriële console sluiten
+service-terminal-heading = Seriële console
+service-terminal-hint = Op Linux-camera's is de debugterminal een root-shell via USB. Open hem en typ opdrachten zoals in een terminal.
+service-terminal-label = Console
+service-terminal-interactive = Seriële console geopend. Typ opdrachten; typ 'exit' om terug te keren naar de service-shell.
 
 # De servicepagina zonder geavanceerde modus: hoe de shell via de console te
 # bereiken is en wat daarvoor klaar moet staan.

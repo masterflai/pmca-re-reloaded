@@ -208,10 +208,38 @@ function cardServiceShell(): HTMLElement {
   disconnect.disabled = true;
   run.disabled = true;
 
+  // The interactive serial console (BusyBox on modern Linux cameras). It is a
+  // second, long-lived channel beside the command line: output arrives on its
+  // own schedule, so it is polled rather than answered one line at a time.
+  const termOutput = make("pre", { className: "shell-output" });
+  const termInput = make("input", { type: "text", className: "shell-input", spellcheck: false });
+  const termToggle = make("button", { i18n: "btn-service-terminal-open" });
+  termInput.disabled = true;
+  termToggle.disabled = true;
+  let termOn = false;
+  let termTimer: number | undefined;
+
   /** Append a line to the transcript and keep the newest one in view. */
   const echo = (text: string, className?: string): void => {
     output.append(make("span", { className: className ?? "", textContent: `${text}\n` }));
     output.scrollTop = output.scrollHeight;
+  };
+
+  /** Append raw console bytes, decoded as UTF-8, without adding a newline. */
+  const termEcho = (text: string, className?: string): void => {
+    termOutput.append(make("span", { className: className ?? "", textContent: text }));
+    termOutput.scrollTop = termOutput.scrollHeight;
+  };
+
+  const stopTerminal = (): void => {
+    if (termTimer !== undefined) {
+      clearInterval(termTimer);
+      termTimer = undefined;
+    }
+    termOn = false;
+    termInput.disabled = true;
+    termToggle.dataset.i18n = "btn-service-terminal-open";
+    termToggle.textContent = tr("btn-service-terminal-open");
   };
 
   const setConnected = (connected: boolean): void => {
@@ -219,6 +247,8 @@ function cardServiceShell(): HTMLElement {
     disconnect.disabled = !connected;
     run.disabled = !connected;
     input.disabled = !connected;
+    termToggle.disabled = !connected;
+    if (!connected) stopTerminal();
     if (connected) input.focus();
   };
 
@@ -244,6 +274,66 @@ function cardServiceShell(): HTMLElement {
       showError(status, e);
     } finally {
       setConnected(false);
+    }
+  });
+
+  const decoder = new TextDecoder();
+
+  /** Read whatever the console produced and show it. Drives the poll loop. */
+  const pollTerminal = async (): Promise<void> => {
+    try {
+      const bytes = await invoke<number[]>("service_read_terminal");
+      if (bytes.length > 0) termEcho(decoder.decode(new Uint8Array(bytes)));
+    } catch (e) {
+      termEcho(`\n${errorText(e)}\n`, "shell-error");
+      stopTerminal();
+    }
+  };
+
+  termToggle.addEventListener("click", async () => {
+    if (termOn) {
+      try {
+        await invoke("service_set_terminal", { enable: false });
+      } catch (e) {
+        showError(status, e);
+      }
+      stopTerminal();
+      return;
+    }
+    termToggle.disabled = true;
+    try {
+      await invoke("service_set_terminal", { enable: true });
+      termOn = true;
+      termInput.disabled = false;
+      termToggle.dataset.i18n = "btn-service-terminal-close";
+      termToggle.textContent = tr("btn-service-terminal-close");
+      termInput.focus();
+      termTimer = window.setInterval(() => void pollTerminal(), 150);
+    } catch (e) {
+      showError(status, e);
+    } finally {
+      termToggle.disabled = !termOn && disconnect.disabled;
+      if (!disconnect.disabled) termToggle.disabled = false;
+    }
+  });
+
+  /** Send a typed line to the console, newline included, as a terminal would. */
+  const submitTerminal = async (): Promise<void> => {
+    const line = termInput.value;
+    termInput.value = "";
+    try {
+      const data = new TextEncoder().encode(`${line}\n`);
+      await invoke("service_write_terminal", { data: Array.from(data) });
+    } catch (e) {
+      termEcho(`\n${errorText(e)}\n`, "shell-error");
+      stopTerminal();
+    }
+  };
+
+  termInput.addEventListener("keydown", (event) => {
+    if (event.key === "Enter") {
+      event.preventDefault();
+      void submitTerminal();
     }
   });
 
@@ -306,6 +396,16 @@ function cardServiceShell(): HTMLElement {
       input,
       browse,
       run,
+    ),
+    make("h3", { i18n: "service-terminal-heading" }),
+    make("p", { className: "muted", i18n: "service-terminal-hint" }),
+    make("div", { className: "row" }, termToggle),
+    termOutput,
+    make(
+      "div",
+      { className: "row" },
+      make("label", { i18n: "service-terminal-label" }),
+      termInput,
     ),
     status,
   );

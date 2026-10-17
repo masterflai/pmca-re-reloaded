@@ -72,6 +72,67 @@ pub(crate) async fn service_close(app: AppHandle) -> Result<(), CommandError> {
     .await
 }
 
+/// Turn the camera's debug terminal on (`enable`) or off.
+///
+/// The serial console is polled with [`service_read_terminal`] and written to
+/// with [`service_write_terminal`]; this just opens or closes it.
+#[tauri::command]
+pub(crate) async fn service_set_terminal(app: AppHandle, enable: bool) -> Result<(), CommandError> {
+    with_camera_as_is(app, move |_, state| {
+        let localizer = state.localizer()?;
+        let mut guard = state.service.lock().map_err(CommandError::internal)?;
+        let session = guard.as_mut().ok_or_else(|| service_not_connected(&localizer))?;
+        if enable {
+            session.enable_terminal()?;
+        } else {
+            session.disable_terminal()?;
+        }
+        Ok(())
+    })
+    .await
+}
+
+/// Poll the debug terminal for output, as bytes the front-end decodes as UTF-8.
+///
+/// Returns whatever was waiting, which may be nothing. The front-end drives the
+/// loop so the window stays responsive while the console is idle.
+#[tauri::command]
+pub(crate) async fn service_read_terminal(app: AppHandle) -> Result<Vec<u8>, CommandError> {
+    with_camera_as_is(app, |_, state| {
+        let localizer = state.localizer()?;
+        let mut guard = state.service.lock().map_err(CommandError::internal)?;
+        let session = guard.as_mut().ok_or_else(|| service_not_connected(&localizer))?;
+        Ok(session.read_terminal())
+    })
+    .await
+}
+
+/// Send a typed line to the debug terminal.
+#[tauri::command]
+pub(crate) async fn service_write_terminal(
+    app: AppHandle,
+    data: Vec<u8>,
+) -> Result<(), CommandError> {
+    with_camera_as_is(app, move |_, state| {
+        let localizer = state.localizer()?;
+        let mut guard = state.service.lock().map_err(CommandError::internal)?;
+        let session = guard.as_mut().ok_or_else(|| service_not_connected(&localizer))?;
+        session.write_terminal(&data)?;
+        Ok(())
+    })
+    .await
+}
+
+/// The error for a terminal command sent with no session open.
+fn service_not_connected(localizer: &Localizer) -> CommandError {
+    CommandError {
+        code: "no-service-session",
+        message: localizer.tr("service-not-connected"),
+        detail: None,
+        recovery: None,
+    }
+}
+
 /// The updater shell's command reference.
 ///
 /// A separate reference from the service shell's: the two speak different

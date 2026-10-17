@@ -317,6 +317,12 @@ service-backup-written = Wrote backup entry { $id }.
 service-backup-persisted = Persisted the backup of subsystem { $id } to flash.
 service-terminal-on = The debug terminal is now on.
 service-terminal-off = The debug terminal is now off.
+btn-service-terminal-open = Open serial console
+btn-service-terminal-close = Close serial console
+service-terminal-heading = Serial console
+service-terminal-hint = On Linux cameras the debug terminal is a root shell over USB. Open it, then type commands as you would in a terminal.
+service-terminal-label = Console
+service-terminal-interactive = Serial console open. Type commands; type 'exit' to return to the service shell.
 
 # The service page as it looks without advanced mode: how to reach the shell
 # from the console, and what has to be in place first.

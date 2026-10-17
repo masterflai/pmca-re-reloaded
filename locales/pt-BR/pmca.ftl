@@ -305,6 +305,12 @@ service-backup-written = Entrada de backup { $id } gravada.
 service-backup-persisted = Backup do subsistema { $id } gravado na memória flash.
 service-terminal-on = O terminal de depuração está ativado.
 service-terminal-off = O terminal de depuração está desativado.
+btn-service-terminal-open = Abrir console serial
+btn-service-terminal-close = Fechar console serial
+service-terminal-heading = Console serial
+service-terminal-hint = Em câmeras Linux, o terminal de depuração é um shell root por USB. Abra-o e digite comandos como em um terminal.
+service-terminal-label = Console
+service-terminal-interactive = Console serial aberto. Digite comandos; digite "exit" para voltar ao shell de serviço.
 
 # A página de serviço sem o modo avançado: como chegar ao console de serviço
 # pela linha de comando e o que precisa estar preparado.

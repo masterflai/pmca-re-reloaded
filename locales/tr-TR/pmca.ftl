@@ -305,6 +305,12 @@ service-backup-written = { $id } yedek kaydı yazıldı.
 service-backup-persisted = { $id } alt sisteminin yedeği flaş belleğe yazıldı.
 service-terminal-on = Hata ayıklama terminali artık açık.
 service-terminal-off = Hata ayıklama terminali artık kapalı.
+btn-service-terminal-open = Seri konsolu aç
+btn-service-terminal-close = Seri konsolu kapat
+service-terminal-heading = Seri konsol
+service-terminal-hint = Linux kameralarında hata ayıklama terminali, USB üzerinden bir root kabuğudur. Açın ve bir terminaldeki gibi komutlar yazın.
+service-terminal-label = Konsol
+service-terminal-interactive = Seri konsol açık. Komut yazın; servis kabuğuna dönmek için 'exit' yazın.
 
 # Gelişmiş kip kapalıyken servis sayfası: kabuğa konsoldan nasıl ulaşıldığı ve
 # önceden nelerin hazır olması gerektiği.

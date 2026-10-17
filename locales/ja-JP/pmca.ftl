@@ -304,6 +304,12 @@ service-backup-written = バックアップ項目 { $id } を書き込みまし�
 service-backup-persisted = サブシステム { $id } のバックアップをフラッシュメモリに書き込みました。
 service-terminal-on = デバッグ端末を有効にしました。
 service-terminal-off = デバッグ端末を無効にしました。
+btn-service-terminal-open = シリアルコンソールを開く
+btn-service-terminal-close = シリアルコンソールを閉じる
+service-terminal-heading = シリアルコンソール
+service-terminal-hint = Linux カメラでは、デバッグ端末は USB 経由の root シェルです。開いてから、端末と同じようにコマンドを入力してください。
+service-terminal-label = コンソール
+service-terminal-interactive = シリアルコンソールを開きました。コマンドを入力してください。「exit」でサービスシェルに戻ります。
 
 # 拡張モードが無効なときのサービスページ。コンソールからシェルに到達する方法と、
 # そのために必要な準備を示します。

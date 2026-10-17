@@ -305,6 +305,12 @@ service-backup-written = Entri cadangan { $id } ditulis.
 service-backup-persisted = Cadangan subsistem { $id } ditulis ke memori flash.
 service-terminal-on = Terminal awakutu kini aktif.
 service-terminal-off = Terminal awakutu kini nonaktif.
+btn-service-terminal-open = Buka konsol serial
+btn-service-terminal-close = Tutup konsol serial
+service-terminal-heading = Konsol serial
+service-terminal-hint = Pada kamera Linux, terminal debug adalah shell root melalui USB. Buka, lalu ketik perintah seperti di terminal.
+service-terminal-label = Konsol
+service-terminal-interactive = Konsol serial terbuka. Ketik perintah; ketik 'exit' untuk kembali ke shell servis.
 
 # Halaman servis tanpa mode lanjutan: cara mencapai shell dari konsol dan apa
 # yang harus disiapkan lebih dulu.

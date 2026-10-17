@@ -33,6 +33,10 @@ pub(crate) fn serviceshell_command(l: &Localizer) -> Result<(), Box<dyn std::err
             Ok(0) | Err(_) => break,
             Ok(_) => {}
         }
+        if line.trim() == "term" {
+            interactive_terminal(l, &mut session);
+            continue;
+        }
         match session.run_line(l, &line) {
             Ok(None) => {}
             Ok(Some(outcome)) => {
@@ -54,6 +58,70 @@ pub(crate) fn serviceshell_command(l: &Localizer) -> Result<(), Box<dyn std::err
     session.close();
     println!("{}", l.tr("service-shell-done"));
     Ok(())
+}
+
+/// Run the camera's interactive BusyBox serial console until the user types
+/// `exit` (which returns to the `senser>` prompt, not out of service mode).
+///
+/// The console is polled on a background thread so output appears while the
+/// user is not typing; a blocking `read_line` on the main thread cannot do
+/// both. Terminal errors end the loop rather than abort the session, so the
+/// `senser>` prompt — and the clean service-mode exit — is always reached.
+fn interactive_terminal(l: &Localizer, session: &mut pmca_app::service::ServiceSession) {
+    use std::io::Write;
+    use std::sync::mpsc;
+
+    if let Err(e) = session.enable_terminal() {
+        eprintln!("{}: {e}", l.tr("cli-error-prefix"));
+        return;
+    }
+    println!("{}", l.tr("service-terminal-interactive"));
+
+    // Typed lines arrive from a reader thread; the main loop owns the camera.
+    let (tx, rx) = mpsc::channel::<String>();
+    let reader = std::thread::spawn(move || {
+        let stdin = std::io::stdin();
+        loop {
+            let mut line = String::new();
+            match stdin.read_line(&mut line) {
+                Ok(0) | Err(_) => break,
+                Ok(_) => {}
+            }
+            if tx.send(line).is_err() {
+                break;
+            }
+        }
+    });
+
+    let out = std::io::stdout();
+    loop {
+        let chunk = session.read_terminal();
+        if !chunk.is_empty() {
+            let mut handle = out.lock();
+            let _ = handle.write_all(&chunk);
+            let _ = handle.flush();
+        }
+        match rx.try_recv() {
+            Ok(line) => {
+                if line.trim() == "exit" {
+                    break;
+                }
+                if let Err(e) = session.write_terminal(line.as_bytes()) {
+                    eprintln!("{}: {e}", l.tr("cli-error-prefix"));
+                    break;
+                }
+            }
+            Err(mpsc::TryRecvError::Empty) => {
+                std::thread::sleep(std::time::Duration::from_millis(50));
+            }
+            Err(mpsc::TryRecvError::Disconnected) => break,
+        }
+    }
+
+    let _ = session.disable_terminal();
+    // The reader thread is parked on stdin; it ends with the process. Detaching
+    // it keeps this function from blocking on a line that may never come.
+    drop(reader);
 }
 
 /// Assign or release the WinUSB driver.

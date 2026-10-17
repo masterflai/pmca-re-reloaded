@@ -301,6 +301,12 @@ service-backup-written = 已写入备份条目 { $id }。
 service-backup-persisted = 已将子系统 { $id } 的备份写入闪存。
 service-terminal-on = 调试终端现已开启。
 service-terminal-off = 调试终端现已关闭。
+btn-service-terminal-open = 打开串行控制台
+btn-service-terminal-close = 关闭串行控制台
+service-terminal-heading = 串行控制台
+service-terminal-hint = 在 Linux 相机上，调试终端是通过 USB 的 root shell。打开它，然后像在终端中一样输入命令。
+service-terminal-label = 控制台
+service-terminal-interactive = 串行控制台已打开。请输入命令；输入“exit”返回服务 shell。
 
 # 未启用高级模式时的服务页面：如何从控制台进入终端，以及需要提前准备什么。
 service-console-heading = 在控制台中启动服务终端

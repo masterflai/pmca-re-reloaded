@@ -302,6 +302,12 @@ service-backup-written = ব্যাকআপ এন্ট্রি { $id } ল
 service-backup-persisted = উপসিস্টেম { $id }-এর ব্যাকআপ ফ্ল্যাশ মেমরিতে লেখা হয়েছে।
 service-terminal-on = ডিবাগ টার্মিনাল এখন চালু।
 service-terminal-off = ডিবাগ টার্মিনাল এখন বন্ধ।
+btn-service-terminal-open = সিরিয়াল কনসোল খুলুন
+btn-service-terminal-close = সিরিয়াল কনসোল বন্ধ করুন
+service-terminal-heading = সিরিয়াল কনসোল
+service-terminal-hint = Linux ক্যামেরায় ডিবাগ টার্মিনাল হলো USB-র উপর একটি রুট শেল। এটি খুলুন, তারপর টার্মিনালের মতোই কমান্ড টাইপ করুন।
+service-terminal-label = কনসোল
+service-terminal-interactive = সিরিয়াল কনসোল খোলা। কমান্ড টাইপ করুন; সার্ভিস শেলে ফিরতে 'exit' টাইপ করুন।
 
 # উন্নত মোড ছাড়া সার্ভিস পাতা: কনসোল থেকে শেলে কীভাবে পৌঁছানো যায় এবং তার
 # আগে কী প্রস্তুত রাখতে হয়।

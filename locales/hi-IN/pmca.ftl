@@ -303,6 +303,12 @@ service-backup-written = बैकअप प्रविष्टि { $id } ल
 service-backup-persisted = उपतंत्र { $id } का बैकअप फ्लैश मेमोरी में लिख दिया गया।
 service-terminal-on = डीबग टर्मिनल अब चालू है।
 service-terminal-off = डीबग टर्मिनल अब बंद है।
+btn-service-terminal-open = सीरियल कंसोल खोलें
+btn-service-terminal-close = सीरियल कंसोल बंद करें
+service-terminal-heading = सीरियल कंसोल
+service-terminal-hint = Linux कैमरों में डिबग टर्मिनल USB पर एक रूट शेल है। इसे खोलें, फिर किसी टर्मिनल की तरह कमांड टाइप करें।
+service-terminal-label = कंसोल
+service-terminal-interactive = सीरियल कंसोल खुला। कमांड टाइप करें; सेवा शेल पर लौटने के लिए 'exit' टाइप करें।
 
 # उन्नत मोड के बिना सर्विस पृष्ठ: कंसोल से शेल तक कैसे पहुँचें और उससे पहले
 # क्या तैयार होना चाहिए।
