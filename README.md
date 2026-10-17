@@ -69,7 +69,10 @@ in Rust, and it needs neither Python nor extra driver tools.
 ## What it does
 
 <p align="center">
-  <img src="docs/images/demo.gif" width="720" alt="Short demo: reading the camera info, loading the community app list and installing three apps">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="docs/images/demo-dark.gif">
+    <img src="docs/images/demo-light.gif" width="720" alt="Short demo: reading the camera info, loading the community app list and installing three apps">
+  </picture>
 </p>
 
 **Camera information** — model, firmware version, serial number and USB mode at
