@@ -22,7 +22,11 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - os: ubuntu-latest
+          # Not `ubuntu-latest`: a binary built against a newer glibc refuses
+          # to start on older distributions, so the oldest supported image is
+          # the widest reach. (`ubuntu-latest` also migrates to Ubuntu 26 from
+          # 2026-10-19.) The GUI Linux build below is pinned for the same reason.
+          - os: ubuntu-22.04
             target: x86_64-unknown-linux-gnu
             archive: pmca-console-x86_64-linux.tar.gz
           - os: windows-latest
@@ -39,7 +43,7 @@ jobs:
             target: x86_64-apple-darwin
             archive: pmca-console-x86_64-macos.tar.gz
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: Install Rust toolchain
         uses: dtolnay/rust-toolchain@stable
@@ -91,7 +95,7 @@ jobs:
           fi
 
       - name: Upload artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: ${{ matrix.archive }}
           path: |
@@ -129,7 +133,7 @@ jobs:
             targets: ""
             bundle-dir: target/release/bundle
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: Install Rust toolchain
         uses: dtolnay/rust-toolchain@stable
@@ -141,7 +145,7 @@ jobs:
           workspaces: crates/pmca-gui/src-tauri -> ../../../target
           key: ${{ matrix.label }}
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v5
         with:
           node-version: 22
 
@@ -211,7 +215,7 @@ jobs:
           ls -l
 
       - name: Upload artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: pmca-gui-${{ matrix.label }}
           path: gui-artifacts/*
@@ -232,12 +236,12 @@ jobs:
       actions: read
       contents: read
     steps:
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v5
         with:
           name: pmca-console-x86_64-windows.zip
           path: unsigned/console
 
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v5
         with:
           name: pmca-gui-windows
           path: unsigned/gui
@@ -259,7 +263,7 @@ jobs:
 
       - name: Upload unsigned files
         id: upload-unsigned
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: signpath-input
           path: signpath-input/*
@@ -295,7 +299,7 @@ jobs:
           for f in *; do sha256sum "$f" > "$f.sha256"; done
           ls -l
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v5
         with:
           name: windows-signed
           path: out/*
@@ -313,13 +317,13 @@ jobs:
     permissions:
       contents: write
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           sparse-checkout: CHANGELOG.md
           sparse-checkout-cone-mode: false
 
       - name: Download artifacts
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v5
         with:
           path: artifacts
 
