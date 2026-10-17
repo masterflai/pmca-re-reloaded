@@ -6,6 +6,24 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+## [1.1.3-rc.1] - 2026-10-17
+
+Pre-release for testing on macOS. Please report whether the camera can be
+read in MTP mode, and include the exact error message if it cannot.
+
+### Fixed
+
+- macOS: opening the camera failed with “could not open interface for
+  exclusive access” and the app wrongly suggested another cable or avoiding
+  USB hubs. In MTP mode the system's camera service `ptpcamerad` holds the
+  camera; the program now ends it and retries. The system restarts the
+  service when it is needed again.
+- macOS: in mass-storage mode the system's disk driver holds the camera and
+  cannot be displaced. The error now says so and asks to set the camera's USB
+  connection to MTP.
+- macOS: the setup notes claimed that mass-storage mode works through Sony's
+  Camera Driver. It does not; they now ask for MTP mode instead.
+
 ## [1.1.2] - 2026-10-17
 
 ### Fixed

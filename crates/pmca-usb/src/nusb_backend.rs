@@ -240,9 +240,61 @@ fn is_permission_denied(message: &str) -> bool {
 /// media monitor can hold interface 0, so claiming it fails with `EBUSY`. The
 /// kernel-driver case is handled by claiming with a detach, so what is left is
 /// a userspace holder; either way it is not a transfer fault and must not send
-/// the user cable-hunting. A pure function so it can be tested without hardware.
+/// the user cable-hunting. macOS reports the same condition as
+/// `kIOReturnExclusiveAccess` ("could not open interface for exclusive
+/// access"). A pure function so it can be tested without hardware.
 fn is_busy(message: &str) -> bool {
-    message.to_ascii_lowercase().contains("busy")
+    let lower = message.to_ascii_lowercase();
+    lower.contains("busy") || lower.contains("exclusive access")
+}
+
+/// How often a PTP interface held on macOS is reclaimed after evicting the
+/// system camera daemon, which launchd may restart in between.
+#[cfg(target_os = "macos")]
+const MACOS_PTP_CLAIM_ATTEMPTS: usize = 5;
+
+/// Ends the macOS processes that seize every PTP camera on connection:
+/// `ptpcamerad` (macOS 10.15 and later) and `PTPCamera` (earlier). Both are
+/// per-user agents that launchd restarts on demand, so nothing is lost.
+#[cfg(target_os = "macos")]
+fn evict_macos_ptp_daemons() {
+    for name in ["ptpcamerad", "PTPCamera"] {
+        let _ = std::process::Command::new("/usr/bin/killall")
+            .args(["-9", name])
+            .stdout(std::process::Stdio::null())
+            .stderr(std::process::Stdio::null())
+            .status();
+    }
+}
+
+/// Claims `interface_number` of an opened device, detaching a kernel driver
+/// where the OS allows it.
+///
+/// macOS has no detach: in MTP mode the system's `ptpcamerad` holds the PTP
+/// interface and every claim fails with `kIOReturnExclusiveAccess`. For that
+/// class the daemon is ended and the claim retried.
+fn claim(
+    handle: &nusb::Device,
+    device: &DiscoveredDevice,
+    interface_number: u8,
+    class: u8,
+) -> Result<nusb::Interface> {
+    #[cfg_attr(not(target_os = "macos"), allow(unused_mut))]
+    let mut result = handle.detach_and_claim_interface(interface_number).wait();
+    #[cfg(target_os = "macos")]
+    if class == crate::class::PTP {
+        for _ in 0..MACOS_PTP_CLAIM_ATTEMPTS {
+            if !matches!(&result, Err(e) if e.kind() == nusb::ErrorKind::Busy) {
+                break;
+            }
+            evict_macos_ptp_daemons();
+            std::thread::sleep(Duration::from_millis(200));
+            result = handle.detach_and_claim_interface(interface_number).wait();
+        }
+    }
+    #[cfg(not(target_os = "macos"))]
+    let _ = class;
+    result.map_err(|e| map_open_error(device, e))
 }
 
 /// Classifies a device-open failure.
@@ -300,10 +352,8 @@ impl NusbBackend {
     /// Opens `device` and claims interface number `interface_number`.
     pub fn open(device: &DiscoveredDevice, interface_number: u8) -> Result<Self> {
         let handle = device.info.open().wait().map_err(|e| map_open_error(device, e))?;
-        let interface = handle
-            .detach_and_claim_interface(interface_number)
-            .wait()
-            .map_err(|e| map_open_error(device, e))?;
+        // The class is unknown here, so the macOS PTP eviction does not apply.
+        let interface = claim(&handle, device, interface_number, 0)?;
         Ok(Self::new(interface, interface_number))
     }
 
@@ -314,10 +364,7 @@ impl NusbBackend {
         let handle = device.info.open().wait().map_err(|e| map_open_error(device, e))?;
         let config = handle.active_configuration().map_err(|e| Error::Transfer(e.to_string()))?;
         let iface = find_bulk_interface(&config, class).ok_or(Error::NoDevice)?;
-        let interface = handle
-            .detach_and_claim_interface(iface.interface_number)
-            .wait()
-            .map_err(|e| map_open_error(device, e))?;
+        let interface = claim(&handle, device, iface.interface_number, class)?;
         Ok((Self::new(interface, iface.interface_number), iface))
     }
 
@@ -331,10 +378,7 @@ impl NusbBackend {
         let handle = device.info.open().wait().map_err(|e| map_open_error(device, e))?;
         let config = handle.active_configuration().map_err(|e| Error::Transfer(e.to_string()))?;
         let eps = find_all_bulk_endpoints(&config, class).ok_or(Error::NoDevice)?;
-        let interface = handle
-            .detach_and_claim_interface(eps.interface_number)
-            .wait()
-            .map_err(|e| map_open_error(device, e))?;
+        let interface = claim(&handle, device, eps.interface_number, class)?;
         Ok((Self::new(interface, eps.interface_number), eps))
     }
 
@@ -518,6 +562,8 @@ mod tests {
     fn a_busy_interface_is_recognised() {
         assert!(is_busy("Interface is busy (os error 16)"));
         assert!(is_busy("Device or resource busy"));
+        // macOS, kIOReturnExclusiveAccess
+        assert!(is_busy("could not open interface for exclusive access (error 0xe00002c5)"));
     }
 
     #[test]
