@@ -6,6 +6,8 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+## [1.1.3] - 2026-10-17
+
 ### Added
 
 - Service mode now offers the camera's interactive serial console (a root
@@ -14,37 +16,6 @@ All notable changes to this project are documented here. The format follows
   From there, remounting `/usr` read-write and editing files in the camera's
   Linux userland are ordinary shell commands. The console still needs the
   service-mode keys, exactly as the rest of service mode does.
-
-## [1.1.3-rc.3] - 2026-10-17
-
-Third pre-release. The program is unchanged since 1.1.3-rc.2; it contains the
-macOS fixes of 1.1.3-rc.1 and the installer artwork of 1.1.3-rc.2 (see below).
-Reports from a Mac are still welcome: please say whether the camera can be
-read in MTP mode, and include the exact error message if it cannot.
-
-### Changed
-
-- The demo animation in the README now follows the reader's light or dark
-  colour scheme, like the screenshots.
-- Releases are published as soon as they are built; pre-releases are marked
-  as such.
-
-## [1.1.3-rc.2] - 2026-10-17
-
-Second pre-release. It contains the macOS fixes of 1.1.3-rc.1 (see below),
-which still wait for a report from a Mac: please say whether the camera can be
-read in MTP mode, and include the exact error message if it cannot.
-
-### Changed
-
-- Windows: the installers now look like the app. The setup file has its own
-  icon instead of the generic NSIS one, and the NSIS and MSI pages show the
-  app's colours, camera and wordmark.
-
-## [1.1.3-rc.1] - 2026-10-17
-
-Pre-release for testing on macOS. Please report whether the camera can be
-read in MTP mode, and include the exact error message if it cannot.
 
 ### Fixed
 
@@ -58,6 +29,14 @@ read in MTP mode, and include the exact error message if it cannot.
   connection to MTP.
 - macOS: the setup notes claimed that mass-storage mode works through Sony's
   Camera Driver. It does not; they now ask for MTP mode instead.
+
+### Changed
+
+- Windows: the installers now look like the app. The setup file has its own
+  icon instead of the generic NSIS one, and the NSIS and MSI pages show the
+  app's colours, camera and wordmark.
+- The demo animation in the README now follows the reader's light or dark
+  colour scheme, like the screenshots.
 
 ## [1.1.2] - 2026-10-17
 
