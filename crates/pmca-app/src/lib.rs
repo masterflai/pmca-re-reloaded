@@ -294,7 +294,7 @@ pub struct InstallRequest<'a> {
 /// application-install mode, start a local HTTPS market server, hand the camera
 /// the XPD startup file, then relay its TLS traffic to that server until the
 /// installation task reports completion. The camera stays in app-install mode
-/// afterwards; see [`stays_in_app_install_mode`].
+/// afterwards; see `stays_in_app_install_mode`.
 pub fn install_app(
     l: &Localizer,
     request: &InstallRequest<'_>,

@@ -89,7 +89,7 @@ pub fn region_key(region: &str) -> Option<&str> {
 /// The languages the "unlock all languages" tweak turns on for a region.
 ///
 /// Every language, save where the camera's firmware cannot show one: a
-/// Japanese camera gets everything except [`JAPAN_UNSUPPORTED`]. The point of
+/// Japanese camera gets everything except `JAPAN_UNSUPPORTED`. The point of
 /// the tweak is to make the menu usable to someone who cannot read the factory
 /// language, and a language that reboots the camera when it is scrolled past
 /// does the opposite.

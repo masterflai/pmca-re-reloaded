@@ -45,6 +45,12 @@ jobs:
       - name: cargo clippy
         run: cargo clippy --workspace --all-targets -- -D warnings
 
+      # Catches doc links that break, e.g. to an item made private.
+      - name: cargo doc
+        env:
+          RUSTDOCFLAGS: -D warnings
+        run: cargo doc --workspace --no-deps
+
   test:
     name: Test (${{ matrix.os }})
     runs-on: ${{ matrix.os }}

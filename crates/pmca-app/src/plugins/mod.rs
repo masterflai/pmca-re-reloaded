@@ -10,7 +10,7 @@
 //! * switches for camera settings, declared in the manifest;
 //! * rows for the compatibility overview, declared in the manifest;
 //! * tools and diagnostics as WebAssembly modules, run in the sandbox of
-//!   [`wasm`].
+//!   `wasm`.
 //!
 //! Installing copies the checked file into the user's data folder. Plugins are
 //! loaded once at start-up ([`load`]), so installing or removing one takes

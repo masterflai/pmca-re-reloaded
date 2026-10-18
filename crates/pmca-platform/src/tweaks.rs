@@ -339,7 +339,7 @@ pub fn list(patch: &(impl Settings + ?Sized)) -> Vec<TweakStatus> {
 /// Fails if the tweak is unknown, or if the camera's current value is not one
 /// the toolkit recognises — writing in that case could brick the camera.
 ///
-/// `accept_caution` is the user's answer to whatever [`caution`] reported for
+/// `accept_caution` is the user's answer to whatever `caution` reported for
 /// this tweak, and is ignored where there was nothing to report. Defaulting it
 /// to `false` at every call site would be the safe reading, but it is a
 /// parameter rather than a default so that a caller who has not thought about

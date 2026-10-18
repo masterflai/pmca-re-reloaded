@@ -90,7 +90,7 @@ impl SweepReport {
 
 /// Undo anything a previous run left behind. Call once at program start.
 ///
-/// The counterpart to [`leave_service_mode`], for the case where that never
+/// The counterpart to `leave_service_mode`, for the case where that never
 /// got to run: a crash, a power loss, or the process being killed. Two things
 /// are left behind then, and undoing only one of them is not enough:
 ///

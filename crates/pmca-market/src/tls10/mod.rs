@@ -29,7 +29,7 @@
 //! * The certificate and its key are generated when the server starts and
 //!   discarded when it stops, so there is no stored secret to steal. Its
 //!   issuer *name* is a root the camera knows, because the camera rejects any
-//!   other; it does not verify the signature (see [`selfsigned`]).
+//!   other; it does not verify the signature (see `selfsigned`).
 //!
 //! This module must never be used for a general-purpose client or server. For
 //! anything reachable from a network, use `rustls`, which the store client
@@ -88,7 +88,7 @@ impl Tls10Config {
     /// Make up a certificate and key for this session.
     ///
     /// This is the normal path. Nothing is read from disk and nothing is left
-    /// behind; see [`selfsigned`] for why that is preferable to shipping a key.
+    /// behind; see `selfsigned` for why that is preferable to shipping a key.
     pub fn generate() -> Result<Self> {
         let generated = selfsigned::generate()?;
         Ok(Tls10Config { certificates: vec![generated.certificate], key: generated.key })

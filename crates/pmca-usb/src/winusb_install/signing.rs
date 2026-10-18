@@ -741,6 +741,53 @@ mod tests {
         assert!(signed_len > unsigned, "the signature did not grow the catalog");
     }
 
+    /// Every file in the key stores of the software KSP and the legacy CSP,
+    /// for the user and, where readable, for the machine.
+    fn key_store_files() -> std::collections::BTreeSet<std::path::PathBuf> {
+        fn walk(dir: &Path, found: &mut std::collections::BTreeSet<std::path::PathBuf>) {
+            let Ok(entries) = std::fs::read_dir(dir) else { return };
+            for path in entries.flatten().map(|e| e.path()) {
+                if path.is_dir() {
+                    walk(&path, found);
+                } else {
+                    found.insert(path);
+                }
+            }
+        }
+        let mut found = std::collections::BTreeSet::new();
+        for root in ["APPDATA", "ProgramData"].into_iter().filter_map(std::env::var_os) {
+            let crypto = Path::new(&root).join("Microsoft").join("Crypto");
+            for sub in ["Keys", "RSA", "SystemKeys"] {
+                walk(&crypto.join(sub), &mut found);
+            }
+        }
+        found
+    }
+
+    /// The README promises that the signing key never reaches the disk; a
+    /// persisted one would also outlive a crashed run, since no sweep removes it.
+    #[test]
+    fn the_signing_key_is_never_written_to_disk() {
+        let dir = std::env::temp_dir().join(format!("pmca-key-test-{}", std::process::id()));
+        std::fs::create_dir_all(&dir).expect("temp directory");
+        let inf = dir.join("pmca_winusb.inf");
+        std::fs::write(&inf, b"; not a real INF, only something to hash\r\n").expect("write INF");
+        let catalog = dir.join("pmca_winusb.cat");
+        let members = [hash_inf(&inf, szOID_NIST_sha256).expect("SHA-256 digest")];
+        write_catalog(&inf, &catalog, &members).expect("write the catalog");
+
+        let before = key_store_files();
+        let cert = TempCertificate::generate().expect("certificate with an in-memory key");
+        let signed = sign_file(&catalog, &cert);
+        let during = key_store_files();
+        drop(cert);
+        let _ = std::fs::remove_dir_all(&dir);
+
+        signed.expect("sign the catalog");
+        let written: Vec<_> = during.difference(&before).collect();
+        assert!(written.is_empty(), "key material reached the disk: {written:?}");
+    }
+
     /// Builds a catalog for real and checks that both members survive.
     ///
     /// Catalog creation needs no elevation and touches nothing outside the

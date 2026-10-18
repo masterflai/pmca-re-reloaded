@@ -636,7 +636,7 @@ pub fn wait_for_mode(
 }
 
 /// [`wait_for_mode`], telling the caller once when the camera shows its USB
-/// mode choice and waiting up to [`WAITING_PATIENCE`] polls longer for it.
+/// mode choice and waiting up to `WAITING_PATIENCE` polls longer for it.
 ///
 /// Ends with [`Error::CameraNotReady`] if the camera is still waiting then.
 pub fn wait_for_mode_or_choice(
