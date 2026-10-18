@@ -629,6 +629,7 @@ err-usb-too-many-devices = Podłączono więcej niż jeden aparat. Odłącz wszy
 err-usb-transfer = Transfer USB nie powiódł się. Spróbuj innego kabla lub portu i unikaj koncentratorów USB.
 err-usb-permission = Program nie ma uprawnień do otwarcia aparatu przez USB. W systemie Linux to prawo nadaje się jednorazowo regułą udev dla identyfikatora producenta Sony; skrypt scripts/linux-prepare.sh w źródłach ją instaluje. Następnie odłącz aparat i podłącz go ponownie.
 err-usb-busy = Z aparatu korzysta inny program, więc nie udało się go otworzyć. Zamknij inne programy, które mogą mieć do niego dostęp; w systemie Linux może go przytrzymywać monitor multimediów środowiska, który zatrzymuje skrypt scripts/linux-prepare.sh. W systemie macOS ustaw połączenie USB aparatu na MTP: w trybie pamięci masowej trzyma go systemowy sterownik dysku.
+err-usb-needs-root = macOS przekazuje połączenie pamięci masowej aparatu programowi tylko wtedy, gdy działa on z uprawnieniami administratora. Uruchom program wiersza poleceń przez sudo, na przykład: sudo pmca-console tweaks. Informacje o aparacie można odczytać także bez tego, jeśli połączenie USB aparatu jest ustawione na MTP.
 err-usb-stall = Aparat przerwał transfer USB.
 err-usb-protocol = Aparat odesłał nieoczekiwaną odpowiedź.
 err-usb-msc-status = Aparat odrzucił polecenie pamięci masowej.

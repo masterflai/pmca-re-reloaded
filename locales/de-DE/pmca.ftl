@@ -636,6 +636,7 @@ err-usb-too-many-devices = Es ist mehr als eine Kamera angeschlossen. Bitte alle
 err-usb-transfer = Die USB-Übertragung ist fehlgeschlagen. Bitte ein anderes Kabel oder einen anderen Anschluss verwenden und USB-Hubs vermeiden.
 err-usb-permission = Das Programm darf die Kamera nicht über USB öffnen. Unter Linux wird dieses Recht einmalig durch eine udev-Regel für Sonys Hersteller-Kennung erteilt; das Skript scripts/linux-prepare.sh im Quelltext richtet sie ein. Danach die Kamera ab- und wieder anstecken.
 err-usb-busy = Ein anderes Programm verwendet die Kamera, daher ließ sie sich nicht öffnen. Schließen Sie andere Programme, die darauf zugreifen könnten; unter Linux kann der Medien-Monitor der Arbeitsumgebung sie belegen, den scripts/linux-prepare.sh beendet. Unter macOS stellen Sie die USB-Verbindung der Kamera auf MTP: Im Massenspeichermodus belegt sie der Laufwerkstreiber des Systems.
+err-usb-needs-root = macOS überlässt die Massenspeicher-Verbindung der Kamera einem Programm nur, wenn es mit Administratorrechten läuft. Starten Sie das Kommandozeilenprogramm mit sudo, zum Beispiel: sudo pmca-console tweaks. Die Kamerainformationen lassen sich auch ohne lesen, wenn die USB-Verbindung der Kamera auf MTP steht.
 err-usb-stall = Die Kamera hat die USB-Übertragung abgebrochen.
 err-usb-protocol = Die Kamera hat unerwartet geantwortet.
 err-usb-msc-status = Die Kamera hat einen Speicherbefehl abgelehnt.

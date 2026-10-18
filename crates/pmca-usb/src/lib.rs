@@ -34,8 +34,10 @@
 //!   modes where no such alternative exists — mass storage on the way into
 //!   service mode, and service mode itself. It replaces the manual Zadig step
 //!   the toolkit used to ask for, and undoes itself again afterwards.
+//! * On macOS, `macos_capture` takes a mass-storage camera from the system's
+//!   disk driver (root only), the counterpart of the WinUSB binding.
 //!
-//!   These three are the crate's only `unsafe` code (Windows FFI), confined to
+//!   These four are the crate's only `unsafe` code (platform FFI), confined to
 //!   those modules; the rest of the crate is `#![deny(unsafe_code)]`. The one
 //!   exception is a read-only service-manager query in [`host_services`].
 //!
@@ -54,6 +56,9 @@ pub mod command;
 #[cfg(feature = "hardware")]
 pub mod discovery;
 pub mod host_services;
+#[cfg(all(target_os = "macos", feature = "hardware"))]
+#[allow(unsafe_code)]
+mod macos_capture;
 pub mod mock;
 pub mod msc;
 pub mod mtp;
@@ -117,6 +122,13 @@ pub enum Error {
     /// kernel-driver case is already resolved by claiming with a detach.
     #[error("the USB interface is held by another program: {0}")]
     Busy(String),
+    /// macOS hands the mass-storage interface only to a process run as root.
+    ///
+    /// The system's disk driver holds it, and capturing the device from that
+    /// driver is reserved for root. Kept apart from [`Error::Busy`]: the remedy
+    /// is running with `sudo`, not closing another program.
+    #[error("taking the camera's mass-storage connection from macOS needs root")]
+    NeedsRoot,
     /// A mass-storage camera is bound to `USBSTOR` but has no drive letter.
     ///
     /// Deliberately not folded into [`Error::Driver`], whose advice is to bind
@@ -233,6 +245,7 @@ impl Error {
             Error::Driver(_) => "usb-driver",
             Error::Permission(_) => "usb-permission",
             Error::Busy(_) => "usb-busy",
+            Error::NeedsRoot => "usb-needs-root",
             Error::NoMassStorageVolume => "usb-no-mass-storage-volume",
             Error::AppInstallMode => "usb-app-install-mode",
             Error::Stall => "usb-stall",
@@ -269,6 +282,7 @@ impl Error {
             }
             Error::PtpResponse { phase, code } => Some(format!("{phase} {code:#06x}")),
             Error::Stall
+            | Error::NeedsRoot
             | Error::Unsupported
             | Error::NoDevice
             | Error::CameraNotReady

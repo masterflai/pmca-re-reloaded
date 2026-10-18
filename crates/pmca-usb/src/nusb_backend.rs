@@ -7,8 +7,8 @@
 //!   through `nusb`'s endpoint queues.
 //!
 //! `nusb` itself is pure Rust, so this backend contains no `unsafe` code. The
-//! crate's `unsafe` lives in the three Windows-only FFI modules listed in the
-//! crate documentation.
+//! crate's `unsafe` lives in the platform FFI modules listed in the crate
+//! documentation.
 
 use nusb::MaybeFuture;
 use nusb::descriptors::TransferType;
@@ -267,18 +267,35 @@ fn evict_macos_ptp_daemons() {
     }
 }
 
+/// A claimed interface, plus on macOS the capture that made claiming possible.
+struct Claimed {
+    interface: nusb::Interface,
+    #[cfg(target_os = "macos")]
+    capture: Option<crate::macos_capture::Capture>,
+}
+
+impl From<nusb::Interface> for Claimed {
+    fn from(interface: nusb::Interface) -> Self {
+        Self {
+            interface,
+            #[cfg(target_os = "macos")]
+            capture: None,
+        }
+    }
+}
+
 /// Claims `interface_number` of an opened device, detaching a kernel driver
 /// where the OS allows it.
 ///
-/// macOS has no detach: in MTP mode the system's `ptpcamerad` holds the PTP
-/// interface and every claim fails with `kIOReturnExclusiveAccess`. For that
-/// class the daemon is ended and the claim retried.
+/// macOS has no detach. In MTP mode the system's `ptpcamerad` holds the PTP
+/// interface, so the daemon is ended and the claim retried. In mass-storage
+/// mode the disk driver holds it, which only a device capture gets past.
 fn claim(
-    handle: &nusb::Device,
+    handle: nusb::Device,
     device: &DiscoveredDevice,
     interface_number: u8,
     class: u8,
-) -> Result<nusb::Interface> {
+) -> Result<Claimed> {
     #[cfg_attr(not(target_os = "macos"), allow(unused_mut))]
     let mut result = handle.detach_and_claim_interface(interface_number).wait();
     #[cfg(target_os = "macos")]
@@ -291,10 +308,33 @@ fn claim(
             std::thread::sleep(Duration::from_millis(200));
             result = handle.detach_and_claim_interface(interface_number).wait();
         }
+    } else if class == crate::class::MSC
+        && matches!(&result, Err(e) if e.kind() == nusb::ErrorKind::Busy)
+    {
+        // Capturing needs the device closed, which this handle keeps open.
+        drop(handle);
+        return claim_captured(device, interface_number);
     }
     #[cfg(not(target_os = "macos"))]
     let _ = class;
-    result.map_err(|e| map_open_error(device, e))
+    result.map(Claimed::from).map_err(|e| map_open_error(device, e))
+}
+
+/// Captures the device from its kernel drivers, then claims the interface on a
+/// fresh handle.
+#[cfg(target_os = "macos")]
+fn claim_captured(device: &DiscoveredDevice, interface_number: u8) -> Result<Claimed> {
+    if !crate::macos_capture::is_root() {
+        return Err(Error::NeedsRoot);
+    }
+    let capture = crate::macos_capture::Capture::device(device.info.registry_entry_id())
+        .map_err(Error::Busy)?;
+    let handle = device.info.open().wait().map_err(|e| map_open_error(device, e))?;
+    let interface = handle
+        .detach_and_claim_interface(interface_number)
+        .wait()
+        .map_err(|e| map_open_error(device, e))?;
+    Ok(Claimed { interface, capture: Some(capture) })
 }
 
 /// Classifies a device-open failure.
@@ -336,25 +376,31 @@ pub struct NusbBackend {
     ep_in: HashMap<u8, nusb::Endpoint<Bulk, In>>,
     /// Opened OUT endpoints, keyed by address.
     ep_out: HashMap<u8, nusb::Endpoint<Bulk, Out>>,
+    /// Declared last so the interface and endpoints are closed before the
+    /// device is handed back to macOS.
+    #[cfg(target_os = "macos")]
+    _capture: Option<crate::macos_capture::Capture>,
 }
 
 impl NusbBackend {
-    fn new(interface: nusb::Interface, interface_number: u8) -> Self {
+    fn new(claimed: Claimed, interface_number: u8) -> Self {
         Self {
-            interface,
+            interface: claimed.interface,
             interface_number,
             timeout: DEFAULT_TIMEOUT,
             ep_in: HashMap::new(),
             ep_out: HashMap::new(),
+            #[cfg(target_os = "macos")]
+            _capture: claimed.capture,
         }
     }
 
     /// Opens `device` and claims interface number `interface_number`.
     pub fn open(device: &DiscoveredDevice, interface_number: u8) -> Result<Self> {
         let handle = device.info.open().wait().map_err(|e| map_open_error(device, e))?;
-        // The class is unknown here, so the macOS PTP eviction does not apply.
-        let interface = claim(&handle, device, interface_number, 0)?;
-        Ok(Self::new(interface, interface_number))
+        // The class is unknown here, so neither macOS workaround applies.
+        let claimed = claim(handle, device, interface_number, 0)?;
+        Ok(Self::new(claimed, interface_number))
     }
 
     /// Opens `device`, locates the bulk interface for the given USB `class`
@@ -364,8 +410,8 @@ impl NusbBackend {
         let handle = device.info.open().wait().map_err(|e| map_open_error(device, e))?;
         let config = handle.active_configuration().map_err(|e| Error::Transfer(e.to_string()))?;
         let iface = find_bulk_interface(&config, class).ok_or(Error::NoDevice)?;
-        let interface = claim(&handle, device, iface.interface_number, class)?;
-        Ok((Self::new(interface, iface.interface_number), iface))
+        let claimed = claim(handle, device, iface.interface_number, class)?;
+        Ok((Self::new(claimed, iface.interface_number), iface))
     }
 
     /// Like [`open_class`](Self::open_class), but reports *every* bulk endpoint
@@ -378,13 +424,13 @@ impl NusbBackend {
         let handle = device.info.open().wait().map_err(|e| map_open_error(device, e))?;
         let config = handle.active_configuration().map_err(|e| Error::Transfer(e.to_string()))?;
         let eps = find_all_bulk_endpoints(&config, class).ok_or(Error::NoDevice)?;
-        let interface = claim(&handle, device, eps.interface_number, class)?;
-        Ok((Self::new(interface, eps.interface_number), eps))
+        let claimed = claim(handle, device, eps.interface_number, class)?;
+        Ok((Self::new(claimed, eps.interface_number), eps))
     }
 
     /// Wraps an already-claimed interface (useful for advanced callers/tests).
     pub fn from_interface(interface: nusb::Interface) -> Self {
-        Self::new(interface, 0)
+        Self::new(interface.into(), 0)
     }
 
     /// Overrides the per-transfer timeout.

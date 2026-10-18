@@ -643,6 +643,7 @@ mod tests {
             pmca_usb::Error::Driver("x".into()),
             pmca_usb::Error::Permission("x".into()),
             pmca_usb::Error::Busy("x".into()),
+            pmca_usb::Error::NeedsRoot,
             pmca_usb::Error::NoMassStorageVolume,
             pmca_usb::Error::AppInstallMode,
             pmca_usb::Error::Stall,

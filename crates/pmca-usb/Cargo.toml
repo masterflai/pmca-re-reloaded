@@ -44,11 +44,17 @@ windows = { version = "0.62", optional = true, features = [
     "Win32_UI_WindowsAndMessaging",
 ] }
 
+# macOS device capture (see `macos_capture`). Both crates already come in
+# through `nusb`; listing them here adds nothing new to the build.
+[target.'cfg(target_os = "macos")'.dependencies]
+io-kit-sys = { version = "0.5", optional = true }
+core-foundation-sys = { version = "0.8", optional = true }
+
 [features]
 # Enabled by default for real use; disable (e.g. `--no-default-features`) to
 # build/test only the hardware-independent logic and the in-memory mock.
 default = ["hardware"]
-hardware = ["dep:nusb", "dep:windows"]
+hardware = ["dep:nusb", "dep:windows", "dep:io-kit-sys", "dep:core-foundation-sys"]
 
 [dev-dependencies]
 # Lets the senser tests stand in fabricated service-mode keys.
@@ -63,4 +69,8 @@ required-features = ["hardware"]
 
 [[example]]
 name = "probe_appinstall"
+required-features = ["hardware"]
+
+[[example]]
+name = "probe_senser_mtp"
 required-features = ["hardware"]

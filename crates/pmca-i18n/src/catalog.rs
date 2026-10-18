@@ -22,8 +22,9 @@
 //! pointed at, rather than at runtime where the cause is invisible.
 
 use std::collections::{BTreeMap, BTreeSet};
+use std::ffi::OsString;
 use std::io;
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 
 use crate::{DEFAULT_LOCALE, locale_source};
 
@@ -397,7 +398,8 @@ pub fn user_data_dir() -> Option<PathBuf> {
     let base = if cfg!(windows) {
         PathBuf::from(std::env::var_os("APPDATA")?)
     } else if cfg!(target_os = "macos") {
-        PathBuf::from(std::env::var_os("HOME")?).join("Library/Application Support")
+        macos_home(std::env::var_os("HOME"), std::env::var_os("SUDO_USER"))?
+            .join("Library/Application Support")
     } else {
         match std::env::var_os("XDG_CONFIG_HOME") {
             Some(dir) => PathBuf::from(dir),
@@ -405,6 +407,21 @@ pub fn user_data_dir() -> Option<PathBuf> {
         }
     };
     Some(base.join(APP_DIR))
+}
+
+/// The home of the user who started the program, also under `sudo`.
+///
+/// macOS needs root to hand a mass-storage camera to the program, and a `sudo`
+/// that resets `HOME` to root's would hide the keys the user imported.
+fn macos_home(home: Option<OsString>, sudo_user: Option<OsString>) -> Option<PathBuf> {
+    let home = home.map(PathBuf::from);
+    match (home, sudo_user) {
+        (Some(h), Some(user)) if h == Path::new("/var/root") => {
+            Some(Path::new("/Users").join(user))
+        }
+        (None, Some(user)) => Some(Path::new("/Users").join(user)),
+        (home, _) => home,
+    }
 }
 
 /// Where the edited catalogue for `locale` is stored.
@@ -459,6 +476,18 @@ pub fn remove_user_catalog(locale: &str) -> io::Result<bool> {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn sudo_with_root_home_still_finds_the_users_folder() {
+        let home =
+            |h: Option<&str>, u: Option<&str>| macos_home(h.map(Into::into), u.map(Into::into));
+        assert_eq!(home(Some("/Users/ann"), None), Some(PathBuf::from("/Users/ann")));
+        assert_eq!(home(Some("/Users/ann"), Some("ann")), Some(PathBuf::from("/Users/ann")));
+        assert_eq!(home(Some("/var/root"), Some("ann")), Some(PathBuf::from("/Users/ann")));
+        assert_eq!(home(None, Some("ann")), Some(PathBuf::from("/Users/ann")));
+        assert_eq!(home(Some("/var/root"), None), Some(PathBuf::from("/var/root")));
+        assert_eq!(home(None, None), None);
+    }
 
     const BASE: &str = "\
 # header

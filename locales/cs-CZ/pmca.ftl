@@ -629,6 +629,7 @@ err-usb-too-many-devices = Je připojen více než jeden fotoaparát. Odpojte v�
 err-usb-transfer = Přenos přes USB se nezdařil. Zkuste jiný kabel nebo port a nepoužívejte rozbočovače USB.
 err-usb-permission = Program nesmí otevřít fotoaparát přes USB. V Linuxu se toto právo udělí jednorázově pravidlem udev pro identifikátor výrobce Sony; skript scripts/linux-prepare.sh ve zdrojovém stromu je nainstaluje. Poté fotoaparát odpojte a znovu připojte.
 err-usb-busy = Fotoaparát používá jiný program, takže jej nešlo otevřít. Zavřete ostatní programy, které by k němu mohly přistupovat; v Linuxu jej může držet monitor médií prostředí, který zastaví skript scripts/linux-prepare.sh. V macOS přepněte připojení USB fotoaparátu na MTP: v režimu velkokapacitního úložiště jej drží diskový ovladač systému.
+err-usb-needs-root = macOS předá připojení fotoaparátu jako velkokapacitního úložiště programu jen tehdy, když běží s právy správce. Spusťte program příkazové řádky přes sudo, například: sudo pmca-console tweaks. Informace o fotoaparátu lze číst i bez toho, pokud je připojení USB fotoaparátu nastaveno na MTP.
 err-usb-stall = Fotoaparát přerušil přenos přes USB.
 err-usb-protocol = Fotoaparát odeslal neočekávanou odpověď.
 err-usb-msc-status = Fotoaparát odmítl příkaz úložiště.

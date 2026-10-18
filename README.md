@@ -156,14 +156,19 @@ runtime, which Windows 11 has and Windows 10 may not. Settings and edited
 translations are kept in your user profile.
 
 **macOS** — The `.app` in the `.dmg` runs from any folder. Close applications
-that might access the camera (Photos, cloud sync tools) before connecting it.
+that might access the camera (Photos, cloud sync tools) before connecting it,
+and set the camera's USB connection to MTP. Tweaks, the service shell and the
+function analysis go through the camera's mass-storage connection, which macOS
+hands to a program only when it runs with administrator rights. Use the
+command line for them, for example `sudo ./pmca-console tweaks`; the camera's
+card leaves Finder while it runs and comes back afterwards.
 
 **Linux** — Make the `.AppImage` executable and run it, or install the `.deb`.
 [`scripts/linux-prepare.sh`](scripts/linux-prepare.sh) sets up the udev rule
 for Sony's vendor id and stops the desktop from claiming the camera.
 
-The macOS and Linux builds pass the full test suite, but have not yet been
-tried with a camera. Reports are welcome — see [Feedback](#feedback).
+The Linux build has been tried with a camera, the macOS build only in part so
+far. Reports are welcome — see [Feedback](#feedback).
 
 ### Signatures
 

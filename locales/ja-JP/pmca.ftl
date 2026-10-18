@@ -628,6 +628,7 @@ err-usb-too-many-devices = 複数のカメラが接続されています。対�
 err-usb-transfer = USB 転送に失敗しました。別のケーブルやポートを試し、USB ハブは使用しないでください。
 err-usb-permission = プログラムはカメラを USB で開く権限がありません。Linux ではこの権限は、ソニーのベンダー ID に対する udev ルールによって一度だけ与えられます。ソースツリーの scripts/linux-prepare.sh がそれを導入します。その後、カメラを抜き差ししてください。
 err-usb-busy = 別のプログラムがカメラを使用しているため、開けませんでした。カメラにアクセスし得る他のプログラムを閉じてください。Linux ではデスクトップのメディア監視がカメラを掴むことがあり、scripts/linux-prepare.sh がそれを停止します。macOS ではカメラの USB 接続を MTP に設定してください。マスストレージモードではシステムのディスクドライバーがカメラを占有します。
+err-usb-needs-root = macOS は、管理者権限で実行されているプログラムにしかカメラのマスストレージ接続を渡しません。コマンドラインプログラムを sudo 付きで起動してください（例: sudo pmca-console tweaks）。カメラの USB 接続を MTP に設定すれば、カメラ情報はそれなしでも読み取れます。
 err-usb-stall = カメラが USB 転送を中断しました。
 err-usb-protocol = カメラが予期しない応答を返しました。
 err-usb-msc-status = カメラがストレージコマンドを拒否しました。

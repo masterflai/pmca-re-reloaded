@@ -6,6 +6,16 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+### Added
+
+- macOS: tweaks, the service shell and the function analysis are available
+  from the command line run with `sudo`, for example
+  `sudo ./pmca-console tweaks`. macOS hands the camera's mass-storage
+  connection only to a program with administrator rights; the program takes
+  it from the system's disk driver while it works and gives it back
+  afterwards. Without those rights the error message says what to do.
+  Not yet tried with a camera.
+
 ## [1.1.4-rc.1] - 2026-10-18
 
 Pre-release for testing on macOS.

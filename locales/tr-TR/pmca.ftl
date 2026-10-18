@@ -630,6 +630,7 @@ err-usb-too-many-devices = Birden fazla kamera bağlı. Kullanmak istediğiniz d
 err-usb-transfer = USB aktarımı başarısız oldu. Farklı bir kablo ya da bağlantı noktası deneyin ve USB göbeklerinden kaçının.
 err-usb-permission = Programın kamerayı USB üzerinden açma izni yok. Linux'ta bu hak, Sony'nin üretici kimliği için bir udev kuralıyla bir kez verilir; kaynak ağacındaki scripts/linux-prepare.sh betiği onu kurar. Ardından kamerayı çıkarıp yeniden takın.
 err-usb-busy = Kamerayı başka bir program kullanıyor, bu yüzden açılamadı. Ona erişebilecek diğer programları kapatın; Linux'ta masaüstünün medya izleyicisi onu tutabilir; bunu scripts/linux-prepare.sh durdurur. macOS'ta kameranın USB bağlantısını MTP olarak ayarlayın: yığın depolama modunda onu sistemin kendi disk sürücüsü tutar.
+err-usb-needs-root = macOS, kameranın yığın depolama bağlantısını yalnızca yönetici haklarıyla çalışan bir programa bırakır. Komut satırı programını sudo ile başlatın, örneğin: sudo pmca-console tweaks. Kameranın USB bağlantısı MTP olarak ayarlıysa kamera bilgileri bu olmadan da okunabilir.
 err-usb-stall = Kamera USB aktarımını durdurdu.
 err-usb-protocol = Kamera beklenmedik bir yanıt gönderdi.
 err-usb-msc-status = Kamera bir depolama komutunu reddetti.

@@ -641,6 +641,7 @@ err-usb-too-many-devices = More than one camera is connected. Disconnect all but
 err-usb-transfer = The USB transfer failed. Try a different cable or port, and avoid USB hubs.
 err-usb-permission = The program is not allowed to open the camera over USB. On Linux this permission is granted once by a udev rule for Sony's vendor id; the script scripts/linux-prepare.sh in the source tree installs it. Then unplug the camera and plug it back in.
 err-usb-busy = Another program is using the camera, so it could not be opened. Close other programs that might access it; on Linux the desktop's media monitor can hold it, which scripts/linux-prepare.sh stops. On macOS, set the camera's USB connection to MTP: in mass-storage mode the system's own disk driver holds it.
+err-usb-needs-root = macOS gives the camera's mass-storage connection to a program only when it runs with administrator rights. Start the command-line program with sudo, for example: sudo pmca-console tweaks. Reading the camera information also works without it, with the camera's USB connection set to MTP.
 err-usb-stall = The camera aborted the USB transfer.
 err-usb-protocol = The camera sent an unexpected response.
 err-usb-msc-status = The camera rejected a storage command.

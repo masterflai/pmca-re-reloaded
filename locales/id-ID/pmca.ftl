@@ -630,6 +630,7 @@ err-usb-too-many-devices = Lebih dari satu kamera terhubung. Cabut semuanya kecu
 err-usb-transfer = Transfer USB gagal. Coba kabel atau port lain, dan hindari hub USB.
 err-usb-permission = Program tidak diizinkan membuka kamera melalui USB. Di Linux hak ini diberikan sekali melalui aturan udev untuk kode produsen Sony; skrip scripts/linux-prepare.sh dalam kode sumber memasangnya. Setelah itu cabut kamera lalu colokkan kembali.
 err-usb-busy = Program lain sedang menggunakan kamera, sehingga tidak dapat dibuka. Tutup program lain yang mungkin mengaksesnya; di Linux pemantau media destop dapat menahannya, yang dihentikan oleh scripts/linux-prepare.sh. Di macOS, setel koneksi USB kamera ke MTP: dalam mode penyimpanan massal, driver disk milik sistem menahannya.
+err-usb-needs-root = macOS hanya menyerahkan koneksi penyimpanan massal kamera kepada program yang berjalan dengan hak administrator. Jalankan program baris perintah dengan sudo, misalnya: sudo pmca-console tweaks. Informasi kamera juga dapat dibaca tanpa itu jika koneksi USB kamera diatur ke MTP.
 err-usb-stall = Kamera membatalkan transfer USB.
 err-usb-protocol = Kamera mengirim respons yang tidak terduga.
 err-usb-msc-status = Kamera menolak sebuah perintah penyimpanan.

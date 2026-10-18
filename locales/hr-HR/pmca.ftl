@@ -629,6 +629,7 @@ err-usb-too-many-devices = Priključen je više od jednog fotoaparata. Odspojite
 err-usb-transfer = USB prijenos nije uspio. Pokušajte s drugim kabelom ili priključkom i izbjegavajte USB razdjelnike.
 err-usb-permission = Program ne smije otvoriti fotoaparat putem USB-a. Na Linuxu se to pravo dodjeljuje jednokratno udev pravilom za Sonyjevu oznaku proizvođača; skripta scripts/linux-prepare.sh u izvornom kodu ga instalira. Zatim odspojite fotoaparat i ponovno ga priključite.
 err-usb-busy = Fotoaparat koristi drugi program pa ga nije bilo moguće otvoriti. Zatvorite druge programe koji bi mu mogli pristupati; na Linuxu ga može držati monitor medija radne površine, što zaustavlja skripta scripts/linux-prepare.sh. Na macOS-u postavite USB vezu fotoaparata na MTP: u načinu rada masovne pohrane drži ga sistemski upravljački program diska.
+err-usb-needs-root = macOS prepušta vezu fotoaparata kao uređaja za masovnu pohranu programu samo kada radi s administratorskim pravima. Pokrenite program naredbenog retka sa sudo, na primjer: sudo pmca-console tweaks. Podaci o fotoaparatu mogu se čitati i bez toga ako je USB veza fotoaparata postavljena na MTP.
 err-usb-stall = Fotoaparat je prekinuo USB prijenos.
 err-usb-protocol = Fotoaparat je poslao neočekivan odgovor.
 err-usb-msc-status = Fotoaparat je odbio naredbu za pohranu.
