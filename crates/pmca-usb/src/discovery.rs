@@ -389,6 +389,20 @@ pub fn read_camera_info(camera: &DetectedCamera) -> Result<CameraInfoReport> {
     }
 }
 
+/// Whether a mass-storage camera is out of this process's reach for lack of
+/// rights: macOS hands the disk driver's interface to root only.
+#[must_use]
+pub fn mass_storage_needs_root() -> bool {
+    #[cfg(target_os = "macos")]
+    {
+        !crate::macos_capture::is_root()
+    }
+    #[cfg(not(target_os = "macos"))]
+    {
+        false
+    }
+}
+
 /// Opens a camera's Sony external-command transport, type-erased.
 ///
 /// Resolves the right transport (mass-storage or MTP) for the camera's mode and

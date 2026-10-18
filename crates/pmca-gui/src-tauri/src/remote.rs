@@ -1,8 +1,9 @@
 //! The macOS broker: the requests the window sends it, how it carries them
 //! out, and the window's end of the call.
 //!
-//! On macOS the service-mode sessions, the tweaks and the function analysis
-//! live in an elevated copy of this program; [`pmca_app::broker`] explains why
+//! On macOS the service-mode sessions, the tweaks, the function analysis and
+//! everything that reboots the camera into updater mode live in an elevated
+//! copy of this program; [`pmca_app::broker`] explains why
 //! and carries the bytes. The requests mirror the window's commands, and the
 //! broker answers them with the same functions the commands use elsewhere, so
 //! there is one implementation of each.
@@ -16,9 +17,11 @@ use pmca_app::broker::RemoteError;
 use pmca_app::dto::TweakChange;
 use pmca_app::service::ServiceSession;
 use pmca_app::tweaks::TweakSession;
+use pmca_app::updater::UpdaterSession;
 use pmca_i18n::Localizer;
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
+use std::path::PathBuf;
 
 use crate::*;
 
@@ -47,6 +50,10 @@ pub(crate) enum Request {
     AnalysisReportJson,
     AnalysisDiscard,
     AnalysisRestorePending,
+    FirmwareFlash { file: PathBuf, flash: bool, confirm: bool },
+    UpdaterOpen { fdat_file: Option<PathBuf>, fdat_dir: PathBuf, flash: bool },
+    UpdaterRun { line: String },
+    UpdaterClose,
 }
 
 /// A request with the window's current language.
@@ -62,6 +69,7 @@ pub(crate) struct Sessions {
     tweaks: Option<TweakSession>,
     service: Option<ServiceSession>,
     analysis: Option<AnalysisRun>,
+    updater: Option<UpdaterSession>,
 }
 
 impl From<CommandError> for RemoteError {
@@ -208,6 +216,31 @@ fn run(
             json(())
         }
         Request::AnalysisRestorePending => json(pmca_app::analysis::restore_pending(l, sink)?),
+        Request::FirmwareFlash { file, flash, confirm } => {
+            let request = pmca_app::firmware::FlashRequest { file: &file, flash, confirm };
+            json(pmca_app::firmware::flash_firmware(l, &request, sink)?)
+        }
+        Request::UpdaterOpen { fdat_file, fdat_dir, flash } => {
+            s.updater.take();
+            let request =
+                pmca_app::updater::OpenRequest { model: None, fdat_file, fdat_dir, flash };
+            s.updater = Some(UpdaterSession::open(l, &request, sink)?);
+            json(())
+        }
+        Request::UpdaterRun { line } => {
+            let outputs = pmca_app::updater::parse(&line, l)
+                .ok()
+                .flatten()
+                .map(|r| r.local_outputs())
+                .unwrap_or_default();
+            let outcome = run_updater_line(&mut s.updater, l, &line);
+            pmca_app::ownership::return_paths(&outputs);
+            json(outcome?)
+        }
+        Request::UpdaterClose => {
+            s.updater.take();
+            json(())
+        }
     }
 }
 
@@ -318,6 +351,10 @@ mod tests {
         assert_eq!(ask(&mut sessions, &mut sink, Request::AnalysisState).unwrap(), Value::Null);
         assert_eq!(ask(&mut sessions, &mut sink, Request::ServiceClose).unwrap(), Value::Null);
         assert_eq!(ask(&mut sessions, &mut sink, Request::AnalysisDiscard).unwrap(), Value::Null);
+        assert_eq!(ask(&mut sessions, &mut sink, Request::UpdaterClose).unwrap(), Value::Null);
+        let e =
+            ask(&mut sessions, &mut sink, Request::UpdaterRun { line: "info".into() }).unwrap_err();
+        assert_eq!(e.code, "no-updater-session");
         let e = ask(&mut sessions, &mut sink, Request::ServiceReadTerminal).unwrap_err();
         assert_eq!(e.code, "no-service-session");
         let e = ask(&mut sessions, &mut sink, Request::AnalysisSnapshot).unwrap_err();

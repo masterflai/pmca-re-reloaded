@@ -208,23 +208,38 @@ pub(crate) async fn updater_open(
     confirm: bool,
 ) -> Result<(), CommandError> {
     with_camera(app, move |app, state| {
-        let localizer = state.localizer()?;
-        let mut guard = state.updater.lock().map_err(CommandError::internal)?;
-        // Opening twice would leave the first session behind with no way to
-        // close it, so the existing one is ended first.
-        guard.take();
-        let request = pmca_app::updater::OpenRequest {
-            model: None,
-            fdat_file: fdat_file.filter(|p| !p.is_empty()).map(PathBuf::from),
-            fdat_dir: state.fdat_root.clone(),
-            flash: confirm,
-        };
-        *guard = Some(pmca_app::updater::UpdaterSession::open(
-            &localizer,
-            &request,
-            &mut progress(app),
-        )?);
-        Ok(())
+        let fdat_file = fdat_file.filter(|p| !p.is_empty()).map(PathBuf::from);
+        #[cfg(target_os = "macos")]
+        {
+            let request = remote::Request::UpdaterOpen {
+                fdat_file,
+                fdat_dir: state.fdat_root.clone(),
+                flash: confirm,
+            };
+            state.updater.lock().map_err(CommandError::internal)?.take();
+            remote::call(app, state, request)?;
+            Ok(())
+        }
+        #[cfg(not(target_os = "macos"))]
+        {
+            let localizer = state.localizer()?;
+            let mut guard = state.updater.lock().map_err(CommandError::internal)?;
+            // Opening twice would leave the first session behind with no way to
+            // close it, so the existing one is ended first.
+            guard.take();
+            let request = pmca_app::updater::OpenRequest {
+                model: None,
+                fdat_file,
+                fdat_dir: state.fdat_root.clone(),
+                flash: confirm,
+            };
+            *guard = Some(pmca_app::updater::UpdaterSession::open(
+                &localizer,
+                &request,
+                &mut progress(app),
+            )?);
+            Ok(())
+        }
     })
     .await
 }
@@ -238,24 +253,47 @@ pub(crate) async fn updater_open(
 pub(crate) async fn updater_run(
     app: AppHandle,
     line: String,
-) -> Result<Option<pmca_app::updater::UpdaterOutcome>, CommandError> {
-    with_camera(app, move |_, state| {
+) -> Result<Reply<Option<pmca_app::updater::UpdaterOutcome>>, CommandError> {
+    with_camera(app, move |_app, state| {
         let localizer = state.localizer()?;
-        let mut guard = state.updater.lock().map_err(CommandError::internal)?;
-        let session = guard.as_mut().ok_or_else(|| CommandError {
-            code: "no-updater-session".into(),
-            message: localizer.tr("service-not-connected"),
-            detail: None,
-            recovery: None,
-        })?;
-        let outcome = session.run_line(&localizer, &line)?;
-        // `exit` is a command like any other, and the session it ends is this one.
-        if outcome.as_ref().is_some_and(|o| o.finished) {
-            guard.take();
+        #[cfg(target_os = "macos")]
+        {
+            remote::call_if_running(_app, state, remote::Request::UpdaterRun { line })?
+                .map(Reply::Relayed)
+                .ok_or_else(|| updater_not_connected(&localizer))
         }
-        Ok(outcome)
+        #[cfg(not(target_os = "macos"))]
+        {
+            let mut guard = state.updater.lock().map_err(CommandError::internal)?;
+            run_updater_line(&mut guard, &localizer, &line).map(Reply::Here)
+        }
     })
     .await
+}
+
+/// Run `line` on the updater session in `slot`, ending it on `exit`.
+pub(crate) fn run_updater_line(
+    slot: &mut Option<pmca_app::updater::UpdaterSession>,
+    localizer: &Localizer,
+    line: &str,
+) -> Result<Option<pmca_app::updater::UpdaterOutcome>, CommandError> {
+    let session = slot.as_mut().ok_or_else(|| updater_not_connected(localizer))?;
+    let outcome = session.run_line(localizer, line)?;
+    // `exit` is a command like any other, and the session it ends is this one.
+    if outcome.as_ref().is_some_and(|o| o.finished) {
+        slot.take();
+    }
+    Ok(outcome)
+}
+
+/// The error for an updater command sent with no session open.
+fn updater_not_connected(localizer: &Localizer) -> CommandError {
+    CommandError {
+        code: "no-updater-session".into(),
+        message: localizer.tr("service-not-connected"),
+        detail: None,
+        recovery: None,
+    }
 }
 
 /// End the updater session, letting the firmware write finalise.
@@ -265,7 +303,9 @@ pub(crate) async fn updater_run(
 /// still there.
 #[tauri::command]
 pub(crate) async fn updater_close(app: AppHandle) -> Result<(), CommandError> {
-    with_camera_as_is(app, |_, state| {
+    with_camera_as_is(app, |_app, state| {
+        #[cfg(target_os = "macos")]
+        remote::call_if_running(_app, state, remote::Request::UpdaterClose)?;
         state.updater.lock().map_err(CommandError::internal)?.take();
         Ok(())
     })

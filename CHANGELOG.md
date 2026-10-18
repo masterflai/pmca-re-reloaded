@@ -6,6 +6,24 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+## [1.1.4-rc.4] - 2026-10-18
+
+Pre-release for testing on macOS. Contains everything from 1.1.4-rc.1 to
+1.1.4-rc.3.
+
+### Changed
+
+- macOS: firmware updates and the updater shell work in the app too, through
+  the same elevated copy as the service shell. Files the updater shell writes
+  to this computer belong to you. Not yet tried with a camera.
+
+### Fixed
+
+- macOS: without administrator rights, a firmware update or the updater shell
+  stops before the camera restarts into update mode. Before, the camera
+  restarted first and then stayed in update mode until its battery was taken
+  out.
+
 ## [1.1.4-rc.3] - 2026-10-18
 
 Pre-release for testing on macOS. Contains everything from 1.1.4-rc.1 and

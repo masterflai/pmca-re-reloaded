@@ -15,11 +15,25 @@ pub(crate) async fn flash_firmware(
     file: String,
     flash: bool,
     confirm: bool,
-) -> Result<FirmwareOutcome, CommandError> {
+) -> Result<Reply<FirmwareOutcome>, CommandError> {
     with_camera(app, move |app, state| {
-        let localizer = state.localizer()?;
-        let request = pmca_app::firmware::FlashRequest { file: Path::new(&file), flash, confirm };
-        Ok(pmca_app::firmware::flash_firmware(&localizer, &request, &mut progress(app))?)
+        #[cfg(target_os = "macos")]
+        {
+            let request =
+                remote::Request::FirmwareFlash { file: PathBuf::from(file), flash, confirm };
+            remote::call(app, state, request).map(Reply::Relayed)
+        }
+        #[cfg(not(target_os = "macos"))]
+        {
+            let localizer = state.localizer()?;
+            let request =
+                pmca_app::firmware::FlashRequest { file: Path::new(&file), flash, confirm };
+            Ok(Reply::Here(pmca_app::firmware::flash_firmware(
+                &localizer,
+                &request,
+                &mut progress(app),
+            )?))
+        }
     })
     .await
 }

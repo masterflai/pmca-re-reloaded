@@ -139,6 +139,17 @@ impl UpdaterRequest {
                 | Self::Shell { .. }
         )
     }
+
+    /// The files on this computer the command may create.
+    ///
+    /// The macOS broker runs as root and hands these back to the user.
+    #[must_use]
+    pub fn local_outputs(&self) -> Vec<PathBuf> {
+        match self {
+            Self::Pull { local, .. } | Self::ReadMemory { local, .. } => vec![local.clone()],
+            _ => Vec::new(),
+        }
+    }
 }
 
 /// What a command produced.

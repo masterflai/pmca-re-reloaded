@@ -135,6 +135,10 @@ pub fn enter_updater_mode(
         return Ok(None);
     }
 
+    // Updater mode is mass storage; refuse before the reboot, not after it.
+    if discovery::mass_storage_needs_root() {
+        return Err(Error::Usb(pmca_usb::Error::NeedsRoot));
+    }
     sink.emit(ProgressEvent::step(ProgressKind::Switching, l.tr("updater-switch-wait")));
     updater.switch_mode()?;
     // Release the rebooting device before polling for its updater-mode identity.
