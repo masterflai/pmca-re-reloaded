@@ -427,6 +427,8 @@ fn main() -> ExitCode {
     // the process, which would skip the guard's destructor and leave the
     // console switched. Those paths print ASCII only, so they need no guard.
     let cli = Cli::parse();
+    // Under sudo, files this run creates in the user's folder go back to the user.
+    let _ownership = pmca_app::ownership::OwnershipGuard::new();
     // Held for the rest of the run; restores the code page on the way out.
     let _console = ConsoleCodePage::switch_to_utf8();
     // Load whatever key material the user has already imported, so the

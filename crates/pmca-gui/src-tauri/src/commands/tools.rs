@@ -55,7 +55,7 @@ pub(crate) fn tool(
     output: Option<PathBuf>,
 ) -> Result<pmca_app::tools::ToolOutcome, CommandError> {
     let missing_output = || CommandError {
-        code: "tool-output-required",
+        code: "tool-output-required".into(),
         message: localizer.tr("tools-file-required"),
         detail: None,
         recovery: None,
@@ -75,7 +75,7 @@ pub(crate) fn tool(
         "xpd-checksum" => pmca_app::tools::ToolRequest::XpdChecksum { input },
         other => {
             return Err(CommandError {
-                code: "unknown-tool",
+                code: "unknown-tool".into(),
                 message: format!("unknown tool: {other}"),
                 detail: Some(other.to_string()),
                 recovery: None,

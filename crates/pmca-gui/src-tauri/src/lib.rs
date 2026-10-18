@@ -38,14 +38,14 @@ const PROGRESS_EVENT: &str = "pmca://progress";
 #[derive(Debug, serde::Serialize)]
 pub struct CommandError {
     /// Stable identifier of the failure, never the English text.
-    pub code: &'static str,
+    pub code: String,
     /// The backend's own wording, used when the code has no translation.
     pub message: String,
     /// Variable part of the message (a path, a status byte, a device error).
     pub detail: Option<String>,
     /// An action the front-end may offer to make the operation possible, or
     /// `None` when the user has to intervene on the camera itself.
-    pub recovery: Option<&'static str>,
+    pub recovery: Option<String>,
 }
 
 impl CommandError {
@@ -54,7 +54,7 @@ impl CommandError {
     /// The `operation` code intentionally has no translation key, so the
     /// front-end falls through to `message`.
     fn localized(message: String) -> Self {
-        Self { code: "operation", message, detail: None, recovery: None }
+        Self { code: "operation".into(), message, detail: None, recovery: None }
     }
 
     /// Report a failure of the GUI process itself, such as a poisoned lock.
@@ -63,20 +63,46 @@ impl CommandError {
     /// reported under one code instead of being enumerated.
     fn internal<E: std::fmt::Display>(e: E) -> Self {
         let message = e.to_string();
-        Self { code: "internal", message: message.clone(), detail: Some(message), recovery: None }
+        Self {
+            code: "internal".into(),
+            message: message.clone(),
+            detail: Some(message),
+            recovery: None,
+        }
     }
 }
 
 impl From<pmca_app::Error> for CommandError {
     fn from(e: pmca_app::Error) -> Self {
-        Self { code: e.code(), message: e.to_string(), detail: e.detail(), recovery: e.recovery() }
+        (&e).into()
+    }
+}
+
+impl From<&pmca_app::Error> for CommandError {
+    fn from(e: &pmca_app::Error) -> Self {
+        pmca_app::elevated::RemoteError::from(e).into()
+    }
+}
+
+impl From<pmca_app::elevated::RemoteError> for CommandError {
+    fn from(e: pmca_app::elevated::RemoteError) -> Self {
+        Self { code: e.code, message: e.message, detail: e.detail, recovery: e.recovery }
+    }
+}
+
+impl From<pmca_app::elevated::ElevatedError> for CommandError {
+    fn from(e: pmca_app::elevated::ElevatedError) -> Self {
+        match e {
+            pmca_app::elevated::ElevatedError::Helper(e) => e.into(),
+            pmca_app::elevated::ElevatedError::Local(e) => e.into(),
+        }
     }
 }
 
 impl From<std::io::Error> for CommandError {
     fn from(e: std::io::Error) -> Self {
         let message = e.to_string();
-        Self { code: "io", message: message.clone(), detail: Some(message), recovery: None }
+        Self { code: "io".into(), message: message.clone(), detail: Some(message), recovery: None }
     }
 }
 

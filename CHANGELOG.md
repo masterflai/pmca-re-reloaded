@@ -6,15 +6,26 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+## [1.1.4-rc.2] - 2026-10-18
+
+Pre-release for testing on macOS. Contains everything from 1.1.4-rc.1. The
+macOS changes have not yet been tried with a camera.
+
 ### Added
 
-- macOS: tweaks, the service shell and the function analysis are available
-  from the command line run with `sudo`, for example
-  `sudo ./pmca-console tweaks`. macOS hands the camera's mass-storage
-  connection only to a program with administrator rights; the program takes
-  it from the system's disk driver while it works and gives it back
-  afterwards. Without those rights the error message says what to do.
-  Not yet tried with a camera.
+- macOS: the tweaks work in the app. It asks for your password through the
+  system dialog, which macOS does not show again for a few minutes, and runs
+  each tweak operation with administrator rights: macOS hands the camera's
+  mass-storage connection only to such a program. The camera's card leaves
+  Finder while this runs and comes back afterwards.
+- macOS: the service shell and the function analysis are available from the
+  command line run with `sudo`, for example `sudo ./pmca-console serviceshell`.
+  Without those rights the error message says what to do.
+
+### Changed
+
+- Files a run under `sudo` creates in your user folder (keys, records kept
+  before a change) now belong to you, not to the administrator account.
 
 ## [1.1.4-rc.1] - 2026-10-18
 

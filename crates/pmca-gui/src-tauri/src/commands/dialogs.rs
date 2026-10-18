@@ -34,7 +34,7 @@ pub(crate) fn dialog_filter(
         "plugin" => Ok(("file-filter-plugin", &["pmcaplugin"])),
         "any" => Ok(("file-filter-any", &["*"])),
         _ => Err(CommandError {
-            code: "unknown-file-kind",
+            code: "unknown-file-kind".into(),
             message: format!("unknown file kind: {kind}"),
             detail: Some(kind.to_string()),
             recovery: None,

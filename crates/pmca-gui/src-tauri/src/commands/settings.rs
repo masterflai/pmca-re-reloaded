@@ -17,7 +17,7 @@ pub(crate) fn available_locales() -> Vec<String> {
 #[tauri::command]
 pub(crate) fn locale_catalog(locale: String) -> Result<String, CommandError> {
     pmca_i18n::catalog::effective_source(&locale).ok_or(CommandError {
-        code: "unknown-locale",
+        code: "unknown-locale".into(),
         message: format!("unknown locale: {locale}"),
         detail: Some(locale),
         recovery: None,
@@ -83,7 +83,7 @@ pub(crate) fn known_locale(locale: &str) -> Result<(), CommandError> {
         return Ok(());
     }
     Err(CommandError {
-        code: "unknown-locale",
+        code: "unknown-locale".into(),
         message: format!("unknown locale: {locale}"),
         detail: Some(locale.to_string()),
         recovery: None,
@@ -118,7 +118,7 @@ pub(crate) fn export_catalog(
 ) -> Result<Option<String>, CommandError> {
     known_locale(&locale)?;
     let text = pmca_i18n::catalog::export(&locale).ok_or_else(|| CommandError {
-        code: "unknown-locale",
+        code: "unknown-locale".into(),
         message: format!("unknown locale: {locale}"),
         detail: Some(locale.clone()),
         recovery: None,
@@ -148,7 +148,7 @@ pub(crate) fn import_catalog(
     // than as a generic I/O failure the user cannot act on.
     let bytes = std::fs::read(&file)?;
     let text = String::from_utf8(bytes).map_err(|e| CommandError {
-        code: "catalog-encoding",
+        code: "catalog-encoding".into(),
         message: "the translation file is not valid UTF-8".to_string(),
         detail: Some(e.to_string()),
         recovery: None,
@@ -156,7 +156,7 @@ pub(crate) fn import_catalog(
     let source = pmca_i18n::catalog::normalize(&text);
     let report =
         pmca_i18n::catalog::validate_for(&locale, &source).ok_or_else(|| CommandError {
-            code: "unknown-locale",
+            code: "unknown-locale".into(),
             message: format!("unknown locale: {locale}"),
             detail: Some(locale.clone()),
             recovery: None,

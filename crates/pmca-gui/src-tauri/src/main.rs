@@ -10,5 +10,8 @@ fn main() {
     if let Some(code) = pmca_app::drivers::run_helper_if_requested(&args) {
         std::process::exit(code);
     }
+    if let Some(code) = pmca_app::elevated::run_helper_if_requested(&args) {
+        std::process::exit(code);
+    }
     pmca_gui_tauri::run()
 }

@@ -43,7 +43,7 @@ pub(crate) async fn service_run(
         let localizer = state.localizer()?;
         let mut guard = state.service.lock().map_err(CommandError::internal)?;
         let session = guard.as_mut().ok_or_else(|| CommandError {
-            code: "no-service-session",
+            code: "no-service-session".into(),
             message: localizer.tr("service-not-connected"),
             detail: None,
             recovery: None,
@@ -126,7 +126,7 @@ pub(crate) async fn service_write_terminal(
 /// The error for a terminal command sent with no session open.
 fn service_not_connected(localizer: &Localizer) -> CommandError {
     CommandError {
-        code: "no-service-session",
+        code: "no-service-session".into(),
         message: localizer.tr("service-not-connected"),
         detail: None,
         recovery: None,
@@ -193,7 +193,7 @@ pub(crate) async fn updater_run(
         let localizer = state.localizer()?;
         let mut guard = state.updater.lock().map_err(CommandError::internal)?;
         let session = guard.as_mut().ok_or_else(|| CommandError {
-            code: "no-updater-session",
+            code: "no-updater-session".into(),
             message: localizer.tr("service-not-connected"),
             detail: None,
             recovery: None,
