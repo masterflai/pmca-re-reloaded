@@ -269,6 +269,13 @@ impl<B: UsbBackend> MtpDevice<B> {
     pub fn into_backend(self) -> B {
         self.backend
     }
+
+    /// Clears a halt on both bulk endpoints, which also resets their data
+    /// toggles.
+    pub fn clear_halts(&mut self) -> Result<()> {
+        self.backend.clear_halt(self.ep_in)?;
+        self.backend.clear_halt(self.ep_out)
+    }
 }
 
 /// Asks an MTP-mode camera to reconnect as a mass-storage device.

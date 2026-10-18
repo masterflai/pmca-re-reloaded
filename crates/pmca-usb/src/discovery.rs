@@ -343,9 +343,7 @@ pub fn read_camera_info(camera: &DetectedCamera) -> Result<CameraInfoReport> {
             }
             #[cfg(windows)]
             reject_app_install_over_wpd()?;
-            let (backend, iface) = NusbBackend::open_class(&camera.device, class::PTP)?;
-            let mut mtp = MtpDevice::new(backend, iface.ep_in, iface.ep_out);
-            let dev_info = mtp.get_device_info()?;
+            let (mut mtp, dev_info) = open_raw_mtp(camera)?;
             if is_sony_mtp_app_install_camera(&dev_info) {
                 return Err(Error::AppInstallMode);
             }
@@ -357,6 +355,7 @@ pub fn read_camera_info(camera: &DetectedCamera) -> Result<CameraInfoReport> {
                 report.serial = Some(dev_info.serial_number);
                 return Ok(report);
             }
+            mtp.open_session(1)?;
             let (info, lens, firmware) = read_extcmd_report(mtp)?;
             Ok(build_report(camera.mode, info, lens, firmware))
         }
@@ -421,12 +420,11 @@ pub fn open_extcmd_transport(camera: &DetectedCamera) -> Result<Box<dyn SonyExtC
             }
             #[cfg(windows)]
             reject_app_install_over_wpd()?;
-            let (backend, iface) = NusbBackend::open_class(&camera.device, class::PTP)?;
-            let mut mtp = MtpDevice::new(backend, iface.ep_in, iface.ep_out);
-            // Opening a session is required before ext-cmds flow over MTP.
-            if is_sony_mtp_app_install_camera(&mtp.get_device_info()?) {
+            let (mut mtp, info) = open_raw_mtp(camera)?;
+            if is_sony_mtp_app_install_camera(&info) {
                 return Err(Error::AppInstallMode);
             }
+            mtp.open_session(1)?;
             Ok(Box::new(mtp))
         }
         CameraMode::AppInstall | CameraMode::Senser | CameraMode::Unknown => {
@@ -470,9 +468,7 @@ pub fn open_app_install(camera: &DetectedCamera) -> Result<AppInstallCamera<AppI
     if let Some(device) = crate::wpd::open_app_install()? {
         return Ok(AppInstallCamera::new(Box::new(device)));
     }
-    let (backend, iface) = NusbBackend::open_class(&camera.device, class::PTP)?;
-    let mut mtp = MtpDevice::new(backend, iface.ep_in, iface.ep_out);
-    let info = mtp.get_device_info()?;
+    let (mut mtp, info) = open_raw_mtp(camera)?;
     if !is_sony_mtp_app_install_camera(&info) {
         return Err(Error::Protocol("camera is not in application-installation mode"));
     }
@@ -505,11 +501,7 @@ pub fn is_app_install(camera: &DetectedCamera) -> bool {
         return true;
     }
 
-    let Ok((backend, iface)) = NusbBackend::open_class(&camera.device, class::PTP) else {
-        return false;
-    };
-    let mut mtp = MtpDevice::new(backend, iface.ep_in, iface.ep_out);
-    matches!(mtp.get_device_info(), Ok(info) if is_sony_mtp_app_install_camera(&info))
+    matches!(open_raw_mtp(camera), Ok((_, info)) if is_sony_mtp_app_install_camera(&info))
 }
 
 /// Polls for a single camera in application-installation mode.
@@ -693,12 +685,33 @@ pub fn switch_to_mass_storage(camera: &DetectedCamera) -> Result<()> {
     #[cfg(windows)]
     reject_app_install_over_wpd()?;
 
-    let (backend, iface) = NusbBackend::open_class(&camera.device, class::PTP)?;
-    let mut mtp = MtpDevice::new(backend, iface.ep_in, iface.ep_out);
-    if is_sony_mtp_app_install_camera(&mtp.get_device_info()?) {
+    let (mut mtp, info) = open_raw_mtp(camera)?;
+    if is_sony_mtp_app_install_camera(&info) {
         return Err(Error::AppInstallMode);
     }
+    mtp.open_session(1)?;
     crate::mtp::switch_to_msc(&mut mtp)
+}
+
+/// Opens an MTP camera's PTP interface over raw bulk endpoints and reads its
+/// device info, the one request PTP allows without a session.
+///
+/// A STALL on that first request means an earlier host left a transaction
+/// unfinished — on macOS the `ptpcamerad` ended to free the interface. Clearing
+/// both halts puts the endpoints back in step, and the request is sent once more.
+fn open_raw_mtp(
+    camera: &DetectedCamera,
+) -> Result<(MtpDevice<NusbBackend>, crate::sony::MtpDeviceInfo)> {
+    let (backend, iface) = NusbBackend::open_class(&camera.device, class::PTP)?;
+    let mut mtp = MtpDevice::new(backend, iface.ep_in, iface.ep_out);
+    let info = match mtp.get_device_info() {
+        Err(Error::Stall) => {
+            mtp.clear_halts()?;
+            mtp.get_device_info()?
+        }
+        other => other?,
+    };
+    Ok((mtp, info))
 }
 
 #[cfg(test)]
