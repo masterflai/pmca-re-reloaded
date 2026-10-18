@@ -22,8 +22,22 @@ use tauri::{AppHandle, Emitter, Manager, State, Window};
 use tauri_plugin_dialog::{DialogExt, MessageDialogButtons, MessageDialogKind};
 
 mod commands;
+mod remote;
 
 use commands::*;
+pub use remote::run_broker;
+
+/// A command's result, computed here or relayed as JSON from the macOS broker.
+///
+/// Both serialize to the same JSON, so the window cannot tell them apart.
+#[derive(serde::Serialize)]
+#[serde(untagged)]
+pub(crate) enum Reply<T> {
+    #[cfg_attr(target_os = "macos", allow(dead_code))]
+    Here(T),
+    #[cfg_attr(not(target_os = "macos"), allow(dead_code))]
+    Relayed(serde_json::Value),
+}
 
 /// Event name the front-end subscribes to for installation progress.
 const PROGRESS_EVENT: &str = "pmca://progress";
@@ -80,22 +94,13 @@ impl From<pmca_app::Error> for CommandError {
 
 impl From<&pmca_app::Error> for CommandError {
     fn from(e: &pmca_app::Error) -> Self {
-        pmca_app::elevated::RemoteError::from(e).into()
+        pmca_app::broker::RemoteError::from(e).into()
     }
 }
 
-impl From<pmca_app::elevated::RemoteError> for CommandError {
-    fn from(e: pmca_app::elevated::RemoteError) -> Self {
+impl From<pmca_app::broker::RemoteError> for CommandError {
+    fn from(e: pmca_app::broker::RemoteError) -> Self {
         Self { code: e.code, message: e.message, detail: e.detail, recovery: e.recovery }
-    }
-}
-
-impl From<pmca_app::elevated::ElevatedError> for CommandError {
-    fn from(e: pmca_app::elevated::ElevatedError) -> Self {
-        match e {
-            pmca_app::elevated::ElevatedError::Helper(e) => e.into(),
-            pmca_app::elevated::ElevatedError::Local(e) => e.into(),
-        }
     }
 }
 
@@ -157,6 +162,9 @@ struct AppState {
     /// Held by every operation that talks to the camera; `true` once the
     /// start-up sweep has run. See [`with_camera`].
     camera: Mutex<bool>,
+    /// macOS: the elevated copy holding the service-mode work, once started.
+    #[cfg(target_os = "macos")]
+    broker: Mutex<Option<pmca_app::broker::Broker>>,
 }
 
 impl AppState {
@@ -171,6 +179,8 @@ impl AppState {
             downloads: Mutex::new(HashMap::new()),
             install_series: Mutex::new(None),
             camera: Mutex::new(false),
+            #[cfg(target_os = "macos")]
+            broker: Mutex::new(None),
         }
     }
 

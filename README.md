@@ -159,11 +159,11 @@ translations are kept in your user profile.
 that might access the camera (Photos, cloud sync tools) before connecting it,
 and set the camera's USB connection to MTP. Tweaks, the service shell and the
 function analysis go through the camera's mass-storage connection, which macOS
-hands to a program only when it runs with administrator rights. For the tweaks
-the app asks for your password and does the rest itself; the service shell and
-the function analysis need the command line, for example
-`sudo ./pmca-console serviceshell`. The camera's card leaves Finder while this
-runs and comes back afterwards, so eject it there first if files on it are open.
+hands to a program only when it runs with administrator rights. The app asks
+for your password once per run and does the rest itself; on the command line
+use `sudo`, for example `sudo ./pmca-console serviceshell`. The camera's card
+leaves Finder while this runs and comes back afterwards, so eject it there
+first if files on it are open.
 
 **Linux** — Make the `.AppImage` executable and run it, or install the `.deb`.
 [`scripts/linux-prepare.sh`](scripts/linux-prepare.sh) sets up the udev rule

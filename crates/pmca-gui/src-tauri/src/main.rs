@@ -10,8 +10,8 @@ fn main() {
     if let Some(code) = pmca_app::drivers::run_helper_if_requested(&args) {
         std::process::exit(code);
     }
-    if let Some(code) = pmca_app::elevated::run_helper_if_requested(&args) {
-        std::process::exit(code);
+    if let Some(socket) = pmca_app::broker::broker_socket(&args) {
+        std::process::exit(pmca_gui_tauri::run_broker(socket));
     }
     pmca_gui_tauri::run()
 }

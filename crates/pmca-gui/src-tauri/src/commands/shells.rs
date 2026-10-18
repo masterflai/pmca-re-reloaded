@@ -19,13 +19,21 @@ pub(crate) fn service_help() -> &'static str {
 #[tauri::command]
 pub(crate) async fn service_open(app: AppHandle) -> Result<(), CommandError> {
     with_camera(app, |app, state| {
-        let localizer = state.localizer()?;
-        let mut guard = state.service.lock().map_err(CommandError::internal)?;
-        // Opening twice would leave the first connection behind with no way to
-        // close it, so the existing one is ended first.
-        guard.take();
-        *guard = Some(pmca_app::service::ServiceSession::open(&localizer, &mut progress(app))?);
-        Ok(())
+        #[cfg(target_os = "macos")]
+        {
+            remote::call(app, state, remote::Request::ServiceOpen)?;
+            Ok(())
+        }
+        #[cfg(not(target_os = "macos"))]
+        {
+            let localizer = state.localizer()?;
+            let mut guard = state.service.lock().map_err(CommandError::internal)?;
+            // Opening twice would leave the first connection behind with no way to
+            // close it, so the existing one is ended first.
+            guard.take();
+            *guard = Some(pmca_app::service::ServiceSession::open(&localizer, &mut progress(app))?);
+            Ok(())
+        }
     })
     .await
 }
@@ -38,24 +46,37 @@ pub(crate) async fn service_open(app: AppHandle) -> Result<(), CommandError> {
 pub(crate) async fn service_run(
     app: AppHandle,
     line: String,
-) -> Result<Option<pmca_app::service::ServiceOutcome>, CommandError> {
-    with_camera(app, move |_, state| {
+) -> Result<Reply<Option<pmca_app::service::ServiceOutcome>>, CommandError> {
+    with_camera(app, move |_app, state| {
         let localizer = state.localizer()?;
-        let mut guard = state.service.lock().map_err(CommandError::internal)?;
-        let session = guard.as_mut().ok_or_else(|| CommandError {
-            code: "no-service-session".into(),
-            message: localizer.tr("service-not-connected"),
-            detail: None,
-            recovery: None,
-        })?;
-        let outcome = session.run_line(&localizer, &line)?;
-        // `exit` is a command like any other, and the session it ends is this one.
-        if outcome.as_ref().is_some_and(|o| o.finished) {
-            guard.take();
+        #[cfg(target_os = "macos")]
+        {
+            remote::call_if_running(_app, state, remote::Request::ServiceRun { line })?
+                .map(Reply::Relayed)
+                .ok_or_else(|| service_not_connected(&localizer))
         }
-        Ok(outcome)
+        #[cfg(not(target_os = "macos"))]
+        {
+            let mut guard = state.service.lock().map_err(CommandError::internal)?;
+            run_service_line(&mut guard, &localizer, &line).map(Reply::Here)
+        }
     })
     .await
+}
+
+/// Run `line` on the session in `slot`, ending it on `exit`.
+pub(crate) fn run_service_line(
+    slot: &mut Option<pmca_app::service::ServiceSession>,
+    localizer: &Localizer,
+    line: &str,
+) -> Result<Option<pmca_app::service::ServiceOutcome>, CommandError> {
+    let session = slot.as_mut().ok_or_else(|| service_not_connected(localizer))?;
+    let outcome = session.run_line(localizer, line)?;
+    // `exit` is a command like any other, and the session it ends is this one.
+    if outcome.as_ref().is_some_and(|o| o.finished) {
+        slot.take();
+    }
+    Ok(outcome)
 }
 
 /// Leave service mode.
@@ -65,7 +86,9 @@ pub(crate) async fn service_run(
 /// still there.
 #[tauri::command]
 pub(crate) async fn service_close(app: AppHandle) -> Result<(), CommandError> {
-    with_camera_as_is(app, |_, state| {
+    with_camera_as_is(app, |_app, state| {
+        #[cfg(target_os = "macos")]
+        remote::call_if_running(_app, state, remote::Request::ServiceClose)?;
         state.service.lock().map_err(CommandError::internal)?.take();
         Ok(())
     })
@@ -78,16 +101,25 @@ pub(crate) async fn service_close(app: AppHandle) -> Result<(), CommandError> {
 /// with [`service_write_terminal`]; this just opens or closes it.
 #[tauri::command]
 pub(crate) async fn service_set_terminal(app: AppHandle, enable: bool) -> Result<(), CommandError> {
-    with_camera_as_is(app, move |_, state| {
+    with_camera_as_is(app, move |_app, state| {
         let localizer = state.localizer()?;
-        let mut guard = state.service.lock().map_err(CommandError::internal)?;
-        let session = guard.as_mut().ok_or_else(|| service_not_connected(&localizer))?;
-        if enable {
-            session.enable_terminal()?;
-        } else {
-            session.disable_terminal()?;
+        #[cfg(target_os = "macos")]
+        {
+            remote::call_if_running(_app, state, remote::Request::ServiceSetTerminal { enable })?
+                .map(|_| ())
+                .ok_or_else(|| service_not_connected(&localizer))
         }
-        Ok(())
+        #[cfg(not(target_os = "macos"))]
+        {
+            let mut guard = state.service.lock().map_err(CommandError::internal)?;
+            let session = guard.as_mut().ok_or_else(|| service_not_connected(&localizer))?;
+            if enable {
+                session.enable_terminal()?;
+            } else {
+                session.disable_terminal()?;
+            }
+            Ok(())
+        }
     })
     .await
 }
@@ -97,12 +129,21 @@ pub(crate) async fn service_set_terminal(app: AppHandle, enable: bool) -> Result
 /// Returns whatever was waiting, which may be nothing. The front-end drives the
 /// loop so the window stays responsive while the console is idle.
 #[tauri::command]
-pub(crate) async fn service_read_terminal(app: AppHandle) -> Result<Vec<u8>, CommandError> {
-    with_camera_as_is(app, |_, state| {
+pub(crate) async fn service_read_terminal(app: AppHandle) -> Result<Reply<Vec<u8>>, CommandError> {
+    with_camera_as_is(app, |_app, state| {
         let localizer = state.localizer()?;
-        let mut guard = state.service.lock().map_err(CommandError::internal)?;
-        let session = guard.as_mut().ok_or_else(|| service_not_connected(&localizer))?;
-        Ok(session.read_terminal())
+        #[cfg(target_os = "macos")]
+        {
+            remote::call_if_running(_app, state, remote::Request::ServiceReadTerminal)?
+                .map(Reply::Relayed)
+                .ok_or_else(|| service_not_connected(&localizer))
+        }
+        #[cfg(not(target_os = "macos"))]
+        {
+            let mut guard = state.service.lock().map_err(CommandError::internal)?;
+            let session = guard.as_mut().ok_or_else(|| service_not_connected(&localizer))?;
+            Ok(Reply::Here(session.read_terminal()))
+        }
     })
     .await
 }
@@ -113,18 +154,27 @@ pub(crate) async fn service_write_terminal(
     app: AppHandle,
     data: Vec<u8>,
 ) -> Result<(), CommandError> {
-    with_camera_as_is(app, move |_, state| {
+    with_camera_as_is(app, move |_app, state| {
         let localizer = state.localizer()?;
-        let mut guard = state.service.lock().map_err(CommandError::internal)?;
-        let session = guard.as_mut().ok_or_else(|| service_not_connected(&localizer))?;
-        session.write_terminal(&data)?;
-        Ok(())
+        #[cfg(target_os = "macos")]
+        {
+            remote::call_if_running(_app, state, remote::Request::ServiceWriteTerminal { data })?
+                .map(|_| ())
+                .ok_or_else(|| service_not_connected(&localizer))
+        }
+        #[cfg(not(target_os = "macos"))]
+        {
+            let mut guard = state.service.lock().map_err(CommandError::internal)?;
+            let session = guard.as_mut().ok_or_else(|| service_not_connected(&localizer))?;
+            session.write_terminal(&data)?;
+            Ok(())
+        }
     })
     .await
 }
 
-/// The error for a terminal command sent with no session open.
-fn service_not_connected(localizer: &Localizer) -> CommandError {
+/// The error for a command sent with no session open.
+pub(crate) fn service_not_connected(localizer: &Localizer) -> CommandError {
     CommandError {
         code: "no-service-session".into(),
         message: localizer.tr("service-not-connected"),

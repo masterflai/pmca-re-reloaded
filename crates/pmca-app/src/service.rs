@@ -184,6 +184,23 @@ impl ServiceRequest {
                 | Self::Terminal { .. }
         )
     }
+
+    /// The files on this computer the command may create.
+    ///
+    /// The macOS broker runs as root and hands these back to the user.
+    #[must_use]
+    pub fn local_outputs(&self) -> Vec<PathBuf> {
+        match self {
+            Self::Pull { local, .. }
+            | Self::ReadMemory { local, .. }
+            | Self::BackupDump { local }
+            | Self::BackupTrace { local } => vec![local.clone()],
+            Self::BackupDumpText { local } => {
+                vec![dump_path(local, "bin"), dump_path(local, "txt")]
+            }
+            _ => Vec::new(),
+        }
+    }
 }
 
 /// What a command produced.

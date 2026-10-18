@@ -1,49 +1,21 @@
 //! Tweaks: list, apply, undo, close.
 //!
-//! On macOS each operation runs in the elevated helper instead of a session
-//! held here: the camera's mass-storage connection needs root, and the capture
-//! that grants it belongs to the process that made it.
+//! On macOS the session lives in the elevated broker; see [`crate::remote`].
 
 use crate::*;
 
-#[cfg(target_os = "macos")]
-use pmca_app::elevated::TweakOperation;
-
-/// Run one tweak operation in the elevated helper; see [`pmca_app::elevated`].
-#[cfg(target_os = "macos")]
-fn elevated(
-    app: &AppHandle,
-    state: &AppState,
-    operation: TweakOperation,
-) -> Result<TweakReport, CommandError> {
-    let locale = state.locale.lock().map_err(CommandError::internal)?.clone();
-    let localizer = Localizer::new(&locale);
-    Ok(pmca_app::elevated::run_tweak_operation(
-        &localizer,
-        &locale,
-        &operation,
-        &mut progress(app),
-    )?)
-}
-
 /// Read the tweaks through the view's service-mode session, opening it if
 /// necessary.
+#[cfg_attr(target_os = "macos", allow(dead_code))]
 pub(crate) fn read_tweaks(app: &AppHandle, state: &AppState) -> Result<TweakReport, CommandError> {
-    #[cfg(target_os = "macos")]
-    {
-        elevated(app, state, TweakOperation::Read)
-    }
-    #[cfg(not(target_os = "macos"))]
-    {
-        let localizer = state.localizer()?;
-        let mut guard = state.tweaks.lock().map_err(CommandError::internal)?;
-        Ok(pmca_app::tweaks::with_session(
-            &mut guard,
-            &localizer,
-            &mut progress(app),
-            |session, sink| session.read(&localizer, sink),
-        )?)
-    }
+    let localizer = state.localizer()?;
+    let mut guard = state.tweaks.lock().map_err(CommandError::internal)?;
+    Ok(pmca_app::tweaks::with_session(
+        &mut guard,
+        &localizer,
+        &mut progress(app),
+        |session, sink| session.read(&localizer, sink),
+    )?)
 }
 
 /// Read the connected camera's tweakable settings.
@@ -55,8 +27,18 @@ pub(crate) fn read_tweaks(app: &AppHandle, state: &AppState) -> Result<TweakRepo
 /// after listing does not have to fetch the camera back into service mode. It
 /// is closed by [`tweaks_close`], which the view calls when the user leaves it.
 #[tauri::command]
-pub(crate) async fn list_tweaks(app: AppHandle) -> Result<TweakReport, CommandError> {
-    with_camera(app, read_tweaks).await
+pub(crate) async fn list_tweaks(app: AppHandle) -> Result<Reply<TweakReport>, CommandError> {
+    with_camera(app, |app, state| {
+        #[cfg(target_os = "macos")]
+        {
+            remote::call(app, state, remote::Request::TweaksRead).map(Reply::Relayed)
+        }
+        #[cfg(not(target_os = "macos"))]
+        {
+            read_tweaks(app, state).map(Reply::Here)
+        }
+    })
+    .await
 }
 
 /// Apply tweak changes to the connected camera and report the new state.
@@ -68,25 +50,25 @@ pub(crate) async fn list_tweaks(app: AppHandle) -> Result<TweakReport, CommandEr
 pub(crate) async fn apply_tweaks(
     app: AppHandle,
     changes: Vec<TweakChange>,
-) -> Result<TweakReport, CommandError> {
+) -> Result<Reply<TweakReport>, CommandError> {
     with_camera(app, move |app, state| {
-        if changes.is_empty() {
-            return read_tweaks(app, state);
-        }
         #[cfg(target_os = "macos")]
         {
-            elevated(app, state, TweakOperation::Apply { changes })
+            remote::call(app, state, remote::Request::TweaksApply { changes }).map(Reply::Relayed)
         }
         #[cfg(not(target_os = "macos"))]
         {
+            if changes.is_empty() {
+                return read_tweaks(app, state).map(Reply::Here);
+            }
             let localizer = state.localizer()?;
             let mut guard = state.tweaks.lock().map_err(CommandError::internal)?;
-            Ok(pmca_app::tweaks::with_session(
+            Ok(Reply::Here(pmca_app::tweaks::with_session(
                 &mut guard,
                 &localizer,
                 &mut progress(app),
                 |session, sink| session.apply(&localizer, &changes, sink),
-            )?)
+            )?))
         }
     })
     .await
@@ -99,25 +81,26 @@ pub(crate) async fn apply_tweaks(
 pub(crate) async fn apply_tweaks_whole_image(
     app: AppHandle,
     changes: Vec<TweakChange>,
-) -> Result<TweakReport, CommandError> {
+) -> Result<Reply<TweakReport>, CommandError> {
     with_camera(app, move |app, state| {
-        if changes.is_empty() {
-            return read_tweaks(app, state);
-        }
         #[cfg(target_os = "macos")]
         {
-            elevated(app, state, TweakOperation::ApplyWholeImage { changes })
+            remote::call(app, state, remote::Request::TweaksApplyWholeImage { changes })
+                .map(Reply::Relayed)
         }
         #[cfg(not(target_os = "macos"))]
         {
+            if changes.is_empty() {
+                return read_tweaks(app, state).map(Reply::Here);
+            }
             let localizer = state.localizer()?;
             let mut guard = state.tweaks.lock().map_err(CommandError::internal)?;
-            Ok(pmca_app::tweaks::with_session(
+            Ok(Reply::Here(pmca_app::tweaks::with_session(
                 &mut guard,
                 &localizer,
                 &mut progress(app),
                 |session, sink| session.apply_whole_image(&localizer, &changes, sink),
-            )?)
+            )?))
         }
     })
     .await
@@ -125,22 +108,22 @@ pub(crate) async fn apply_tweaks_whole_image(
 
 /// Write back the values saved before the first per-property tweak change.
 #[tauri::command]
-pub(crate) async fn undo_tweaks(app: AppHandle) -> Result<TweakReport, CommandError> {
+pub(crate) async fn undo_tweaks(app: AppHandle) -> Result<Reply<TweakReport>, CommandError> {
     with_camera(app, |app, state| {
         #[cfg(target_os = "macos")]
         {
-            elevated(app, state, TweakOperation::Undo)
+            remote::call(app, state, remote::Request::TweaksUndo).map(Reply::Relayed)
         }
         #[cfg(not(target_os = "macos"))]
         {
             let localizer = state.localizer()?;
             let mut guard = state.tweaks.lock().map_err(CommandError::internal)?;
-            Ok(pmca_app::tweaks::with_session(
+            Ok(Reply::Here(pmca_app::tweaks::with_session(
                 &mut guard,
                 &localizer,
                 &mut progress(app),
                 |session, sink| session.undo(&localizer, sink),
-            )?)
+            )?))
         }
     })
     .await
@@ -153,7 +136,9 @@ pub(crate) async fn undo_tweaks(app: AppHandle) -> Result<TweakReport, CommandEr
 /// whether a session was ever started.
 #[tauri::command]
 pub(crate) async fn tweaks_close(app: AppHandle) -> Result<(), CommandError> {
-    with_camera_as_is(app, |_, state| {
+    with_camera_as_is(app, |_app, state| {
+        #[cfg(target_os = "macos")]
+        remote::call_if_running(_app, state, remote::Request::TweaksClose)?;
         state.tweaks.lock().map_err(CommandError::internal)?.take();
         Ok(())
     })

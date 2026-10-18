@@ -35,13 +35,30 @@ impl Drop for OwnershipGuard {
 /// Make everything under the user's data folder belong to the invoking user.
 pub fn return_user_data() {
     #[cfg(unix)]
+    if let (Some(uid), Some(gid)) = invoking_user()
+        && let Some(dir) = pmca_i18n::catalog::user_data_dir()
     {
-        let id = |name| std::env::var(name).ok()?.parse::<u32>().ok();
-        let (Some(uid), Some(gid)) = (id("SUDO_UID"), id("SUDO_GID")) else { return };
-        if let Some(dir) = pmca_i18n::catalog::user_data_dir() {
-            give(&dir, uid, gid);
+        give(&dir, uid, gid);
+    }
+}
+
+/// Give single files a root run wrote outside the data folder to the invoking user.
+pub fn return_paths(paths: &[std::path::PathBuf]) {
+    #[cfg(unix)]
+    if let (Some(uid), Some(gid)) = invoking_user() {
+        for path in paths {
+            let _ = std::os::unix::fs::lchown(path, Some(uid), Some(gid));
         }
     }
+    #[cfg(not(unix))]
+    let _ = paths;
+}
+
+/// `SUDO_UID` and `SUDO_GID`, as `sudo` and the macOS broker set them.
+#[cfg(unix)]
+fn invoking_user() -> (Option<u32>, Option<u32>) {
+    let id = |name| std::env::var(name).ok()?.parse::<u32>().ok();
+    (id("SUDO_UID"), id("SUDO_GID"))
 }
 
 /// `lchown` the tree at `path`, never following a link out of it.

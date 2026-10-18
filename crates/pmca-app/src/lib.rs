@@ -18,10 +18,10 @@
 
 pub mod about;
 pub mod analysis;
+pub mod broker;
 mod direct;
 pub mod drivers;
 pub mod dto;
-pub mod elevated;
 pub mod fdat;
 pub mod firmware;
 pub mod keys;

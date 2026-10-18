@@ -6,6 +6,21 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+## [1.1.4-rc.3] - 2026-10-18
+
+Pre-release for testing on macOS. Contains everything from 1.1.4-rc.1 and
+1.1.4-rc.2.
+
+### Changed
+
+- macOS: the service shell and the function analysis work in the app as well,
+  not only on the command line. The app asks for your password once per run
+  and keeps an elevated copy of itself for the service-mode work, so the
+  tweaks no longer ask again after a few minutes and keep their service-mode
+  session between reading and applying. Files the service shell writes to
+  this computer belong to you, and relative paths start in your home folder.
+  Not yet tried with a camera.
+
 ## [1.1.4-rc.2] - 2026-10-18
 
 Pre-release for testing on macOS. Contains everything from 1.1.4-rc.1. The
