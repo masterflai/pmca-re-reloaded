@@ -6,6 +6,26 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+## [1.1.4-rc.1] - 2026-10-18
+
+Pre-release for testing on macOS.
+
+### Fixed
+
+- macOS and Linux, MTP mode: reading the camera information failed with
+  “The camera aborted the USB transfer”. The program sent Sony's commands
+  without first opening a session with the camera, which the camera requires.
+  It now opens one, as it always did on Windows. If the camera rejects the very
+  first request because an earlier program left a transfer unfinished, the
+  connection is reset and the request is sent again.
+- Command line: after `exit`, the service and updater shells printed their
+  closing message twice.
+
+### Changed
+
+- Linux: the command-line program is now built on Ubuntu 22.04, so it also
+  starts on distributions with an older C library (glibc).
+
 ## [1.1.3] - 2026-10-17
 
 ### Added
