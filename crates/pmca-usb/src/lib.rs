@@ -20,12 +20,12 @@
 //!   camera's TLS traffic to the local install server during app installation.
 //! * The real hardware backend ([`nusb_backend`], behind the default
 //!   `hardware` feature) wraps `nusb`.
-//! * On Windows, [`scsi_passthrough`] provides an alternative mass-storage
+//! * On Windows, `scsi_passthrough` provides an alternative mass-storage
 //!   transport that talks to the OS USBSTOR stack via
 //!   `IOCTL_SCSI_PASS_THROUGH_DIRECT`. It is required for cameras in
 //!   firmware-updater mode, whose bulk endpoints reject raw WinUSB Bulk-Only
 //!   transfers.
-//! * Also on Windows, [`wpd`] provides an alternative MTP transport built on
+//! * Also on Windows, `wpd` provides an alternative MTP transport built on
 //!   Windows Portable Devices. Cameras in MTP and application-installation
 //!   mode are claimed by the in-box `WUDFWpdMtp` driver, which denies raw
 //!   endpoint access; WPD is the supported way to reach them, and using it

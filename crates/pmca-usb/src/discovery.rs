@@ -450,7 +450,7 @@ pub fn read_model_name(
 /// The application-install transport, chosen at open time.
 ///
 /// Two transports can carry the install proxy: the raw bulk-endpoint
-/// [`MtpDevice`], and — on Windows — [`crate::wpd::WpdDevice`], which reaches a
+/// [`MtpDevice`], and — on Windows — `wpd::WpdDevice`, which reaches a
 /// camera still bound to the in-box `WUDFWpdMtp` driver. They share no type,
 /// so the choice is erased here rather than leaking into every caller.
 pub type AppInstallTransport = Box<dyn AppInstallDevice>;
@@ -462,7 +462,7 @@ pub type AppInstallTransport = Box<dyn AppInstallDevice>;
 /// The returned [`AppInstallCamera`] drives the install proxy protocol.
 ///
 /// On Windows the device is claimed by the in-box `WUDFWpdMtp` class driver,
-/// which denies raw endpoint access, so [`crate::wpd`] is tried first there.
+/// which denies raw endpoint access, so `wpd` is tried first there.
 /// The raw bulk transport remains the fallback for a camera whose driver has
 /// been replaced with WinUSB.
 pub fn open_app_install(camera: &DetectedCamera) -> Result<AppInstallCamera<AppInstallTransport>> {

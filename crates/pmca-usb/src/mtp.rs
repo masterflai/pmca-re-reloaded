@@ -54,7 +54,7 @@ const SONY_REQ_RECONNECT: u16 = 0x9282;
 ///
 /// [`MtpDevice`] implements this over raw bulk endpoints. On Windows the
 /// app-install and MTP interfaces are claimed by the `WUDFWpdMtp` class driver,
-/// so bulk endpoints are unavailable; [`crate::wpd::WpdDevice`] implements the
+/// so bulk endpoints are unavailable; `wpd::WpdDevice` implements the
 /// same four shapes through the WPD MTP extension commands instead. Everything
 /// above this trait (Sony external commands, the application-install proxy) is
 /// written against it and therefore works over either transport.
