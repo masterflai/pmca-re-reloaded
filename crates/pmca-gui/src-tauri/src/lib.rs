@@ -183,7 +183,7 @@ impl AppState {
 /// the next session's authentication, so starting from a swept state is what
 /// stops one crashed run from making the application look broken ever after.
 fn sweep_leftovers() {
-    let swept = pmca_app::tweaks::sweep_leftovers();
+    let swept = pmca_app::service_mode::sweep_leftovers();
     if swept.is_empty() {
         return;
     }
@@ -222,7 +222,7 @@ async fn with_camera<T: Send + 'static>(
         let state = app.state::<AppState>();
         let _camera = state.lock_camera();
         if !state.holds_session() {
-            pmca_app::tweaks::release_leftovers(&state.localizer()?)?;
+            pmca_app::service_mode::release_leftovers(&state.localizer()?)?;
         }
         work(&app, &state)
     })

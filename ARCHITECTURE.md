@@ -215,8 +215,9 @@ so a mode switch can never overlap another operation.
 ## 9. Where to start reading
 
 * A use case end to end: `crates/pmca-app/src/tweaks.rs` (session handling,
-  both write paths) or `crates/pmca-app/src/analysis/` (`run.rs`: snapshots
-  and write test, `cross_check.rs`, `report.rs`).
+  both write paths, on top of `service_mode.rs`) or
+  `crates/pmca-app/src/analysis/` (`run.rs`: snapshots and write test,
+  `cross_check.rs`, `report.rs`).
 * The decisions behind a write: `crates/pmca-platform/src/lib.rs`
   (`BackupPatch`) and `crates/pmca-platform/src/analysis.rs`.
 * How the camera is reached: `crates/pmca-usb/src/discovery.rs` and

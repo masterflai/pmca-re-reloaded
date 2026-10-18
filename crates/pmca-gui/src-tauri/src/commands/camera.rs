@@ -79,7 +79,7 @@ pub(crate) async fn switch_camera_mode(app: AppHandle) -> Result<(), CommandErro
 pub(crate) async fn start_driver_helper(app: AppHandle) -> Result<(), CommandError> {
     in_background(move || {
         let state = app.state::<AppState>();
-        Ok(pmca_app::tweaks::start_driver_helper(&state.localizer()?)?)
+        Ok(pmca_app::drivers::start_helper(&state.localizer()?)?)
     })
     .await
 }

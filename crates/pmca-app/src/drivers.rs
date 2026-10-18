@@ -69,18 +69,37 @@ pub fn rights() -> Rights {
     }
 }
 
-/// Start the helper now rather than at the first driver task. Does nothing
-/// when the process is elevated or a helper is already running.
-pub fn start_helper() -> winusb::Result<()> {
+/// Start the helper now rather than at the first driver task, so the one
+/// rights prompt of this program run comes when the user asks for it rather
+/// than mid-task. Does nothing when the process is elevated or a helper is
+/// already running.
+///
+/// A dismissed prompt comes back as [`crate::Error::NeedsElevation`]: nothing
+/// was started, and the next driver task simply asks again.
+pub fn start_helper(l: &Localizer) -> crate::Result<()> {
     if winusb::can_assign_drivers() {
         return Ok(());
     }
-    let mut helper = HELPER.lock().map_err(|_| winusb::Error::Install("helper lock".into()))?;
-    if helper.is_none() {
-        *helper = Some(Connection::start()?);
-        HELPER_RUNNING.store(true, Ordering::Release);
+    let started = HELPER.lock().map_err(|_| winusb::Error::Install("helper lock".into())).and_then(
+        |mut helper| {
+            if helper.is_none() {
+                *helper = Some(Connection::start()?);
+                HELPER_RUNNING.store(true, Ordering::Release);
+            }
+            Ok(())
+        },
+    );
+    started.map_err(|e| localize_error(l, e))
+}
+
+/// A driver-assignment failure in the user's language.
+pub(crate) fn localize_error(l: &Localizer, e: winusb::Error) -> crate::Error {
+    match e {
+        winusb::Error::NeedsElevation => {
+            crate::Error::NeedsElevation(l.tr("driver-helper-declined"))
+        }
+        e => crate::Error::Operation(l.tr_arg("driver-bind-failed", "detail", &e.to_string())),
     }
-    Ok(())
 }
 
 /// Assign WinUSB to a Sony device, starting the helper if necessary.
@@ -167,7 +186,7 @@ pub fn remove_foreign_drivers(l: &Localizer) -> crate::Result<Vec<String>> {
     } else {
         call(&Request::RemoveForeign, true).map(|reply| reply.packages)
     };
-    removed.map_err(|e| crate::tweaks::driver_error(l, e))
+    removed.map_err(|e| localize_error(l, e))
 }
 
 /// One request to the helper.

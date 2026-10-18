@@ -455,7 +455,7 @@ fn main() -> ExitCode {
     // left to release and report zero — telling the user nothing happened when
     // in fact everything did.
     if !matches!(cli.command, Command::Driver { .. }) {
-        let swept = pmca_app::tweaks::sweep_leftovers();
+        let swept = pmca_app::service_mode::sweep_leftovers();
         if swept.packages > 0 {
             eprintln!("{}", l.tr_arg("driver-swept", "count", &swept.packages.to_string()));
         }

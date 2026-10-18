@@ -468,7 +468,7 @@ impl ServiceSession {
     /// after every session. Making the caller do that by hand was a papercut
     /// the console used to have and this does not.
     pub fn open(l: &Localizer, sink: &mut dyn ProgressSink) -> Result<Self> {
-        Ok(Self { cam: crate::tweaks::open_service_camera(l, sink)?, open: true })
+        Ok(Self { cam: crate::service_mode::open_service_camera(l, sink)?, open: true })
     }
 
     /// Carry out one command.
@@ -689,7 +689,7 @@ impl ServiceSession {
     /// closed — cannot all know whether one of the others got there first.
     pub fn close(&mut self) {
         if std::mem::take(&mut self.open) {
-            crate::tweaks::leave_service_mode(&mut self.cam);
+            crate::service_mode::leave_service_mode(&mut self.cam);
         }
     }
 }

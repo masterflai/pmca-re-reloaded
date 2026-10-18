@@ -28,6 +28,7 @@ pub mod network;
 pub mod plugins;
 pub mod proxy;
 pub mod service;
+pub mod service_mode;
 pub mod store;
 pub mod tools;
 pub mod tweaks;

@@ -31,7 +31,7 @@ use serde::Serialize;
 
 use crate::direct;
 use crate::dto::{ProgressEvent, ProgressKind};
-use crate::tweaks::{leave_service_mode, open_service_camera};
+use crate::service_mode::{leave_service_mode, open_service_camera};
 use crate::{Error, ProgressSink, Result};
 
 /// Identifies the report format; bumped when a field changes meaning.
