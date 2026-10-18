@@ -142,13 +142,12 @@ pub(crate) fn run_platform_shell<T: pmca_usb::command::SonyExtCmdTransport>(
         }
 
         match pmca_app::updater::execute(shell, l, &request) {
+            // Reported by the caller, once the updater has completed.
+            Ok(outcome) if outcome.finished => break,
             Ok(outcome) => {
                 println!("{}", outcome.message);
                 if let Some(dump) = outcome.dump {
                     print!("{dump}");
-                }
-                if outcome.finished {
-                    break;
                 }
             }
             Err(e) => eprintln!("{}: {e}", l.tr("cli-error-prefix")),

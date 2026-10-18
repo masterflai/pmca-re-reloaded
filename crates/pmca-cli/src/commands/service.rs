@@ -39,13 +39,12 @@ pub(crate) fn serviceshell_command(l: &Localizer) -> Result<(), Box<dyn std::err
         }
         match session.run_line(l, &line) {
             Ok(None) => {}
+            // Reported below, once the session is actually closed.
+            Ok(Some(outcome)) if outcome.finished => break,
             Ok(Some(outcome)) => {
                 println!("{}", outcome.message);
                 if let Some(dump) = outcome.dump {
                     print!("{dump}");
-                }
-                if outcome.finished {
-                    break;
                 }
             }
             Err(e) => eprintln!("{}: {e}", l.tr("cli-error-prefix")),
