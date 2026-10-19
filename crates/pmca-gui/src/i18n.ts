@@ -107,7 +107,7 @@ export function tr(key: string): string {
 
 /** Translate a key and fill in its `{ $name }` placeholders. */
 export function trFill(key: string, values: Record<string, string | number>): string {
-  return tr(key).replace(/\{\s*\$([a-z-]+)\s*\}/g, (whole, name: string) =>
+  return tr(key).replace(/\{\s*\$([A-Za-z][A-Za-z0-9_-]*)\s*\}/g, (whole, name: string) =>
     name in values ? String(values[name]) : whole,
   );
 }

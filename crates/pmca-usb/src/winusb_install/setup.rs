@@ -9,14 +9,16 @@ use std::path::Path;
 use windows::Win32::Devices::DeviceAndDriverInstallation::{
     CM_GETIDLIST_FILTER_ENUMERATOR, CM_GETIDLIST_FILTER_PRESENT, CM_Get_Device_ID_List_SizeW,
     CM_Get_Device_ID_ListW, CM_LOCATE_DEVNODE_NORMAL, CM_Locate_DevNodeW, CM_REENUMERATE_NORMAL,
-    CM_Reenumerate_DevNode, CONFIGRET, CR_SUCCESS, DIIRFLAG_FORCE_INF, DIUNINSTALLDRIVER_FLAGS,
-    DiInstallDriverW, DiUninstallDriverW, OEM_SOURCE_MEDIA_TYPE, SPOST_PATH, SetupCopyOEMInfW,
-    SetupUninstallOEMInfW,
+    CM_Reenumerate_DevNode, CONFIGRET, CR_SUCCESS, DIGCF_ALLCLASSES, DIIRFLAG_FORCE_INF,
+    DIUNINSTALLDRIVER_FLAGS, DiInstallDriverW, DiUninstallDevice, DiUninstallDriverW, HDEVINFO,
+    OEM_SOURCE_MEDIA_TYPE, SP_DEVINFO_DATA, SPDRP_MFG, SPOST_PATH, SetupCopyOEMInfW,
+    SetupDiDestroyDeviceInfoList, SetupDiEnumDeviceInfo, SetupDiGetClassDevsW,
+    SetupDiGetDeviceInstanceIdW, SetupDiGetDeviceRegistryPropertyW, SetupUninstallOEMInfW,
 };
-use windows::Win32::Foundation::ERROR_ACCESS_DENIED;
+use windows::Win32::Foundation::{ERROR_ACCESS_DENIED, HWND};
 use windows::core::PCWSTR;
 
-use super::{Error, Result, wide};
+use super::{Error, PROVIDER, Result, wide};
 
 /// `SP_COPY_NEWER_ONLY` — do not re-copy an identical package.
 const SP_COPY_NEWER_ONLY: u32 = 0x0000_0004;
@@ -136,6 +138,93 @@ pub(super) fn rescan_devices() {
     }
 }
 
+/// Sony device nodes, plugged in or not, still assigned by a package of ours.
+///
+/// Removing a package rolls back only the devices plugged in at that moment.
+/// Right after leaving service mode the camera is between two product ids, so
+/// the node of the mode it returns in keeps WinUSB with its package gone; as a
+/// mass-storage device it then shows "check the connected device". Measured on
+/// a DSC-RX1R. Service-mode nodes are skipped: WinUSB is what they need anyway.
+fn orphaned(mut visit: impl FnMut(HDEVINFO, &SP_DEVINFO_DATA)) -> usize {
+    let enumerator = wide("USB");
+    // SAFETY: `enumerator` outlives the call. Without `DIGCF_PRESENT` the set
+    // includes nodes of devices that are not plugged in.
+    let Ok(set) = (unsafe {
+        SetupDiGetClassDevsW(None, PCWSTR(enumerator.as_ptr()), None, DIGCF_ALLCLASSES)
+    }) else {
+        return 0;
+    };
+
+    let mut found = 0;
+    let mut data =
+        SP_DEVINFO_DATA { cbSize: size_of::<SP_DEVINFO_DATA>() as u32, ..Default::default() };
+    for index in 0.. {
+        // SAFETY: `set` is valid until destroyed below; `data` carries its size.
+        if unsafe { SetupDiEnumDeviceInfo(set, index, &mut data) }.is_err() {
+            break;
+        }
+        let mut id = [0u16; 256];
+        // SAFETY: `id` is a writable buffer of the length passed with it.
+        if unsafe { SetupDiGetDeviceInstanceIdW(set, &data, Some(&mut id), None) }.is_err() {
+            continue;
+        }
+        let mut mfg = [0u8; 256];
+        // SAFETY: as above, for the manufacturer string.
+        if unsafe {
+            SetupDiGetDeviceRegistryPropertyW(set, &data, SPDRP_MFG, None, Some(&mut mfg), None)
+        }
+        .is_err()
+        {
+            continue;
+        }
+        if is_orphan(&utf16_until_nul(&id), &utf16_bytes_until_nul(&mfg)) {
+            found += 1;
+            visit(set, &data);
+        }
+    }
+    // SAFETY: `set` came from `SetupDiGetClassDevsW` and is not used afterwards.
+    unsafe {
+        let _ = SetupDiDestroyDeviceInfoList(set);
+    }
+    found
+}
+
+fn is_orphan(instance_id: &str, manufacturer: &str) -> bool {
+    let id = instance_id.to_ascii_uppercase();
+    let Some(rest) = id.strip_prefix(r"USB\VID_054C&PID_") else { return false };
+    let senser = u16::from_str_radix(rest.get(..4).unwrap_or_default(), 16)
+        .is_ok_and(|pid| crate::sony::SONY_ID_PRODUCT_SENSER.contains(&pid));
+    !senser && manufacturer == PROVIDER
+}
+
+fn utf16_until_nul(buffer: &[u16]) -> String {
+    let end = buffer.iter().position(|&c| c == 0).unwrap_or(buffer.len());
+    String::from_utf16_lossy(&buffer[..end])
+}
+
+fn utf16_bytes_until_nul(bytes: &[u8]) -> String {
+    let units: Vec<u16> = bytes.chunks_exact(2).map(|p| u16::from_le_bytes([p[0], p[1]])).collect();
+    utf16_until_nul(&units)
+}
+
+/// How many nodes [`remove_orphans`] would remove. Needs no rights.
+pub(super) fn count_orphans() -> usize {
+    orphaned(|_, _| ())
+}
+
+/// Uninstall every node [`count_orphans`] reports, so the next arrival of the
+/// device gets the driver Windows ranks best. Needs administrator rights.
+pub(super) fn remove_orphans() -> usize {
+    let mut removed = 0;
+    orphaned(|set, data| {
+        // SAFETY: `set` and `data` are valid for the duration of the visit.
+        if unsafe { DiUninstallDevice(HWND::default(), set, data, 0, None) }.is_ok() {
+            removed += 1;
+        }
+    });
+    removed
+}
+
 /// Whether a device matching `hardware_id` is plugged in right now.
 ///
 /// Answers the question the USB backend cannot: its enumeration only reports
@@ -168,5 +257,25 @@ pub(super) fn device_present(hardware_id: &str) -> bool {
             return false;
         }
         buffer.first().is_some_and(|&c| c != 0)
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn only_non_service_sony_nodes_of_ours_are_orphans() {
+        assert!(is_orphan(r"USB\VID_054C&PID_0586\C6C7805BD4C3", PROVIDER));
+        assert!(is_orphan(r"usb\vid_054c&pid_03e2\X", PROVIDER));
+        assert!(!is_orphan(r"USB\VID_054C&PID_0336\X", PROVIDER));
+        assert!(!is_orphan(r"USB\VID_054C&PID_0586\X", "Sony"));
+        assert!(!is_orphan(r"USB\VID_1234&PID_0586\X", PROVIDER));
+    }
+
+    #[test]
+    fn registry_strings_end_at_the_first_nul() {
+        let bytes: Vec<u8> = "AB\0C".encode_utf16().flat_map(u16::to_le_bytes).collect();
+        assert_eq!(utf16_bytes_until_nul(&bytes), "AB");
     }
 }

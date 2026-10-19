@@ -6,6 +6,15 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+### Fixed
+
+- Windows: after writing to the camera in service mode, the camera could come
+  back with the service-mode driver still assigned to its mass-storage side
+  and ask you to check the connected device. The clean-up now also releases
+  the driver of a camera that was switching modes at that moment; one left
+  behind by an earlier version is released at the next camera task, after
+  Windows asks for administrator rights.
+
 ## [1.1.4-rc.4] - 2026-10-18
 
 Pre-release for testing on macOS. Contains everything from 1.1.4-rc.1 to

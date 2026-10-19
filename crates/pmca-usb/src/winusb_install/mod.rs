@@ -186,7 +186,8 @@ pub fn unbind_all() -> Result<Cleanup> {
         setup::remove_package(&package)?;
         cleanup.packages.push(package);
     }
-    if !cleanup.packages.is_empty() {
+    let orphans = setup::remove_orphans();
+    if !cleanup.packages.is_empty() || orphans > 0 {
         // Without this the devices stay driverless until the next replug, and
         // the camera would look broken to the user right after we told them we
         // had tidied up.
@@ -210,7 +211,8 @@ pub fn sweep() -> Cleanup {
             cleanup.packages.push(package);
         }
     }
-    if !cleanup.packages.is_empty() {
+    let orphans = setup::remove_orphans();
+    if !cleanup.packages.is_empty() || orphans > 0 {
         setup::rescan_devices();
     }
     cleanup.certificates = signing::remove_certificates().unwrap_or(0);
@@ -218,9 +220,10 @@ pub fn sweep() -> Cleanup {
 }
 
 /// How many driver packages of ours are still staged, e.g. because the last
-/// cleanup ran without administrator rights.
+/// cleanup ran without administrator rights, plus the Sony device nodes still
+/// assigned by one that is already gone.
 pub fn pending_packages() -> usize {
-    staged_packages().len()
+    staged_packages().len() + setup::count_orphans()
 }
 
 /// Whether this process runs elevated and may therefore assign drivers.
