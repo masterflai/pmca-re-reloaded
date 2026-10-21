@@ -6,6 +6,12 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+## [1.2.0] - 2026-10-21
+
+**macOS:** firmware updates and the updater shell have still not been tried
+on a Mac with a camera. Until a successful update on a Mac has been reported,
+update the firmware from Windows or with Sony's own updater.
+
 ### Added
 
 - Settings: an update notification, off by default. When you switch it on, the
@@ -205,6 +211,6 @@ and Linux.
 - **Device list** in the app with the functions each known model supports,
   plus community reports for further models.
 
-[Unreleased]: https://github.com/masterflai/pmca-re-reloaded/compare/v1.1.4...HEAD
+[Unreleased]: https://github.com/masterflai/pmca-re-reloaded/compare/v1.2.0...HEAD
 [1.1.0]: https://github.com/masterflai/pmca-re-reloaded/compare/v1.0.0...v1.1.0
 [1.0.0]: https://github.com/masterflai/pmca-re-reloaded/releases/tag/v1.0.0
