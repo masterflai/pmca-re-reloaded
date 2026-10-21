@@ -61,6 +61,11 @@ know how to recover the camera.
 - Command line: after `exit`, the service and updater shells printed their
   closing message twice.
 
+### Security
+
+- Downloads over HTTPS no longer accept certificates issued through the
+  distrusted emSign intermediates (RUSTSEC-2026-0381, RUSTSEC-2026-0382).
+
 ## [1.1.3] - 2026-10-17
 
 ### Added
