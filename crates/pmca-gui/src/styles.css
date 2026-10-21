@@ -418,6 +418,24 @@ summary {
   user-select: all;
 }
 
+/* The start-up notice about a newer release; sits above every view until hidden. */
+.update-banner {
+  margin: 20px 0 0;
+  border-inline-start: 3px solid var(--accent);
+}
+
+.update-banner h2 {
+  margin: 0 0 8px;
+  font-size: 1.05rem;
+}
+
+.update-banner code {
+  flex: 1;
+  font-size: 0.9em;
+  color: var(--text-muted);
+  user-select: all;
+}
+
 /*
  * The service shell's transcript.
  *

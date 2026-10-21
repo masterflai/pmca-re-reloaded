@@ -6,6 +6,31 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+### Added
+
+- Settings: an update notification, off by default. When you switch it on, the
+  app asks GitHub at every start whether a newer release exists and, if so,
+  shows its version and download address at the top of the window.
+  Pre-releases are not announced.
+
+### Changed
+
+- The "show all menu languages" switch now counts language slots rather than
+  languages, and notes that a camera shows only the languages its firmware
+  knows: an RX1R II shows 25 of the 35. Which language sits in which slot has
+  been measured on that camera, which also confirms that the two languages a
+  Japanese camera cannot show are simplified and traditional Chinese.
+
+### Fixed
+
+- Plugins: a plugin made for a newer or a different edition of the program was
+  refused with a raw parser message listing every allowed field. It now says
+  in your language which feature this version does not know.
+- Command line: commands that never use a camera (plugins, keys, the file
+  tools, `license`, `apps`) no longer look for drivers an earlier run left
+  behind. A camera command that finds one now actually asks for the
+  administrator rights its message announces.
+
 ## [1.1.4] - 2026-10-21
 
 **Caution on macOS:** the new macOS functions of this release have not yet

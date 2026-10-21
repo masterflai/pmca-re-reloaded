@@ -335,7 +335,9 @@ Privacy: this program will not transfer any information to other networked
 systems unless specifically requested by the user or the person installing or
 operating it. The features that reach the network do so only when used: the
 GPS assist data (from Sony), the community app list (from GitHub) and the key
-import (from the address you enter). There is no telemetry.
+import (from the address you enter). If you switch on the update notification
+in the settings, the app also asks GitHub for the newest release at every
+start; it is off by default. There is no telemetry.
 
 ## Acknowledgements and license
 

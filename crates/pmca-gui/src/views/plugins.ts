@@ -51,9 +51,10 @@ export function cardPlugins(): HTMLElement {
     }
     for (const plugin of state.plugins) list.append(pluginRow(plugin));
     for (const failed of state.failed) {
-      list.append(
-        make("p", { className: "error-text" }, `${failed.file}: `, trFill("plugin-invalid", { reason: failed.reason })),
-      );
+      const reason = failed.unknownField
+        ? trFill("plugin-unknown-field", { field: failed.unknownField })
+        : trFill("plugin-invalid", { reason: failed.reason });
+      list.append(make("p", { className: "error-text" }, `${failed.file}: `, reason));
     }
   }
 

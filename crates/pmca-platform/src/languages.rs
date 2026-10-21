@@ -33,12 +33,67 @@ pub const REGION_JAPAN: &str = "J1";
 /// which on a camera whose menu is in a language the owner cannot read is
 /// close to the same thing.
 ///
-/// Which two languages these are is not established. The reference discussion
-/// suspects simplified and traditional Chinese, and the tables are consistent
-/// with that — the two slots are set across the Asia-Pacific regions and in
-/// `UC2`, and nowhere in Europe — but nothing here proves it, so they are
-/// identified by position rather than by name.
+/// They are simplified and traditional Chinese: the reference discussion
+/// suspected it, and [`LANGUAGE_CODES`], measured on an RX1R II, confirms it.
+/// The reboot itself has not been seen here on a Japanese body.
 const JAPAN_UNSUPPORTED: [usize; 2] = [7, 8];
+
+/// The language in each slot as a BCP 47 code; `None` where not yet established.
+///
+/// Measured on a DSC-RX1RM2 by writing six bit masks and reading its menu. Its
+/// firmware shows 25 languages; the open slots hold ones it cannot display.
+/// Cross-checked against the CEC, CE3 and J1 tables.
+pub const LANGUAGE_CODES: [Option<&str>; LANGUAGE_COUNT] = [
+    Some("en"),
+    Some("ja"),
+    Some("fr"),
+    Some("de"),
+    Some("es"),
+    Some("it"),
+    Some("pt"),
+    Some("zh-Hans"),
+    Some("zh-Hant"),
+    Some("ar"),
+    Some("ko"),
+    Some("nl"),
+    Some("ru"),
+    Some("th"),
+    Some("fa"),
+    Some("hu"),
+    Some("cs"),
+    Some("pl"),
+    Some("sv"),
+    Some("no"),
+    Some("tr"),
+    Some("el"),
+    None,
+    Some("ms"),
+    None,
+    Some("fi"),
+    None,
+    Some("da"),
+    None,
+    None,
+    None,
+    None,
+    None,
+    None,
+    None,
+];
+
+/// The enabled languages of a table: the known ones by code, and how many
+/// enabled slots hold a language not yet established.
+pub fn enabled_languages(langs: &[u8]) -> (Vec<&'static str>, usize) {
+    let mut known = Vec::new();
+    let mut unknown = 0;
+    for (slot, _) in langs.iter().enumerate().filter(|(_, l)| **l == LANG_ENABLED) {
+        match LANGUAGE_CODES.get(slot).copied().flatten() {
+            Some(code) => known.push(code),
+            None => unknown += 1,
+        }
+    }
+    (known, unknown)
+}
 
 const TABLES: &[(&str, &str)] = &[
     ("ALLLANG", "11111111111111111111111111111111111"),
@@ -214,6 +269,37 @@ mod tests {
         assert_ne!(
             default_languages(REGION_JAPAN).unwrap(),
             unlockable_languages(REGION_JAPAN, false)
+        );
+    }
+
+    #[test]
+    fn the_measured_codes_are_distinct() {
+        let known: Vec<&str> = LANGUAGE_CODES.iter().flatten().copied().collect();
+        assert_eq!(known.len(), 25);
+        let mut sorted = known.clone();
+        sorted.sort_unstable();
+        sorted.dedup();
+        assert_eq!(sorted.len(), known.len());
+    }
+
+    #[test]
+    fn the_tables_name_what_the_rx1r_ii_showed() {
+        // Photographed on the camera: CEC lists 17 languages, CE3 the same without Russian.
+        let cec = [
+            "en", "fr", "de", "es", "it", "pt", "nl", "ru", "hu", "cs", "pl", "sv", "no", "tr",
+            "el", "fi", "da",
+        ];
+        assert_eq!(enabled_languages(&default_languages("CEC").unwrap()), (cec.to_vec(), 1));
+        let ce3: Vec<&str> = cec.into_iter().filter(|c| *c != "ru").collect();
+        assert_eq!(enabled_languages(&default_languages("CE3").unwrap()), (ce3, 3));
+        assert_eq!(enabled_languages(&default_languages(REGION_JAPAN).unwrap()), (vec!["ja"], 0));
+    }
+
+    #[test]
+    fn the_slots_japan_cannot_show_are_chinese() {
+        assert_eq!(
+            JAPAN_UNSUPPORTED.map(|s| LANGUAGE_CODES[s]),
+            [Some("zh-Hans"), Some("zh-Hant")]
         );
     }
 }

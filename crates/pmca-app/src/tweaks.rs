@@ -569,7 +569,7 @@ mod tests {
         let state: TweakState = pmca_platform::tweaks::TweakStatus {
             id: "language".into(),
             enabled: false,
-            value: "33 / 35 languages activated".into(),
+            value: "33 / 35 language slots enabled".into(),
             presentation: pmca_platform::tweaks::Presentation::Toggle,
             caution: Some(pmca_platform::tweaks::Caution::UnsupportedLanguages),
         }

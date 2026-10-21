@@ -34,6 +34,7 @@ pub mod service_mode;
 pub mod store;
 pub mod tools;
 pub mod tweaks;
+pub mod update;
 pub mod updater;
 
 use std::path::Path;

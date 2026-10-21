@@ -346,6 +346,7 @@ impl From<pmca_platform::tweaks::TweakStatus> for TweakState {
         // camera never asks for the card there.
         let note_key = match t.id.as_str() {
             "palNtsc" => Some("tweak-pal-ntsc-note".to_string()),
+            "language" => Some("tweak-language-note".to_string()),
             _ => None,
         };
         let caution_key = t.caution.map(|c| {
@@ -640,6 +641,19 @@ pub struct StreamingSettings {
     pub social: SocialSettings,
     /// Configured streaming services.
     pub services: Vec<StreamingService>,
+}
+
+/// A published release newer than the running build.
+#[derive(Debug, Clone, Default, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+#[cfg_attr(test, derive(ts_rs::TS), ts(export))]
+pub struct AvailableUpdate {
+    /// Version of the running build.
+    pub current: String,
+    /// Version of the newest release, without the tag's `v`.
+    pub latest: String,
+    /// Page the release is downloaded from.
+    pub url: String,
 }
 
 #[cfg(test)]

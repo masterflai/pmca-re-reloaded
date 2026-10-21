@@ -108,6 +108,16 @@ pub struct PluginFailure {
     pub file: String,
     /// Why, as technical English text.
     pub reason: String,
+    /// The manifest field this build does not know, when that is why: the
+    /// plugin was made for a newer or a different edition of the program.
+    pub unknown_field: Option<String>,
+}
+
+impl PluginFailure {
+    fn new(file: String, reason: String) -> Self {
+        let unknown_field = unknown_field(&reason).map(str::to_string);
+        Self { file, reason, unknown_field }
+    }
 }
 
 /// The installed plugins.
@@ -198,7 +208,7 @@ fn read_archive(bytes: &[u8], file: &str) -> std::result::Result<Plugin, String>
         return Err(format!("more than {MAX_ENTRIES} files in the archive"));
     }
     let manifest: Manifest = serde_json::from_slice(&read_entry(&mut zip, "plugin.json", 1 << 20)?)
-        .map_err(|e| format!("plugin.json: {e}"))?;
+        .map_err(manifest_error)?;
     manifest.validate()?;
 
     let prefix = format!("plg-{}-", manifest.id);
@@ -344,13 +354,13 @@ pub fn load() {
         let file = path.file_name().map(|f| f.to_string_lossy().into_owned()).unwrap_or_default();
         match read_file(&path) {
             Ok((plugin, _)) if plugins.iter().any(|p| p.manifest.id == plugin.manifest.id) => {
-                failed.push(PluginFailure {
+                failed.push(PluginFailure::new(
                     file,
-                    reason: "another file has the same plugin id".to_string(),
-                });
+                    "another file has the same plugin id".to_string(),
+                ));
             }
             Ok((plugin, _)) => plugins.push(plugin),
-            Err(reason) => failed.push(PluginFailure { file, reason }),
+            Err(reason) => failed.push(PluginFailure::new(file, reason)),
         }
     }
 
@@ -377,7 +387,31 @@ fn loaded() -> &'static [Plugin] {
 }
 
 fn invalid(l: &Localizer, reason: &str) -> Error {
-    Error::Operation(l.tr_arg("plugin-invalid", "reason", reason))
+    Error::Operation(refusal(l, reason))
+}
+
+const UNKNOWN_FIELD: &str = "unknown field `";
+
+/// serde's message lists every allowed field and the position; only the unknown one helps.
+fn manifest_error(e: serde_json::Error) -> String {
+    let text = e.to_string();
+    match text.strip_prefix(UNKNOWN_FIELD).and_then(|rest| rest.split_once('`')) {
+        Some((field, _)) => format!("{UNKNOWN_FIELD}{field}`"),
+        None => format!("plugin.json: {text}"),
+    }
+}
+
+fn unknown_field(reason: &str) -> Option<&str> {
+    reason.strip_prefix(UNKNOWN_FIELD)?.strip_suffix('`')
+}
+
+/// Why a plugin file was refused, in the user's language.
+#[must_use]
+pub fn refusal(l: &Localizer, reason: &str) -> String {
+    match unknown_field(reason) {
+        Some(field) => l.tr_arg("plugin-unknown-field", "field", field),
+        None => l.tr_arg("plugin-invalid", "reason", reason),
+    }
 }
 
 /// The installed plugins, and whether a restart would change what is in effect.
@@ -395,7 +429,7 @@ pub fn list() -> PluginList {
                 });
                 plugins.push(plugin.info(active));
             }
-            Err(reason) => failed.push(PluginFailure { file, reason }),
+            Err(reason) => failed.push(PluginFailure::new(file, reason)),
         }
     }
     let load_failed = LOADED.get().map_or(0, |l| l.failed.len());
@@ -641,6 +675,16 @@ mod tests {
             assert!(err.contains(expect), "{from} -> {err}");
         }
         assert!(read_archive(b"not a zip", "x").err().unwrap().contains("archive"));
+    }
+
+    #[test]
+    fn an_unknown_manifest_field_is_named_on_its_own() {
+        let manifest = MANIFEST.replacen("\"name\"", "\"identity\": {}, \"name\"", 1);
+        let reason = data_plugin(&manifest, "plg-demo-flag = x\n").err().unwrap();
+        assert_eq!(reason, "unknown field `identity`");
+        let failure = PluginFailure::new("x".into(), reason);
+        assert_eq!(failure.unknown_field.as_deref(), Some("identity"));
+        assert_eq!(PluginFailure::new("x".into(), "too large".into()).unknown_field, None);
     }
 
     #[test]

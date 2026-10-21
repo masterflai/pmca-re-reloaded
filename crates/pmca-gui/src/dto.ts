@@ -10,6 +10,7 @@
 
 export type { AboutInfo } from "./bindings/AboutInfo";
 export type { AboutLink } from "./bindings/AboutLink";
+export type { AvailableUpdate } from "./bindings/AvailableUpdate";
 export type { CameraSummary } from "./bindings/CameraSummary";
 export type { CommunityApp } from "./bindings/CommunityApp";
 export type { FirmwareOutcome } from "./bindings/FirmwareOutcome";

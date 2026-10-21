@@ -19,11 +19,7 @@ pub(crate) fn plugins_command(
                 print_plugin(l, plugin);
             }
             for failed in &list.failed {
-                println!(
-                    "{}: {}",
-                    failed.file,
-                    l.tr_arg("plugin-invalid", "reason", &failed.reason)
-                );
+                println!("{}: {}", failed.file, plugins::refusal(l, &failed.reason));
             }
             if list.restart_required {
                 println!("{}", l.tr("plugin-restart"));

@@ -23,7 +23,14 @@ import {
   tr,
   type Locale,
 } from "../i18n";
-import { advancedMode, analysisOn, setAdvancedMode, setAnalysisMode } from "../preferences";
+import {
+  advancedMode,
+  analysisOn,
+  setAdvancedMode,
+  setAnalysisMode,
+  setUpdateCheck,
+  updateCheckOn,
+} from "../preferences";
 import { cardPlugins } from "./plugins";
 
 /**
@@ -36,7 +43,39 @@ import { cardPlugins } from "./plugins";
  * currently on screen.
  */
 export function viewSettings(host: HTMLElement): void {
-  host.append(cardTranslationEditor(), cardPlugins(), cardAdvancedMode(), cardAnalysisMode());
+  host.append(
+    cardTranslationEditor(),
+    cardPlugins(),
+    cardUpdateCheck(),
+    cardAdvancedMode(),
+    cardAnalysisMode(),
+  );
+}
+
+/** Opt in to hearing about new releases at start. */
+function cardUpdateCheck(): HTMLElement {
+  const status = statusLine();
+  const toggle = make("input", { type: "checkbox" });
+  toggle.checked = updateCheckOn;
+
+  const report = (): void => {
+    const key = updateCheckOn ? "settings-update-on" : "settings-update-off";
+    showStatus(status, tr(key));
+    status.dataset.i18n = key;
+  };
+
+  toggle.addEventListener("change", () => {
+    setUpdateCheck(toggle.checked);
+    report();
+  });
+  report();
+
+  return card(
+    make("h2", { i18n: "settings-update-heading" }),
+    make("p", { i18n: "settings-update-purpose" }),
+    make("label", { className: "row" }, toggle, make("span", { i18n: "settings-update-toggle" })),
+    status,
+  );
 }
 
 /**

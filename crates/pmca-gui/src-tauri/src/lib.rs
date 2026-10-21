@@ -364,6 +364,7 @@ pub fn run() {
             import_catalog,
             reset_catalog,
             about_info,
+            check_for_update,
             host_platform,
             check_interfering_services,
             get_camera_info,

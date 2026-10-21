@@ -267,7 +267,7 @@ fn describe(d: &Def, data: &[u8], enabled: bool) -> String {
         }
         Kind::Language => {
             let on = data.iter().filter(|&&l| l == LANG_ENABLED).count();
-            format!("{on} / {} languages activated", data.len())
+            format!("{on} / {} language slots enabled", data.len())
         }
     }
 }
@@ -551,6 +551,6 @@ mod tests {
         let mut data = vec![LANG_DISABLED; LANGUAGE_COUNT];
         data[0] = LANG_ENABLED;
         data[5] = LANG_ENABLED;
-        assert_eq!(describe(d, &data, false), "2 / 35 languages activated");
+        assert_eq!(describe(d, &data, false), "2 / 35 language slots enabled");
     }
 }

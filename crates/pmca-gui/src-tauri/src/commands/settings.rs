@@ -46,6 +46,14 @@ pub(crate) fn about_info() -> pmca_app::about::AboutInfo {
     pmca_app::about::info()
 }
 
+/// The newest release, if it is newer than this build. The window only asks
+/// when the user has switched the update notification on.
+#[tauri::command]
+pub(crate) async fn check_for_update()
+-> Result<Option<pmca_app::dto::AvailableUpdate>, CommandError> {
+    in_background(|| Ok(pmca_app::update::check()?)).await
+}
+
 /// Which operating system the window is running on.
 ///
 /// The driver advice differs per platform and is not a matter of taste: on

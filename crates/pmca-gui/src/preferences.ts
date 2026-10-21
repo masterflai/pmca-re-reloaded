@@ -1,4 +1,4 @@
-/** User preferences kept in local storage: advanced mode, the function analysis switch and the theme. */
+/** User preferences kept in local storage: advanced mode, the function analysis switch, the update notification and the theme. */
 
 import { tr } from "./i18n";
 
@@ -83,6 +83,37 @@ export function setAnalysisMode(on: boolean): void {
 export function applyAnalysisNav(): void {
   const item = document.querySelector<HTMLElement>('.nav-item[data-view="analysis"]');
   if (item) item.hidden = !analysisOn;
+}
+
+// ---------------------------------------------------------------------------
+// Update notification
+// ---------------------------------------------------------------------------
+
+const UPDATE_CHECK_STORAGE_KEY = "pmca.updateCheck";
+
+/**
+ * Whether the window asks GitHub for a newer release at start.
+ *
+ * Off by default and whenever storage cannot be read: the check reaches the
+ * network, which this program does only when the user has asked for it.
+ */
+export let updateCheckOn = readUpdateCheck();
+
+function readUpdateCheck(): boolean {
+  try {
+    return localStorage.getItem(UPDATE_CHECK_STORAGE_KEY) === "on";
+  } catch {
+    return false;
+  }
+}
+
+export function setUpdateCheck(on: boolean): void {
+  updateCheckOn = on;
+  try {
+    localStorage.setItem(UPDATE_CHECK_STORAGE_KEY, on ? "on" : "off");
+  } catch {
+    /* the choice still applies to this session */
+  }
 }
 
 // ---------------------------------------------------------------------------

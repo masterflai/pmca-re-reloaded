@@ -455,8 +455,9 @@ fn main() -> ExitCode {
     // `driver` is exempt. `driver bind` would have its own package swept away
     // moments before staging a new one, and `driver unbind` would find nothing
     // left to release and report zero — telling the user nothing happened when
-    // in fact everything did.
-    if !matches!(cli.command, Command::Driver { .. }) {
+    // in fact everything did. Commands that never reach a camera are exempt
+    // too: they have no use for the sweep, and its hints would only confuse.
+    if uses_camera(&cli.command) {
         let swept = pmca_app::service_mode::sweep_leftovers();
         if swept.packages > 0 {
             eprintln!("{}", l.tr_arg("driver-swept", "count", &swept.packages.to_string()));
@@ -466,6 +467,8 @@ fn main() -> ExitCode {
         }
         if pmca_usb::winusb_install::pending_packages() > 0 {
             eprintln!("{}", l.tr("driver-leftover-needs-elevation"));
+            // Starts the driver helper, so the prompt the hint announces really appears.
+            let _ = pmca_app::service_mode::release_leftovers(&l);
         }
         let foreign = pmca_app::drivers::foreign_drivers();
         if !foreign.is_empty() {
@@ -480,6 +483,42 @@ fn main() -> ExitCode {
             eprintln!("{}: {}", l.tr("cli-error-prefix"), error_text(e.as_ref(), &l));
             ExitCode::FAILURE
         }
+    }
+}
+
+/// Whether `cmd` talks to a camera, and so needs the start-up driver sweep.
+fn uses_camera(cmd: &Command) -> bool {
+    match cmd {
+        Command::Info
+        | Command::UsageLog { .. }
+        | Command::Install { .. }
+        | Command::Updatershell { .. }
+        | Command::Serviceshell
+        | Command::Tweaks { .. }
+        | Command::Analyze { .. }
+        | Command::Gps { .. }
+        | Command::Wifi { .. }
+        | Command::Stream { .. }
+        | Command::Firmware { .. } => true,
+        Command::License { .. }
+        | Command::Apk2spk { .. }
+        | Command::Spk2apk { .. }
+        | Command::PrintBackup { .. }
+        | Command::PrintUsageLog { .. }
+        | Command::GuessFirmware { .. }
+        | Command::XpdChecksum { .. }
+        | Command::Apps
+        | Command::Driver { .. }
+        | Command::Keys { .. } => false,
+        // Spelled out, so a new plugin action has to decide as well.
+        Command::Plugins { action } => match action {
+            PluginsAction::List
+            | PluginsAction::Inspect { .. }
+            | PluginsAction::Install { .. }
+            | PluginsAction::Remove { .. }
+            | PluginsAction::Run { .. }
+            | PluginsAction::Pack { .. } => false,
+        },
     }
 }
 

@@ -11,4 +11,9 @@ file: string,
 /**
  * Why, as technical English text.
  */
-reason: string, };
+reason: string, 
+/**
+ * The manifest field this build does not know, when that is why: the
+ * plugin was made for a newer or a different edition of the program.
+ */
+unknownField: string | null, };
