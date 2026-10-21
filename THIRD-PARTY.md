@@ -11,7 +11,7 @@ this file is for. It ships alongside `LICENSE.txt` in every release archive.
 The licence of this project itself is in [LICENSE.txt](LICENSE.txt) and is not
 repeated here.
 
-Generated: 2026-10-16
+Generated: 2026-10-21
 
 * Packages: **526**
 * With a copyright notice recovered from their sources: **381**
@@ -2097,7 +2097,7 @@ in executable form must tell the recipients where its source is available
   > Copyright 2023 Dirkjan Ochtman
   > Copyright (c) 2023 Dirkjan Ochtman <dirkjan@ochtman.nl>
 
-### rustls-webpki 0.103.14
+### rustls-webpki 0.103.16
 
 * Licence: `ISC`
 * Source: https://github.com/rustls/webpki
@@ -3058,7 +3058,7 @@ in executable form must tell the recipients where its source is available
 
   > Copyright (c) 2016 Boucher, Antoni <bouanto@zoho.com>
 
-### webpki-roots 1.0.9
+### webpki-roots 1.0.10
 
 * Licence: `CDLA-Permissive-2.0`
 * Source: https://github.com/rustls/webpki-roots
