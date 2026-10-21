@@ -23,7 +23,7 @@ update the firmware from Windows or with Sony's own updater.
 
 - The "show all menu languages" switch now counts language slots rather than
   languages, and notes that a camera shows only the languages its firmware
-  knows: an RX1R II shows 25 of the 35. Which language sits in which slot has
+  knows: an RX1R shows 25 of the 35. Which language sits in which slot has
   been measured on that camera, which also confirms that the two languages a
   Japanese camera cannot show are simplified and traditional Chinese.
 

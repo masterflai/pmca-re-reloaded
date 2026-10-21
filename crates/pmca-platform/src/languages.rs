@@ -34,13 +34,13 @@ pub const REGION_JAPAN: &str = "J1";
 /// close to the same thing.
 ///
 /// They are simplified and traditional Chinese: the reference discussion
-/// suspected it, and [`LANGUAGE_CODES`], measured on an RX1R II, confirms it.
+/// suspected it, and [`LANGUAGE_CODES`], measured on an RX1R, confirms it.
 /// The reboot itself has not been seen here on a Japanese body.
 const JAPAN_UNSUPPORTED: [usize; 2] = [7, 8];
 
 /// The language in each slot as a BCP 47 code; `None` where not yet established.
 ///
-/// Measured on a DSC-RX1RM2 by writing six bit masks and reading its menu. Its
+/// Measured on a DSC-RX1R by writing six bit masks and reading its menu. Its
 /// firmware shows 25 languages; the open slots hold ones it cannot display.
 /// Cross-checked against the CEC, CE3 and J1 tables.
 pub const LANGUAGE_CODES: [Option<&str>; LANGUAGE_COUNT] = [
@@ -283,7 +283,7 @@ mod tests {
     }
 
     #[test]
-    fn the_tables_name_what_the_rx1r_ii_showed() {
+    fn the_tables_name_what_the_rx1r_showed() {
         // Photographed on the camera: CEC lists 17 languages, CE3 the same without Russian.
         let cec = [
             "en", "fr", "de", "es", "it", "pt", "nl", "ru", "hu", "cs", "pl", "sv", "no", "tr",
