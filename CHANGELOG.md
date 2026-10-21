@@ -6,6 +6,12 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+### Changed
+
+- The theme is chosen with a single button that cycles through system, light
+  and dark. A sun or moon shows the active theme; in system mode a small "A"
+  sits next to it.
+
 ### Fixed
 
 - Windows: after writing to the camera in service mode, the camera could come

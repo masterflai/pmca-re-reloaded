@@ -169,7 +169,7 @@ async function main(): Promise<void> {
   await loadLocales();
   const locale = detectLocale();
   setupLanguagePicker(locale);
-  setupThemeSwitch(theme);
+  setupThemeSwitch();
   await applyLocale(locale);
   // Before any view is built: the driver paragraphs are chosen at render time,
   // and a page rendered before the answer arrives would show the wrong one.

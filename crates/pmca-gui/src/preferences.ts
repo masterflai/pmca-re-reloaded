@@ -90,7 +90,7 @@ export function applyAnalysisNav(): void {
 // ---------------------------------------------------------------------------
 
 /**
- * The three theme choices, in the order they appear in the switch.
+ * The three theme choices, in the order the button cycles through them.
  *
  * `system` is a first-class option rather than the absence of a choice: the
  * stylesheet resolves it through `prefers-color-scheme`, so a user who never
@@ -101,22 +101,26 @@ type Theme = (typeof THEMES)[number];
 const THEME_STORAGE_KEY = "pmca.theme";
 
 /**
- * Icons for the three choices, as inline SVG paths on a 16x16 grid.
- *
- * Inline rather than an icon font or an image: three glyphs do not justify a
- * dependency, and `currentColor` lets them inherit the segment's colour for
- * free -- including the inversion when a segment is selected.
+ * Icons as inline SVG paths on a 16x16 grid; `currentColor` lets them follow
+ * the button's colour without an icon font.
  */
-const THEME_ICONS: Record<Theme, string> = {
-  // Monitor: the desktop decides.
-  system:
-    '<rect x="1.5" y="2.5" width="13" height="9" rx="1.5"/><path d="M5.5 14h5M8 11.5V14"/>',
+const THEME_ICONS: Record<"light" | "dark", string> = {
   // Sun: disc plus eight rays.
   light:
     '<circle cx="8" cy="8" r="3.25"/><path d="M8 1v1.5M8 13.5V15M15 8h-1.5M2.5 8H1M12.95 3.05l-1.06 1.06M4.11 11.89l-1.06 1.06M12.95 12.95l-1.06-1.06M4.11 4.11L3.05 3.05"/>',
   // Crescent moon.
   dark: '<path d="M13.5 9.6A5.8 5.8 0 0 1 6.4 2.5a5.8 5.8 0 1 0 7.1 7.1z"/>',
 };
+
+// Small "A" in the bottom-right corner marking the automatic (system) mode.
+const AUTO_BADGE = '<path class="theme-auto-badge" d="M10 15.5l2.5-6.5 2.5 6.5M10.9 13.2h3.2"/>';
+
+const darkQuery = window.matchMedia("(prefers-color-scheme: dark)");
+
+function currentTheme(): Theme {
+  const theme = document.documentElement.dataset.theme ?? null;
+  return isTheme(theme) ? theme : "system";
+}
 
 function isTheme(value: string | null): value is Theme {
   return value !== null && (THEMES as readonly string[]).includes(value);
@@ -145,38 +149,47 @@ export function applyTheme(theme: Theme): void {
   } catch {
     /* the choice still applies to this session */
   }
-  document
-    .querySelectorAll<HTMLButtonElement>("#theme-switch button")
-    .forEach((b) => {
-      b.setAttribute("aria-checked", String(b.dataset.theme === theme));
-    });
+  renderThemeSwitch();
 }
 
-/** Label the switch and its segments in the active language. */
+/**
+ * Draw the button for the active choice. In system mode it shows the sun or
+ * moon the desktop currently resolves to, shrunk to make room for the "A".
+ */
+function renderThemeSwitch(): void {
+  const button = document.querySelector<HTMLButtonElement>("#theme-switch");
+  if (!button) return;
+  const theme = currentTheme();
+  const glyph = theme === "system" ? (darkQuery.matches ? "dark" : "light") : theme;
+  const icon =
+    theme === "system"
+      ? `<g class="theme-auto-glyph" transform="scale(0.75)">${THEME_ICONS[glyph]}</g>${AUTO_BADGE}`
+      : THEME_ICONS[glyph];
+  button.innerHTML = `<svg viewBox="0 0 16 16" aria-hidden="true">${icon}</svg>`;
+  translateThemeSwitch();
+}
+
+/** Label the button in the active language. */
 export function translateThemeSwitch(): void {
-  const group = document.querySelector<HTMLElement>("#theme-switch");
-  if (!group) return;
-  group.setAttribute("aria-label", tr("settings-theme"));
-  group.querySelectorAll<HTMLButtonElement>("button").forEach((b) => {
-    // Icon-only controls carry no text, so the name has to be supplied for
-    // screen readers -- and the tooltip is the only hint a sighted user gets.
-    const label = tr(`settings-theme-${b.dataset.theme}`);
-    b.setAttribute("aria-label", label);
-    b.title = label;
-  });
+  const button = document.querySelector<HTMLButtonElement>("#theme-switch");
+  if (!button) return;
+  // Icon-only, so the name has to be supplied for screen readers and the
+  // tooltip is the only hint a sighted user gets.
+  const label = `${tr("settings-theme")}: ${tr(`settings-theme-${currentTheme()}`)}`;
+  button.setAttribute("aria-label", label);
+  button.title = label;
 }
 
-export function setupThemeSwitch(current: Theme): void {
-  const group = document.querySelector<HTMLElement>("#theme-switch");
-  if (!group) return;
-  for (const theme of THEMES) {
-    const button = document.createElement("button");
-    button.type = "button";
-    button.dataset.theme = theme;
-    button.setAttribute("role", "radio");
-    button.setAttribute("aria-checked", String(theme === current));
-    button.innerHTML = `<svg viewBox="0 0 16 16" aria-hidden="true">${THEME_ICONS[theme]}</svg>`;
-    button.addEventListener("click", () => applyTheme(theme));
-    group.append(button);
-  }
+export function setupThemeSwitch(): void {
+  const button = document.querySelector<HTMLButtonElement>("#theme-switch");
+  if (!button) return;
+  button.addEventListener("click", () => {
+    const next = THEMES[(THEMES.indexOf(currentTheme()) + 1) % THEMES.length];
+    applyTheme(next);
+  });
+  // The system icon mirrors the desktop, so it has to follow when that flips.
+  darkQuery.addEventListener("change", () => {
+    if (currentTheme() === "system") renderThemeSwitch();
+  });
+  renderThemeSwitch();
 }

@@ -200,53 +200,41 @@ body {
 }
 
 /*
- * Theme switch: three segments (system / light / dark) rather than a two-state
- * toggle, because "follow the OS" is a distinct choice and a toggle cannot
- * express it -- it would silently pin the theme the moment it is touched.
- * Icon-only, so it needs no room for translated words; the label lives in the
- * tooltip and the accessible name.
+ * Theme button: one click cycles system / light / dark. Sun or moon shows the
+ * pinned choice; in system mode a small "A" sits next to the resolved glyph.
+ * Icon-only; the label lives in the tooltip and the accessible name.
  */
-.theme-switch {
-  display: flex;
-  gap: 2px;
-  padding: 2px;
-  border-radius: var(--radius);
-  border: 1px solid var(--control-border);
-  background: var(--control);
-}
-
-/* By id: the switch sits inside `.content`, whose generic button padding and
+/* By id: the button sits inside `.content`, whose generic button padding and
    hover rules come later and would otherwise win and push the icon off-centre. */
-#theme-switch button {
+#theme-switch {
   display: grid;
   place-items: center;
-  width: 32px;
-  height: 28px;
+  width: 34px;
+  height: 32px;
   padding: 0;
-  border: 0;
-  border-radius: calc(var(--radius) - 3px);
-  background: transparent;
+  border: 1px solid var(--control-border);
+  border-radius: var(--radius);
+  background: var(--control);
   color: var(--text-muted);
   cursor: pointer;
 }
 
-#theme-switch button:hover { background: var(--control-hover); color: var(--text); }
-
-#theme-switch button[aria-checked="true"] {
-  background: var(--accent);
-  color: #fff;
-}
+#theme-switch:hover { background: var(--control-hover); color: var(--text); }
 
 .theme-switch svg {
-  width: 16px;
-  height: 16px;
-  /* One stroke definition for all three glyphs keeps them optically equal. */
+  width: 18px;
+  height: 18px;
   fill: none;
   stroke: currentColor;
   stroke-width: 1.6;
   stroke-linecap: round;
   stroke-linejoin: round;
 }
+
+/* Compensates the 0.75 scale so the shrunk glyph keeps the same line weight. */
+.theme-switch .theme-auto-glyph { stroke-width: 2.13; }
+
+.theme-switch .theme-auto-badge { stroke-width: 1.4; }
 
 select {
   padding: 8px 10px;
