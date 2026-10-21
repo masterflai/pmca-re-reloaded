@@ -43,7 +43,10 @@
 //!
 //! * **ids** are lower-case letters, digits and single hyphens. Every entry's
 //!   name is the message `plg-<plugin id>-<entry id>` in `locales/en-US.ftl`;
-//!   an optional `…-hint` message adds a one-line explanation.
+//!   an optional `…-hint` message adds a one-line explanation. The optional
+//!   messages `plg-<plugin id>-name` and `plg-<plugin id>-description`
+//!   translate the manifest's `name` and `description`, which is why no entry
+//!   may have the id `name` or `description`.
 //! * **Languages.** For a language the program ships, a plugin may only add
 //!   its own `plg-<plugin id>-…` messages. For any other language the file may
 //!   be a complete translation of the program's catalogue; missing messages

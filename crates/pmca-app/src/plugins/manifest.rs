@@ -193,6 +193,9 @@ impl Manifest {
             if !valid_id(id, 32) {
                 return Err(format!("`{id}` is not a valid entry id"));
             }
+            if matches!(id.as_str(), "name" | "description") {
+                return Err(format!("entry id `{id}` is reserved for the plugin's own {id}"));
+            }
             if !seen.insert(id) {
                 return Err(format!("entry id `{id}` is used twice"));
             }

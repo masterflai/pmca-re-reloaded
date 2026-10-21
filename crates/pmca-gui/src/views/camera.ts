@@ -20,6 +20,7 @@ import type { CameraSummary, PhotoSummary, PluginCompat, UsageLogOutcome } from 
 import { currentLocale, isCommandError, modeName, tr, trFill } from "../i18n";
 import { hostPlatform } from "../platform";
 import { GPS_MODELS, GPS_MODELS_UNTESTED, deviceToggle, markCell } from "./network";
+import { pluginText } from "./plugins";
 import { DOCS_DEVICES_URL, cardServiceDiagnosis } from "./welcome";
 
 export function viewCameraInfo(host: HTMLElement): void {
@@ -115,7 +116,7 @@ function pluginDevices(): HTMLElement {
     .then((lists) => {
       for (const list of lists) {
         box.append(
-          make("h3", {}, make("span", { i18n: "plugin-compat-heading" }), `: ${list.name}`),
+          make("h3", {}, make("span", { i18n: "plugin-compat-heading" }), `: ${pluginText(`plg-${list.plugin}-name`, list.name)}`),
           deviceRows(
             "device-table more",
             [...COMPAT_COLUMNS, "plugin-col-note"],

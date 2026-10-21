@@ -28,6 +28,14 @@ function permissionLines(info: PluginInfo): string[] {
   return info.permissions.map((p) => `• ${tr(`plugin-perm-${p}`)}`);
 }
 
+/** A plugin's own text in the window's language, else as its manifest has it. */
+export function pluginText(key: string | null, written: string): string {
+  if (key === null) return written;
+  // A plugin not yet installed has not had its messages loaded.
+  const text = tr(key);
+  return text === key ? written : text;
+}
+
 /**
  * Installed plugins, installing from a file and removing.
  *
@@ -59,9 +67,10 @@ export function cardPlugins(): HTMLElement {
   }
 
   function pluginRow(plugin: PluginInfo): HTMLElement {
+    const name = pluginText(plugin.nameKey, plugin.name);
     const remove = make("button", { i18n: "btn-remove" });
     remove.addEventListener("click", async () => {
-      if (!(await confirmed(trFill("plugin-remove-confirm", { name: plugin.name }), tr("btn-remove")))) return;
+      if (!(await confirmed(trFill("plugin-remove-confirm", { name }), tr("btn-remove")))) return;
       try {
         await invoke("plugins_remove", { id: plugin.id });
         showDone(status, trFill("plugin-removed", { id: plugin.id }));
@@ -70,13 +79,15 @@ export function cardPlugins(): HTMLElement {
         showError(status, e);
       }
     });
-    const title = make("strong", { textContent: `${plugin.name} ${plugin.version}` });
+    const title = make("strong", { textContent: `${name} ${plugin.version}` });
     const head = make("div", { className: "row" }, title, make("span", { className: "hint", textContent: plugin.id }));
     if (!plugin.active) head.append(make("span", { className: "hint", i18n: "plugin-inactive" }));
     head.append(remove);
     const body: (Node | string)[] = [head];
     if (plugin.author) body.push(make("p", { className: "hint" }, make("span", { i18n: "plugin-author" }), `: ${plugin.author}`));
-    if (plugin.description) body.push(make("p", { textContent: plugin.description }));
+    if (plugin.description) {
+      body.push(make("p", { textContent: pluginText(plugin.descriptionKey, plugin.description) }));
+    }
     body.push(make("ul", {}, ...plugin.permissions.map((p) => make("li", { i18n: `plugin-perm-${p}` }))));
     return make("div", { className: "plugin-row" }, ...body);
   }
@@ -89,7 +100,7 @@ export function cardPlugins(): HTMLElement {
       if (path === null) return;
       const info = await invoke<PluginInfo>("plugins_inspect", { path });
       const message = [
-        `${info.name} ${info.version} (${info.id})`,
+        `${pluginText(info.nameKey, info.name)} ${info.version} (${info.id})`,
         info.author ? `${tr("plugin-author")}: ${info.author}` : "",
         "",
         tr("plugin-install-confirm"),

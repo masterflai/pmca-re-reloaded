@@ -61,6 +61,10 @@ pub struct PluginInfo {
     pub author: String,
     /// Description as written in the manifest.
     pub description: String,
+    /// Fluent id of the name in other languages, if the plugin translates it.
+    pub name_key: Option<String>,
+    /// Fluent id of the description in other languages, if the plugin translates it.
+    pub description_key: Option<String>,
     /// File name of the archive.
     pub file: String,
     /// What the plugin may do, as slugs the front-ends translate
@@ -269,24 +273,23 @@ fn installed_files() -> Vec<PathBuf> {
 }
 
 impl Plugin {
+    /// Whether `locales/en-US.ftl` defines the message `key`.
+    fn names(&self, key: &str) -> bool {
+        self.catalogs.iter().find(|(l, _)| l == pmca_i18n::DEFAULT_LOCALE).is_some_and(|(_, s)| {
+            s.lines().any(|l| l.split_once('=').is_some_and(|(k, _)| k.trim() == key))
+        })
+    }
+
     fn entries(&self, diagnostics: bool) -> Vec<PluginEntry> {
         let m = &self.manifest;
-        let english = self
-            .catalogs
-            .iter()
-            .find(|(l, _)| l == pmca_i18n::DEFAULT_LOCALE)
-            .map(|(_, s)| s.as_str())
-            .unwrap_or_default();
         let entry = |id: &str, input: &[String], host: &[String]| {
             let label_key = m.key(id);
             let hint = format!("{label_key}-hint");
-            let has_hint =
-                english.lines().any(|l| l.split_once('=').is_some_and(|(k, _)| k.trim() == hint));
             PluginEntry {
                 plugin: m.id.clone(),
                 id: id.to_string(),
                 label_key,
-                hint_key: has_hint.then_some(hint),
+                hint_key: self.names(&hint).then_some(hint),
                 input: input.to_vec(),
                 host: host.to_vec(),
             }
@@ -330,6 +333,8 @@ impl Plugin {
             version: m.version.clone(),
             author: m.author.clone(),
             description: m.description.clone(),
+            name_key: Some(m.key("name")).filter(|k| self.names(k)),
+            description_key: Some(m.key("description")).filter(|k| self.names(k)),
             file: self.file.clone(),
             permissions: permissions.into_iter().map(str::to_string).collect(),
             languages,
@@ -627,6 +632,20 @@ mod tests {
         assert_eq!(info.tweaks, ["plg-demo-flag"]);
         assert_eq!(info.compatibility, 1);
         assert_eq!(info.permissions, ["languages", "camera-settings", "compatibility"]);
+        assert_eq!((info.name_key, info.description_key), (None, None));
+    }
+
+    #[test]
+    fn a_plugin_may_translate_its_name_and_description() {
+        let english =
+            "plg-demo-flag = Demo flag\nplg-demo-name = Demo\nplg-demo-description = For tests\n";
+        let info = data_plugin(MANIFEST, english).unwrap().info(false);
+        assert_eq!(info.name_key.as_deref(), Some("plg-demo-name"));
+        assert_eq!(info.description_key.as_deref(), Some("plg-demo-description"));
+
+        let clash = MANIFEST.replace(r#""id": "flag""#, r#""id": "name""#);
+        let err = data_plugin(&clash, "plg-demo-name = Demo\n").err().unwrap();
+        assert!(err.contains("reserved"), "{err}");
     }
 
     #[test]

@@ -68,12 +68,17 @@ pub(crate) fn plugins_command(
 
 /// Name, version, what the plugin may do, and how to run its entries.
 fn print_plugin(l: &Localizer, plugin: &pmca_app::plugins::PluginInfo) {
-    println!("{} {} ({})", plugin.name, plugin.version, plugin.id);
+    // Until the next start a new plugin's own messages are not loaded yet.
+    let own = |key: &Option<String>, written: &str| match key {
+        Some(key) if l.tr(key) != *key => l.tr(key),
+        _ => written.to_string(),
+    };
+    println!("{} {} ({})", own(&plugin.name_key, &plugin.name), plugin.version, plugin.id);
     if !plugin.author.is_empty() {
         println!("  {}: {}", l.tr("plugin-author"), plugin.author);
     }
     if !plugin.description.is_empty() {
-        println!("  {}", plugin.description);
+        println!("  {}", own(&plugin.description_key, &plugin.description));
     }
     for permission in &plugin.permissions {
         println!("  - {}", l.tr(&format!("plugin-perm-{permission}")));

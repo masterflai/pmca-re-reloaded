@@ -6,6 +6,12 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+### Added
+
+- A plugin can translate its name and description: the messages
+  `plg-<id>-name` and `plg-<id>-description` in its own language files are
+  shown in place of the manifest's text once the plugin is installed.
+
 ## [1.2.0] - 2026-10-21
 
 **macOS:** firmware updates and the updater shell have still not been tried

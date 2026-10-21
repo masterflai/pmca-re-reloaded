@@ -26,6 +26,14 @@ author: string,
  */
 description: string, 
 /**
+ * Fluent id of the name in other languages, if the plugin translates it.
+ */
+nameKey: string | null, 
+/**
+ * Fluent id of the description in other languages, if the plugin translates it.
+ */
+descriptionKey: string | null, 
+/**
  * File name of the archive.
  */
 file: string, 
