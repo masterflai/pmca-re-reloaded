@@ -6,11 +6,39 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+## [1.1.4] - 2026-10-21
+
+**Caution on macOS:** the new macOS functions of this release have not yet
+been tried on a Mac with a camera. This matters most for firmware updates: an
+update that breaks off can leave the camera unable to start. Until a
+successful update on a Mac has been reported, update the firmware from Windows
+or with Sony's own updater, and use the updater shell on a Mac only if you
+know how to recover the camera.
+
+### Added
+
+- macOS: the tweaks, the service shell, the function analysis, firmware
+  updates and the updater shell work in the app. macOS hands the camera's
+  mass-storage connection only to a program with administrator rights, so the
+  app asks for your password once per run through the system dialog and keeps
+  an elevated copy of itself for this work. The tweaks keep their service-mode
+  session between reading and applying. The camera's card leaves Finder while
+  this runs and comes back afterwards. Files the service and updater shells
+  write to this computer belong to you, and relative paths start in your home
+  folder.
+- macOS: the service shell and the function analysis are available from the
+  command line run with `sudo`, for example `sudo ./pmca-console serviceshell`.
+  Without those rights the error message says what to do.
+
 ### Changed
 
 - The theme is chosen with a single button that cycles through system, light
   and dark. A sun or moon shows the active theme; in system mode a small "A"
   sits next to it.
+- Files a run under `sudo` creates in your user folder (keys, records kept
+  before a change) now belong to you, not to the administrator account.
+- Linux: the command-line program is now built on Ubuntu 22.04, so it also
+  starts on distributions with an older C library (glibc).
 
 ### Fixed
 
@@ -20,80 +48,18 @@ All notable changes to this project are documented here. The format follows
   the driver of a camera that was switching modes at that moment; one left
   behind by an earlier version is released at the next camera task, after
   Windows asks for administrator rights.
-
-## [1.1.4-rc.4] - 2026-10-18
-
-Pre-release for testing on macOS. Contains everything from 1.1.4-rc.1 to
-1.1.4-rc.3.
-
-### Changed
-
-- macOS: firmware updates and the updater shell work in the app too, through
-  the same elevated copy as the service shell. Files the updater shell writes
-  to this computer belong to you. Not yet tried with a camera.
-
-### Fixed
-
-- macOS: without administrator rights, a firmware update or the updater shell
-  stops before the camera restarts into update mode. Before, the camera
-  restarted first and then stayed in update mode until its battery was taken
-  out.
-
-## [1.1.4-rc.3] - 2026-10-18
-
-Pre-release for testing on macOS. Contains everything from 1.1.4-rc.1 and
-1.1.4-rc.2.
-
-### Changed
-
-- macOS: the service shell and the function analysis work in the app as well,
-  not only on the command line. The app asks for your password once per run
-  and keeps an elevated copy of itself for the service-mode work, so the
-  tweaks no longer ask again after a few minutes and keep their service-mode
-  session between reading and applying. Files the service shell writes to
-  this computer belong to you, and relative paths start in your home folder.
-  Not yet tried with a camera.
-
-## [1.1.4-rc.2] - 2026-10-18
-
-Pre-release for testing on macOS. Contains everything from 1.1.4-rc.1. The
-macOS changes have not yet been tried with a camera.
-
-### Added
-
-- macOS: the tweaks work in the app. It asks for your password through the
-  system dialog, which macOS does not show again for a few minutes, and runs
-  each tweak operation with administrator rights: macOS hands the camera's
-  mass-storage connection only to such a program. The camera's card leaves
-  Finder while this runs and comes back afterwards.
-- macOS: the service shell and the function analysis are available from the
-  command line run with `sudo`, for example `sudo ./pmca-console serviceshell`.
-  Without those rights the error message says what to do.
-
-### Changed
-
-- Files a run under `sudo` creates in your user folder (keys, records kept
-  before a change) now belong to you, not to the administrator account.
-
-## [1.1.4-rc.1] - 2026-10-18
-
-Pre-release for testing on macOS.
-
-### Fixed
-
 - macOS and Linux, MTP mode: reading the camera information failed with
   “The camera aborted the USB transfer”. The program sent Sony's commands
   without first opening a session with the camera, which the camera requires.
   It now opens one, as it always did on Windows. If the camera rejects the very
   first request because an earlier program left a transfer unfinished, the
   connection is reset and the request is sent again.
+- macOS: without administrator rights, a firmware update or the updater shell
+  stops before the camera restarts into update mode. Before, the camera
+  restarted first and then stayed in update mode until its battery was taken
+  out.
 - Command line: after `exit`, the service and updater shells printed their
   closing message twice.
-
-### Changed
-
-- Linux: the command-line program is now built on Ubuntu 22.04, so it also
-  starts on distributions with an older C library (glibc).
 
 ## [1.1.3] - 2026-10-17
 
@@ -209,6 +175,6 @@ and Linux.
 - **Device list** in the app with the functions each known model supports,
   plus community reports for further models.
 
-[Unreleased]: https://github.com/masterflai/pmca-re-reloaded/compare/v1.1.0...HEAD
+[Unreleased]: https://github.com/masterflai/pmca-re-reloaded/compare/v1.1.4...HEAD
 [1.1.0]: https://github.com/masterflai/pmca-re-reloaded/compare/v1.0.0...v1.1.0
 [1.0.0]: https://github.com/masterflai/pmca-re-reloaded/releases/tag/v1.0.0

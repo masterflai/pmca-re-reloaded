@@ -166,6 +166,11 @@ use `sudo`, for example `sudo ./pmca-console serviceshell`. The camera's card
 leaves Finder while this runs and comes back afterwards, so eject it there
 first if files on it are open.
 
+**Caution:** firmware updates and the updater shell have not yet been tried
+on a Mac with a camera. An update that breaks off can leave the camera unable
+to start. Until a successful update on a Mac has been reported, update the
+firmware from Windows or with Sony's own updater.
+
 **Linux** — Make the `.AppImage` executable and run it, or install the `.deb`.
 [`scripts/linux-prepare.sh`](scripts/linux-prepare.sh) sets up the udev rule
 for Sony's vendor id and stops the desktop from claiming the camera.
