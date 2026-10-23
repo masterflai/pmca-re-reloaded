@@ -633,7 +633,7 @@ msg-link-copied = Lien copié dans le presse-papiers.
 # par l'interface ; ces textes forment donc des phrases complètes sans elle.
 # Il n'existe volontairement pas de `err-operation` : ce code désigne un
 # message déjà traduit, qui doit être affiché tel quel.
-err-usb-no-device = Aucun appareil photo détecté. Connectez un appareil et allumez-le. Si l'écran de l'appareil indique toujours qu'il se connecte, l'appareil n'atteint pas l'ordinateur : utilisez un câble de données plutôt qu'un câble de charge seule, branchez l'appareil directement sans hub ni adaptateur, puis éteignez-le et rallumez-le ; si cela ne suffit pas, retirez brièvement la batterie.
+err-usb-no-device = Aucun appareil photo détecté. Connectez un appareil et allumez-le. Si l'écran de l'appareil indique toujours qu'il se connecte, l'appareil n'atteint pas l'ordinateur : utilisez un câble de données plutôt qu'un câble de charge seule, branchez l'appareil directement sans hub ni adaptateur, puis éteignez-le et rallumez-le ; si cela ne suffit pas, retirez brièvement la batterie. Avec un câble de données, même un appareil éteint est détecté et signalé comme non prêt ; si ce message s'affiche aussi appareil éteint, le câble ne transmet probablement pas de données.
 err-usb-camera-not-ready = L'appareil est connecté mais pas prêt : il est éteint ou attend sur son écran le choix du mode USB. Allumez-le ou choisissez « Stockage de masse (MSC) » sur l'appareil.
 camera-choose-usb-mode = L'appareil attend le choix du mode USB. Choisissez « Stockage de masse (MSC) » sur l'appareil.
 err-usb-too-many-devices = Plusieurs appareils sont connectés. Déconnectez tous les autres.

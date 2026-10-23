@@ -632,7 +632,7 @@ msg-link-copied = Poveznica je kopirana u međuspremnik.
 # sučelje, pa su ovi tekstovi potpune rečenice i bez njega.
 # Namjerno ne postoji `err-operation`: ta šifra označava poruku koju je
 # pozadinski sloj već preveo i koja se mora prikazati doslovno.
-err-usb-no-device = Nije pronađen nijedan fotoaparat. Priključite fotoaparat i uključite ga. Ako zaslon fotoaparata i dalje pokazuje da se povezuje, fotoaparat ne dolazi do računala: umjesto kabela samo za punjenje koristite podatkovni kabel, priključite fotoaparat izravno bez USB razdjelnika ili adaptera te ga isključite i ponovno uključite; ako to ne pomogne, nakratko izvadite bateriju.
+err-usb-no-device = Nije pronađen nijedan fotoaparat. Priključite fotoaparat i uključite ga. Ako zaslon fotoaparata i dalje pokazuje da se povezuje, fotoaparat ne dolazi do računala: umjesto kabela samo za punjenje koristite podatkovni kabel, priključite fotoaparat izravno bez USB razdjelnika ili adaptera te ga isključite i ponovno uključite; ako to ne pomogne, nakratko izvadite bateriju. Preko podatkovnog kabela prepoznaje se i isključeni fotoaparat te se prijavljuje kao nespreman; pojavi li se ova poruka i kad je fotoaparat isključen, kabel vjerojatno ne prenosi podatke.
 err-usb-camera-not-ready = Fotoaparat je priključen, ali nije spreman: isključen je ili na zaslonu čeka odabir USB načina. Uključite ga ili na fotoaparatu odaberite „Masovna pohrana (MSC)“.
 camera-choose-usb-mode = Fotoaparat čeka odabir USB načina. Na fotoaparatu odaberite „Masovna pohrana (MSC)“.
 err-usb-too-many-devices = Priključen je više od jednog fotoaparata. Odspojite sve osim onoga s kojim želite raditi.

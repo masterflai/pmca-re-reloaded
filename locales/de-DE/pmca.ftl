@@ -639,7 +639,7 @@ msg-link-copied = Link in die Zwischenablage kopiert.
 # angehängt; die Texte sind daher auch ohne ihn vollständige Sätze.
 # Ein `err-operation` gibt es bewusst nicht: dieser Code kennzeichnet eine
 # bereits übersetzte Meldung, die unverändert angezeigt werden muss.
-err-usb-no-device = Keine Kamera gefunden. Bitte eine Kamera anschließen und einschalten. Meldet die Kamera am Display weiterhin, dass sie eine Verbindung herstellt, kommt sie am Rechner nicht an: Bitte ein Datenkabel statt eines reinen Ladekabels verwenden, die Kamera ohne Hub oder Adapter direkt anschließen und sie aus- und wieder einschalten; hilft das nicht, kurz den Akku entnehmen.
+err-usb-no-device = Keine Kamera gefunden. Bitte eine Kamera anschließen und einschalten. Meldet die Kamera am Display weiterhin, dass sie eine Verbindung herstellt, kommt sie am Rechner nicht an: Bitte ein Datenkabel statt eines reinen Ladekabels verwenden, die Kamera ohne Hub oder Adapter direkt anschließen und sie aus- und wieder einschalten; hilft das nicht, kurz den Akku entnehmen. Über ein Datenkabel wird auch eine ausgeschaltete Kamera erkannt und als nicht bereit gemeldet; erscheint diese Meldung auch bei ausgeschalteter Kamera, überträgt das Kabel vermutlich keine Daten.
 err-usb-camera-not-ready = Die Kamera ist angeschlossen, aber nicht bereit: Sie ist ausgeschaltet oder wartet am Display auf die Auswahl des USB-Modus. Bitte einschalten bzw. an der Kamera „Bildübertragung (MSC)“ bzw. „Massenspeicher“ wählen.
 camera-choose-usb-mode = Die Kamera wartet auf die Auswahl des USB-Modus. Bitte an der Kamera „Bildübertragung (MSC)“ bzw. „Massenspeicher“ wählen.
 err-usb-too-many-devices = Es ist mehr als eine Kamera angeschlossen. Bitte alle bis auf die gewünschte trennen.

@@ -635,7 +635,7 @@ msg-link-copied = Koppeling naar het klembord gekopieerd.
 # wordt door de frontend toegevoegd; de teksten zijn daarom ook zonder dat deel
 # volledige zinnen. Er bestaat bewust geen `err-operation`: die code duidt een
 # melding aan die de backend al heeft vertaald en die ongewijzigd moet worden getoond.
-err-usb-no-device = Geen camera gevonden. Sluit een camera aan en schakel deze in. Blijft het display van de camera melden dat er verbinding wordt gemaakt, dan bereikt de camera de computer niet: gebruik een datakabel in plaats van een kabel die alleen oplaadt, sluit de camera rechtstreeks aan zonder hub of adapter en schakel deze uit en weer in; helpt dat niet, verwijder dan kort de accu.
+err-usb-no-device = Geen camera gevonden. Sluit een camera aan en schakel deze in. Blijft het display van de camera melden dat er verbinding wordt gemaakt, dan bereikt de camera de computer niet: gebruik een datakabel in plaats van een kabel die alleen oplaadt, sluit de camera rechtstreeks aan zonder hub of adapter en schakel deze uit en weer in; helpt dat niet, verwijder dan kort de accu. Via een datakabel wordt ook een uitgeschakelde camera herkend en als niet gereed gemeld; verschijnt deze melding ook bij een uitgeschakelde camera, dan draagt de kabel waarschijnlijk geen data over.
 err-usb-camera-not-ready = De camera is aangesloten maar niet gereed: ze staat uit of wacht op haar scherm op de keuze van de USB-modus. Zet haar aan of kies „Massaopslag (MSC)” op de camera.
 camera-choose-usb-mode = De camera wacht op de keuze van de USB-modus. Kies „Massaopslag (MSC)” op de camera.
 err-usb-too-many-devices = Er is meer dan één camera aangesloten. Koppel alle toestellen los behalve het toestel waarmee u wilt werken.

@@ -633,7 +633,7 @@ msg-link-copied = Bağlantı panoya kopyalandı.
 # bu nedenle bu cümleler onsuz da eksiksiz okunur.
 # `err-operation` bilerek yoktur: o kod, arka ucun zaten çevirdiği ve
 # olduğu gibi gösterilmesi gereken bir iletiyi işaretler.
-err-usb-no-device = Kamera bulunamadı. Bir kamera bağlayın ve açın. Kameranın ekranı bağlanmakta olduğunu göstermeye devam ederse, bilgisayar onu almıyor: yalnızca şarj kablosu yerine veri kablosu kullanın, kamerayı hub veya adaptör olmadan doğrudan bağlayın ve kapatıp açın; bu işe yaramazsa, pili kısaca çıkarın.
+err-usb-no-device = Kamera bulunamadı. Bir kamera bağlayın ve açın. Kameranın ekranı bağlanmakta olduğunu göstermeye devam ederse, bilgisayar onu almıyor: yalnızca şarj kablosu yerine veri kablosu kullanın, kamerayı hub veya adaptör olmadan doğrudan bağlayın ve kapatıp açın; bu işe yaramazsa, pili kısaca çıkarın. Veri kablosuyla kapalı bir kamera bile algılanır ve hazır değil olarak bildirilir; bu mesaj kamera kapalıyken de görünüyorsa, kablo büyük olasılıkla veri aktarmıyordur.
 err-usb-camera-not-ready = Kamera bağlı ama hazır değil: Kapalı ya da ekranında USB modunun seçilmesini bekliyor. Kamerayı açın veya kamerada “Yığın Depolama (MSC)” seçin.
 camera-choose-usb-mode = Kamera USB modunun seçilmesini bekliyor. Lütfen kamerada “Yığın Depolama (MSC)” seçin.
 err-usb-too-many-devices = Birden fazla kamera bağlı. Kullanmak istediğiniz dışındakileri çıkarın.

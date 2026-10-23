@@ -632,7 +632,7 @@ msg-link-copied = Odkaz byl zkopírován do schránky.
 # rozhraní, takže tyto texty dávají smysl jako celé věty i bez ní.
 # Záměrně zde není `err-operation`: tento kód označuje zprávu, kterou backend
 # již přeložil a která se musí zobrazit doslovně.
-err-usb-no-device = Nebyl nalezen žádný fotoaparát. Připojte fotoaparát a zapněte jej. Pokud fotoaparát na displeji stále ukazuje, že se připojuje, nepřichází do počítače: místo čistě nabíjecího kabelu použijte kabel na přenos dat, fotoaparát připojte přímo bez hubu nebo adaptéru a vypněte jej a znovu jej zapněte; pokud to nepomůže, krátce vyjměte baterii.
+err-usb-no-device = Nebyl nalezen žádný fotoaparát. Připojte fotoaparát a zapněte jej. Pokud fotoaparát na displeji stále ukazuje, že se připojuje, nepřichází do počítače: místo čistě nabíjecího kabelu použijte kabel na přenos dat, fotoaparát připojte přímo bez hubu nebo adaptéru a vypněte jej a znovu jej zapněte; pokud to nepomůže, krátce vyjměte baterii. Přes datový kabel se rozpozná i vypnutý fotoaparát a hlásí se jako nepřipravený; objeví-li se tato zpráva i u vypnutého fotoaparátu, kabel pravděpodobně nepřenáší data.
 err-usb-camera-not-ready = Fotoaparát je připojen, ale není připraven: je vypnutý, nebo na displeji čeká na volbu režimu USB. Zapněte ho, nebo na fotoaparátu zvolte „Hromadné ukládání (MSC)“.
 camera-choose-usb-mode = Fotoaparát čeká na volbu režimu USB. Na fotoaparátu zvolte „Hromadné ukládání (MSC)“.
 err-usb-too-many-devices = Je připojen více než jeden fotoaparát. Odpojte všechny kromě toho, se kterým chcete pracovat.

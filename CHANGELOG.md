@@ -18,7 +18,9 @@ All notable changes to this project are documented here. The format follows
   saying that it is connecting: a charge-only cable carries no data, so the
   computer never sees the camera. The message suggests a data cable, a direct
   connection without hub or adapter, switching the camera off and on, and
-  briefly removing the battery.
+  briefly removing the battery. It also gives a quick cable test: over a data
+  cable even a switched-off camera is detected and reported as not ready, so
+  "No camera found" with the camera off points to a charge-only cable.
 
 ## [1.2.0] - 2026-10-21
 

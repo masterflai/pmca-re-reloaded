@@ -632,7 +632,7 @@ msg-link-copied = Odnośnik skopiowano do schowka.
 # dołączana przez warstwę prezentacji, więc czyta się je jak pełne zdania i bez niej.
 # Celowo nie ma wpisu `err-operation`: ten kod oznacza komunikat już
 # przetłumaczony przez zaplecze, który trzeba pokazać dosłownie.
-err-usb-no-device = Nie znaleziono aparatu. Podłącz aparat i włącz go. Jeśli ekran aparatu wciąż pokazuje, że trwa łączenie, aparat nie dociera do komputera: zamiast kabla tylko do ładowania użyj kabla do transmisji danych, podłącz aparat bezpośrednio bez huba lub adaptera, a następnie wyłącz go i włącz ponownie; jeśli to nie pomoże, na chwilę wyjmij akumulator.
+err-usb-no-device = Nie znaleziono aparatu. Podłącz aparat i włącz go. Jeśli ekran aparatu wciąż pokazuje, że trwa łączenie, aparat nie dociera do komputera: zamiast kabla tylko do ładowania użyj kabla do transmisji danych, podłącz aparat bezpośrednio bez huba lub adaptera, a następnie wyłącz go i włącz ponownie; jeśli to nie pomoże, na chwilę wyjmij akumulator. Przez kabel do transmisji danych wykrywany jest nawet wyłączony aparat, zgłaszany jako niegotowy; jeśli ten komunikat pojawia się także przy wyłączonym aparacie, kabel prawdopodobnie nie przesyła danych.
 err-usb-camera-not-ready = Aparat jest podłączony, ale nie jest gotowy: jest wyłączony albo czeka na ekranie na wybór trybu USB. Włącz go lub wybierz w aparacie „Pamięć masowa (MSC)”.
 camera-choose-usb-mode = Aparat czeka na wybór trybu USB. Wybierz w aparacie „Pamięć masowa (MSC)”.
 err-usb-too-many-devices = Podłączono więcej niż jeden aparat. Odłącz wszystkie oprócz tego, z którym chcesz pracować.

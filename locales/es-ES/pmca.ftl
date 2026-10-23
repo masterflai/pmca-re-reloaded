@@ -633,7 +633,7 @@ msg-link-copied = Enlace copiado al portapapeles.
 # dispositivo) la añade la interfaz, así que estas frases se leen completas sin ella.
 # No existe `err-operation` a propósito: ese código marca un mensaje que el
 # backend ya ha traducido y debe mostrarse literalmente.
-err-usb-no-device = No se encontró ninguna cámara. Conecta una cámara y enciéndela. Si la pantalla de la cámara sigue diciendo que está conectando, el ordenador no la recibe: utiliza un cable de datos en lugar de un cable solo de carga, conecta la cámara directamente sin un concentrador o adaptador, y apágala y enciéndela de nuevo; si eso no ayuda, retira brevemente la batería.
+err-usb-no-device = No se encontró ninguna cámara. Conecta una cámara y enciéndela. Si la pantalla de la cámara sigue diciendo que está conectando, el ordenador no la recibe: utiliza un cable de datos en lugar de un cable solo de carga, conecta la cámara directamente sin un concentrador o adaptador, y apágala y enciéndela de nuevo; si eso no ayuda, retira brevemente la batería. Con un cable de datos se detecta incluso una cámara apagada, que se indica como no preparada; si este mensaje aparece también con la cámara apagada, probablemente el cable no transmite datos.
 err-usb-camera-not-ready = La cámara está conectada pero no lista: está apagada o espera en su pantalla que se elija el modo USB. Enciéndela o elige «Almacenamiento masivo (MSC)» en la cámara.
 camera-choose-usb-mode = La cámara espera que se elija el modo USB. Elige «Almacenamiento masivo (MSC)» en la cámara.
 err-usb-too-many-devices = Hay más de una cámara conectada. Desconecta todas salvo la que quieras usar.
