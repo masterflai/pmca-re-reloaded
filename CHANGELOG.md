@@ -12,6 +12,14 @@ All notable changes to this project are documented here. The format follows
   `plg-<id>-name` and `plg-<id>-description` in its own language files are
   shown in place of the manifest's text once the plugin is installed.
 
+### Changed
+
+- "No camera found" now says what to check when the camera's display keeps
+  saying that it is connecting: a charge-only cable carries no data, so the
+  computer never sees the camera. The message suggests a data cable, a direct
+  connection without hub or adapter, switching the camera off and on, and
+  briefly removing the battery.
+
 ## [1.2.0] - 2026-10-21
 
 **macOS:** firmware updates and the updater shell have still not been tried

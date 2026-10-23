@@ -633,7 +633,7 @@ msg-link-copied = Tautan disalin ke papan klip.
 # oleh antarmuka, sehingga kalimat ini tetap utuh tanpa bagian tersebut.
 # `err-operation` sengaja tidak ada: kode itu menandai pesan yang sudah
 # diterjemahkan backend dan harus ditampilkan apa adanya.
-err-usb-no-device = Kamera tidak ditemukan. Hubungkan kamera dan nyalakan.
+err-usb-no-device = Kamera tidak ditemukan. Hubungkan kamera dan nyalakan. Jika layar kamera terus menampilkan bahwa kamera sedang menyambung, komputer tidak menerimanya: gunakan kabel data daripada kabel pengisian daya saja, sambungkan kamera langsung tanpa hub atau adaptor, dan matikan serta nyalakan kembali; jika itu tidak membantu, keluarkan baterai sebentar.
 err-usb-camera-not-ready = Kamera terhubung tetapi belum siap: kamera mati atau menunggu pemilihan mode USB di layarnya. Nyalakan kamera atau pilih “Penyimpanan Massal (MSC)” di kamera.
 camera-choose-usb-mode = Kamera menunggu pemilihan mode USB. Pilih “Penyimpanan Massal (MSC)” di kamera.
 err-usb-too-many-devices = Lebih dari satu kamera terhubung. Cabut semuanya kecuali yang ingin Anda gunakan.

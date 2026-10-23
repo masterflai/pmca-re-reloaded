@@ -633,7 +633,7 @@ msg-link-copied = Lenken er kopiert til utklippstavlen.
 # legges til av grensesnittet, så tekstene er hele setninger også uten den.
 # Det finnes med vilje ingen `err-operation`: den koden merker en melding
 # bakstykket allerede har oversatt, og som må vises ordrett.
-err-usb-no-device = Fant ingen kameraer. Koble til et kamera og slå det på.
+err-usb-no-device = Fant ingen kameraer. Koble til et kamera og slå det på. Viser kameraskjermen fortsatt at den kobler til, når ikke kameraet fram til datamaskinen: bruk en datakabel i stedet for en ren ladekabel, koble kameraet direkte til uten hub eller adapter, og slå det av og på igjen; hjelper ikke det, ta batteriet ut en kort stund.
 err-usb-camera-not-ready = Kameraet er tilkoblet, men ikke klart: Det er slått av eller venter på skjermen på at USB-modus skal velges. Slå det på, eller velg «Masselagring (MSC)» på kameraet.
 camera-choose-usb-mode = Kameraet venter på at USB-modus skal velges. Velg «Masselagring (MSC)» på kameraet.
 err-usb-too-many-devices = Mer enn ett kamera er tilkoblet. Koble fra alle unntatt det du vil arbeide med.

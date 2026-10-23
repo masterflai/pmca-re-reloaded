@@ -633,7 +633,7 @@ msg-link-copied = Link copiado para a área de transferência.
 # dispositivo) é acrescentada pela interface, então estas frases são completas sem ela.
 # Não existe `err-operation` de propósito: esse código marca uma mensagem que o
 # backend já traduziu e que deve ser exibida literalmente.
-err-usb-no-device = Nenhuma câmera encontrada. Conecte uma câmera e ligue-a.
+err-usb-no-device = Nenhuma câmera encontrada. Conecte uma câmera e ligue-a. Se a tela da câmera continua dizendo que está conectando, o computador não está recebendo: use um cabo de dados em vez de um cabo apenas para carregamento, conecte a câmera diretamente sem um hub ou adaptador, e desligue-a e ligue-a novamente; se isso não ajudar, remova brevemente a bateria.
 err-usb-camera-not-ready = A câmera está conectada, mas não está pronta: está desligada ou aguarda na tela a escolha do modo USB. Ligue-a ou escolha “Armazenamento em massa (MSC)” na câmera.
 camera-choose-usb-mode = A câmera aguarda a escolha do modo USB. Escolha “Armazenamento em massa (MSC)” na câmera.
 err-usb-too-many-devices = Há mais de uma câmera conectada. Desconecte todas, menos a que você quer usar.
