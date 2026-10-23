@@ -13,6 +13,8 @@ env:
   # which is the opposite of what these jobs are for. RUSTUP_TOOLCHAIN outranks
   # the file, so `stable` stays `stable`. The MSRV job overrides it below.
   RUSTUP_TOOLCHAIN: stable
+  # A stalled Ubuntu mirror otherwise hangs apt without an error until the job limit.
+  APT_OPTS: "-o Acquire::Retries=3 -o Acquire::http::Timeout=30"
 
 # The workflow only needs to read the repository; no token write scope.
 permissions:
@@ -37,7 +39,8 @@ jobs:
       - uses: Swatinem/rust-cache@v2
 
       - name: Install libudev (required by nusb on Linux)
-        run: sudo apt-get update && sudo apt-get install -y libudev-dev
+        timeout-minutes: 10
+        run: sudo apt-get $APT_OPTS update && sudo apt-get $APT_OPTS install -y libudev-dev
 
       - name: cargo fmt
         run: cargo fmt --all --check
@@ -68,7 +71,8 @@ jobs:
 
       - name: Install libudev (required by nusb on Linux)
         if: runner.os == 'Linux'
-        run: sudo apt-get update && sudo apt-get install -y libudev-dev
+        timeout-minutes: 10
+        run: sudo apt-get $APT_OPTS update && sudo apt-get $APT_OPTS install -y libudev-dev
 
       - name: cargo test
         run: cargo test --workspace --all-targets
@@ -114,7 +118,8 @@ jobs:
       - uses: Swatinem/rust-cache@v2
 
       - name: Install libudev (required by nusb on Linux)
-        run: sudo apt-get update && sudo apt-get install -y libudev-dev
+        timeout-minutes: 10
+        run: sudo apt-get $APT_OPTS update && sudo apt-get $APT_OPTS install -y libudev-dev
 
       - name: cargo check
         run: cargo check --workspace --all-targets
@@ -246,6 +251,7 @@ jobs:
   gui:
     name: GUI (${{ matrix.os }})
     runs-on: ${{ matrix.os }}
+    timeout-minutes: 30
     strategy:
       fail-fast: false
       matrix:
@@ -268,9 +274,10 @@ jobs:
 
       - name: Install Tauri system dependencies
         if: runner.os == 'Linux'
+        timeout-minutes: 10
         run: |
-          sudo apt-get update
-          sudo apt-get install -y libwebkit2gtk-4.1-dev libappindicator3-dev \
+          sudo apt-get $APT_OPTS update
+          sudo apt-get $APT_OPTS install -y libwebkit2gtk-4.1-dev libappindicator3-dev \
             librsvg2-dev patchelf libudev-dev
 
       - name: Build frontend
