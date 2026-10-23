@@ -26,6 +26,8 @@ All notable changes to this project are documented here. The format follows
 
 - `ctutils` updated to 0.4.5 (RUSTSEC-2026-0385, non-constant-time mask
   generation and `u128` comparisons).
+- GUI: `tokio` updated to 1.54.1 (RUSTSEC-2026-0386, `AsyncFd::new` violates
+  I/O safety).
 
 ## [1.2.0] - 2026-10-21
 

@@ -2614,7 +2614,7 @@ in executable form must tell the recipients where its source is available
   > Copyright 2020 Tomasz "Soveu" Marx
   > Copyright (c) 2020 Soveu
 
-### tokio 1.53.1
+### tokio 1.54.1
 
 * Licence: `MIT`
 * Source: https://github.com/tokio-rs/tokio
