@@ -22,6 +22,11 @@ All notable changes to this project are documented here. The format follows
   cable even a switched-off camera is detected and reported as not ready, so
   "No camera found" with the camera off points to a charge-only cable.
 
+### Security
+
+- `ctutils` updated to 0.4.5 (RUSTSEC-2026-0385, non-constant-time mask
+  generation and `u128` comparisons).
+
 ## [1.2.0] - 2026-10-21
 
 **macOS:** firmware updates and the updater shell have still not been tried

@@ -11,7 +11,7 @@ this file is for. It ships alongside `LICENSE.txt` in every release archive.
 The licence of this project itself is in [LICENSE.txt](LICENSE.txt) and is not
 repeated here.
 
-Generated: 2026-10-21
+Generated: 2026-10-23
 
 * Packages: **526**
 * With a copyright notice recovered from their sources: **381**
@@ -557,7 +557,7 @@ in executable form must tell the recipients where its source is available
 * Licence: `Apache-2.0 OR MIT`
 * Source: https://github.com/mmastrac/linktime
 
-### ctutils 0.4.2
+### ctutils 0.4.5
 
 * Licence: `Apache-2.0 OR MIT`
 * Source: https://github.com/RustCrypto/utils
