@@ -376,7 +376,17 @@ fn dump_ioreg(r: &mut Report, registry_id: u64, label: &str) {
         CStr::from_ptr(name.as_ptr()).to_string_lossy().into_owned()
     };
     let tree = shell("/usr/sbin/ioreg", &["-l", "-w0", "-r", "-n", &name]);
-    r.block(&format!("ioreg {label} ({name})"), &tree, 800, false);
+    // The camera's serial number has no place in a report that gets mailed around.
+    let tree: Vec<String> = tree
+        .lines()
+        .map(|line| match line.split_once('=') {
+            Some((key, _)) if key.to_ascii_lowercase().contains("serial") => {
+                format!("{key}= <removed>")
+            }
+            _ => line.to_string(),
+        })
+        .collect();
+    r.block(&format!("ioreg {label} ({name})"), &tree.join("\n"), 800, false);
     r.line(format!("ioreg {label} written to the report"));
 }
 
