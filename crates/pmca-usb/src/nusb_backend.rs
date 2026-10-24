@@ -274,11 +274,15 @@ enum Link {
     /// macOS: an interface of a captured device, reached through IOUSBHost.
     #[cfg(target_os = "macos")]
     Host(crate::macos_capture::HostInterface),
+    /// macOS: an interface claimed through `nusb` after a capture ended its
+    /// drivers. The capture resets the device once the interface is released.
+    #[cfg(target_os = "macos")]
+    Borrowed { link: NusbLink, _capture: crate::macos_capture::HostInterface },
 }
 
 impl From<nusb::Interface> for Link {
     fn from(interface: nusb::Interface) -> Self {
-        Self::Nusb(NusbLink { interface, ep_in: HashMap::new(), ep_out: HashMap::new() })
+        Self::Nusb(NusbLink::new(interface))
     }
 }
 
@@ -296,6 +300,10 @@ struct NusbLink {
 }
 
 impl NusbLink {
+    fn new(interface: nusb::Interface) -> Self {
+        Self { interface, ep_in: HashMap::new(), ep_out: HashMap::new() }
+    }
+
     /// The cached IN endpoint for `ep`, opening it on first use.
     fn endpoint_in(&mut self, ep: u8) -> Result<&mut nusb::Endpoint<Bulk, In>> {
         if !self.ep_in.contains_key(&ep) {
@@ -390,6 +398,10 @@ const MACOS_FRESH_DEVICE_GRACE: Duration = Duration::from_secs(3);
 #[cfg(target_os = "macos")]
 const MACOS_CAPTURE_POLL: Duration = Duration::from_millis(100);
 
+/// How long a captured device's interface is tried through IOUSBHost, per way.
+#[cfg(target_os = "macos")]
+const MACOS_INTERFACE_WAIT: Duration = Duration::from_secs(3);
+
 /// What happened during a capture, for the error message if it fails.
 #[cfg(target_os = "macos")]
 struct CaptureTrace {
@@ -423,13 +435,18 @@ impl CaptureTrace {
     }
 }
 
-/// Captures the device from its kernel drivers through IOUSBHost and opens the
-/// interface there.
+/// Captures the device from its kernel drivers through IOUSBHost and reaches
+/// the interface after that.
 ///
-/// The card is unmounted first, so the disk driver can end. If the capture
-/// fails, the card is mounted again and the error carries a trace of the steps.
+/// The card is unmounted first, so the disk driver can end. Then, in turn:
+/// the interface through IOUSBHost on a fresh configuration; through `nusb`
+/// while the capture holds the drivers away; and both again after the capture
+/// was surrendered without a reset. If none works, the device is reset, the
+/// card mounted again and the error carries a trace of the steps.
 #[cfg(target_os = "macos")]
 fn claim_captured(device: &DiscoveredDevice, interface_number: u8, first: &str) -> Result<Link> {
+    use crate::macos_capture::{HostInterface, driver_tree};
+
     if !crate::macos_capture::is_root() {
         return Err(Error::NeedsRoot);
     }
@@ -437,7 +454,7 @@ fn claim_captured(device: &DiscoveredDevice, interface_number: u8, first: &str) 
     let mut trace = CaptureTrace::new();
     trace.note(format!("macOS {}", crate::macos_capture::os_version()));
     trace.note(format!("first claim: {first}"));
-    trace.note(format!("drivers: {}", crate::macos_capture::driver_tree(id)));
+    trace.note(format!("drivers: {}", driver_tree(id)));
     // A mounted volume keeps the disk driver from ending.
     let disk = crate::macos_capture::bsd_disk(id);
     match &disk {
@@ -447,17 +464,65 @@ fn claim_captured(device: &DiscoveredDevice, interface_number: u8, first: &str) 
         )),
         None => trace.note("no disk".into()),
     }
-    match crate::macos_capture::HostInterface::capture(id, interface_number, &mut |step| {
-        trace.note(step)
-    }) {
-        Ok(host) => Ok(Link::Host(host)),
+    let mut note = |step: String| trace.note(step);
+    let reached = match HostInterface::capture(id, &mut note) {
+        Ok(host) => {
+            note(format!("reconfigure: {}", host.reconfigure()));
+            reach_captured(device, interface_number, host, &mut note)
+        }
+        Err(e) => Err(e),
+    };
+    match reached {
+        Ok(link) => Ok(link),
         Err(e) => {
             trace.note(e);
+            trace.note(format!("drivers after reset: {}", driver_tree(id)));
             if let Some(disk) = &disk {
                 crate::macos_capture::diskutil(&["mountDisk"], disk);
             }
             Err(Error::Transfer(trace.render()))
         }
+    }
+}
+
+/// The ways to a captured device's interface, see [`claim_captured`]. On
+/// failure, dropping `host` resets the device.
+#[cfg(target_os = "macos")]
+fn reach_captured(
+    device: &DiscoveredDevice,
+    interface_number: u8,
+    mut host: crate::macos_capture::HostInterface,
+    note: &mut dyn FnMut(String),
+) -> std::result::Result<Link, String> {
+    let id = device.info.registry_entry_id();
+    let legacy = || -> std::result::Result<NusbLink, String> {
+        let handle = device.info.open().wait().map_err(|e| format!("open: {e}"))?;
+        let interface =
+            handle.claim_interface(interface_number).wait().map_err(|e| format!("claim: {e}"))?;
+        Ok(NusbLink::new(interface))
+    };
+    if host.open_interface(interface_number, MACOS_INTERFACE_WAIT, note) {
+        return Ok(Link::Host(host));
+    }
+    match legacy() {
+        Ok(link) => return Ok(Link::Borrowed { link, _capture: host }),
+        Err(e) => note(format!("nusb while captured: {e}")),
+    }
+    host.surrender();
+    note(format!("surrendered, drivers: {}", crate::macos_capture::driver_tree(id)));
+    if host.open_interface(interface_number, MACOS_INTERFACE_WAIT, note) {
+        return Ok(Link::Host(host));
+    }
+    let deadline = std::time::Instant::now() + MACOS_INTERFACE_WAIT;
+    loop {
+        match legacy() {
+            Ok(link) => return Ok(Link::Borrowed { link, _capture: host }),
+            Err(e) => note(format!("nusb after surrender: {e}")),
+        }
+        if std::time::Instant::now() >= deadline {
+            return Err("interface not available".into());
+        }
+        std::thread::sleep(MACOS_CAPTURE_POLL);
     }
 }
 
@@ -558,6 +623,8 @@ impl UsbBackend for NusbBackend {
         let link = match &mut self.link {
             Link::Nusb(link) => link,
             #[cfg(target_os = "macos")]
+            Link::Borrowed { link, .. } => link,
+            #[cfg(target_os = "macos")]
             Link::Host(host) => return host.read(ep, length, timeout),
         };
         let endpoint = link.endpoint_in(ep)?;
@@ -583,6 +650,8 @@ impl UsbBackend for NusbBackend {
         let link = match &mut self.link {
             Link::Nusb(link) => link,
             #[cfg(target_os = "macos")]
+            Link::Borrowed { link, .. } => link,
+            #[cfg(target_os = "macos")]
             Link::Host(host) => return host.write(ep, data, timeout),
         };
         let endpoint = link.endpoint_out(ep)?;
@@ -593,6 +662,8 @@ impl UsbBackend for NusbBackend {
     fn clear_halt(&mut self, ep: u8) -> Result<()> {
         let link = match &mut self.link {
             Link::Nusb(link) => link,
+            #[cfg(target_os = "macos")]
+            Link::Borrowed { link, .. } => link,
             #[cfg(target_os = "macos")]
             Link::Host(host) => return host.clear_halt(ep),
         };
@@ -613,21 +684,26 @@ impl UsbBackend for NusbBackend {
         // half-finished (e.g. a timed-out data phase), which otherwise makes the
         // next session's first CBW stall. Best-effort: not all stacks accept it.
         let index = u16::from(self.interface_number);
-        match &mut self.link {
-            Link::Nusb(link) => link.control_out(
-                nusb::transfer::ControlOut {
-                    control_type: nusb::transfer::ControlType::Class,
-                    recipient: nusb::transfer::Recipient::Interface,
-                    request: 0xFF,
-                    value: 0,
-                    index,
-                    data: &[],
-                },
-                self.timeout,
-            ),
+        let link = match &mut self.link {
+            Link::Nusb(link) => link,
             #[cfg(target_os = "macos")]
-            Link::Host(host) => host.control_out(0x21, 0xFF, 0, index, &[], self.timeout),
-        }
+            Link::Borrowed { link, .. } => link,
+            #[cfg(target_os = "macos")]
+            Link::Host(host) => {
+                return host.control_out(0x21, 0xFF, 0, index, &[], self.timeout);
+            }
+        };
+        link.control_out(
+            nusb::transfer::ControlOut {
+                control_type: nusb::transfer::ControlType::Class,
+                recipient: nusb::transfer::Recipient::Interface,
+                request: 0xFF,
+                value: 0,
+                index,
+                data: &[],
+            },
+            self.timeout,
+        )
     }
 
     fn vendor_request_out(
@@ -642,21 +718,26 @@ impl UsbBackend for NusbBackend {
         // (bmRequestType 0x43): Sony's firmware ignores the request when it is
         // addressed to the device, and the following bulk write then runs into
         // the still-active mass-storage endpoint and stalls.
-        match &mut self.link {
-            Link::Nusb(link) => link.control_out(
-                nusb::transfer::ControlOut {
-                    control_type: nusb::transfer::ControlType::Vendor,
-                    recipient: nusb::transfer::Recipient::Other,
-                    request,
-                    value,
-                    index,
-                    data,
-                },
-                self.timeout,
-            ),
+        let link = match &mut self.link {
+            Link::Nusb(link) => link,
             #[cfg(target_os = "macos")]
-            Link::Host(host) => host.control_out(0x43, request, value, index, data, self.timeout),
-        }
+            Link::Borrowed { link, .. } => link,
+            #[cfg(target_os = "macos")]
+            Link::Host(host) => {
+                return host.control_out(0x43, request, value, index, data, self.timeout);
+            }
+        };
+        link.control_out(
+            nusb::transfer::ControlOut {
+                control_type: nusb::transfer::ControlType::Vendor,
+                recipient: nusb::transfer::Recipient::Other,
+                request,
+                value,
+                index,
+                data,
+            },
+            self.timeout,
+        )
     }
 }
 

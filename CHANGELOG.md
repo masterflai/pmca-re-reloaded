@@ -6,6 +6,22 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+## [1.3.0-rc.8] - 2026-10-24
+
+Pre-release for testing on macOS. Contains everything from 1.3.0-rc.1 to
+1.3.0-rc.7.
+
+### Fixed
+
+- macOS 26: the camera's mass-storage connection is now tried in several ways
+  after taking the camera from the system. Selecting the same USB
+  configuration again did not replace the refused interface, so the camera is
+  now unconfigured first. If IOUSBHost still refuses the interface, the
+  program claims it the earlier way while the system's driver is held off,
+  and finally after letting go of the camera without a reset. If nothing
+  works, the camera is reset so its card comes back, and the error lists every
+  step.
+
 ## [1.3.0-rc.7] - 2026-10-24
 
 Pre-release for testing on macOS. Contains everything from 1.3.0-rc.1 to

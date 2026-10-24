@@ -6,7 +6,8 @@
 //! still can: opening the device with its capture option ends every driver of
 //! the device and its interfaces, which Apple allows to root.
 //! [`HostInterface`] does that and then moves data through IOUSBHost's own
-//! interface and pipe objects. Destroying the device resets it and lets the
+//! interface and pipe objects, or keeps the drivers away while `nusb` claims
+//! the now free interface. Destroying the device resets it and lets the
 //! system match its drivers again, so the card comes back.
 //!
 //! IOUSBHost is an Objective-C framework. It is driven through the Objective-C
@@ -54,9 +55,8 @@ const IO_RETURN_ERROR: i32 = 0xe000_02bc_u32 as i32;
 /// `kUSBHostReturnPipeStalled`.
 const STALLED: [i32; 2] = [0xe000_404f_u32 as i32, 0xe000_5000_u32 as i32];
 
-/// How long the captured device's interface may stay unavailable while macOS
-/// ends its drivers.
-const INTERFACE_TIMEOUT: Duration = Duration::from_secs(10);
+/// How long a surrendered device may refuse the capture that resets it.
+const RECAPTURE_TIMEOUT: Duration = Duration::from_secs(2);
 
 /// How often the interface is looked for meanwhile.
 const INTERFACE_POLL: Duration = Duration::from_millis(100);
@@ -130,8 +130,14 @@ struct DeviceRequest {
 }
 
 /// A captured camera's interface, reached through IOUSBHost.
+///
+/// It may also hold no interface, while the capture alone keeps the drivers
+/// away from one claimed elsewhere, and no device once the capture was
+/// surrendered. Dropping it resets the device either way.
 pub(crate) struct HostInterface {
+    /// The captured device, or null after [`surrender`](Self::surrender).
     device: Id,
+    /// The opened interface, or null.
     interface: Id,
     /// Pipes opened so far, keyed by endpoint address.
     pipes: HashMap<u8, Id>,
@@ -142,80 +148,108 @@ pub(crate) struct HostInterface {
 unsafe impl Send for HostInterface {}
 
 impl HostInterface {
-    /// Capture the device with IORegistry entry `registry_id` and open its
-    /// interface `interface_number`. `note` records each step for a trace.
+    /// Capture the device with IORegistry entry `registry_id`, which ends
+    /// every driver of it. `note` records each step for a trace.
     pub(crate) fn capture(
         registry_id: u64,
-        interface_number: u8,
         note: &mut dyn FnMut(String),
     ) -> std::result::Result<Self, String> {
         let _pool = Pool::new();
-        // SAFETY: every object created here is owned by `host`, whose drop
-        // destroys and releases it; services are released after use.
-        unsafe {
-            note(format!("IOUSBHost {}", IOUSBHostVersionNumber));
-            let service = service_by_id(registry_id).ok_or("device not in the IORegistry")?;
-            let device = init_object(c"IOUSBHostDevice", service, INIT_DEVICE_CAPTURE);
-            IOObjectRelease(service);
-            let device = device.map_err(|code| format!("capture refused (0x{code:08x})"))?;
-            let mut host =
-                Self { device, interface: ptr::null_mut(), pipes: HashMap::new(), registry_id };
-            note(format!("captured, drivers: {}", driver_tree(registry_id)));
-            // The interfaces the drivers were stopped on stay unusable; a fresh
-            // configuration replaces them, unmatched so no driver returns.
-            note(format!("configure: 0x{:08x}", host.configure(false)));
-
-            let deadline = Instant::now() + INTERFACE_TIMEOUT;
-            let mut refusals = 0u32;
-            loop {
-                match interface_service(registry_id, interface_number) {
-                    Some(service) => {
-                        let (id, busy) = service_state(service);
-                        let opened = init_object(c"IOUSBHostInterface", service, 0);
-                        IOObjectRelease(service);
-                        match opened {
-                            Ok(interface) => {
-                                host.interface = interface;
-                                return Ok(host);
-                            }
-                            Err(code) => {
-                                refusals += 1;
-                                note(format!(
-                                    "interface 0x{id:x} (busy {busy}) refused (0x{code:08x})"
-                                ));
-                            }
-                        }
-                        if refusals == 30 {
-                            note(format!("configure, matching: 0x{:08x}", host.configure(true)));
-                        }
-                    }
-                    None => note("no interface".into()),
-                }
-                if Instant::now() >= deadline {
-                    note(format!("drivers: {}", driver_tree(registry_id)));
-                    return Err("interface not available".into());
-                }
-                std::thread::sleep(INTERFACE_POLL);
-            }
-        }
+        // SAFETY: a constant the framework exports.
+        let version = unsafe { IOUSBHostVersionNumber };
+        note(format!("IOUSBHost {version}"));
+        let device = capture_device(registry_id)
+            .map_err(|code| format!("capture refused (0x{code:08x})"))?;
+        note(format!("captured, drivers: {}", driver_tree(registry_id)));
+        Ok(Self { device, interface: ptr::null_mut(), pipes: HashMap::new(), registry_id })
     }
 
-    /// Select the device's first configuration, registering its interfaces for
-    /// driver matching if `match_interfaces`; returns the IOReturn code.
-    fn configure(&self, match_interfaces: bool) -> i32 {
-        // SAFETY: `self.device` is a live IOUSBHostDevice; the descriptor
-        // pointer IOUSBHost returns stays valid while the device does.
+    /// Replace the interfaces the drivers were stopped on with fresh ones:
+    /// unconfigure, then select the first configuration again, unmatched so no
+    /// driver returns. Selecting the active configuration alone does nothing.
+    /// Returns both IOReturn codes for the trace.
+    pub(crate) fn reconfigure(&self) -> String {
+        let _pool = Pool::new();
+        // SAFETY: `self.device` is a live IOUSBHostDevice while not
+        // surrendered; the descriptor pointer IOUSBHost returns stays valid
+        // while the device does.
         unsafe {
+            if self.device.is_null() {
+                return "surrendered".into();
+            }
             let mut error: Id = ptr::null_mut();
             let descriptor = send!(*const u8; self.device, c"configurationDescriptorWithIndex:error:",
                 0usize => usize, &mut error => *mut Id);
             let value = if descriptor.is_null() { 1 } else { *descriptor.add(5) };
-            let mut error: Id = ptr::null_mut();
-            let ok = send!(i8; self.device, c"configureWithValue:matchInterfaces:error:",
-                usize::from(value) => usize, i8::from(match_interfaces) => i8,
-                &mut error => *mut Id);
-            if ok != 0 { kIOReturnSuccess } else { error_code(error) }
+            let configure = |value: u8| {
+                let mut error: Id = ptr::null_mut();
+                let ok = send!(i8; self.device, c"configureWithValue:matchInterfaces:error:",
+                    usize::from(value) => usize, 0i8 => i8, &mut error => *mut Id);
+                if ok != 0 { kIOReturnSuccess } else { error_code(error) }
+            };
+            let off = configure(0);
+            let on = configure(value);
+            format!("0 -> 0x{off:08x}, {value} -> 0x{on:08x}")
         }
+    }
+
+    /// Open interface `number` through IOUSBHost, retrying for up to `wait`.
+    /// `note` records each refusal.
+    pub(crate) fn open_interface(
+        &mut self,
+        number: u8,
+        wait: Duration,
+        note: &mut dyn FnMut(String),
+    ) -> bool {
+        let _pool = Pool::new();
+        let deadline = Instant::now() + wait;
+        loop {
+            match interface_service(self.registry_id, number) {
+                // SAFETY: the service is live until released here; the opened
+                // interface is owned by `self`, whose drop destroys it.
+                Some(service) => unsafe {
+                    let (id, busy) = service_state(service);
+                    let opened = init_object(c"IOUSBHostInterface", service, 0);
+                    IOObjectRelease(service);
+                    match opened {
+                        Ok(interface) => {
+                            self.interface = interface;
+                            note(format!("interface 0x{id:x} opened"));
+                            return true;
+                        }
+                        Err(code) => {
+                            note(format!("interface 0x{id:x} (busy {busy}) refused (0x{code:08x})"))
+                        }
+                    }
+                },
+                None => note("no interface".into()),
+            }
+            if Instant::now() >= deadline {
+                return false;
+            }
+            std::thread::sleep(INTERFACE_POLL);
+        }
+    }
+
+    /// Give up the device without a reset, so its drivers stay away, and with
+    /// it whatever hold the capture has on its interfaces.
+    pub(crate) fn surrender(&mut self) {
+        let _pool = Pool::new();
+        if self.device.is_null() {
+            return;
+        }
+        // SAFETY: the device is live and released once; the field is cleared.
+        unsafe {
+            send!((); self.device, c"destroyWithOptions:", DESTROY_SURRENDER => usize);
+            release(self.device);
+        }
+        self.device = ptr::null_mut();
+    }
+
+    /// The object control transfers go through: the device, or the interface
+    /// once the device was surrendered.
+    fn control_target(&self) -> Id {
+        if self.device.is_null() { self.interface } else { self.device }
     }
 
     /// The pipe for endpoint `ep`, opened on first use.
@@ -313,11 +347,11 @@ impl HostInterface {
         let length = u16::try_from(data.len())
             .map_err(|_| Error::Protocol("control transfer data too long"))?;
         let setup = DeviceRequest { request_type, request, value, index, length };
-        // SAFETY: `self.device` is live; the buffer is released on every path.
+        // SAFETY: the target is live; the buffer is released on every path.
         unsafe {
             let buffer = new_data(data);
             let mut error: Id = ptr::null_mut();
-            let ok = send!(i8; self.device,
+            let ok = send!(i8; self.control_target(),
                 c"sendDeviceRequest:data:bytesTransferred:completionTimeout:error:",
                 setup => DeviceRequest, buffer => Id, ptr::null_mut() => *mut usize,
                 timeout.as_secs_f64() => f64, &mut error => *mut Id);
@@ -343,6 +377,27 @@ impl Drop for HostInterface {
             // A camera that switched mode is a new device by now; a reset
             // would hit that one instead.
             let present = service_by_id(self.registry_id).map(|s| IOObjectRelease(s)).is_some();
+            if self.device.is_null() && present {
+                // Surrendered: capture again, so destroying resets the device
+                // and its drivers return. A handle elsewhere may still be
+                // closing.
+                let deadline = Instant::now() + RECAPTURE_TIMEOUT;
+                loop {
+                    match capture_device(self.registry_id) {
+                        Ok(device) => {
+                            self.device = device;
+                            break;
+                        }
+                        Err(_) if Instant::now() < deadline => {
+                            std::thread::sleep(INTERFACE_POLL);
+                        }
+                        Err(_) => break,
+                    }
+                }
+            }
+            if self.device.is_null() {
+                return;
+            }
             if present {
                 send!((); self.device, c"destroy");
             } else {
@@ -350,6 +405,18 @@ impl Drop for HostInterface {
             }
             release(self.device);
         }
+    }
+}
+
+/// Open the device with IORegistry entry `registry_id` with the capture
+/// option; returns the IOReturn code on failure.
+fn capture_device(registry_id: u64) -> std::result::Result<Id, i32> {
+    // SAFETY: the service is live until released here.
+    unsafe {
+        let service = service_by_id(registry_id).ok_or(IO_RETURN_ERROR)?;
+        let device = init_object(c"IOUSBHostDevice", service, INIT_DEVICE_CAPTURE);
+        IOObjectRelease(service);
+        device
     }
 }
 
