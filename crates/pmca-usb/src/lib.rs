@@ -35,7 +35,8 @@
 //!   service mode, and service mode itself. It replaces the manual Zadig step
 //!   the toolkit used to ask for, and undoes itself again afterwards.
 //! * On macOS, `macos_capture` takes a mass-storage camera from the system's
-//!   disk driver (root only), the counterpart of the WinUSB binding.
+//!   disk driver through the IOUSBHost framework (root only), the counterpart
+//!   of the WinUSB binding.
 //!
 //!   These four are the crate's only `unsafe` code (platform FFI), confined to
 //!   those modules; the rest of the crate is `#![deny(unsafe_code)]`. The one

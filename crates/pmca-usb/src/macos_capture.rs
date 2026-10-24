@@ -1,97 +1,96 @@
-//! macOS: take a USB device away from the kernel drivers that hold it.
+//! macOS: take a mass-storage camera away from the system's disk driver.
 //!
-//! macOS cannot detach a kernel driver from a single interface. What it offers
-//! instead is to *capture* the whole device: re-enumerating it with the capture
-//! option ends every kernel driver bound to its interfaces and keeps them away
-//! while this process holds the capture. That needs root (or an Apple
-//! entitlement this program does not have). Only the mass-storage path asks for
-//! it, because the system's disk driver is the one holder no ordinary process
-//! can displace.
+//! Since macOS 26 the system refuses every IOUSBLib user client for an
+//! interface one of its own drivers holds, so `nusb` (like libusb) cannot reach
+//! a camera in mass-storage mode at all, root or not. The IOUSBHost framework
+//! still can: opening the device with its capture option ends every driver of
+//! the device and its interfaces, which Apple allows to root.
+//! [`HostInterface`] does that and then moves data through IOUSBHost's own
+//! interface and pipe objects. Destroying the device resets it and lets the
+//! system match its drivers again, so the card comes back.
 //!
-//! Capturing does not re-enumerate: the drivers are ended in place, and the
-//! device stays under its IORegistry entry. The capture lasts while the device
-//! handle that asked for it stays open, so [`Capture`] keeps that handle,
-//! seized, until it is dropped. A plain re-enumeration then gives the device
-//! back; the kernel matches its drivers again and the volume reappears. The
-//! IOKit sequence follows libusb's `darwin_detach_kernel_driver` and
-//! `darwin_reenumerate_device`.
+//! IOUSBHost is an Objective-C framework. It is driven through the Objective-C
+//! runtime directly, which keeps the dependency list as it was.
+//!
+//! The module also holds what prepares a capture and explains a failed one:
+//! the root check, unmounting the camera's card and a trace of the drivers
+//! that hold the device.
 
+use std::collections::HashMap;
 use std::ffi::{CStr, c_char, c_void};
 use std::ptr;
+use std::time::{Duration, Instant};
 
-use core_foundation_sys::base::{
-    CFGetTypeID, CFIndex, CFRelease, SInt32, kCFAllocatorDefault, kCFAllocatorSystemDefault,
-};
+use core_foundation_sys::base::{CFGetTypeID, CFIndex, CFRelease, kCFAllocatorDefault};
+use core_foundation_sys::number::{CFNumberGetTypeID, CFNumberGetValue, kCFNumberSInt32Type};
 use core_foundation_sys::string::{
     CFStringCreateWithCString, CFStringGetCString, CFStringGetTypeID, kCFStringEncodingUTF8,
 };
-use core_foundation_sys::uuid::{
-    CFUUIDBytes, CFUUIDGetConstantUUIDWithBytes, CFUUIDGetUUIDBytes, CFUUIDRef,
-};
 use io_kit_sys::keys::kIOServicePlane;
-use io_kit_sys::ret::{IOReturn, kIOReturnNoResources, kIOReturnSuccess};
+use io_kit_sys::ret::kIOReturnSuccess;
 use io_kit_sys::types::{io_iterator_t, io_registry_entry_t, io_service_t};
 use io_kit_sys::{
-    IOIteratorNext, IOObjectGetClass, IOObjectRelease, IORegistryEntryGetChildIterator,
-    IORegistryEntryIDMatching, IORegistryEntrySearchCFProperty, IOServiceGetMatchingService,
-    kIORegistryIterateRecursively,
+    IOIteratorNext, IOObjectConformsTo, IOObjectGetClass, IOObjectRelease,
+    IORegistryEntryCreateCFProperty, IORegistryEntryGetChildIterator, IORegistryEntryIDMatching,
+    IORegistryEntrySearchCFProperty, IOServiceGetMatchingService, kIORegistryIterateRecursively,
 };
 
-/// `kUSBReEnumerateCaptureDeviceMask` from `IOUSBLib.h`.
-const CAPTURE_DEVICE: u32 = 1 << 30;
+use crate::{Error, Result};
 
 /// `kIOMainPortDefault`, which is defined as 0.
 const MAIN_PORT_DEFAULT: u32 = 0;
 
-type Fn0 = Option<unsafe extern "C" fn(this: *mut c_void) -> IOReturn>;
-type Unused = *const c_void;
+/// `IOUSBHostObjectInitOptionsDeviceCapture`.
+const INIT_DEVICE_CAPTURE: usize = 1 << 0;
 
-/// The leading part of `IOUSBDeviceStruct650`, up to `USBDeviceReEnumerate`.
-///
-/// Only the slots used here are typed; the order is the header's, and the
-/// struct is only ever read through a pointer IOKit hands out, so the missing
-/// tail does not matter.
-#[repr(C)]
-struct DeviceVtbl {
-    _reserved: Unused,
-    _query_interface: Unused,
-    _add_ref: Unused,
-    release: Option<unsafe extern "C" fn(this: *mut c_void) -> u32>,
-    _async_and_port: [Unused; 4],
-    open: Fn0,
-    close: Fn0,
-    _class_to_get_configuration: [Unused; 13],
-    set_configuration: Option<unsafe extern "C" fn(this: *mut c_void, value: u8) -> IOReturn>,
-    _frame_number_to_interface_iterator: [Unused; 5],
-    open_seize: Fn0,
-    _request_to_serial_index: [Unused; 7],
-    re_enumerate: Option<unsafe extern "C" fn(this: *mut c_void, options: u32) -> IOReturn>,
-}
+/// `IOUSBHostObjectDestroyOptionsDeviceSurrender`: no reset, no re-matching.
+const DESTROY_SURRENDER: usize = 1 << 0;
 
-/// The leading part of `IOCFPlugInInterfaceStruct`.
-#[repr(C)]
-struct PluginVtbl {
-    _reserved: Unused,
-    query_interface: Option<
-        unsafe extern "C" fn(this: *mut c_void, iid: CFUUIDBytes, out: *mut *mut c_void) -> SInt32,
-    >,
-    _add_ref: Unused,
-    release: Option<unsafe extern "C" fn(this: *mut c_void) -> u32>,
-}
+/// `kIOReturnError`, reported when IOUSBHost gives no error object.
+const IO_RETURN_ERROR: i32 = 0xe000_02bc_u32 as i32;
 
-#[link(name = "IOKit", kind = "framework")]
+/// The IOReturn codes of a stalled endpoint: `kIOUSBPipeStalled` and
+/// `kUSBHostReturnPipeStalled`.
+const STALLED: [i32; 2] = [0xe000_404f_u32 as i32, 0xe000_5000_u32 as i32];
+
+/// How long the captured device's interface may stay unavailable while macOS
+/// ends its drivers.
+const INTERFACE_TIMEOUT: Duration = Duration::from_secs(10);
+
+/// How often the interface is looked for meanwhile.
+const INTERFACE_POLL: Duration = Duration::from_millis(100);
+
+type Id = *mut c_void;
+type Sel = *const c_void;
+
+#[link(name = "objc")]
 unsafe extern "C" {
-    fn IOCreatePlugInInterfaceForService(
-        service: io_service_t,
-        plugin_type: CFUUIDRef,
-        interface_type: CFUUIDRef,
-        out: *mut *mut *mut PluginVtbl,
-        score: *mut SInt32,
-    ) -> IOReturn;
+    fn objc_getClass(name: *const c_char) -> Id;
+    fn sel_registerName(name: *const c_char) -> Sel;
+    fn objc_msgSend();
+    fn objc_autoreleasePoolPush() -> *mut c_void;
+    fn objc_autoreleasePoolPop(pool: *mut c_void);
+}
+
+#[link(name = "IOUSBHost", kind = "framework")]
+unsafe extern "C" {
+    static IOUSBHostVersionNumber: f64;
 }
 
 unsafe extern "C" {
     fn geteuid() -> u32;
+}
+
+/// Sends an Objective-C message: `send!(Ret; receiver, c"selector:", arg => Type, ...)`.
+///
+/// `objc_msgSend` must be called through a pointer of the method's exact type.
+macro_rules! send {
+    ($ret:ty; $receiver:expr, $selector:expr $(, $arg:expr => $ty:ty)* $(,)?) => {{
+        let f = std::mem::transmute::<unsafe extern "C" fn(), unsafe extern "C" fn(Id, Sel $(, $ty)*) -> $ret>(
+            objc_msgSend as unsafe extern "C" fn(),
+        );
+        f($receiver, sel_registerName(CStr::as_ptr($selector)) $(, $arg)*)
+    }};
 }
 
 /// Whether this process runs as root, which capturing requires.
@@ -100,69 +99,392 @@ pub(crate) fn is_root() -> bool {
     unsafe { geteuid() == 0 }
 }
 
-fn uuid(bytes: [u8; 16]) -> CFUUIDRef {
-    let [b0, b1, b2, b3, b4, b5, b6, b7, b8, b9, b10, b11, b12, b13, b14, b15] = bytes;
-    // SAFETY: returns a constant, never-released UUID object.
-    unsafe {
-        CFUUIDGetConstantUUIDWithBytes(
-            kCFAllocatorSystemDefault,
-            b0,
-            b1,
-            b2,
-            b3,
-            b4,
-            b5,
-            b6,
-            b7,
-            b8,
-            b9,
-            b10,
-            b11,
-            b12,
-            b13,
-            b14,
-            b15,
-        )
+/// An autorelease pool for the duration of one call: IOUSBHost hands out its
+/// error objects autoreleased, and this thread has no pool of its own.
+struct Pool(*mut c_void);
+
+impl Pool {
+    fn new() -> Self {
+        // SAFETY: push has no preconditions; the pool is popped on drop.
+        Self(unsafe { objc_autoreleasePoolPush() })
     }
 }
 
-/// `kIOUSBDeviceUserClientTypeID`.
-fn device_user_client() -> CFUUIDRef {
-    uuid([
-        0x9d, 0xc7, 0xb7, 0x80, 0x9e, 0xc0, 0x11, 0xd4, 0xa5, 0x4f, 0x00, 0x0a, 0x27, 0x05, 0x28,
-        0x61,
-    ])
+impl Drop for Pool {
+    fn drop(&mut self) {
+        // SAFETY: pops the pool pushed in `new`, on the same thread.
+        unsafe { objc_autoreleasePoolPop(self.0) }
+    }
 }
 
-/// `kIOCFPlugInInterfaceID`.
-fn plugin_interface() -> CFUUIDRef {
-    uuid([
-        0xc2, 0x44, 0xe8, 0x58, 0x10, 0x9c, 0x11, 0xd4, 0x91, 0xd4, 0x00, 0x50, 0xe4, 0xc6, 0x42,
-        0x6f,
-    ])
+/// `IOUSBDeviceRequest`, the setup packet of a control transfer.
+#[repr(C, packed)]
+#[derive(Clone, Copy)]
+struct DeviceRequest {
+    request_type: u8,
+    request: u8,
+    value: u16,
+    index: u16,
+    length: u16,
 }
 
-/// `kIOUSBDeviceInterfaceID650`.
-fn device_interface_650() -> CFUUIDRef {
-    uuid([
-        0x4a, 0xac, 0x1b, 0x2e, 0x24, 0xc2, 0x47, 0x6a, 0x96, 0x4d, 0x91, 0x33, 0x35, 0x34, 0xf2,
-        0xcc,
-    ])
+/// A captured camera's interface, reached through IOUSBHost.
+pub(crate) struct HostInterface {
+    device: Id,
+    interface: Id,
+    /// Pipes opened so far, keyed by endpoint address.
+    pipes: HashMap<u8, Id>,
+    registry_id: u64,
+}
+
+// The objects are only used from the thread that owns the backend holding them.
+unsafe impl Send for HostInterface {}
+
+impl HostInterface {
+    /// Capture the device with IORegistry entry `registry_id` and open its
+    /// interface `interface_number`. `note` records each step for a trace.
+    pub(crate) fn capture(
+        registry_id: u64,
+        interface_number: u8,
+        note: &mut dyn FnMut(String),
+    ) -> std::result::Result<Self, String> {
+        let _pool = Pool::new();
+        // SAFETY: every object created here is owned by `host`, whose drop
+        // destroys and releases it; services are released after use.
+        unsafe {
+            note(format!("IOUSBHost {}", IOUSBHostVersionNumber));
+            let service = service_by_id(registry_id).ok_or("device not in the IORegistry")?;
+            let device = init_object(c"IOUSBHostDevice", service, INIT_DEVICE_CAPTURE);
+            IOObjectRelease(service);
+            let device = device.map_err(|code| format!("capture refused (0x{code:08x})"))?;
+            let mut host =
+                Self { device, interface: ptr::null_mut(), pipes: HashMap::new(), registry_id };
+            note(format!("captured, drivers: {}", driver_tree(registry_id)));
+
+            let deadline = Instant::now() + INTERFACE_TIMEOUT;
+            let mut configured = false;
+            loop {
+                match interface_service(registry_id, interface_number) {
+                    Some(service) => {
+                        let opened = init_object(c"IOUSBHostInterface", service, 0);
+                        IOObjectRelease(service);
+                        match opened {
+                            Ok(interface) => {
+                                host.interface = interface;
+                                return Ok(host);
+                            }
+                            Err(code) => note(format!("interface refused (0x{code:08x})")),
+                        }
+                    }
+                    // Without its drivers the device may have dropped its configuration.
+                    None if !configured => {
+                        configured = true;
+                        note(format!("configure: 0x{:08x}", host.configure()));
+                    }
+                    None => note("no interface".into()),
+                }
+                if Instant::now() >= deadline {
+                    return Err("interface not available".into());
+                }
+                std::thread::sleep(INTERFACE_POLL);
+            }
+        }
+    }
+
+    /// Select the device's first configuration; returns the IOReturn code.
+    fn configure(&self) -> i32 {
+        // SAFETY: `self.device` is a live IOUSBHostDevice; the descriptor
+        // pointer IOUSBHost returns stays valid while the device does.
+        unsafe {
+            let mut error: Id = ptr::null_mut();
+            let descriptor = send!(*const u8; self.device, c"configurationDescriptorWithIndex:error:",
+                0usize => usize, &mut error => *mut Id);
+            let value = if descriptor.is_null() { 1 } else { *descriptor.add(5) };
+            let mut error: Id = ptr::null_mut();
+            let ok = send!(i8; self.device, c"configureWithValue:matchInterfaces:error:",
+                usize::from(value) => usize, 1i8 => i8, &mut error => *mut Id);
+            if ok != 0 { kIOReturnSuccess } else { error_code(error) }
+        }
+    }
+
+    /// The pipe for endpoint `ep`, opened on first use.
+    fn pipe(&mut self, ep: u8) -> Result<Id> {
+        if let Some(&pipe) = self.pipes.get(&ep) {
+            return Ok(pipe);
+        }
+        // SAFETY: `self.interface` is a live IOUSBHostInterface; the pipe is
+        // released on drop.
+        let pipe = unsafe {
+            let mut error: Id = ptr::null_mut();
+            let pipe = send!(Id; self.interface, c"copyPipeWithAddress:error:",
+                usize::from(ep) => usize, &mut error => *mut Id);
+            if pipe.is_null() {
+                return Err(io_error("open pipe", error_code(error)));
+            }
+            pipe
+        };
+        self.pipes.insert(ep, pipe);
+        Ok(pipe)
+    }
+
+    /// Run one bulk transfer on `ep` with `data` as its buffer; returns the
+    /// bytes transferred.
+    ///
+    /// # Safety
+    ///
+    /// `data` must be a live `NSMutableData` or null.
+    unsafe fn transfer(&mut self, ep: u8, data: Id, timeout: Duration) -> Result<usize> {
+        let pipe = self.pipe(ep)?;
+        let mut done = 0usize;
+        let mut error: Id = ptr::null_mut();
+        // SAFETY: `pipe` is live; `data` is guaranteed by the caller; `error`
+        // is an NSError or null.
+        unsafe {
+            let ok = send!(i8; pipe, c"sendIORequestWithData:bytesTransferred:completionTimeout:error:",
+                data => Id, &mut done => *mut usize, timeout.as_secs_f64() => f64,
+                &mut error => *mut Id);
+            if ok != 0 { Ok(done) } else { Err(io_error("bulk transfer", error_code(error))) }
+        }
+    }
+
+    /// Read up to `length` bytes from IN endpoint `ep`.
+    pub(crate) fn read(&mut self, ep: u8, length: usize, timeout: Duration) -> Result<Vec<u8>> {
+        let _pool = Pool::new();
+        // SAFETY: the buffer is created here, read only up to the bytes the
+        // transfer reports, and released on every path.
+        unsafe {
+            let data = send!(Id; send!(Id; objc_getClass(c"NSMutableData".as_ptr()), c"alloc"),
+                c"initWithLength:", length => usize);
+            let result = self.transfer(ep, data, timeout).map(|done| {
+                let bytes = send!(*const u8; data, c"mutableBytes");
+                std::slice::from_raw_parts(bytes, done.min(length)).to_vec()
+            });
+            send!((); data, c"release");
+            result
+        }
+    }
+
+    /// Write `data` to OUT endpoint `ep`.
+    pub(crate) fn write(&mut self, ep: u8, data: &[u8], timeout: Duration) -> Result<()> {
+        let _pool = Pool::new();
+        // SAFETY: the buffer copies `data` and is released on every path.
+        unsafe {
+            let buffer = new_data(data);
+            let result = self.transfer(ep, buffer, timeout).map(|_| ());
+            release(buffer);
+            result
+        }
+    }
+
+    /// Clear the halt of endpoint `ep`.
+    pub(crate) fn clear_halt(&mut self, ep: u8) -> Result<()> {
+        let _pool = Pool::new();
+        let pipe = self.pipe(ep)?;
+        // SAFETY: `pipe` is live.
+        unsafe {
+            let mut error: Id = ptr::null_mut();
+            let ok = send!(i8; pipe, c"clearStallWithError:", &mut error => *mut Id);
+            if ok != 0 { Ok(()) } else { Err(io_error("clear halt", error_code(error))) }
+        }
+    }
+
+    /// Send a host-to-device control transfer through the captured device.
+    pub(crate) fn control_out(
+        &mut self,
+        request_type: u8,
+        request: u8,
+        value: u16,
+        index: u16,
+        data: &[u8],
+        timeout: Duration,
+    ) -> Result<()> {
+        let _pool = Pool::new();
+        let length = u16::try_from(data.len())
+            .map_err(|_| Error::Protocol("control transfer data too long"))?;
+        let setup = DeviceRequest { request_type, request, value, index, length };
+        // SAFETY: `self.device` is live; the buffer is released on every path.
+        unsafe {
+            let buffer = new_data(data);
+            let mut error: Id = ptr::null_mut();
+            let ok = send!(i8; self.device,
+                c"sendDeviceRequest:data:bytesTransferred:completionTimeout:error:",
+                setup => DeviceRequest, buffer => Id, ptr::null_mut() => *mut usize,
+                timeout.as_secs_f64() => f64, &mut error => *mut Id);
+            let code = error_code(error);
+            release(buffer);
+            if ok != 0 { Ok(()) } else { Err(io_error("control transfer", code)) }
+        }
+    }
+}
+
+impl Drop for HostInterface {
+    fn drop(&mut self) {
+        let _pool = Pool::new();
+        // SAFETY: each object is live until released here, and released once.
+        unsafe {
+            for &pipe in self.pipes.values() {
+                release(pipe);
+            }
+            if !self.interface.is_null() {
+                send!((); self.interface, c"destroy");
+                release(self.interface);
+            }
+            // A camera that switched mode is a new device by now; a reset
+            // would hit that one instead.
+            let present = service_by_id(self.registry_id).map(|s| IOObjectRelease(s)).is_some();
+            if present {
+                send!((); self.device, c"destroy");
+            } else {
+                send!((); self.device, c"destroyWithOptions:", DESTROY_SURRENDER => usize);
+            }
+            release(self.device);
+        }
+    }
+}
+
+/// `[[class alloc] initWithIOService:service options:options queue:nil error:&e interestHandler:nil]`.
+///
+/// # Safety
+///
+/// `service` must be a live service of the kind `class` represents.
+unsafe fn init_object(
+    class: &CStr,
+    service: io_service_t,
+    options: usize,
+) -> std::result::Result<Id, i32> {
+    // SAFETY: guaranteed by the caller; a failed init releases the allocation.
+    unsafe {
+        let allocated = send!(Id; objc_getClass(class.as_ptr()), c"alloc");
+        let mut error: Id = ptr::null_mut();
+        let object = send!(Id; allocated, c"initWithIOService:options:queue:error:interestHandler:",
+            service => io_service_t, options => usize, ptr::null_mut() => Id,
+            &mut error => *mut Id, ptr::null_mut() => Id);
+        if object.is_null() { Err(error_code(error)) } else { Ok(object) }
+    }
+}
+
+/// A new `NSMutableData` holding a copy of `bytes`, or nil when empty.
+///
+/// # Safety
+///
+/// The result must be released with [`release`].
+unsafe fn new_data(bytes: &[u8]) -> Id {
+    if bytes.is_empty() {
+        return ptr::null_mut();
+    }
+    // SAFETY: copies `bytes`, which outlive the call.
+    unsafe {
+        let allocated = send!(Id; objc_getClass(c"NSMutableData".as_ptr()), c"alloc");
+        send!(Id; allocated, c"initWithBytes:length:",
+            bytes.as_ptr() => *const u8, bytes.len() => usize)
+    }
+}
+
+/// # Safety
+///
+/// `object` must be an owned Objective-C object or null.
+unsafe fn release(object: Id) {
+    if !object.is_null() {
+        // SAFETY: guaranteed by the caller.
+        unsafe { send!((); object, c"release") }
+    }
+}
+
+/// The IOReturn code inside an `NSError` from IOUSBHost.
+///
+/// # Safety
+///
+/// `error` must be an `NSError` or null.
+unsafe fn error_code(error: Id) -> i32 {
+    if error.is_null() {
+        return IO_RETURN_ERROR;
+    }
+    // SAFETY: guaranteed by the caller. IOReturn codes are 32-bit.
+    unsafe { send!(isize; error, c"code") as i32 }
+}
+
+/// Classifies a failed IOUSBHost call.
+fn io_error(step: &str, code: i32) -> Error {
+    if STALLED.contains(&code) {
+        Error::Stall
+    } else {
+        Error::Transfer(format!("{step} failed (0x{code:08x})"))
+    }
+}
+
+/// The service with IORegistry entry `registry_id`, to be released by the caller.
+fn service_by_id(registry_id: u64) -> Option<io_service_t> {
+    // SAFETY: the matching dictionary is consumed by IOServiceGetMatchingService.
+    let service = unsafe {
+        IOServiceGetMatchingService(
+            MAIN_PORT_DEFAULT,
+            IORegistryEntryIDMatching(registry_id).cast_const(),
+        )
+    };
+    (service != 0).then_some(service)
+}
+
+/// The IOUSBHostInterface service numbered `number` below the device with
+/// IORegistry entry `registry_id`, to be released by the caller.
+fn interface_service(registry_id: u64, number: u8) -> Option<io_service_t> {
+    let device = service_by_id(registry_id)?;
+    let mut iterator: io_iterator_t = 0;
+    // SAFETY: the iterator and every child that is not returned are released.
+    unsafe {
+        let listed = IORegistryEntryGetChildIterator(device, kIOServicePlane, &mut iterator);
+        IOObjectRelease(device);
+        if listed != kIOReturnSuccess {
+            return None;
+        }
+        let mut found = None;
+        loop {
+            let child = IOIteratorNext(iterator);
+            if child == 0 {
+                break;
+            }
+            if found.is_none()
+                && IOObjectConformsTo(child, c"IOUSBHostInterface".as_ptr()) != 0
+                && number_property(child, c"bInterfaceNumber") == Some(i32::from(number))
+            {
+                found = Some(child);
+            } else {
+                IOObjectRelease(child);
+            }
+        }
+        IOObjectRelease(iterator);
+        found
+    }
+}
+
+/// A numeric property of a registry entry.
+///
+/// # Safety
+///
+/// `entry` must be a live registry entry.
+unsafe fn number_property(entry: io_registry_entry_t, key: &CStr) -> Option<i32> {
+    // SAFETY: guaranteed by the caller; the key and the value are released.
+    unsafe {
+        let key =
+            CFStringCreateWithCString(kCFAllocatorDefault, key.as_ptr(), kCFStringEncodingUTF8);
+        let value = IORegistryEntryCreateCFProperty(entry, key, kCFAllocatorDefault, 0);
+        CFRelease(key.cast());
+        if value.is_null() {
+            return None;
+        }
+        let mut number = 0i32;
+        let read = CFGetTypeID(value) == CFNumberGetTypeID()
+            && CFNumberGetValue(value.cast(), kCFNumberSInt32Type, (&raw mut number).cast());
+        CFRelease(value);
+        read.then_some(number)
+    }
 }
 
 /// The BSD name of the disk below the device with IORegistry entry
 /// `registry_id`, such as `disk4`.
 pub(crate) fn bsd_disk(registry_id: u64) -> Option<String> {
-    // SAFETY: the matching dictionary is consumed by IOServiceGetMatchingService;
-    // the service, the key and the value are released on every path.
+    let service = service_by_id(registry_id)?;
+    // SAFETY: the service, the key and the value are released on every path.
     unsafe {
-        let service = IOServiceGetMatchingService(
-            MAIN_PORT_DEFAULT,
-            IORegistryEntryIDMatching(registry_id).cast_const(),
-        );
-        if service == 0 {
-            return None;
-        }
         let key = CFStringCreateWithCString(
             kCFAllocatorDefault,
             c"BSD Name".as_ptr(),
@@ -218,16 +540,11 @@ pub(crate) fn os_version() -> String {
 /// The IOKit classes below the device with IORegistry entry `registry_id`,
 /// three levels deep, for a trace: which drivers hold its interfaces.
 pub(crate) fn driver_tree(registry_id: u64) -> String {
-    // SAFETY: the matching dictionary is consumed by IOServiceGetMatchingService;
-    // the service is released below.
+    let Some(service) = service_by_id(registry_id) else {
+        return "device gone".into();
+    };
+    // SAFETY: `service` is live until released below.
     unsafe {
-        let service = IOServiceGetMatchingService(
-            MAIN_PORT_DEFAULT,
-            IORegistryEntryIDMatching(registry_id).cast_const(),
-        );
-        if service == 0 {
-            return "device gone".into();
-        }
         let tree = children(service, 3).join(" ");
         IOObjectRelease(service);
         tree
@@ -262,144 +579,5 @@ unsafe fn children(entry: io_registry_entry_t, depth: u32) -> Vec<String> {
         }
         IOObjectRelease(iterator);
         out
-    }
-}
-
-/// A captured device; dropping it gives the device back to its kernel drivers.
-pub(crate) struct Capture {
-    device: *mut *mut DeviceVtbl,
-    open: bool,
-    captured: bool,
-}
-
-// The handle is only used from the thread that owns the backend holding it.
-unsafe impl Send for Capture {}
-
-impl Capture {
-    /// Capture the device with IORegistry entry `registry_id` and keep the
-    /// capturing handle open. Also returns the open results, for a trace.
-    pub(crate) fn take(registry_id: u64) -> Result<(Self, String), String> {
-        let device = open_device_interface(registry_id)?;
-        let mut capture = Self { device, open: false, captured: false };
-        // SAFETY: `device` is a live IOUSBDeviceInterface650 owned by `capture`.
-        unsafe {
-            let seize = call0(device, (**device).open_seize);
-            capture.open =
-                seize == kIOReturnSuccess || call0(device, (**device).open) == kIOReturnSuccess;
-            if !capture.open {
-                return Err(format!("could not open the device to capture it (0x{seize:08x})"));
-            }
-            let rc = match (**device).re_enumerate {
-                Some(f) => f(device.cast(), CAPTURE_DEVICE),
-                None => kIOReturnNoResources,
-            };
-            if rc != kIOReturnSuccess {
-                return Err(format!("capture refused (0x{rc:08x})"));
-            }
-            capture.captured = true;
-            // libusb re-opens after capturing, and keeps the device open meanwhile.
-            call0(device, (**device).close);
-            let reseize = call0(device, (**device).open_seize);
-            capture.open =
-                reseize == kIOReturnSuccess || call0(device, (**device).open) == kIOReturnSuccess;
-            Ok((capture, format!("open 0x{seize:08x}, reopen 0x{reseize:08x}")))
-        }
-    }
-
-    /// Select configuration `value` through the capturing handle.
-    pub(crate) fn set_configuration(&self, value: u8) -> IOReturn {
-        // SAFETY: `self.device` is live until drop.
-        unsafe {
-            match (**self.device).set_configuration {
-                Some(f) => f(self.device.cast(), value),
-                None => kIOReturnNoResources,
-            }
-        }
-    }
-}
-
-impl Drop for Capture {
-    fn drop(&mut self) {
-        let device = self.device;
-        // SAFETY: `device` is live until the release below. Every call may fail
-        // harmlessly: a camera that switched mode is no longer this device.
-        unsafe {
-            if self.captured {
-                if !self.open {
-                    self.open = call0(device, (**device).open_seize) == kIOReturnSuccess;
-                }
-                if let Some(f) = (**device).re_enumerate {
-                    f(device.cast(), 0);
-                }
-            }
-            if self.open {
-                call0(device, (**device).close);
-            }
-            if let Some(release) = (**device).release {
-                release(device.cast());
-            }
-        }
-    }
-}
-
-/// # Safety
-///
-/// `device` must be a live device interface.
-unsafe fn call0(device: *mut *mut DeviceVtbl, f: Fn0) -> IOReturn {
-    match f {
-        // SAFETY: guaranteed by the caller.
-        Some(f) => unsafe { f(device.cast()) },
-        None => -1,
-    }
-}
-
-/// The IOUSBDeviceInterface650 for the device with IORegistry entry `registry_id`.
-fn open_device_interface(registry_id: u64) -> Result<*mut *mut DeviceVtbl, String> {
-    // SAFETY: the matching dictionary is consumed by IOServiceGetMatchingService;
-    // the service and the plug-in are released on every path.
-    unsafe {
-        let service = IOServiceGetMatchingService(
-            MAIN_PORT_DEFAULT,
-            IORegistryEntryIDMatching(registry_id).cast_const(),
-        );
-        if service == 0 {
-            return Err("device not found in the IORegistry".into());
-        }
-
-        let mut plugin: *mut *mut PluginVtbl = ptr::null_mut();
-        let mut score: SInt32 = 0;
-        let mut rc = kIOReturnNoResources;
-        // A freshly enumerated device can answer "no resources" for a moment.
-        for _ in 0..5 {
-            rc = IOCreatePlugInInterfaceForService(
-                service,
-                device_user_client(),
-                plugin_interface(),
-                &mut plugin,
-                &mut score,
-            );
-            if rc != kIOReturnNoResources {
-                break;
-            }
-            std::thread::sleep(std::time::Duration::from_millis(1));
-        }
-        IOObjectRelease(service);
-        if rc != kIOReturnSuccess || plugin.is_null() {
-            return Err(format!("no IOKit plug-in for the device (0x{rc:08x})"));
-        }
-
-        let mut device: *mut c_void = ptr::null_mut();
-        let query = (**plugin).query_interface;
-        let hr = match query {
-            Some(f) => f(plugin.cast(), CFUUIDGetUUIDBytes(device_interface_650()), &mut device),
-            None => -1,
-        };
-        if let Some(release) = (**plugin).release {
-            release(plugin.cast());
-        }
-        if hr != 0 || device.is_null() {
-            return Err(format!("no USB device interface (0x{hr:08x})"));
-        }
-        Ok(device.cast())
     }
 }

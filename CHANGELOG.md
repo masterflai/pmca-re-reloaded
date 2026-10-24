@@ -6,6 +6,21 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+## [1.3.0-rc.6] - 2026-10-24
+
+Pre-release for testing on macOS. Contains everything from 1.3.0-rc.1 to
+1.3.0-rc.5.
+
+### Fixed
+
+- macOS 26: the camera's mass-storage connection is now taken over through
+  Apple's IOUSBHost framework. macOS 26 no longer lets programs reach a USB
+  interface that one of its own drivers holds through the older interface the
+  program used before, even with administrator rights; IOUSBHost can still
+  take the camera from the system's disk driver. This is what the tweaks, the
+  service shell, the function analysis, firmware updates and reading the
+  camera information in Auto or Mass Storage mode need on a Mac.
+
 ## [1.3.0-rc.5] - 2026-10-24
 
 Pre-release for testing on macOS. Contains everything from 1.3.0-rc.1 to

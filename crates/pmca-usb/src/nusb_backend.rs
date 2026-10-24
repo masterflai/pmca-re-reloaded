@@ -267,20 +267,65 @@ fn evict_macos_ptp_daemons() {
     }
 }
 
-/// A claimed interface, plus on macOS the capture that made claiming possible.
-struct Claimed {
-    interface: nusb::Interface,
+/// The path a [`NusbBackend`] moves its data through.
+enum Link {
+    /// An interface claimed through `nusb`.
+    Nusb(NusbLink),
+    /// macOS: an interface of a captured device, reached through IOUSBHost.
     #[cfg(target_os = "macos")]
-    capture: Option<crate::macos_capture::Capture>,
+    Host(crate::macos_capture::HostInterface),
 }
 
-impl From<nusb::Interface> for Claimed {
+impl From<nusb::Interface> for Link {
     fn from(interface: nusb::Interface) -> Self {
-        Self {
-            interface,
-            #[cfg(target_os = "macos")]
-            capture: None,
+        Self::Nusb(NusbLink { interface, ep_in: HashMap::new(), ep_out: HashMap::new() })
+    }
+}
+
+/// A claimed `nusb` interface with the endpoints opened on it so far.
+struct NusbLink {
+    interface: nusb::Interface,
+    /// Opened IN endpoints, keyed by address.
+    ///
+    /// `nusb` 0.2 hands out exclusive [`nusb::Endpoint`] handles that own a
+    /// transfer queue, so an address may only be opened once. They are cached
+    /// here and reused for every transfer on that address.
+    ep_in: HashMap<u8, nusb::Endpoint<Bulk, In>>,
+    /// Opened OUT endpoints, keyed by address.
+    ep_out: HashMap<u8, nusb::Endpoint<Bulk, Out>>,
+}
+
+impl NusbLink {
+    /// The cached IN endpoint for `ep`, opening it on first use.
+    fn endpoint_in(&mut self, ep: u8) -> Result<&mut nusb::Endpoint<Bulk, In>> {
+        if !self.ep_in.contains_key(&ep) {
+            let endpoint = self
+                .interface
+                .endpoint::<Bulk, In>(ep)
+                .map_err(|e| Error::Transfer(e.to_string()))?;
+            self.ep_in.insert(ep, endpoint);
         }
+        Ok(self.ep_in.get_mut(&ep).expect("endpoint was just inserted"))
+    }
+
+    /// The cached OUT endpoint for `ep`, opening it on first use.
+    fn endpoint_out(&mut self, ep: u8) -> Result<&mut nusb::Endpoint<Bulk, Out>> {
+        if !self.ep_out.contains_key(&ep) {
+            let endpoint = self
+                .interface
+                .endpoint::<Bulk, Out>(ep)
+                .map_err(|e| Error::Transfer(e.to_string()))?;
+            self.ep_out.insert(ep, endpoint);
+        }
+        Ok(self.ep_out.get_mut(&ep).expect("endpoint was just inserted"))
+    }
+
+    fn control_out(
+        &self,
+        control: nusb::transfer::ControlOut<'_>,
+        timeout: Duration,
+    ) -> Result<()> {
+        self.interface.control_out(control, timeout).wait().map(|_| ()).map_err(map_transfer_error)
     }
 }
 
@@ -295,7 +340,7 @@ fn claim(
     device: &DiscoveredDevice,
     interface_number: u8,
     class: u8,
-) -> Result<Claimed> {
+) -> Result<Link> {
     #[cfg_attr(not(target_os = "macos"), allow(unused_mut))]
     let mut result = handle.detach_and_claim_interface(interface_number).wait();
     #[cfg(target_os = "macos")]
@@ -334,19 +379,14 @@ fn claim(
     }
     #[cfg(not(target_os = "macos"))]
     let _ = class;
-    result.map(Claimed::from).map_err(|e| map_open_error(device, e))
+    result.map(Link::from).map_err(|e| map_open_error(device, e))
 }
 
 /// How long a freshly enumerated device may refuse a claim with "no resources".
 #[cfg(target_os = "macos")]
 const MACOS_FRESH_DEVICE_GRACE: Duration = Duration::from_secs(3);
 
-/// How long the interface of a captured device may stay unclaimable while
-/// macOS ends its drivers.
-#[cfg(target_os = "macos")]
-const MACOS_CAPTURE_TIMEOUT: Duration = Duration::from_secs(10);
-
-/// How often claiming is retried meanwhile.
+/// How often a freshly enumerated device's claim is retried meanwhile.
 #[cfg(target_os = "macos")]
 const MACOS_CAPTURE_POLL: Duration = Duration::from_millis(100);
 
@@ -383,20 +423,17 @@ impl CaptureTrace {
     }
 }
 
-/// Captures the device from its kernel drivers, then claims the interface.
+/// Captures the device from its kernel drivers through IOUSBHost and opens the
+/// interface there.
 ///
-/// The capture ends the drivers in place and lasts while its handle stays
-/// open, so the returned [`Claimed`] keeps it. Claiming is retried while the
-/// drivers are still ending; a device that comes back unconfigured is
-/// configured through the capturing handle. If it fails, the error carries a
-/// trace of these steps.
+/// The card is unmounted first, so the disk driver can end. If the capture
+/// fails, the card is mounted again and the error carries a trace of the steps.
 #[cfg(target_os = "macos")]
-fn claim_captured(device: &DiscoveredDevice, interface_number: u8, first: &str) -> Result<Claimed> {
+fn claim_captured(device: &DiscoveredDevice, interface_number: u8, first: &str) -> Result<Link> {
     if !crate::macos_capture::is_root() {
         return Err(Error::NeedsRoot);
     }
     let id = device.info.registry_entry_id();
-    let location = device.info.location_id();
     let mut trace = CaptureTrace::new();
     trace.note(format!("macOS {}", crate::macos_capture::os_version()));
     trace.note(format!("first claim: {first}"));
@@ -410,85 +447,17 @@ fn claim_captured(device: &DiscoveredDevice, interface_number: u8, first: &str) 
         )),
         None => trace.note("no disk".into()),
     }
-    let remount = |disk: &Option<String>| {
-        if let Some(disk) = disk {
-            crate::macos_capture::diskutil(&["mountDisk"], disk);
-        }
-    };
-    let (capture, opened) = match crate::macos_capture::Capture::take(id) {
-        Ok(taken) => taken,
+    match crate::macos_capture::HostInterface::capture(id, interface_number, &mut |step| {
+        trace.note(step)
+    }) {
+        Ok(host) => Ok(Link::Host(host)),
         Err(e) => {
-            remount(&disk);
-            return Err(Error::Busy(e));
-        }
-    };
-    trace.note(format!("captured 0x{id:x} at 0x{location:08x} ({opened})"));
-    let mut reconfigured = false;
-    let mut polls = 0u32;
-    loop {
-        polls += 1;
-        if polls == 5 {
-            trace.note(format!("drivers now: {}", crate::macos_capture::driver_tree(id)));
-        }
-        let late = trace.start.elapsed() >= MACOS_CAPTURE_TIMEOUT;
-        let found = nusb::list_devices()
-            .wait()
-            .map_err(|e| Error::Transfer(e.to_string()))?
-            .find(|d| d.location_id() == location && d.vendor_id() == device.vendor_id);
-        match found {
-            None => trace.note("gone".into()),
-            Some(info) => {
-                if info.registry_entry_id() != id {
-                    trace.note(format!("now 0x{:x}", info.registry_entry_id()));
-                }
-                match claim_on(&info, interface_number) {
-                    Ok(interface) => return Ok(Claimed { interface, capture: Some(capture) }),
-                    Err(Refusal::Unconfigured(value)) if !reconfigured => {
-                        reconfigured = true;
-                        let rc = capture.set_configuration(value);
-                        trace.note(format!("configure {value}: 0x{rc:08x}"));
-                    }
-                    Err(Refusal::Unconfigured(_)) => trace.note("no interfaces".into()),
-                    Err(Refusal::Failed(e)) => trace.note(e),
-                }
+            trace.note(e);
+            if let Some(disk) = &disk {
+                crate::macos_capture::diskutil(&["mountDisk"], disk);
             }
+            Err(Error::Transfer(trace.render()))
         }
-        if late {
-            break;
-        }
-        std::thread::sleep(MACOS_CAPTURE_POLL);
-    }
-    // Give the device back so its volume returns.
-    drop(capture);
-    remount(&disk);
-    Err(Error::Transfer(trace.render()))
-}
-
-/// Why claiming a captured device's interface failed.
-#[cfg(target_os = "macos")]
-enum Refusal {
-    /// The device has no configuration set; carries the one to select.
-    Unconfigured(u8),
-    /// Anything else, with the step that failed.
-    Failed(String),
-}
-
-/// Opens `info` and claims `interface_number`.
-#[cfg(target_os = "macos")]
-fn claim_on(
-    info: &nusb::DeviceInfo,
-    interface_number: u8,
-) -> std::result::Result<nusb::Interface, Refusal> {
-    // The capture holds the device seized, so this open is a shared one.
-    let handle = info.open().wait().map_err(|e| Refusal::Failed(format!("open: {e}")))?;
-    match handle.claim_interface(interface_number).wait() {
-        Err(e) if e.kind() == nusb::ErrorKind::NotFound => {
-            match handle.configurations().next().map(|c| c.configuration_value()) {
-                Some(value) => Err(Refusal::Unconfigured(value)),
-                None => Err(Refusal::Failed(format!("claim: {e}"))),
-            }
-        }
-        other => other.map_err(|e| Refusal::Failed(format!("claim: {e}"))),
     }
 }
 
@@ -518,36 +487,17 @@ fn map_open_error<E: std::fmt::Display>(device: &DiscoveredDevice, e: E) -> Erro
     }
 }
 
-/// A blocking bulk transport over an opened `nusb` interface.
+/// A blocking bulk transport over an opened `nusb` interface, or on macOS
+/// over a captured device's interface.
 pub struct NusbBackend {
-    interface: nusb::Interface,
+    link: Link,
     interface_number: u8,
     timeout: Duration,
-    /// Opened IN endpoints, keyed by address.
-    ///
-    /// `nusb` 0.2 hands out exclusive [`nusb::Endpoint`] handles that own a
-    /// transfer queue, so an address may only be opened once. They are cached
-    /// here and reused for every transfer on that address.
-    ep_in: HashMap<u8, nusb::Endpoint<Bulk, In>>,
-    /// Opened OUT endpoints, keyed by address.
-    ep_out: HashMap<u8, nusb::Endpoint<Bulk, Out>>,
-    /// Declared last so the interface and endpoints are closed before the
-    /// device is handed back to macOS.
-    #[cfg(target_os = "macos")]
-    _capture: Option<crate::macos_capture::Capture>,
 }
 
 impl NusbBackend {
-    fn new(claimed: Claimed, interface_number: u8) -> Self {
-        Self {
-            interface: claimed.interface,
-            interface_number,
-            timeout: DEFAULT_TIMEOUT,
-            ep_in: HashMap::new(),
-            ep_out: HashMap::new(),
-            #[cfg(target_os = "macos")]
-            _capture: claimed.capture,
-        }
+    fn new(link: Link, interface_number: u8) -> Self {
+        Self { link, interface_number, timeout: DEFAULT_TIMEOUT }
     }
 
     /// Opens `device` and claims interface number `interface_number`.
@@ -592,32 +542,10 @@ impl NusbBackend {
     pub fn set_timeout(&mut self, timeout: Duration) {
         self.timeout = timeout;
     }
-
-    /// The cached IN endpoint for `ep`, opening it on first use.
-    fn endpoint_in(&mut self, ep: u8) -> Result<&mut nusb::Endpoint<Bulk, In>> {
-        if !self.ep_in.contains_key(&ep) {
-            let endpoint = self
-                .interface
-                .endpoint::<Bulk, In>(ep)
-                .map_err(|e| Error::Transfer(e.to_string()))?;
-            self.ep_in.insert(ep, endpoint);
-        }
-        Ok(self.ep_in.get_mut(&ep).expect("endpoint was just inserted"))
-    }
-
-    /// The cached OUT endpoint for `ep`, opening it on first use.
-    fn endpoint_out(&mut self, ep: u8) -> Result<&mut nusb::Endpoint<Bulk, Out>> {
-        if !self.ep_out.contains_key(&ep) {
-            let endpoint = self
-                .interface
-                .endpoint::<Bulk, Out>(ep)
-                .map_err(|e| Error::Transfer(e.to_string()))?;
-            self.ep_out.insert(ep, endpoint);
-        }
-        Ok(self.ep_out.get_mut(&ep).expect("endpoint was just inserted"))
-    }
 }
 
+// Off macOS, `Link` has one variant, so its matches look needless there.
+#[cfg_attr(not(target_os = "macos"), allow(clippy::infallible_destructuring_match))]
 impl UsbBackend for NusbBackend {
     fn read(&mut self, ep: u8, length: usize) -> Result<Vec<u8>> {
         if ep & crate::ENDPOINT_IN == 0 {
@@ -627,7 +555,12 @@ impl UsbBackend for NusbBackend {
             return Ok(Vec::new());
         }
         let timeout = self.timeout;
-        let endpoint = self.endpoint_in(ep)?;
+        let link = match &mut self.link {
+            Link::Nusb(link) => link,
+            #[cfg(target_os = "macos")]
+            Link::Host(host) => return host.read(ep, length, timeout),
+        };
+        let endpoint = link.endpoint_in(ep)?;
         // `nusb` 0.2 requires the requested length to be a non-zero multiple of
         // the maximum packet size. The protocols above ask for exact byte
         // counts, so the request is rounded up; the device ends the transfer
@@ -647,19 +580,29 @@ impl UsbBackend for NusbBackend {
             return Err(Error::Protocol("write requested on a non-OUT endpoint"));
         }
         let timeout = self.timeout;
-        let endpoint = self.endpoint_out(ep)?;
+        let link = match &mut self.link {
+            Link::Nusb(link) => link,
+            #[cfg(target_os = "macos")]
+            Link::Host(host) => return host.write(ep, data, timeout),
+        };
+        let endpoint = link.endpoint_out(ep)?;
         let completion = endpoint.transfer_blocking(Buffer::from(data.to_vec()), timeout);
         completion.into_result().map(|_| ()).map_err(map_transfer_error)
     }
 
     fn clear_halt(&mut self, ep: u8) -> Result<()> {
+        let link = match &mut self.link {
+            Link::Nusb(link) => link,
+            #[cfg(target_os = "macos")]
+            Link::Host(host) => return host.clear_halt(ep),
+        };
         // In `nusb` 0.2 the halt is cleared on the endpoint, so the endpoint has
         // to be open. It always is by the time a stall is recovered from, but
         // opening it here keeps the call valid on its own.
         if ep & crate::ENDPOINT_IN != 0 {
-            self.endpoint_in(ep)?.clear_halt().wait().map_err(|e| Error::Transfer(e.to_string()))
+            link.endpoint_in(ep)?.clear_halt().wait().map_err(|e| Error::Transfer(e.to_string()))
         } else {
-            self.endpoint_out(ep)?.clear_halt().wait().map_err(|e| Error::Transfer(e.to_string()))
+            link.endpoint_out(ep)?.clear_halt().wait().map_err(|e| Error::Transfer(e.to_string()))
         }
     }
 
@@ -669,21 +612,22 @@ impl UsbBackend for NusbBackend {
         // matters on Windows/WinUSB after a previous session left a transfer
         // half-finished (e.g. a timed-out data phase), which otherwise makes the
         // next session's first CBW stall. Best-effort: not all stacks accept it.
-        self.interface
-            .control_out(
+        let index = u16::from(self.interface_number);
+        match &mut self.link {
+            Link::Nusb(link) => link.control_out(
                 nusb::transfer::ControlOut {
                     control_type: nusb::transfer::ControlType::Class,
                     recipient: nusb::transfer::Recipient::Interface,
                     request: 0xFF,
                     value: 0,
-                    index: self.interface_number as u16,
+                    index,
                     data: &[],
                 },
                 self.timeout,
-            )
-            .wait()
-            .map(|_| ())
-            .map_err(map_transfer_error)
+            ),
+            #[cfg(target_os = "macos")]
+            Link::Host(host) => host.control_out(0x21, 0xFF, 0, index, &[], self.timeout),
+        }
     }
 
     fn vendor_request_out(
@@ -698,8 +642,8 @@ impl UsbBackend for NusbBackend {
         // (bmRequestType 0x43): Sony's firmware ignores the request when it is
         // addressed to the device, and the following bulk write then runs into
         // the still-active mass-storage endpoint and stalls.
-        self.interface
-            .control_out(
+        match &mut self.link {
+            Link::Nusb(link) => link.control_out(
                 nusb::transfer::ControlOut {
                     control_type: nusb::transfer::ControlType::Vendor,
                     recipient: nusb::transfer::Recipient::Other,
@@ -709,10 +653,10 @@ impl UsbBackend for NusbBackend {
                     data,
                 },
                 self.timeout,
-            )
-            .wait()
-            .map(|_| ())
-            .map_err(map_transfer_error)
+            ),
+            #[cfg(target_os = "macos")]
+            Link::Host(host) => host.control_out(0x43, request, value, index, data, self.timeout),
+        }
     }
 }
 
