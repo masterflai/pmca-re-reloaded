@@ -80,7 +80,7 @@ pub fn list_sony_devices() -> Result<Vec<DiscoveredDevice>> {
 
 /// Find, inside an active configuration, the first interface whose class equals
 /// `class` and that exposes both a bulk IN and a bulk OUT endpoint.
-fn find_bulk_interface(
+pub(crate) fn find_bulk_interface(
     config: &nusb::descriptors::ConfigurationDescriptor<'_>,
     class: u8,
 ) -> Option<BulkInterface> {
@@ -257,7 +257,7 @@ const MACOS_PTP_CLAIM_ATTEMPTS: usize = 5;
 /// `ptpcamerad` (macOS 10.15 and later) and `PTPCamera` (earlier). Both are
 /// per-user agents that launchd restarts on demand, so nothing is lost.
 #[cfg(target_os = "macos")]
-fn evict_macos_ptp_daemons() {
+pub(crate) fn evict_macos_ptp_daemons() {
     for name in ["ptpcamerad", "PTPCamera"] {
         let _ = std::process::Command::new("/usr/bin/killall")
             .args(["-9", name])

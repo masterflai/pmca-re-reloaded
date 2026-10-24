@@ -60,6 +60,9 @@ pub mod host_services;
 #[cfg(all(target_os = "macos", feature = "hardware"))]
 #[allow(unsafe_code)]
 mod macos_capture;
+#[cfg(all(target_os = "macos", feature = "hardware"))]
+#[doc(hidden)]
+pub use macos_capture::probe as macos_probe;
 pub mod mock;
 pub mod msc;
 pub mod mtp;

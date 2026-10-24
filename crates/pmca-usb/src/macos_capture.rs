@@ -675,3 +675,6 @@ unsafe fn children(entry: io_registry_entry_t, depth: u32) -> Vec<String> {
         out
     }
 }
+
+// Declared after `send!`, which only reaches modules declared below it.
+pub mod probe;

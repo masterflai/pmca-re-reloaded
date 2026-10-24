@@ -1,0 +1,55 @@
+name: macOS probe
+
+# Builds the diagnostic behind `crates/pmca-usb/examples/macos_probe.rs` for a
+# tester's Mac, without a release.
+on:
+  workflow_dispatch:
+
+env:
+  CARGO_TERM_COLOR: always
+  RUSTUP_TOOLCHAIN: stable
+
+permissions:
+  contents: read
+
+jobs:
+  probe:
+    name: Build macOS probe
+    runs-on: macos-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: aarch64-apple-darwin,x86_64-apple-darwin
+
+      - uses: Swatinem/rust-cache@v2
+        with:
+          key: macos-probe
+
+      - name: Build
+        run: |
+          for target in aarch64-apple-darwin x86_64-apple-darwin; do
+            cargo build --release --locked -p pmca-usb --example macos_probe --target "$target"
+          done
+
+      - name: Package
+        run: |
+          mkdir staging
+          lipo -create -output staging/pmca-macos-probe \
+            target/aarch64-apple-darwin/release/examples/macos_probe \
+            target/x86_64-apple-darwin/release/examples/macos_probe
+          codesign --force --sign - staging/pmca-macos-probe
+          file staging/pmca-macos-probe
+          # Smoke test: links the frameworks, runs the environment checks and quits at the first prompt.
+          (cd staging && sudo ./pmca-macos-probe < /dev/null && cat pmca-macos-probe.txt && rm pmca-macos-probe.txt)
+          tar czf pmca-macos-probe.tar.gz -C staging pmca-macos-probe
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v5
+        with:
+          name: pmca-macos-probe
+          path: pmca-macos-probe.tar.gz
+          if-no-files-found: error
