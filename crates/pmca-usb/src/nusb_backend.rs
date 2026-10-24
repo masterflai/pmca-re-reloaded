@@ -356,7 +356,8 @@ const MACOS_CAPTURE_POLL: Duration = Duration::from_millis(100);
 #[cfg(target_os = "macos")]
 struct CaptureTrace {
     start: std::time::Instant,
-    steps: Vec<(String, u32)>,
+    /// Each step with the time it first happened and how often it repeated.
+    steps: Vec<(String, f32, u32)>,
 }
 
 #[cfg(target_os = "macos")]
@@ -365,21 +366,20 @@ impl CaptureTrace {
         Self { start: std::time::Instant::now(), steps: Vec::new() }
     }
 
-    /// Record `step`; a repeat of the previous step only counts up.
+    /// Record `step`; a step seen before only counts up.
     fn note(&mut self, step: String) {
-        match self.steps.last_mut() {
-            Some((last, count)) if *last == step => *count += 1,
-            _ => {
-                let at = self.start.elapsed().as_secs_f32();
-                self.steps.push((format!("{at:.1}s {step}"), 1));
-            }
+        match self.steps.iter_mut().find(|(seen, _, _)| *seen == step) {
+            Some((_, _, count)) => *count += 1,
+            None => self.steps.push((step, self.start.elapsed().as_secs_f32(), 1)),
         }
     }
 
     fn render(&self) -> String {
         self.steps
             .iter()
-            .map(|(step, n)| if *n > 1 { format!("{step} (x{n})") } else { step.clone() })
+            .map(|(step, at, n)| {
+                if *n > 1 { format!("{at:.1}s {step} (x{n})") } else { format!("{at:.1}s {step}") }
+            })
             .collect::<Vec<_>>()
             .join("; ")
     }
@@ -402,21 +402,33 @@ fn claim_captured(device: &DiscoveredDevice, interface_number: u8, first: &str) 
     let location = device.info.location_id();
     let mut trace = CaptureTrace::new();
     trace.note(format!("claim: {first}"));
-    crate::macos_capture::capture(old).map_err(Error::Busy)?;
-    trace.note(format!("captured 0x{old:x} at 0x{location:08x}"));
+    // A mounted volume keeps the disk driver, and so the device, from terminating.
+    let disk = crate::macos_capture::bsd_disk(old);
+    match &disk {
+        Some(disk) => trace.note(format!(
+            "unmount {disk}: {}",
+            crate::macos_capture::diskutil(&["unmountDisk", "force"], disk)
+        )),
+        None => trace.note("no disk".into()),
+    }
+    let opened = crate::macos_capture::capture(old).map_err(Error::Busy)?;
+    trace.note(format!("captured 0x{old:x} at 0x{location:08x} ({opened})"));
     let mut current = old;
     let mut failures = 0u32;
+    let mut polls = 0u32;
     loop {
         let late = trace.start.elapsed() >= MACOS_CAPTURE_TIMEOUT;
         let found = nusb::list_devices()
             .wait()
             .map_err(|e| Error::Transfer(e.to_string()))?
             .find(|d| d.location_id() == location && d.vendor_id() == device.vendor_id);
+        polls += 1;
         match found {
             None => trace.note("gone".into()),
-            Some(info) if info.registry_entry_id() != old || late => {
+            // The old entry is tried once a second in case macOS detached its drivers in place.
+            Some(info) if info.registry_entry_id() != old || late || polls.is_multiple_of(10) => {
                 current = info.registry_entry_id();
-                trace.note(format!("back as 0x{current:x}, pid {:04x}", info.product_id()));
+                trace.note(format!("at 0x{current:x}, pid {:04x}", info.product_id()));
                 // Re-applying the configuration rebuilds the interfaces under this process.
                 match claim_returned(&info, interface_number, failures == 10) {
                     Ok(interface) => {
@@ -438,6 +450,9 @@ fn claim_captured(device: &DiscoveredDevice, interface_number: u8, first: &str) 
     }
     // Give the device back so its volume returns.
     drop(crate::macos_capture::Capture::held(current));
+    if let Some(disk) = &disk {
+        crate::macos_capture::diskutil(&["mountDisk"], disk);
+    }
     Err(Error::Transfer(trace.render()))
 }
 

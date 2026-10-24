@@ -6,6 +6,18 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+## [1.3.0-rc.3] - 2026-10-24
+
+Pre-release for testing on macOS. Contains everything from 1.3.0-rc.1 and
+1.3.0-rc.2.
+
+### Fixed
+
+- macOS: before taking the camera's mass-storage connection from the system,
+  the program unmounts the camera's card, which otherwise kept macOS from
+  letting go of the camera. If taking it fails, the card is mounted again.
+  The step trace in the error message is shorter and also shows the unmount.
+
 ## [1.3.0-rc.2] - 2026-10-24
 
 Pre-release for testing on macOS. Contains everything from 1.3.0-rc.1.

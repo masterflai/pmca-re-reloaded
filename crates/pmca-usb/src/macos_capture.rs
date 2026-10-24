@@ -14,16 +14,25 @@
 //! again and the volume reappears. The IOKit sequence follows what libusb does
 //! for `libusb_detach_kernel_driver` on macOS.
 
-use std::ffi::c_void;
+use std::ffi::{CStr, c_char, c_void};
 use std::ptr;
 
-use core_foundation_sys::base::{SInt32, kCFAllocatorSystemDefault};
+use core_foundation_sys::base::{
+    CFGetTypeID, CFIndex, CFRelease, SInt32, kCFAllocatorDefault, kCFAllocatorSystemDefault,
+};
+use core_foundation_sys::string::{
+    CFStringCreateWithCString, CFStringGetCString, CFStringGetTypeID, kCFStringEncodingUTF8,
+};
 use core_foundation_sys::uuid::{
     CFUUIDBytes, CFUUIDGetConstantUUIDWithBytes, CFUUIDGetUUIDBytes, CFUUIDRef,
 };
+use io_kit_sys::keys::kIOServicePlane;
 use io_kit_sys::ret::{IOReturn, kIOReturnNoResources, kIOReturnSuccess};
 use io_kit_sys::types::io_service_t;
-use io_kit_sys::{IOObjectRelease, IORegistryEntryIDMatching, IOServiceGetMatchingService};
+use io_kit_sys::{
+    IOObjectRelease, IORegistryEntryIDMatching, IORegistryEntrySearchCFProperty,
+    IOServiceGetMatchingService, kIORegistryIterateRecursively,
+};
 
 /// `kUSBReEnumerateCaptureDeviceMask` from `IOUSBLib.h`.
 const CAPTURE_DEVICE: u32 = 1 << 30;
@@ -139,9 +148,66 @@ fn device_interface_650() -> CFUUIDRef {
 /// Re-enumerate the device with IORegistry entry `registry_id` captured.
 ///
 /// The entry goes away; the device returns under a new one, which the caller
-/// has to find and then hold in a [`Capture`].
-pub(crate) fn capture(registry_id: u64) -> Result<(), String> {
+/// has to find and then hold in a [`Capture`]. Returns how the device was
+/// opened for it, for the caller's trace.
+pub(crate) fn capture(registry_id: u64) -> Result<String, String> {
     re_enumerate(registry_id, CAPTURE_DEVICE).map_err(|rc| format!("capture refused (0x{rc:08x})"))
+}
+
+/// The BSD name of the disk below the device with IORegistry entry
+/// `registry_id`, such as `disk4`.
+pub(crate) fn bsd_disk(registry_id: u64) -> Option<String> {
+    // SAFETY: the matching dictionary is consumed by IOServiceGetMatchingService;
+    // the service, the key and the value are released on every path.
+    unsafe {
+        let service = IOServiceGetMatchingService(
+            MAIN_PORT_DEFAULT,
+            IORegistryEntryIDMatching(registry_id).cast_const(),
+        );
+        if service == 0 {
+            return None;
+        }
+        let key = CFStringCreateWithCString(
+            kCFAllocatorDefault,
+            c"BSD Name".as_ptr(),
+            kCFStringEncodingUTF8,
+        );
+        let value = IORegistryEntrySearchCFProperty(
+            service,
+            kIOServicePlane,
+            key,
+            kCFAllocatorDefault,
+            kIORegistryIterateRecursively,
+        );
+        CFRelease(key.cast());
+        IOObjectRelease(service);
+        if value.is_null() {
+            return None;
+        }
+        let mut buffer = [0 as c_char; 64];
+        let name = (CFGetTypeID(value) == CFStringGetTypeID()
+            && CFStringGetCString(
+                value.cast(),
+                buffer.as_mut_ptr(),
+                buffer.len() as CFIndex,
+                kCFStringEncodingUTF8,
+            ) != 0)
+            .then(|| CStr::from_ptr(buffer.as_ptr()).to_string_lossy().into_owned());
+        CFRelease(value);
+        name
+    }
+}
+
+/// Run `diskutil` on `disk` and summarise the outcome in one line.
+pub(crate) fn diskutil(args: &[&str], disk: &str) -> String {
+    match std::process::Command::new("/usr/sbin/diskutil").args(args).arg(disk).output() {
+        Ok(out) => {
+            let text = if out.status.success() { &out.stdout } else { &out.stderr };
+            let text = String::from_utf8_lossy(text);
+            format!("{} {}", out.status, text.lines().next().unwrap_or("").trim())
+        }
+        Err(e) => e.to_string(),
+    }
 }
 
 /// A device that came back captured; dropping it gives the device back.
@@ -163,13 +229,15 @@ impl Drop for Capture {
     }
 }
 
-/// Open the device seized and re-enumerate it with `options`.
-fn re_enumerate(registry_id: u64, options: u32) -> Result<(), IOReturn> {
+/// Open the device seized and re-enumerate it with `options`; says how it was
+/// opened.
+fn re_enumerate(registry_id: u64, options: u32) -> Result<String, IOReturn> {
     let device = open_device_interface(registry_id).map_err(|_| kIOReturnNoResources)?;
     // SAFETY: `device` is a live IOUSBDeviceInterface650 until the release below.
     unsafe {
-        let opened = call0(device, (**device).open_seize) == kIOReturnSuccess
-            || call0(device, (**device).open) == kIOReturnSuccess;
+        let seize = call0(device, (**device).open_seize);
+        let opened =
+            seize == kIOReturnSuccess || call0(device, (**device).open) == kIOReturnSuccess;
         let rc = match (**device).re_enumerate {
             Some(f) if opened => f(device.cast(), options),
             _ => kIOReturnNoResources,
@@ -180,7 +248,13 @@ fn re_enumerate(registry_id: u64, options: u32) -> Result<(), IOReturn> {
         if let Some(release) = (**device).release {
             release(device.cast());
         }
-        if rc == kIOReturnSuccess { Ok(()) } else { Err(rc) }
+        if rc != kIOReturnSuccess {
+            Err(rc)
+        } else if seize == kIOReturnSuccess {
+            Ok("seized".into())
+        } else {
+            Ok(format!("opened, seize 0x{seize:08x}"))
+        }
     }
 }
 
