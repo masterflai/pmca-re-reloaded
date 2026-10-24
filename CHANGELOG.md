@@ -144,6 +144,13 @@ set to Auto, and the tweaks after the camera has switched to mass-storage mode.
 on a Mac with a camera. Until a successful update on a Mac has been reported,
 update the firmware from Windows or with Sony's own updater.
 
+**macOS 26:** for now only reading the camera information works, with the
+camera's USB connection set to MTP. The service menu cannot be reached yet:
+the tweaks, the service shell, the function analysis, firmware updates and the
+updater shell all need the camera's mass-storage connection, and macOS 26 no
+longer hands it to a program, even with administrator rights. This is being
+investigated.
+
 **Linux:** this release has been confirmed on a Sony α6000 (ILCE-6000,
 firmware 3.21) with its USB connection set to *Auto*: reading the camera
 information, reading and changing the settings memory and installing apps all

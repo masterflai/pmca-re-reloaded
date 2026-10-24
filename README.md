@@ -168,6 +168,13 @@ for the password too. The camera's card
 leaves Finder while this runs and comes back afterwards, so eject it there
 first if files on it are open.
 
+**macOS 26:** for now only reading the camera information works, with the
+camera's USB connection set to MTP. The service menu cannot be reached yet:
+the tweaks, the service shell, the function analysis, firmware updates and the
+updater shell all need the camera's mass-storage connection, and macOS 26 no
+longer hands it to a program, even with administrator rights. This is being
+investigated.
+
 **Caution:** firmware updates and the updater shell have not yet been tried
 on a Mac with a camera. An update that breaks off can leave the camera unable
 to start. Until a successful update on a Mac has been reported, update the
