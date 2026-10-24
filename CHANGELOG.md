@@ -6,6 +6,19 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+## [1.3.0-rc.2] - 2026-10-24
+
+Pre-release for testing on macOS. Contains everything from 1.3.0-rc.1.
+
+### Fixed
+
+- macOS: taking the camera's mass-storage connection from the system now
+  also starts when macOS refuses it with "no resources" instead of
+  "exclusive access", waits up to 15 seconds for the camera to come back, and
+  sets its configuration again if claiming keeps failing. If it still fails,
+  the error message lists each step with its timing, so a report shows where
+  it stopped.
+
 ## [1.3.0-rc.1] - 2026-10-24
 
 Pre-release for testing on macOS: camera information with the USB connection
