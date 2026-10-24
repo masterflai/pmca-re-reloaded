@@ -6,6 +6,18 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+## [1.3.0-rc.7] - 2026-10-24
+
+Pre-release for testing on macOS. Contains everything from 1.3.0-rc.1 to
+1.3.0-rc.6.
+
+### Fixed
+
+- macOS 26: after taking the camera from the system, the program now sets up
+  the camera's USB configuration afresh, so its mass-storage connection can be
+  opened. The interface the system's driver had been stopped on refused it
+  (error 0xe00002c9).
+
 ## [1.3.0-rc.6] - 2026-10-24
 
 Pre-release for testing on macOS. Contains everything from 1.3.0-rc.1 to

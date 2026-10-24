@@ -31,8 +31,9 @@ use io_kit_sys::ret::kIOReturnSuccess;
 use io_kit_sys::types::{io_iterator_t, io_registry_entry_t, io_service_t};
 use io_kit_sys::{
     IOIteratorNext, IOObjectConformsTo, IOObjectGetClass, IOObjectRelease,
-    IORegistryEntryCreateCFProperty, IORegistryEntryGetChildIterator, IORegistryEntryIDMatching,
-    IORegistryEntrySearchCFProperty, IOServiceGetMatchingService, kIORegistryIterateRecursively,
+    IORegistryEntryCreateCFProperty, IORegistryEntryGetChildIterator,
+    IORegistryEntryGetRegistryEntryID, IORegistryEntryIDMatching, IORegistryEntrySearchCFProperty,
+    IOServiceGetBusyState, IOServiceGetMatchingService, kIORegistryIterateRecursively,
 };
 
 use crate::{Error, Result};
@@ -160,12 +161,16 @@ impl HostInterface {
             let mut host =
                 Self { device, interface: ptr::null_mut(), pipes: HashMap::new(), registry_id };
             note(format!("captured, drivers: {}", driver_tree(registry_id)));
+            // The interfaces the drivers were stopped on stay unusable; a fresh
+            // configuration replaces them, unmatched so no driver returns.
+            note(format!("configure: 0x{:08x}", host.configure(false)));
 
             let deadline = Instant::now() + INTERFACE_TIMEOUT;
-            let mut configured = false;
+            let mut refusals = 0u32;
             loop {
                 match interface_service(registry_id, interface_number) {
                     Some(service) => {
+                        let (id, busy) = service_state(service);
                         let opened = init_object(c"IOUSBHostInterface", service, 0);
                         IOObjectRelease(service);
                         match opened {
@@ -173,17 +178,21 @@ impl HostInterface {
                                 host.interface = interface;
                                 return Ok(host);
                             }
-                            Err(code) => note(format!("interface refused (0x{code:08x})")),
+                            Err(code) => {
+                                refusals += 1;
+                                note(format!(
+                                    "interface 0x{id:x} (busy {busy}) refused (0x{code:08x})"
+                                ));
+                            }
                         }
-                    }
-                    // Without its drivers the device may have dropped its configuration.
-                    None if !configured => {
-                        configured = true;
-                        note(format!("configure: 0x{:08x}", host.configure()));
+                        if refusals == 30 {
+                            note(format!("configure, matching: 0x{:08x}", host.configure(true)));
+                        }
                     }
                     None => note("no interface".into()),
                 }
                 if Instant::now() >= deadline {
+                    note(format!("drivers: {}", driver_tree(registry_id)));
                     return Err("interface not available".into());
                 }
                 std::thread::sleep(INTERFACE_POLL);
@@ -191,8 +200,9 @@ impl HostInterface {
         }
     }
 
-    /// Select the device's first configuration; returns the IOReturn code.
-    fn configure(&self) -> i32 {
+    /// Select the device's first configuration, registering its interfaces for
+    /// driver matching if `match_interfaces`; returns the IOReturn code.
+    fn configure(&self, match_interfaces: bool) -> i32 {
         // SAFETY: `self.device` is a live IOUSBHostDevice; the descriptor
         // pointer IOUSBHost returns stays valid while the device does.
         unsafe {
@@ -202,7 +212,8 @@ impl HostInterface {
             let value = if descriptor.is_null() { 1 } else { *descriptor.add(5) };
             let mut error: Id = ptr::null_mut();
             let ok = send!(i8; self.device, c"configureWithValue:matchInterfaces:error:",
-                usize::from(value) => usize, 1i8 => i8, &mut error => *mut Id);
+                usize::from(value) => usize, i8::from(match_interfaces) => i8,
+                &mut error => *mut Id);
             if ok != 0 { kIOReturnSuccess } else { error_code(error) }
         }
     }
@@ -477,6 +488,22 @@ unsafe fn number_property(entry: io_registry_entry_t, key: &CStr) -> Option<i32>
         CFRelease(value);
         read.then_some(number)
     }
+}
+
+/// The registry entry ID and busy state of `service`, for a trace.
+///
+/// # Safety
+///
+/// `service` must be a live service.
+unsafe fn service_state(service: io_service_t) -> (u64, u32) {
+    let mut id = 0u64;
+    let mut busy = 0u32;
+    // SAFETY: guaranteed by the caller; both outputs are plain integers.
+    unsafe {
+        IORegistryEntryGetRegistryEntryID(service, &mut id);
+        IOServiceGetBusyState(service, &mut busy);
+    }
+    (id, busy)
 }
 
 /// The BSD name of the disk below the device with IORegistry entry
