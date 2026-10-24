@@ -6,6 +6,11 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+## [1.3.0-rc.1] - 2026-10-24
+
+Pre-release for testing on macOS: camera information with the USB connection
+set to Auto, and the tweaks after the camera has switched to mass-storage mode.
+
 ### Added
 
 - A plugin can translate its name and description: the messages
