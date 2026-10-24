@@ -175,8 +175,11 @@ firmware from Windows or with Sony's own updater.
 [`scripts/linux-prepare.sh`](scripts/linux-prepare.sh) sets up the udev rule
 for Sony's vendor id and stops the desktop from claiming the camera.
 
-The Linux build has been tried with a camera, the macOS build only in part so
-far. Reports are welcome — see [Feedback](#feedback).
+The Linux build of version 1.2.0 has been tried on a Sony α6000 (ILCE-6000,
+firmware 3.21) with *USB Connection* set to *Auto*: reading the camera
+information, reading and changing the settings memory and installing apps all
+worked. The macOS build has been tried only in
+part so far. Reports are welcome — see [Feedback](#feedback).
 
 ### Signatures
 

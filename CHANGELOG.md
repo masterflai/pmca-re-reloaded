@@ -35,6 +35,11 @@ All notable changes to this project are documented here. The format follows
 on a Mac with a camera. Until a successful update on a Mac has been reported,
 update the firmware from Windows or with Sony's own updater.
 
+**Linux:** this release has been confirmed on a Sony α6000 (ILCE-6000,
+firmware 3.21) with its USB connection set to *Auto*: reading the camera
+information, reading and changing the settings memory and installing apps all
+worked.
+
 ### Added
 
 - Settings: an update notification, off by default. When you switch it on, the
