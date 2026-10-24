@@ -6,6 +6,18 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+## [1.3.0-rc.4] - 2026-10-24
+
+Pre-release for testing on macOS. Contains everything from 1.3.0-rc.1 to
+1.3.0-rc.3.
+
+### Fixed
+
+- macOS: taking the camera's mass-storage connection from the system now
+  keeps hold of the camera for as long as the program works with it. Before,
+  the program let go straight after asking, so macOS handed the camera back
+  to its disk driver before the program could use it.
+
 ## [1.3.0-rc.3] - 2026-10-24
 
 Pre-release for testing on macOS. Contains everything from 1.3.0-rc.1 and

@@ -341,14 +341,12 @@ fn claim(
 #[cfg(target_os = "macos")]
 const MACOS_FRESH_DEVICE_GRACE: Duration = Duration::from_secs(3);
 
-/// How long a captured device may take to come back and become claimable.
-///
-/// The disk driver lets go only once the volume is unmounted, which can take a
-/// while; libusb allows ten seconds for the re-enumeration alone.
+/// How long the interface of a captured device may stay unclaimable while
+/// macOS ends its drivers.
 #[cfg(target_os = "macos")]
-const MACOS_CAPTURE_TIMEOUT: Duration = Duration::from_secs(15);
+const MACOS_CAPTURE_TIMEOUT: Duration = Duration::from_secs(10);
 
-/// How often the returning device is looked for and claimed meanwhile.
+/// How often claiming is retried meanwhile.
 #[cfg(target_os = "macos")]
 const MACOS_CAPTURE_POLL: Duration = Duration::from_millis(100);
 
@@ -385,25 +383,24 @@ impl CaptureTrace {
     }
 }
 
-/// Captures the device from its kernel drivers, then claims the interface on
-/// the device that comes back.
+/// Captures the device from its kernel drivers, then claims the interface.
 ///
-/// Capturing re-enumerates: the old IORegistry entry goes away and every
-/// handle on it answers `kIOReturnNoResources`. The device is therefore looked
-/// up again at the same USB location until it is back under a new entry, and
-/// claiming is retried while IOKit is still setting that entry up. If it
-/// fails, the error carries a trace of these steps.
+/// The capture ends the drivers in place and lasts while its handle stays
+/// open, so the returned [`Claimed`] keeps it. Claiming is retried while the
+/// drivers are still ending; a device that comes back unconfigured is
+/// configured through the capturing handle. If it fails, the error carries a
+/// trace of these steps.
 #[cfg(target_os = "macos")]
 fn claim_captured(device: &DiscoveredDevice, interface_number: u8, first: &str) -> Result<Claimed> {
     if !crate::macos_capture::is_root() {
         return Err(Error::NeedsRoot);
     }
-    let old = device.info.registry_entry_id();
+    let id = device.info.registry_entry_id();
     let location = device.info.location_id();
     let mut trace = CaptureTrace::new();
-    trace.note(format!("claim: {first}"));
-    // A mounted volume keeps the disk driver, and so the device, from terminating.
-    let disk = crate::macos_capture::bsd_disk(old);
+    trace.note(format!("first claim: {first}"));
+    // A mounted volume keeps the disk driver from ending.
+    let disk = crate::macos_capture::bsd_disk(id);
     match &disk {
         Some(disk) => trace.note(format!(
             "unmount {disk}: {}",
@@ -411,37 +408,43 @@ fn claim_captured(device: &DiscoveredDevice, interface_number: u8, first: &str) 
         )),
         None => trace.note("no disk".into()),
     }
-    let opened = crate::macos_capture::capture(old).map_err(Error::Busy)?;
-    trace.note(format!("captured 0x{old:x} at 0x{location:08x} ({opened})"));
-    let mut current = old;
-    let mut failures = 0u32;
-    let mut polls = 0u32;
+    let remount = |disk: &Option<String>| {
+        if let Some(disk) = disk {
+            crate::macos_capture::diskutil(&["mountDisk"], disk);
+        }
+    };
+    let (capture, opened) = match crate::macos_capture::Capture::take(id) {
+        Ok(taken) => taken,
+        Err(e) => {
+            remount(&disk);
+            return Err(Error::Busy(e));
+        }
+    };
+    trace.note(format!("captured 0x{id:x} at 0x{location:08x} ({opened})"));
+    let mut reconfigured = false;
     loop {
         let late = trace.start.elapsed() >= MACOS_CAPTURE_TIMEOUT;
         let found = nusb::list_devices()
             .wait()
             .map_err(|e| Error::Transfer(e.to_string()))?
             .find(|d| d.location_id() == location && d.vendor_id() == device.vendor_id);
-        polls += 1;
         match found {
             None => trace.note("gone".into()),
-            // The old entry is tried once a second in case macOS detached its drivers in place.
-            Some(info) if info.registry_entry_id() != old || late || polls.is_multiple_of(10) => {
-                current = info.registry_entry_id();
-                trace.note(format!("at 0x{current:x}, pid {:04x}", info.product_id()));
-                // Re-applying the configuration rebuilds the interfaces under this process.
-                match claim_returned(&info, interface_number, failures == 10) {
-                    Ok(interface) => {
-                        let capture = crate::macos_capture::Capture::held(current);
-                        return Ok(Claimed { interface, capture: Some(capture) });
+            Some(info) => {
+                if info.registry_entry_id() != id {
+                    trace.note(format!("now 0x{:x}", info.registry_entry_id()));
+                }
+                match claim_on(&info, interface_number) {
+                    Ok(interface) => return Ok(Claimed { interface, capture: Some(capture) }),
+                    Err(Refusal::Unconfigured(value)) if !reconfigured => {
+                        reconfigured = true;
+                        let rc = capture.set_configuration(value);
+                        trace.note(format!("configure {value}: 0x{rc:08x}"));
                     }
-                    Err(e) => {
-                        failures += 1;
-                        trace.note(e);
-                    }
+                    Err(Refusal::Unconfigured(_)) => trace.note("no interfaces".into()),
+                    Err(Refusal::Failed(e)) => trace.note(e),
                 }
             }
-            Some(_) => trace.note("still there".into()),
         }
         if late {
             break;
@@ -449,35 +452,36 @@ fn claim_captured(device: &DiscoveredDevice, interface_number: u8, first: &str) 
         std::thread::sleep(MACOS_CAPTURE_POLL);
     }
     // Give the device back so its volume returns.
-    drop(crate::macos_capture::Capture::held(current));
-    if let Some(disk) = &disk {
-        crate::macos_capture::diskutil(&["mountDisk"], disk);
-    }
+    drop(capture);
+    remount(&disk);
     Err(Error::Transfer(trace.render()))
 }
 
-/// Opens the returned device and claims `interface_number`, configuring the
-/// device first if it came back without a configuration or `reconfigure` asks
-/// for it. The error names the step that failed.
+/// Why claiming a captured device's interface failed.
 #[cfg(target_os = "macos")]
-fn claim_returned(
+enum Refusal {
+    /// The device has no configuration set; carries the one to select.
+    Unconfigured(u8),
+    /// Anything else, with the step that failed.
+    Failed(String),
+}
+
+/// Opens `info` and claims `interface_number`.
+#[cfg(target_os = "macos")]
+fn claim_on(
     info: &nusb::DeviceInfo,
     interface_number: u8,
-    reconfigure: bool,
-) -> std::result::Result<nusb::Interface, String> {
-    let handle = info.open().wait().map_err(|e| format!("open: {e}"))?;
-    let value = handle.configurations().next().map(|c| c.configuration_value());
-    if reconfigure && let Some(value) = value {
-        handle.set_configuration(value).wait().map_err(|e| format!("configure: {e}"))?;
-    }
+) -> std::result::Result<nusb::Interface, Refusal> {
+    // The capture holds the device seized, so this open is a shared one.
+    let handle = info.open().wait().map_err(|e| Refusal::Failed(format!("open: {e}")))?;
     match handle.claim_interface(interface_number).wait() {
-        // No kernel driver set a configuration, so there are no interfaces yet.
         Err(e) if e.kind() == nusb::ErrorKind::NotFound => {
-            let value = value.ok_or_else(|| format!("claim: {e}"))?;
-            handle.set_configuration(value).wait().map_err(|e| format!("configure: {e}"))?;
-            handle.claim_interface(interface_number).wait().map_err(|e| format!("claim: {e}"))
+            match handle.configurations().next().map(|c| c.configuration_value()) {
+                Some(value) => Err(Refusal::Unconfigured(value)),
+                None => Err(Refusal::Failed(format!("claim: {e}"))),
+            }
         }
-        other => other.map_err(|e| format!("claim: {e}")),
+        other => other.map_err(|e| Refusal::Failed(format!("claim: {e}"))),
     }
 }
 

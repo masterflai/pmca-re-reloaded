@@ -8,11 +8,13 @@
 //! it, because the system's disk driver is the one holder no ordinary process
 //! can displace.
 //!
-//! Both directions re-enumerate: the device leaves the IORegistry and comes
-//! back as a new entry, which has to be found and opened afresh. A plain
-//! re-enumeration gives the device back; the kernel then matches its drivers
-//! again and the volume reappears. The IOKit sequence follows what libusb does
-//! for `libusb_detach_kernel_driver` on macOS.
+//! Capturing does not re-enumerate: the drivers are ended in place, and the
+//! device stays under its IORegistry entry. The capture lasts while the device
+//! handle that asked for it stays open, so [`Capture`] keeps that handle,
+//! seized, until it is dropped. A plain re-enumeration then gives the device
+//! back; the kernel matches its drivers again and the volume reappears. The
+//! IOKit sequence follows libusb's `darwin_detach_kernel_driver` and
+//! `darwin_reenumerate_device`.
 
 use std::ffi::{CStr, c_char, c_void};
 use std::ptr;
@@ -57,7 +59,9 @@ struct DeviceVtbl {
     _async_and_port: [Unused; 4],
     open: Fn0,
     close: Fn0,
-    _class_to_interface_iterator: [Unused; 19],
+    _class_to_get_configuration: [Unused; 13],
+    set_configuration: Option<unsafe extern "C" fn(this: *mut c_void, value: u8) -> IOReturn>,
+    _frame_number_to_interface_iterator: [Unused; 5],
     open_seize: Fn0,
     _request_to_serial_index: [Unused; 7],
     re_enumerate: Option<unsafe extern "C" fn(this: *mut c_void, options: u32) -> IOReturn>,
@@ -145,15 +149,6 @@ fn device_interface_650() -> CFUUIDRef {
     ])
 }
 
-/// Re-enumerate the device with IORegistry entry `registry_id` captured.
-///
-/// The entry goes away; the device returns under a new one, which the caller
-/// has to find and then hold in a [`Capture`]. Returns how the device was
-/// opened for it, for the caller's trace.
-pub(crate) fn capture(registry_id: u64) -> Result<String, String> {
-    re_enumerate(registry_id, CAPTURE_DEVICE).map_err(|rc| format!("capture refused (0x{rc:08x})"))
-}
-
 /// The BSD name of the disk below the device with IORegistry entry
 /// `registry_id`, such as `disk4`.
 pub(crate) fn bsd_disk(registry_id: u64) -> Option<String> {
@@ -210,50 +205,79 @@ pub(crate) fn diskutil(args: &[&str], disk: &str) -> String {
     }
 }
 
-/// A device that came back captured; dropping it gives the device back.
+/// A captured device; dropping it gives the device back to its kernel drivers.
 pub(crate) struct Capture {
-    registry_id: u64,
+    device: *mut *mut DeviceVtbl,
+    open: bool,
+    captured: bool,
 }
 
+// The handle is only used from the thread that owns the backend holding it.
+unsafe impl Send for Capture {}
+
 impl Capture {
-    /// Hold the captured device with IORegistry entry `registry_id`.
-    pub(crate) fn held(registry_id: u64) -> Self {
-        Self { registry_id }
+    /// Capture the device with IORegistry entry `registry_id` and keep the
+    /// capturing handle open. Also returns the open results, for a trace.
+    pub(crate) fn take(registry_id: u64) -> Result<(Self, String), String> {
+        let device = open_device_interface(registry_id)?;
+        let mut capture = Self { device, open: false, captured: false };
+        // SAFETY: `device` is a live IOUSBDeviceInterface650 owned by `capture`.
+        unsafe {
+            let seize = call0(device, (**device).open_seize);
+            capture.open =
+                seize == kIOReturnSuccess || call0(device, (**device).open) == kIOReturnSuccess;
+            if !capture.open {
+                return Err(format!("could not open the device to capture it (0x{seize:08x})"));
+            }
+            let rc = match (**device).re_enumerate {
+                Some(f) => f(device.cast(), CAPTURE_DEVICE),
+                None => kIOReturnNoResources,
+            };
+            if rc != kIOReturnSuccess {
+                return Err(format!("capture refused (0x{rc:08x})"));
+            }
+            capture.captured = true;
+            // libusb re-opens after capturing, and keeps the device open meanwhile.
+            call0(device, (**device).close);
+            let reseize = call0(device, (**device).open_seize);
+            capture.open =
+                reseize == kIOReturnSuccess || call0(device, (**device).open) == kIOReturnSuccess;
+            Ok((capture, format!("open 0x{seize:08x}, reopen 0x{reseize:08x}")))
+        }
+    }
+
+    /// Select configuration `value` through the capturing handle.
+    pub(crate) fn set_configuration(&self, value: u8) -> IOReturn {
+        // SAFETY: `self.device` is live until drop.
+        unsafe {
+            match (**self.device).set_configuration {
+                Some(f) => f(self.device.cast(), value),
+                None => kIOReturnNoResources,
+            }
+        }
     }
 }
 
 impl Drop for Capture {
     fn drop(&mut self) {
-        // May fail harmlessly: a camera that switched mode is no longer this entry.
-        let _ = re_enumerate(self.registry_id, 0);
-    }
-}
-
-/// Open the device seized and re-enumerate it with `options`; says how it was
-/// opened.
-fn re_enumerate(registry_id: u64, options: u32) -> Result<String, IOReturn> {
-    let device = open_device_interface(registry_id).map_err(|_| kIOReturnNoResources)?;
-    // SAFETY: `device` is a live IOUSBDeviceInterface650 until the release below.
-    unsafe {
-        let seize = call0(device, (**device).open_seize);
-        let opened =
-            seize == kIOReturnSuccess || call0(device, (**device).open) == kIOReturnSuccess;
-        let rc = match (**device).re_enumerate {
-            Some(f) if opened => f(device.cast(), options),
-            _ => kIOReturnNoResources,
-        };
-        if opened {
-            call0(device, (**device).close);
-        }
-        if let Some(release) = (**device).release {
-            release(device.cast());
-        }
-        if rc != kIOReturnSuccess {
-            Err(rc)
-        } else if seize == kIOReturnSuccess {
-            Ok("seized".into())
-        } else {
-            Ok(format!("opened, seize 0x{seize:08x}"))
+        let device = self.device;
+        // SAFETY: `device` is live until the release below. Every call may fail
+        // harmlessly: a camera that switched mode is no longer this device.
+        unsafe {
+            if self.captured {
+                if !self.open {
+                    self.open = call0(device, (**device).open_seize) == kIOReturnSuccess;
+                }
+                if let Some(f) = (**device).re_enumerate {
+                    f(device.cast(), 0);
+                }
+            }
+            if self.open {
+                call0(device, (**device).close);
+            }
+            if let Some(release) = (**device).release {
+                release(device.cast());
+            }
         }
     }
 }
