@@ -320,21 +320,82 @@ fn claim(
     result.map(Claimed::from).map_err(|e| map_open_error(device, e))
 }
 
-/// Captures the device from its kernel drivers, then claims the interface on a
-/// fresh handle.
+/// How long a captured device may take to come back and become claimable.
+#[cfg(target_os = "macos")]
+const MACOS_CAPTURE_TIMEOUT: Duration = Duration::from_secs(5);
+
+/// How often the returning device is looked for and claimed meanwhile.
+#[cfg(target_os = "macos")]
+const MACOS_CAPTURE_POLL: Duration = Duration::from_millis(100);
+
+/// Captures the device from its kernel drivers, then claims the interface on
+/// the device that comes back.
+///
+/// Capturing re-enumerates: the old IORegistry entry goes away and every
+/// handle on it answers `kIOReturnNoResources`. The device is therefore looked
+/// up again at the same USB location, and claiming is retried while IOKit is
+/// still setting the new entry up.
 #[cfg(target_os = "macos")]
 fn claim_captured(device: &DiscoveredDevice, interface_number: u8) -> Result<Claimed> {
     if !crate::macos_capture::is_root() {
         return Err(Error::NeedsRoot);
     }
-    let capture = crate::macos_capture::Capture::device(device.info.registry_entry_id())
-        .map_err(Error::Busy)?;
-    let handle = device.info.open().wait().map_err(|e| map_open_error(device, e))?;
-    let interface = handle
-        .detach_and_claim_interface(interface_number)
-        .wait()
-        .map_err(|e| map_open_error(device, e))?;
-    Ok(Claimed { interface, capture: Some(capture) })
+    let old = device.info.registry_entry_id();
+    crate::macos_capture::capture(old).map_err(Error::Busy)?;
+    let returned = wait_for_return(device, old)?;
+    let capture = crate::macos_capture::Capture::held(returned.registry_entry_id());
+    let deadline = std::time::Instant::now() + MACOS_CAPTURE_TIMEOUT;
+    loop {
+        match claim_returned(&returned, interface_number) {
+            Ok(interface) => return Ok(Claimed { interface, capture: Some(capture) }),
+            Err(_) if std::time::Instant::now() < deadline => {
+                std::thread::sleep(MACOS_CAPTURE_POLL);
+            }
+            Err(e) => return Err(map_open_error(device, e)),
+        }
+    }
+}
+
+/// The device at `device`'s USB location once it is back under a new
+/// IORegistry entry, or, if macOS kept the old one, that one.
+#[cfg(target_os = "macos")]
+fn wait_for_return(device: &DiscoveredDevice, old: u64) -> Result<nusb::DeviceInfo> {
+    let location = device.info.location_id();
+    let deadline = std::time::Instant::now() + MACOS_CAPTURE_TIMEOUT;
+    loop {
+        let found = nusb::list_devices()
+            .wait()
+            .map_err(|e| Error::Transfer(e.to_string()))?
+            .find(|d| d.location_id() == location && d.vendor_id() == device.vendor_id);
+        let late = std::time::Instant::now() >= deadline;
+        match found {
+            Some(d) if d.registry_entry_id() != old || late => return Ok(d),
+            None if late => return Err(Error::NoDevice),
+            _ => std::thread::sleep(MACOS_CAPTURE_POLL),
+        }
+    }
+}
+
+/// Opens the returned device and claims `interface_number`, configuring the
+/// device first if it came back without a configuration.
+#[cfg(target_os = "macos")]
+fn claim_returned(
+    info: &nusb::DeviceInfo,
+    interface_number: u8,
+) -> std::result::Result<nusb::Interface, nusb::Error> {
+    let handle = info.open().wait()?;
+    match handle.claim_interface(interface_number).wait() {
+        // No kernel driver set a configuration, so there are no interfaces yet.
+        Err(e) if e.kind() == nusb::ErrorKind::NotFound => {
+            let Some(value) = handle.configurations().next().map(|c| c.configuration_value())
+            else {
+                return Err(e);
+            };
+            handle.set_configuration(value).wait()?;
+            handle.claim_interface(interface_number).wait()
+        }
+        other => other,
+    }
 }
 
 /// Classifies a device-open failure.

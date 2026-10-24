@@ -1,9 +1,9 @@
 //! The macOS broker: the requests the window sends it, how it carries them
 //! out, and the window's end of the call.
 //!
-//! On macOS the service-mode sessions, the tweaks, the function analysis and
-//! everything that reboots the camera into updater mode live in an elevated
-//! copy of this program; [`pmca_app::broker`] explains why
+//! On macOS the service-mode sessions, the tweaks, the function analysis,
+//! everything that reboots the camera into updater mode and reading a camera
+//! in mass-storage mode live in an elevated copy of this program; [`pmca_app::broker`] explains why
 //! and carries the bytes. The requests mirror the window's commands, and the
 //! broker answers them with the same functions the commands use elsewhere, so
 //! there is one implementation of each.
@@ -29,6 +29,7 @@ use crate::*;
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(tag = "op", rename_all = "kebab-case")]
 pub(crate) enum Request {
+    CameraInfo,
     TweaksRead,
     TweaksApply { changes: Vec<TweakChange> },
     TweaksApplyWholeImage { changes: Vec<TweakChange> },
@@ -102,6 +103,7 @@ fn run(
 ) -> Result<Value, CommandError> {
     use pmca_app::tweaks::with_session;
     match request {
+        Request::CameraInfo => json(pmca_app::camera_info()?),
         Request::TweaksRead => json(with_session(&mut s.tweaks, l, sink, |t, k| t.read(l, k))?),
         Request::TweaksApply { changes } if changes.is_empty() => {
             json(with_session(&mut s.tweaks, l, sink, |t, k| t.read(l, k))?)

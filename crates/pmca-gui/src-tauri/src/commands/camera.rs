@@ -3,9 +3,22 @@
 use crate::*;
 
 /// Detect the connected camera and report its identity and current USB mode.
+///
+/// On macOS a camera in mass-storage mode (which "Auto" picks on a Mac) is
+/// only reachable with administrator rights, so it is read by the broker.
 #[tauri::command]
-pub(crate) async fn get_camera_info(app: AppHandle) -> Result<CameraSummary, CommandError> {
-    with_camera(app, |_, _| Ok(pmca_app::camera_info()?)).await
+pub(crate) async fn get_camera_info(app: AppHandle) -> Result<Reply<CameraSummary>, CommandError> {
+    with_camera(app, |app, state| {
+        let here = pmca_app::camera_info().map_err(CommandError::from);
+        #[cfg(target_os = "macos")]
+        if matches!(&here, Err(e) if e.code == "usb-needs-root") {
+            return remote::call(app, state, remote::Request::CameraInfo).map(Reply::Relayed);
+        }
+        #[cfg(not(target_os = "macos"))]
+        let _ = (app, state);
+        Ok(Reply::Here(here?))
+    })
+    .await
 }
 
 /// Read the shutter count and capture details from a photo on disk.

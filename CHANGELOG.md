@@ -21,6 +21,19 @@ All notable changes to this project are documented here. The format follows
   briefly removing the battery. It also gives a quick cable test: over a data
   cable even a switched-off camera is detected and reported as not ready, so
   "No camera found" with the camera off points to a charge-only cable.
+- macOS: with the camera's USB connection set to Auto or Mass Storage, the
+  app now reads the camera information as well. It asks for your
+  administrator password for this, as it does for the tweaks; in MTP mode no
+  password is needed.
+
+### Fixed
+
+- macOS: the tweaks, the service shell and the other functions that go
+  through the camera's mass-storage connection failed with "The USB transfer
+  failed" (error 0xe00002be) once the camera had switched to mass-storage
+  mode. Taking the camera from macOS makes it reconnect under a new identity,
+  and the program kept addressing the old one. It now waits for the camera to
+  come back and continues with it.
 
 ### Security
 

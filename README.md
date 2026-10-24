@@ -162,7 +162,9 @@ function analysis, firmware updates and the updater shell go through the
 camera's mass-storage connection, which macOS hands to a program only when it
 runs with administrator rights. The app asks
 for your password once per run and does the rest itself; on the command line
-use `sudo`, for example `sudo ./pmca-console serviceshell`. The camera's card
+use `sudo`, for example `sudo ./pmca-console serviceshell`. With the USB
+connection set to Auto or Mass Storage, reading the camera information asks
+for the password too. The camera's card
 leaves Finder while this runs and comes back afterwards, so eject it there
 first if files on it are open.
 
