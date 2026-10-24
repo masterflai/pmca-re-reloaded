@@ -398,7 +398,9 @@ fn claim_captured(device: &DiscoveredDevice, interface_number: u8, first: &str) 
     let id = device.info.registry_entry_id();
     let location = device.info.location_id();
     let mut trace = CaptureTrace::new();
+    trace.note(format!("macOS {}", crate::macos_capture::os_version()));
     trace.note(format!("first claim: {first}"));
+    trace.note(format!("drivers: {}", crate::macos_capture::driver_tree(id)));
     // A mounted volume keeps the disk driver from ending.
     let disk = crate::macos_capture::bsd_disk(id);
     match &disk {
@@ -422,7 +424,12 @@ fn claim_captured(device: &DiscoveredDevice, interface_number: u8, first: &str) 
     };
     trace.note(format!("captured 0x{id:x} at 0x{location:08x} ({opened})"));
     let mut reconfigured = false;
+    let mut polls = 0u32;
     loop {
+        polls += 1;
+        if polls == 5 {
+            trace.note(format!("drivers now: {}", crate::macos_capture::driver_tree(id)));
+        }
         let late = trace.start.elapsed() >= MACOS_CAPTURE_TIMEOUT;
         let found = nusb::list_devices()
             .wait()

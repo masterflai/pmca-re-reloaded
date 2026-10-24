@@ -30,10 +30,11 @@ use core_foundation_sys::uuid::{
 };
 use io_kit_sys::keys::kIOServicePlane;
 use io_kit_sys::ret::{IOReturn, kIOReturnNoResources, kIOReturnSuccess};
-use io_kit_sys::types::io_service_t;
+use io_kit_sys::types::{io_iterator_t, io_registry_entry_t, io_service_t};
 use io_kit_sys::{
-    IOObjectRelease, IORegistryEntryIDMatching, IORegistryEntrySearchCFProperty,
-    IOServiceGetMatchingService, kIORegistryIterateRecursively,
+    IOIteratorNext, IOObjectGetClass, IOObjectRelease, IORegistryEntryGetChildIterator,
+    IORegistryEntryIDMatching, IORegistryEntrySearchCFProperty, IOServiceGetMatchingService,
+    kIORegistryIterateRecursively,
 };
 
 /// `kUSBReEnumerateCaptureDeviceMask` from `IOUSBLib.h`.
@@ -202,6 +203,65 @@ pub(crate) fn diskutil(args: &[&str], disk: &str) -> String {
             format!("{} {}", out.status, text.lines().next().unwrap_or("").trim())
         }
         Err(e) => e.to_string(),
+    }
+}
+
+/// The macOS version, for a trace.
+pub(crate) fn os_version() -> String {
+    std::process::Command::new("/usr/bin/sw_vers")
+        .arg("-productVersion")
+        .output()
+        .map(|out| String::from_utf8_lossy(&out.stdout).trim().to_string())
+        .unwrap_or_else(|e| e.to_string())
+}
+
+/// The IOKit classes below the device with IORegistry entry `registry_id`,
+/// three levels deep, for a trace: which drivers hold its interfaces.
+pub(crate) fn driver_tree(registry_id: u64) -> String {
+    // SAFETY: the matching dictionary is consumed by IOServiceGetMatchingService;
+    // the service is released below.
+    unsafe {
+        let service = IOServiceGetMatchingService(
+            MAIN_PORT_DEFAULT,
+            IORegistryEntryIDMatching(registry_id).cast_const(),
+        );
+        if service == 0 {
+            return "device gone".into();
+        }
+        let tree = children(service, 3).join(" ");
+        IOObjectRelease(service);
+        tree
+    }
+}
+
+/// # Safety
+///
+/// `entry` must be a live registry entry.
+unsafe fn children(entry: io_registry_entry_t, depth: u32) -> Vec<String> {
+    let mut iterator: io_iterator_t = 0;
+    // SAFETY: guaranteed by the caller; the iterator and every child are released.
+    unsafe {
+        if depth == 0
+            || IORegistryEntryGetChildIterator(entry, kIOServicePlane, &mut iterator)
+                != kIOReturnSuccess
+        {
+            return Vec::new();
+        }
+        let mut out = Vec::new();
+        loop {
+            let child = IOIteratorNext(iterator);
+            if child == 0 {
+                break;
+            }
+            let mut name = [0 as c_char; 128];
+            IOObjectGetClass(child, name.as_mut_ptr());
+            let name = CStr::from_ptr(name.as_ptr()).to_string_lossy().into_owned();
+            let below = children(child, depth - 1);
+            out.push(if below.is_empty() { name } else { format!("{name}[{}]", below.join(",")) });
+            IOObjectRelease(child);
+        }
+        IOObjectRelease(iterator);
+        out
     }
 }
 
