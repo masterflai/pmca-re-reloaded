@@ -724,6 +724,7 @@ err-usb-stall = Fotoaparat je prekinuo USB prijenos.
 err-usb-protocol = Fotoaparat je poslao neočekivan odgovor.
 err-usb-msc-status = Fotoaparat je odbio naredbu za pohranu.
 cli-error-prefix = pogreška
+cli-hint-mass-storage = Prebaci u način masovne pohrane: pmca-console mass-storage
 err-usb-driver = Windows je ovom fotoaparatu dodijelio upravljački program koji ne dopušta izravan pristup. Ovaj način rada zahtijeva WinUSB upravljački program, koji aplikacija može dodijeliti sama — ali samo s administratorskim pravima.
 err-needs-elevation = Dodjela ili oslobađanje upravljačkog programa zahtijeva administratorska prava, a upit sustava Windows je odbijen. Pokušajte ponovno s „Pokreni pomoćnika za upravljačke programe“; na fotoaparatu ne treba ništa mijenjati.
 err-usb-no-mass-storage-volume = Fotoaparat je priključen u načinu rada za masovnu pohranu, ali ne nudi nijedan pogon. Probudite ga, potvrdite USB način rada na njegovu zaslonu ako to zatraži i provjerite je li umetnuta memorijska kartica. Nemojte mijenjati upravljački program: ovaj način rada treba upravo standardni Windowsov.

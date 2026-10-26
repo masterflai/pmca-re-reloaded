@@ -42,6 +42,42 @@ pub(crate) fn info_command(l: &Localizer) -> Result<(), Box<dyn std::error::Erro
     Ok(())
 }
 
+/// Print the shutter count and capture details stored in a photo.
+pub(crate) fn photo_command(
+    l: &Localizer,
+    file: &std::path::Path,
+) -> Result<(), Box<dyn std::error::Error>> {
+    let photo = pmca_app::tools::photo_summary(l, file)?;
+    print_field(l, "shutter-file", Some(&photo.file_name));
+    print_field(l, "shutter-taken", photo.taken.as_deref());
+    print_field(l, "shutter-count", photo.shutter_count.map(|n| n.to_string()).as_deref());
+    let shutter = photo.shutter.as_deref().map(|s| l.tr(&format!("shutter-type-{s}")));
+    print_field(l, "shutter-type", shutter.as_deref());
+    print_field(l, "info-model", photo.model.as_deref());
+    print_field(l, "info-firmware", photo.software.as_deref());
+    print_field(l, "info-lens", photo.lens.as_deref());
+    if let Some(reason) = &photo.count_unavailable {
+        println!("{}", l.tr(&format!("shutter-{reason}")));
+    }
+    if photo.shutter.as_deref() == Some("electronic") {
+        println!("{}", l.tr("shutter-electronic-hint"));
+    }
+    Ok(())
+}
+
+/// Say so when the device lists do not vouch for the camera's model.
+///
+/// Only a warning: the lists are what is known, not what is possible. Silent
+/// when the camera cannot be identified, which some modes do not allow.
+pub(crate) fn warn_unsupported(l: &Localizer, capability: pmca_app::devices::Capability) {
+    let Some(model) = pmca_app::camera_info().ok().and_then(|info| info.model_name) else {
+        return;
+    };
+    if pmca_app::devices::support(&model, capability) != pmca_app::devices::Support::Yes {
+        eprintln!("{}", pmca_app::devices::support_text(l, Some(&model), capability));
+    }
+}
+
 /// Download the camera's usage log to a file.
 ///
 /// The log's structure is undocumented, so it is stored verbatim rather than
@@ -124,6 +160,9 @@ pub(crate) fn install_command(
     };
 
     let request = pmca_app::InstallRequest { apk, cert: cert.as_deref() };
+    if request.apk.is_some() {
+        warn_unsupported(l, pmca_app::devices::Capability::Apps);
+    }
     let outcome = pmca_app::install_app(l, &request, &mut sink)?;
 
     if let Some(device) = outcome.device {
@@ -181,6 +220,9 @@ pub(crate) fn apps_backup_command(
         out_dir: out.map(std::path::Path::to_path_buf),
         confirm,
     };
+    if confirm {
+        warn_unsupported(l, pmca_app::devices::Capability::Updater);
+    }
     let mut sink = |event: pmca_app::ProgressEvent| println!("{}", event.message);
     let outcome = pmca_app::app_backup::backup_apps(l, &request, &mut sink)?;
     for app in &outcome.apps {

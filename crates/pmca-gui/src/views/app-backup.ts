@@ -34,7 +34,7 @@ export function cardAppBackup(): HTMLElement {
     try {
       const model = await identifyModel(status, "updater");
       if (model === undefined || model === IN_APP_INSTALL_MODE) return;
-      const question = `${supportText(model, "updater")}\n\n${tr("app-backup-confirm")}`;
+      const question = `${await supportText(model, "updater")}\n\n${tr("app-backup-confirm")}`;
       if (!(await confirmed(question, tr("btn-confirm-app-backup")))) {
         showStatus(status, tr("app-backup-cancelled"));
         return;

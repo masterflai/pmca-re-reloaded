@@ -78,10 +78,20 @@ enum Command {
     GuessFirmware { file: PathBuf },
     /// Compute the CIC (HMAC-SHA256) checksum of a file.
     XpdChecksum { file: PathBuf },
+    /// Read the shutter count and capture details from a photo (ARW, JPEG, HEIF).
+    ///
+    /// The camera writes the current count into every photo it saves, so the
+    /// newest photo carries the current figure. The file is only read.
+    Photo { file: PathBuf },
 
     // --- Hardware commands (delegated to the USB layer) ---
     /// Display information about the connected camera.
     Info,
+    /// Ask a camera in MTP mode to reconnect as a mass-storage device.
+    ///
+    /// The change lasts until the camera is switched off or unplugged; the USB
+    /// mode chosen in its menu stays as it is.
+    MassStorage,
     /// Download the camera's usage log ("KikiLog").
     ///
     /// The format is undocumented, so the log is written out verbatim. The
@@ -553,12 +563,28 @@ fn main() -> ExitCode {
             let packages = pmca_app::drivers::describe(&foreign);
             eprintln!("{}", l.tr_arg("foreign-drivers-hint", "packages", &packages));
         }
+        let services = pmca_app::interfering_services();
+        if !services.is_empty() {
+            eprintln!("{}", l.tr("diagnose-services-found"));
+            for service in &services {
+                eprintln!("  {} ({})", service.display_name, service.name);
+            }
+            eprintln!("{}", l.tr("diagnose-services-advice"));
+            for service in &services {
+                eprintln!("  net stop {}", service.name);
+            }
+        }
     }
 
     match run(&cli.command, &l) {
         Ok(()) => ExitCode::SUCCESS,
         Err(e) => {
             eprintln!("{}: {}", l.tr("cli-error-prefix"), error_text(e.as_ref(), &l));
+            if e.downcast_ref::<pmca_app::Error>().and_then(pmca_app::Error::recovery)
+                == Some(pmca_app::RECOVERY_SWITCH_TO_MASS_STORAGE)
+            {
+                eprintln!("{}", l.tr("cli-hint-mass-storage"));
+            }
             ExitCode::FAILURE
         }
     }
@@ -568,6 +594,7 @@ fn main() -> ExitCode {
 fn uses_camera(cmd: &Command) -> bool {
     match cmd {
         Command::Info
+        | Command::MassStorage
         | Command::UsageLog { .. }
         | Command::Install { .. }
         | Command::Updatershell { .. }
@@ -586,6 +613,7 @@ fn uses_camera(cmd: &Command) -> bool {
         | Command::PrintUsageLog { .. }
         | Command::GuessFirmware { .. }
         | Command::XpdChecksum { .. }
+        | Command::Photo { .. }
         | Command::Sources { .. }
         | Command::Driver { .. }
         | Command::Keys { .. } => false,
@@ -633,8 +661,15 @@ fn run(cmd: &Command, l: &Localizer) -> Result<(), Box<dyn std::error::Error>> {
         Command::XpdChecksum { file } => {
             tool_command(l, ToolRequest::XpdChecksum { input: file.clone() })?;
         }
+        Command::Photo { file } => {
+            photo_command(l, file)?;
+        }
         Command::Info => {
             info_command(l)?;
+        }
+        Command::MassStorage => {
+            let mut sink = |event: pmca_app::ProgressEvent| println!("{}", event.message);
+            pmca_app::switch_to_mass_storage(l, &mut sink)?;
         }
         Command::UsageLog { out } => {
             usage_log_command(l, out.as_deref())?;

@@ -33,6 +33,36 @@ pub(crate) async fn read_photo(app: AppHandle, file: String) -> Result<PhotoSumm
     .await
 }
 
+/// The device lists, or only the models with `capability`.
+#[tauri::command]
+pub(crate) fn device_lists(capability: Option<Capability>) -> DeviceLists {
+    match capability {
+        Some(capability) => pmca_app::devices::capable(capability),
+        None => pmca_app::devices::lists(),
+    }
+}
+
+/// What the device lists say about `model`, as a verdict and as a sentence.
+#[tauri::command]
+pub(crate) fn device_support(
+    state: State<'_, AppState>,
+    model: Option<String>,
+    capability: Capability,
+) -> Result<SupportCheck, CommandError> {
+    let localizer = state.localizer()?;
+    Ok(SupportCheck {
+        support: model.as_deref().map(|m| pmca_app::devices::support(m, capability)),
+        text: pmca_app::devices::support_text(&localizer, model.as_deref(), capability),
+    })
+}
+
+/// The answer of [`device_support`]; `support` is `None` for an unidentified camera.
+#[derive(serde::Serialize)]
+pub(crate) struct SupportCheck {
+    support: Option<Support>,
+    text: String,
+}
+
 /// Ask where the camera's usage log should go, then download and write it.
 ///
 /// The log's structure is undocumented, so it is stored verbatim; the byte

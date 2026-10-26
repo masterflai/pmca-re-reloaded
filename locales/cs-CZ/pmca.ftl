@@ -724,6 +724,7 @@ err-usb-stall = Fotoaparát přerušil přenos přes USB.
 err-usb-protocol = Fotoaparát odeslal neočekávanou odpověď.
 err-usb-msc-status = Fotoaparát odmítl příkaz úložiště.
 cli-error-prefix = chyba
+cli-hint-mass-storage = Přepnout do režimu velkokapacitního úložiště: pmca-console mass-storage
 err-usb-driver = Systém Windows přiřadil tomuto fotoaparátu ovladač, který neumožňuje přímý přístup. Tento režim vyžaduje ovladač WinUSB, který si aplikace umí přiřadit sama — ale jen s právy správce.
 err-needs-elevation = Přiřazení nebo uvolnění ovladače vyžaduje práva správce a dotaz systému Windows byl odmítnut. Zkuste to znovu tlačítkem „Spustit pomocníka ovladačů“; na fotoaparátu není třeba nic měnit.
 err-usb-no-mass-storage-volume = Fotoaparát je připojen v režimu velkokapacitního úložiště, ale nenabízí žádnou jednotku. Probuďte jej, potvrďte na jeho displeji režim USB, pokud se zeptá, a zkontrolujte, zda je vložena paměťová karta. Neměňte ovladač: tento režim potřebuje právě standardní ovladač systému Windows.

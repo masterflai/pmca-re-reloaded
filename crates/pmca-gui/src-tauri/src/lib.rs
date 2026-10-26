@@ -12,6 +12,7 @@ use std::collections::HashMap;
 use std::path::{Path, PathBuf};
 use std::sync::{Mutex, MutexGuard, PoisonError};
 
+use pmca_app::devices::{Capability, DeviceLists, Support};
 use pmca_app::dto::{
     AppBackupOutcome, CameraSummary, CommunityList, FirmwareOutcome, InstallOutcome, PhotoSummary,
     ProgressEvent, StreamingSettings, TweakChange, TweakReport, WifiAccessPoint,
@@ -372,6 +373,8 @@ pub fn run() {
             check_interfering_services,
             get_camera_info,
             read_photo,
+            device_lists,
+            device_support,
             save_usage_log,
             pick_file,
             ask_choice,

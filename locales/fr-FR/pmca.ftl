@@ -725,6 +725,7 @@ err-usb-stall = L'appareil a interrompu le transfert USB.
 err-usb-protocol = L'appareil a envoyé une réponse inattendue.
 err-usb-msc-status = L'appareil a rejeté une commande de stockage.
 cli-error-prefix = erreur
+cli-hint-mass-storage = Passer en mode stockage de masse: pmca-console mass-storage
 err-usb-driver = Windows a attribué cet appareil à un pilote qui n'autorise pas l'accès direct. Ce mode nécessite le pilote WinUSB, que l'application peut attribuer elle-même — mais uniquement avec des droits d'administrateur.
 err-needs-elevation = Attribuer ou libérer un pilote nécessite les droits d’administrateur, et la demande de Windows a été refusée. Réessayez avec « Démarrer l’assistant pilote » ; rien n’est à changer sur l’appareil.
 err-usb-no-mass-storage-volume = L'appareil est connecté en mode stockage de masse mais ne présente aucun lecteur. Réveillez-le, confirmez le mode USB sur son écran s'il le demande et vérifiez qu'une carte mémoire est insérée. Ne changez pas de pilote : ce mode a besoin du pilote standard de Windows.

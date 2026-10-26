@@ -724,6 +724,7 @@ err-usb-stall = Aparat przerwał transfer USB.
 err-usb-protocol = Aparat odesłał nieoczekiwaną odpowiedź.
 err-usb-msc-status = Aparat odrzucił polecenie pamięci masowej.
 cli-error-prefix = błąd
+cli-hint-mass-storage = Przełącz w tryb pamięci masowej: pmca-console mass-storage
 err-usb-driver = System Windows przypisał temu aparatowi sterownik, który nie zezwala na bezpośredni dostęp. Ten tryb wymaga sterownika WinUSB, który aplikacja może przypisać sama — ale tylko z uprawnieniami administratora.
 err-needs-elevation = Przypisanie lub zwolnienie sterownika wymaga uprawnień administratora, a zapytanie systemu Windows zostało odrzucone. Spróbuj ponownie przyciskiem „Uruchom pomocnika sterowników”; w aparacie nic nie trzeba zmieniać.
 err-usb-no-mass-storage-volume = Aparat jest podłączony w trybie pamięci masowej, ale nie udostępnia żadnego dysku. Wybudź go, potwierdź tryb USB na jego ekranie, jeśli o to prosi, i sprawdź, czy włożona jest karta pamięci. Nie zmieniaj sterownika: ten tryb wymaga właśnie standardowego sterownika systemu Windows.

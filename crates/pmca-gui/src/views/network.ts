@@ -13,101 +13,13 @@ import {
   writing,
 } from "../dom";
 import { browseButton, registerDragDrop, setFileDrop } from "../drop";
-import type { StreamingSettings, WifiAccessPoint } from "../dto";
+import type { GpsModel, StreamingSettings, WifiAccessPoint } from "../dto";
 import { tr } from "../i18n";
-import { lowRiskCheck } from "./camera";
+import { deviceLists, lowRiskCheck } from "./camera";
 
 export function viewNetwork(host: HTMLElement): void {
   host.append(cardGps(), cardWifi(), cardStreaming());
 }
-
-/**
- * One row of the GPS device list: model, GPS variant, architecture, app support.
- * App support is `null` where it is not known.
- */
-type GpsModel = [string, string, string, boolean | null];
-
-/**
- * Cameras with a built-in GPS receiver, grouped as on the card.
- *
- * Model and architecture follow the OpenMemories device list, which names a
- * model family without saying which variant carries the receiver; that is
- * Sony's "V" suffix, given in the second column. App support is the list's
- * own column: whether the model runs PlayMemories Camera Apps.
- */
-export const GPS_MODELS: [string, GpsModel[]][] = [
-  [
-    "gps-devices-compact",
-    [
-      ["DSC-HX5V", "DSC-HX5V", "CXD4115", false],
-      ["DSC-HX9V", "DSC-HX9V", "CXD4132", false],
-      ["DSC-HX20", "DSC-HX20V", "CXD4132", false],
-      ["DSC-HX30", "DSC-HX30V", "CXD4132", false],
-      ["DSC-HX50", "DSC-HX50V", "CXD4132", false],
-      ["DSC-HX60", "DSC-HX60V", "CXD90014", true],
-      ["DSC-HX90", "DSC-HX90V", "CXD90014", true],
-      ["DSC-HX100V", "DSC-HX100V", "CXD4132", false],
-      ["DSC-HX200V", "DSC-HX200V", "CXD4132", false],
-      ["DSC-HX400", "DSC-HX400V", "CXD90014", true],
-    ],
-  ],
-  [
-    "gps-devices-slt",
-    [
-      ["SLT-A55", "SLT-A55V", "CXD4115", false],
-      ["SLT-A65", "SLT-A65V", "CXD4132", false],
-      ["SLT-A77", "SLT-A77V", "CXD4132", false],
-      ["SLT-A99", "SLT-A99V", "CXD4132", false],
-    ],
-  ],
-  [
-    "gps-devices-action",
-    [
-      ["HDR-AS30V", "HDR-AS30V", "CXD4132", false],
-      ["HDR-AS100V", "HDR-AS100V", "CXD90014", true],
-      ["HDR-AS200V", "HDR-AS200V", "CXD90014", true],
-      ["FDR-X1000V", "FDR-X1000V", "CXD90014", true],
-    ],
-  ],
-  [
-    "gps-devices-camcorder",
-    [
-      ["HDR-CX560", "HDR-CX560V", "CXD4132", false],
-      ["HDR-CX700", "HDR-CX700V", "CXD4132", false],
-      ["HDR-XR550", "HDR-XR550V", "CXD4120", false],
-      ["HDR-PJ590V", "HDR-PJ590V", "CXD4132", false],
-      ["HDR-PJ760V", "HDR-PJ760V", "CXD4132", false],
-      ["HDR-PJ790V", "HDR-PJ790V", "CXD4132", false],
-      ["HDR-TD10", "HDR-TD10", "CXD4132", false],
-      ["HDR-TD20", "HDR-TD20V", "CXD4132", false],
-    ],
-  ],
-];
-
-/**
- * Models known to carry a GPS receiver that the OpenMemories device list does
- * not name. Nobody has confirmed that this application can talk to them, so
- * neither their architecture nor their app support is known.
- */
-export const GPS_MODELS_UNTESTED: GpsModel[] = [
-  ["DSC-HX7V", "DSC-HX7V", "\u2013", null],
-  ["DSC-HX10V", "DSC-HX10V", "\u2013", null],
-  ["DSC-TX100V", "DSC-TX100V", "\u2013", null],
-  ["DSC-TX200V", "DSC-TX200V", "\u2013", null],
-  ["DSC-TX300V", "DSC-TX300V", "\u2013", null],
-  ["HDR-XR520V", "HDR-XR520V", "\u2013", null],
-  ["HDR-CX550V", "HDR-CX550V", "\u2013", null],
-  ["HDR-CX260V", "HDR-CX260V", "\u2013", null],
-  ["HDR-PJ260V", "HDR-PJ260V", "\u2013", null],
-  ["HDR-CX580V", "HDR-CX580V", "\u2013", null],
-  ["HDR-PJ580V", "HDR-PJ580V", "\u2013", null],
-  ["HDR-PJ710V", "HDR-PJ710V", "\u2013", null],
-  ["HDR-CX760V", "HDR-CX760V", "\u2013", null],
-  ["HDR-TD30V", "HDR-TD30V", "\u2013", null],
-  ["HXR-NX5", "HXR-NX5", "\u2013", null],
-  ["HXR-NX30", "HXR-NX30", "\u2013", null],
-  ["HXR-NX70", "HXR-NX70", "\u2013", null],
-];
 
 /**
  * A yes/no/unknown cell: a green tick, a red cross or a question mark.
@@ -158,13 +70,13 @@ function gpsDeviceTable(rows: GpsModel[]): HTMLTableElement {
     make(
       "tbody",
       {},
-      ...rows.map(([model, variant, arch, apps]) =>
+      ...rows.map(({ model, variant, arch, apps }) =>
         make(
           "tr",
           {},
           make("th", { scope: "row", textContent: model }),
           make("td", { textContent: variant }),
-          make("td", { textContent: arch }),
+          make("td", { textContent: arch ?? "\u2013" }),
           // Every model listed here has the receiver; that is why it is listed.
           markCell(true),
           markCell(apps),
@@ -223,14 +135,17 @@ function cardGps(): HTMLElement {
     "div",
     { className: "gps-devices" },
     make("p", { className: "hint", i18n: "gps-devices-note" }),
-    ...GPS_MODELS.flatMap(([heading, rows]) => [
-      make("h3", { i18n: heading }),
-      gpsDeviceTable(rows),
-    ]),
-    make("h3", { i18n: "gps-devices-untested" }),
-    make("p", { className: "hint", i18n: "gps-devices-untested-note" }),
-    gpsDeviceTable(GPS_MODELS_UNTESTED),
   );
+  deviceLists()
+    .then((lists) =>
+      devices.append(
+        ...lists.gps.flatMap((g) => [make("h3", { i18n: g.heading }), gpsDeviceTable(g.models)]),
+        make("h3", { i18n: "gps-devices-untested" }),
+        make("p", { className: "hint", i18n: "gps-devices-untested-note" }),
+        gpsDeviceTable(lists.gpsUntested),
+      ),
+    )
+    .catch(() => undefined);
 
   return card(
     make("h2", { i18n: "gps-heading" }),

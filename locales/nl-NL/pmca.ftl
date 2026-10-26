@@ -727,6 +727,7 @@ err-usb-stall = De camera heeft de USB-overdracht afgebroken.
 err-usb-protocol = De camera heeft een onverwacht antwoord gestuurd.
 err-usb-msc-status = De camera heeft een opslagopdracht geweigerd.
 cli-error-prefix = fout
+cli-hint-mass-storage = Naar massaopslagmodus schakelen: pmca-console mass-storage
 err-usb-driver = Windows heeft deze camera aan een stuurprogramma toegewezen dat geen directe toegang toestaat. Deze modus vereist het WinUSB-stuurprogramma, dat de toepassing zelf kan toewijzen — maar alleen met beheerdersrechten.
 err-needs-elevation = Voor het toewijzen of vrijgeven van een stuurprogramma zijn beheerdersrechten nodig, en de vraag van Windows is geweigerd. Probeer het opnieuw met „Stuurprogrammahulp starten”; aan de camera hoeft niets te veranderen.
 err-usb-no-mass-storage-volume = De camera is in massaopslagmodus aangesloten maar biedt geen station aan. Maak hem wakker, bevestig de USB-modus op zijn scherm als daarom wordt gevraagd en controleer of er een geheugenkaart in zit. Wissel het stuurprogramma niet: deze modus heeft juist het standaardstuurprogramma van Windows nodig.

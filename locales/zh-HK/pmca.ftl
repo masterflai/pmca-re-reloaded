@@ -736,6 +736,7 @@ err-usb-stall = 相機中止了 USB 傳輸。
 err-usb-protocol = 相機傳回了非預期的回應。
 err-usb-msc-status = 相機拒絕了一條儲存指令。
 cli-error-prefix = 錯誤
+cli-hint-mass-storage = 切換至大容量儲存模式：pmca-console mass-storage
 err-usb-driver = Windows 已將此相機指派給不容許直接存取的驅動程式。此模式需要 WinUSB 驅動程式，本應用程式可自行指派——但只限於以管理員權限執行時。
 err-needs-elevation = 指派或解除驅動程式需要管理員權限，而 Windows 的提示已被拒絕。請使用「啟動驅動程式助手」再試一次；相機上無需作出任何變更。
 err-usb-no-mass-storage-volume = 相機已以大容量儲存模式連接，但未有提供任何磁碟機。請喚醒相機，如螢幕上詢問 USB 模式請予以確認，並檢查是否已插入記憶卡。請勿更換驅動程式：此模式需要 Windows 的標準驅動程式。

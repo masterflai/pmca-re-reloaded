@@ -736,6 +736,7 @@ err-usb-stall = Máy ảnh đã hủy bỏ quá trình truyền USB.
 err-usb-protocol = Máy ảnh đã gửi phản hồi không mong đợi.
 err-usb-msc-status = Máy ảnh đã từ chối một lệnh lưu trữ.
 cli-error-prefix = lỗi
+cli-hint-mass-storage = Chuyển sang chế độ lưu trữ dung lượng lớn: pmca-console mass-storage
 err-usb-driver = Windows đã gán máy ảnh này cho một trình điều khiển không cho phép truy cập trực tiếp. Chế độ này cần trình điều khiển WinUSB, mà ứng dụng có thể tự gán — nhưng chỉ khi đang chạy với quyền quản trị viên.
 err-needs-elevation = Việc gán hoặc gỡ trình điều khiển cần quyền quản trị viên, và lời nhắc của Windows đã bị từ chối. Hãy thử lại bằng “Khởi động trình hỗ trợ trình điều khiển”; không cần thay đổi gì trên máy ảnh.
 err-usb-no-mass-storage-volume = Máy ảnh đã kết nối ở chế độ lưu trữ dung lượng lớn nhưng không cung cấp ổ đĩa. Hãy đánh thức máy, xác nhận chế độ USB trên màn hình nếu máy yêu cầu, và kiểm tra xem thẻ nhớ đã được lắp chưa. Đừng thay đổi trình điều khiển: chế độ này cần trình điều khiển chuẩn của Windows.

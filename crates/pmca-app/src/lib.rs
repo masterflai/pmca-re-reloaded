@@ -20,6 +20,7 @@ pub mod about;
 pub mod analysis;
 pub mod app_backup;
 pub mod broker;
+pub mod devices;
 mod direct;
 pub mod drivers;
 pub mod dto;

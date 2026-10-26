@@ -725,6 +725,7 @@ err-usb-stall = Kamera USB aktarımını durdurdu.
 err-usb-protocol = Kamera beklenmedik bir yanıt gönderdi.
 err-usb-msc-status = Kamera bir depolama komutunu reddetti.
 cli-error-prefix = hata
+cli-hint-mass-storage = Yığın depolama kipine geç: pmca-console mass-storage
 err-usb-driver = Windows bu kameraya doğrudan erişime izin vermeyen bir sürücü atadı. Bu kip WinUSB sürücüsünü gerektirir; uygulama bunu kendisi atayabilir, ancak yalnızca yönetici haklarıyla.
 err-needs-elevation = Bir sürücüyü atamak veya serbest bırakmak yönetici hakları gerektirir ve Windows isteği reddedildi. “Sürücü yardımcısını başlat” ile yeniden deneyin; kamerada hiçbir şeyin değişmesi gerekmez.
 err-usb-no-mass-storage-volume = Kamera yığın depolama kipinde bağlı ama hiçbir sürücü sunmuyor. Kamerayı uyandırın, ekranında soruyorsa USB kipini onaylayın ve bir bellek kartının takılı olduğunu denetleyin. Sürücüyü değiştirmeyin: bu kip tam da Windows'un standart sürücüsüne gereksinim duyar.

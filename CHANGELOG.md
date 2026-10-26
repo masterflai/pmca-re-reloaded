@@ -13,6 +13,18 @@ All notable changes to this project are documented here. The format follows
   checksum, in a folder per camera. The camera restarts into updater mode for
   it; its app storage is mounted read-only. A saved app is restored with the
   normal installation.
+- Console: `pmca-console photo <file>` reads the shutter count from a photo,
+  and `pmca-console mass-storage` switches a camera in MTP mode to mass
+  storage; a command that fails on an MTP camera points to it.
+- Console: before installing apps, sending GPS data, the firmware update, the
+  updater shell and the app backup, a warning appears when the device lists
+  do not vouch for the camera, as the window has always shown. A running
+  Windows service known to block the camera is named at start.
+
+### Changed
+
+- The device lists live in the shared core instead of the window, so the
+  console and the window check models against the same lists.
 
 ### Fixed
 

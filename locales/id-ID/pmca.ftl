@@ -725,6 +725,7 @@ err-usb-stall = Kamera membatalkan transfer USB.
 err-usb-protocol = Kamera mengirim respons yang tidak terduga.
 err-usb-msc-status = Kamera menolak sebuah perintah penyimpanan.
 cli-error-prefix = galat
+cli-hint-mass-storage = Beralih ke mode penyimpanan massal: pmca-console mass-storage
 err-usb-driver = Windows menetapkan driver untuk kamera ini yang tidak mengizinkan akses langsung. Mode ini memerlukan driver WinUSB, yang dapat ditetapkan aplikasi sendiri — tetapi hanya ketika berjalan dengan hak administrator.
 err-needs-elevation = Menetapkan atau melepaskan driver memerlukan hak administrator, dan permintaan Windows ditolak. Coba lagi dengan “Mulai pembantu driver”; tidak ada yang perlu diubah di kamera.
 err-usb-no-mass-storage-volume = Kamera tersambung dalam mode penyimpanan massal tetapi tidak menyediakan drive apa pun. Bangunkan kamera, konfirmasi mode USB di layarnya jika diminta, dan periksa apakah kartu memori sudah terpasang. Jangan ganti drivernya: mode ini justru memerlukan driver bawaan Windows.

@@ -736,6 +736,7 @@ err-usb-stall = The camera aborted the USB transfer.
 err-usb-protocol = The camera sent an unexpected response.
 err-usb-msc-status = The camera rejected a storage command.
 cli-error-prefix = error
+cli-hint-mass-storage = Switch to mass-storage mode: pmca-console mass-storage
 err-usb-driver = Windows has assigned this camera to a driver that does not permit direct access. This mode needs the WinUSB driver, which the application can assign on its own — but only when it is running with administrator rights.
 err-needs-elevation = Assigning or releasing a driver requires administrator rights, and the Windows prompt was declined. Try again with “Start driver helper”; nothing on the camera has to be changed.
 err-usb-no-mass-storage-volume = The camera is connected in mass-storage mode but is not offering a drive. Wake it up, confirm the USB mode on its screen if it asks, and check that a memory card is inserted. Do not change the driver: this mode needs the standard Windows one.

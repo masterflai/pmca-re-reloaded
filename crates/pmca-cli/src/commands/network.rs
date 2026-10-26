@@ -9,6 +9,7 @@ pub(crate) fn gps_command(
 ) -> Result<(), Box<dyn std::error::Error>> {
     let mut sink = |event: pmca_app::ProgressEvent| println!("{}", event.message);
     let local = file.map(std::fs::read).transpose()?;
+    warn_unsupported(l, pmca_app::devices::Capability::Gps);
     pmca_app::network::update_gps(l, local.as_deref(), &mut sink)?;
     Ok(())
 }

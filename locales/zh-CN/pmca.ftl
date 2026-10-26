@@ -717,6 +717,7 @@ err-usb-stall = 相机中止了 USB 传输。
 err-usb-protocol = 相机返回了意外的响应。
 err-usb-msc-status = 相机拒绝了一条存储命令。
 cli-error-prefix = 错误
+cli-hint-mass-storage = 切换到大容量存储模式：pmca-console mass-storage
 err-usb-driver = Windows 为此相机分配了不允许直接访问的驱动。此模式需要 WinUSB 驱动，本程序可以自行分配——但仅限于以管理员权限运行时。
 err-needs-elevation = 分配或释放驱动程序需要管理员权限，而 Windows 的提示被拒绝。请通过“启动驱动助手”重试；相机上无需更改任何设置。
 err-usb-no-mass-storage-volume = 相机已以大容量存储模式连接，但未提供任何驱动器。请唤醒相机，如屏幕上询问 USB 模式请予以确认，并检查是否已插入存储卡。请勿更换驱动：此模式正需要 Windows 的标准驱动。

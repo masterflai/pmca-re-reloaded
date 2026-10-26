@@ -736,6 +736,7 @@ err-usb-stall = 카메라가 USB 전송을 중단했습니다.
 err-usb-protocol = 카메라가 예기치 않은 응답을 보냈습니다.
 err-usb-msc-status = 카메라가 저장장치 명령을 거부했습니다.
 cli-error-prefix = 오류
+cli-hint-mass-storage = 대용량 저장장치 모드로 전환: pmca-console mass-storage
 err-usb-driver = Windows가 이 카메라에 직접 액세스를 허용하지 않는 드라이버를 할당했습니다. 이 모드에는 WinUSB 드라이버가 필요하며, 애플리케이션이 직접 할당할 수 있지만 관리자 권한으로 실행 중일 때만 가능합니다.
 err-needs-elevation = 드라이버를 할당하거나 해제하려면 관리자 권한이 필요한데, Windows 확인 메시지가 거부되었습니다. “드라이버 도우미 시작”으로 다시 시도하십시오. 카메라에서는 아무것도 변경할 필요가 없습니다.
 err-usb-no-mass-storage-volume = 카메라가 대용량 저장장치 모드로 연결되어 있지만 드라이브를 제공하지 않습니다. 카메라를 깨우고, 화면에서 USB 모드를 묻는 경우 확인한 뒤, 메모리 카드가 삽입되어 있는지 확인하십시오. 드라이버는 변경하지 마십시오. 이 모드에는 표준 Windows 드라이버가 필요합니다.

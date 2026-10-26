@@ -89,7 +89,7 @@ export function viewFirmware(host: HTMLElement): void {
     const preview = await run(false);
     if (!preview) return;
     const question = [
-      supportText(model, "updater"),
+      await supportText(model, "updater"),
       tr("firmware-warning"),
       tr("firmware-untested"),
       `${preview.currentVersion} \u2192 ${preview.newVersion}`,

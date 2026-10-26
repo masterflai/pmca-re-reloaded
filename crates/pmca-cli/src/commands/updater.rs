@@ -26,6 +26,9 @@ pub(crate) fn updatershell_command(
         flash,
     };
     let mut sink = |event: pmca_app::ProgressEvent| println!("{}", event.message);
+    if flash {
+        warn_unsupported(l, pmca_app::devices::Capability::Updater);
+    }
     let (payload, updater, already_updater) = pmca_app::updater::prepare(l, &request, &mut sink)?;
 
     match pmca_app::firmware::enter_updater_mode(
@@ -57,6 +60,7 @@ pub(crate) fn firmware_command(
     // On stderr so it stays visible even when the run is being logged.
     eprintln!("{}", l.tr("firmware-warning"));
     eprintln!("{}", l.tr("firmware-untested"));
+    warn_unsupported(l, pmca_app::devices::Capability::Updater);
     pmca_app::firmware::flash_firmware(
         l,
         &pmca_app::firmware::FlashRequest { file, flash, confirm },

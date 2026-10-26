@@ -731,6 +731,7 @@ err-usb-stall = Die Kamera hat die USB-Übertragung abgebrochen.
 err-usb-protocol = Die Kamera hat unerwartet geantwortet.
 err-usb-msc-status = Die Kamera hat einen Speicherbefehl abgelehnt.
 cli-error-prefix = Fehler
+cli-hint-mass-storage = In den Massenspeichermodus wechseln: pmca-console mass-storage
 err-usb-driver = Windows hat die Kamera einem Treiber zugewiesen, der keinen direkten Zugriff erlaubt. Dieser Modus benötigt den WinUSB-Treiber, den die Anwendung selbst zuweisen kann – allerdings nur mit Administratorrechten.
 err-needs-elevation = Für das Zuweisen oder Freigeben eines Treibers sind Administratorrechte nötig, und die Abfrage von Windows wurde abgelehnt. Mit „Treiberhilfe starten“ erneut versuchen; an der Kamera muss nichts geändert werden.
 err-usb-no-mass-storage-volume = Die Kamera ist im Massenspeichermodus angeschlossen, stellt aber kein Laufwerk bereit. Bitte die Kamera aufwecken, eine Rückfrage zum USB-Modus am Display bestätigen und prüfen, ob eine Speicherkarte eingelegt ist. Den Treiber bitte nicht wechseln: Dieser Modus benötigt genau den Standardtreiber von Windows.

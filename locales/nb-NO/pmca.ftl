@@ -725,6 +725,7 @@ err-usb-stall = Kameraet avbrøt USB-overføringen.
 err-usb-protocol = Kameraet sendte et uventet svar.
 err-usb-msc-status = Kameraet avviste en lagringskommando.
 cli-error-prefix = feil
+cli-hint-mass-storage = Bytt til masselagringsmodus: pmca-console mass-storage
 err-usb-driver = Windows har tilordnet dette kameraet en driver som ikke tillater direkte tilgang. Denne modusen krever WinUSB-driveren, som programmet kan tilordne selv — men bare med administratorrettigheter.
 err-needs-elevation = Tildeling eller frigivelse av en driver krever administratorrettigheter, og Windows-forespørselen ble avvist. Prøv igjen med «Start driverhjelper»; ingenting på kameraet må endres.
 err-usb-no-mass-storage-volume = Kameraet er koblet til i masselagringsmodus, men tilbyr ingen stasjon. Vekk det, bekreft USB-modusen på skjermen hvis det spør, og kontroller at det står et minnekort i. Ikke bytt driver: denne modusen trenger nettopp standarddriveren fra Windows.

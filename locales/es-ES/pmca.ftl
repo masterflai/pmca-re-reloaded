@@ -725,6 +725,7 @@ err-usb-stall = La cámara canceló la transferencia USB.
 err-usb-protocol = La cámara envió una respuesta inesperada.
 err-usb-msc-status = La cámara rechazó un comando de almacenamiento.
 cli-error-prefix = error
+cli-hint-mass-storage = Cambiar al modo de almacenamiento masivo: pmca-console mass-storage
 err-usb-driver = Windows ha asignado a esta cámara un controlador que no permite el acceso directo. Este modo necesita el controlador WinUSB, que la aplicación puede asignar por sí misma, pero solo con permisos de administrador.
 err-needs-elevation = Asignar o liberar un controlador requiere derechos de administrador, y la solicitud de Windows fue rechazada. Vuelva a intentarlo con «Iniciar ayudante de controladores»; no hay que cambiar nada en la cámara.
 err-usb-no-mass-storage-volume = La cámara está conectada en modo de almacenamiento masivo pero no ofrece ninguna unidad. Actívela, confirme el modo USB en su pantalla si lo pide y compruebe que hay una tarjeta de memoria insertada. No cambie el controlador: este modo necesita precisamente el estándar de Windows.
