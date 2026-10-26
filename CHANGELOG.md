@@ -6,6 +6,13 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+### Fixed
+
+- Windows: entering updater mode (firmware update, updater shell) sometimes
+  failed with "SCSI pass-through ioctl failed" right after the camera
+  restarted. The first command is now retried for a few seconds, and the
+  error message includes the Windows error code.
+
 ## [1.3.0] - 2026-10-26
 
 **Apps and plugins from anyone.** Developers publish camera apps and plugins

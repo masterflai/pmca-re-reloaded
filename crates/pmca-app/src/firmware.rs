@@ -38,6 +38,12 @@ const UPDATER_POLL_ATTEMPTS: usize = 60;
 /// Delay between updater-mode polls.
 const UPDATER_POLL_DELAY: Duration = Duration::from_millis(500);
 
+/// How often to try the first command on the camera back in updater mode.
+const REOPEN_ATTEMPTS: usize = 5;
+
+/// Delay between those tries.
+const REOPEN_DELAY: Duration = Duration::from_secs(2);
+
 /// What to do with a firmware file.
 #[derive(Debug, Clone, Copy)]
 pub struct FlashRequest<'a> {
@@ -146,11 +152,31 @@ pub fn enter_updater_mode(
 
     let camera =
         wait_for_updater_mode().ok_or_else(|| Error::Operation(l.tr("updater-switch-timeout")))?;
-    let mut updater = SonyUpdaterCamera::new(discovery::open_extcmd_transport(&camera)?);
-    updater.init()?;
+    let mut updater = open_rebooted(&camera)?;
     // Re-check against the rebooted camera: that is the one about to be written.
     updater.check_guard(payload)?;
     Ok(Some(updater))
+}
+
+/// Open and initialise the camera that has just come back in updater mode.
+///
+/// Right after it re-appears, the first command can fail in transit while the
+/// drive is still being set up; INIT writes nothing, so it is simply retried.
+fn open_rebooted(camera: &DetectedCamera) -> Result<BoxedUpdater> {
+    let mut attempt = 1;
+    loop {
+        let result = discovery::open_extcmd_transport(camera).and_then(|transport| {
+            let mut updater = SonyUpdaterCamera::new(transport);
+            updater.init().map(|()| updater)
+        });
+        match result {
+            Err(pmca_usb::Error::Transfer(_)) if attempt < REOPEN_ATTEMPTS => {
+                attempt += 1;
+                std::thread::sleep(REOPEN_DELAY);
+            }
+            other => return Ok(other?),
+        }
+    }
 }
 
 /// Poll for the camera re-appearing in firmware-updater mode after a switch.

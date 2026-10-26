@@ -198,12 +198,14 @@ impl ScsiPassThroughDevice {
                 ptr::null_mut(),
             )
         };
+        // Read before CloseHandle, which may overwrite the thread's last error.
+        let os_error = std::io::Error::last_os_error();
         unsafe {
             CloseHandle(handle);
         }
 
         if ok == 0 {
-            return Err(Error::Transfer("SCSI pass-through ioctl failed".into()));
+            return Err(Error::Transfer(format!("SCSI pass-through ioctl failed ({os_error})")));
         }
 
         if wb.sptd.scsi_status != 0 {
