@@ -10,6 +10,7 @@ mod network;
 mod plugins;
 mod settings;
 mod shells;
+mod sources;
 mod tools;
 mod tweaks;
 
@@ -22,5 +23,6 @@ pub(crate) use network::*;
 pub(crate) use plugins::*;
 pub(crate) use settings::*;
 pub(crate) use shells::*;
+pub(crate) use sources::*;
 pub(crate) use tools::*;
 pub(crate) use tweaks::*;

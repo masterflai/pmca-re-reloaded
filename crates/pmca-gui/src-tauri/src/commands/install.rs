@@ -38,10 +38,10 @@ pub(crate) async fn flash_firmware(
     .await
 }
 
-/// Fetch the community app list (`OpenMemories-AppList`).
+/// Fetch the apps the user's sources offer.
 #[tauri::command]
-pub(crate) async fn list_community_apps() -> Result<Vec<CommunityApp>, CommandError> {
-    in_background(|| Ok(pmca_app::store::community_apps()?)).await
+pub(crate) async fn list_community_apps() -> Result<CommunityList, CommandError> {
+    in_background(|| Ok(pmca_app::store::community_apps())).await
 }
 
 /// Install an APK, or serve the camera an empty task when `apk` is `None`.
@@ -108,11 +108,12 @@ pub(crate) async fn finish_install_series(app: AppHandle) -> Result<(), CommandE
 #[tauri::command]
 pub(crate) async fn community_app_version(
     app: AppHandle,
+    source: String,
     package: String,
 ) -> Result<String, CommandError> {
     in_background(move || {
         let localizer = app.state::<AppState>().localizer()?;
-        Ok(pmca_app::store::latest_version(&localizer, &package)?)
+        Ok(pmca_app::store::latest_version(&localizer, &source, &package)?)
     })
     .await
 }
@@ -127,25 +128,30 @@ pub(crate) struct DownloadedApp {
     version: String,
 }
 
-/// Download an app from the community store and keep it for installation.
+/// Download an app from a source and keep it for installation.
 ///
 /// Progress is streamed over [`PROGRESS_EVENT`]; the bytes stay in the backend
 /// until [`install_downloaded_app`] takes them.
 #[tauri::command]
 pub(crate) async fn download_community_app(
     app: AppHandle,
+    source: String,
     package: String,
 ) -> Result<DownloadedApp, CommandError> {
     in_background(move || {
         let state = app.state::<AppState>();
         let localizer = state.localizer()?;
-        let download =
-            pmca_app::store::download_community_app(&localizer, &package, &mut progress(&app))?;
+        let download = pmca_app::store::download_community_app(
+            &localizer,
+            &source,
+            &package,
+            &mut progress(&app),
+        )?;
         state
             .downloads
             .lock()
             .map_err(CommandError::internal)?
-            .insert(package.clone(), download.data);
+            .insert(download_key(&source, &package), download.data);
         Ok(DownloadedApp { package, version: download.version })
     })
     .await
@@ -159,14 +165,17 @@ pub(crate) async fn download_community_app(
 #[tauri::command]
 pub(crate) async fn install_downloaded_app(
     app: AppHandle,
+    source: String,
     package: String,
 ) -> Result<InstallOutcome, CommandError> {
     with_camera(app, move |app, state| {
         let localizer = state.localizer()?;
-        let data =
-            state.downloads.lock().map_err(CommandError::internal)?.remove(&package).ok_or_else(
-                || CommandError::internal(format!("{package} has not been downloaded")),
-            )?;
+        let data = state
+            .downloads
+            .lock()
+            .map_err(CommandError::internal)?
+            .remove(&download_key(&source, &package))
+            .ok_or_else(|| CommandError::internal(format!("{package} has not been downloaded")))?;
         let request = InstallRequest { apk: Some(ApkSource::Bytes(&data)), cert: None };
         let mut sink = progress(app);
         in_series(state, |series| series.install(&localizer, &request, &mut sink))

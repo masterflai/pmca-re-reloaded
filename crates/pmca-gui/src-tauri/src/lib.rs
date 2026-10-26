@@ -13,7 +13,7 @@ use std::path::{Path, PathBuf};
 use std::sync::{Mutex, MutexGuard, PoisonError};
 
 use pmca_app::dto::{
-    CameraSummary, CommunityApp, FirmwareOutcome, InstallOutcome, PhotoSummary, ProgressEvent,
+    CameraSummary, CommunityList, FirmwareOutcome, InstallOutcome, PhotoSummary, ProgressEvent,
     StreamingSettings, TweakChange, TweakReport, WifiAccessPoint,
 };
 use pmca_app::{ApkSource, InstallRequest, InstallSeries};
@@ -147,13 +147,15 @@ struct AppState {
     /// across navigation so a write test cannot be lost by leaving the view
     /// before its value is restored.
     analysis: Mutex<Option<pmca_app::analysis::AnalysisRun>>,
-    /// Store apps downloaded ahead of a batch installation, by package.
+    /// Store apps downloaded ahead of a batch installation, by source and package.
     ///
     /// A batch fetches every selected app before it touches the camera, so a
     /// network failure cannot leave the camera stranded in app-install mode.
     /// The bytes wait here rather than in the webview, which would have to
     /// send them back through the IPC channel one app at a time.
     downloads: Mutex<HashMap<String, Vec<u8>>>,
+    /// Plugins downloaded from a source, waiting for the user's agreement.
+    plugin_downloads: Mutex<HashMap<String, Vec<u8>>>,
     /// The batch installation under way, if any.
     ///
     /// Its tasks leave the camera in app-install mode; the window ends the
@@ -177,6 +179,7 @@ impl AppState {
             tweaks: Mutex::new(None),
             analysis: Mutex::new(None),
             downloads: Mutex::new(HashMap::new()),
+            plugin_downloads: Mutex::new(HashMap::new()),
             install_series: Mutex::new(None),
             camera: Mutex::new(false),
             #[cfg(target_os = "macos")]
@@ -418,6 +421,15 @@ pub fn run() {
             plugins_entries,
             plugins_run_tool,
             plugins_run_diagnostic,
+            sources_list,
+            sources_add,
+            sources_remove,
+            source_repo,
+            sources_search,
+            list_community_plugins,
+            download_community_plugin,
+            install_downloaded_plugin,
+            discard_plugin_download,
             service_help,
             service_open,
             service_run,

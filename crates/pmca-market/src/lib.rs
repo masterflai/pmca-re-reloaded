@@ -9,8 +9,9 @@
 //!   JSON/XPD protocol. This module builds the exact responses the camera
 //!   expects and, behind the `server` feature, runs a TLS server that serves
 //!   them.
-//! * [`appstore`] – the **community app store**. Resolves the YAML app list
-//!   published on GitHub (`OpenMemories-AppList`) to downloadable APKs.
+//! * [`appstore`] – the **app sources**. Reads the YAML source files users
+//!   add from GitHub, resolves their entries to downloadable APKs and plugins,
+//!   and describes and searches source repositories.
 //!
 //! Sony's own PlayMemories Camera Apps store has been shut down, so the port of
 //! `pmca/marketclient` that talked to it has been removed.

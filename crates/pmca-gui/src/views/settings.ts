@@ -32,6 +32,7 @@ import {
   updateCheckOn,
 } from "../preferences";
 import { cardPlugins } from "./plugins";
+import { cardSources } from "./sources";
 
 /**
  * Settings: everything about the *content* of a translation.
@@ -45,6 +46,7 @@ import { cardPlugins } from "./plugins";
 export function viewSettings(host: HTMLElement): void {
   host.append(
     cardTranslationEditor(),
+    cardSources(),
     cardPlugins(),
     cardUpdateCheck(),
     cardAdvancedMode(),

@@ -1,7 +1,7 @@
-//! Plugins: extensions the user installs from a local file.
+//! Plugins: extensions the user installs from a local file or a source.
 //!
-//! There is no plugin store and nothing is fetched: a plugin reaches this
-//! program only because the user chose its file. A plugin file
+//! Nothing is fetched on its own: a plugin reaches this program only because
+//! the user chose its file or picked it from a source they added. A plugin file
 //! (`*.pmcaplugin`) is a ZIP archive holding a `plugin.json` manifest and,
 //! depending on what it brings,
 //!
@@ -10,7 +10,10 @@
 //! * switches for camera settings, declared in the manifest;
 //! * rows for the compatibility overview, declared in the manifest;
 //! * tools and diagnostics as WebAssembly modules, run in the sandbox of
-//!   `wasm`.
+//!   `wasm`;
+//! * optionally `signature.json`, an Ed25519 signature over all other files
+//!   (see `signature`). An installed signed plugin is only ever replaced by a
+//!   file signed with the same key.
 //!
 //! Installing copies the checked file into the user's data folder. Plugins are
 //! loaded once at start-up ([`load`]), so installing or removing one takes
@@ -19,6 +22,7 @@
 //! camera's identity, or see the imported key material.
 
 mod manifest;
+mod signature;
 mod wasm;
 
 pub use manifest::{API_VERSION, CompatEntry};
@@ -45,6 +49,8 @@ const MAX_ENTRY_BYTES: u64 = 16 << 20;
 const MAX_CATALOG_BYTES: u64 = 1 << 20;
 const MAX_ENTRIES: usize = 256;
 const MAX_INPUT_BYTES: u64 = 256 << 20;
+/// Upper bound on everything a signature check decompresses.
+const MAX_SIGNED_BYTES: u64 = 128 << 20;
 
 /// A plugin as installed or offered, for listing and confirming.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize)]
@@ -80,6 +86,8 @@ pub struct PluginInfo {
     pub diagnostics: Vec<PluginEntry>,
     /// Number of compatibility rows it adds.
     pub compatibility: u32,
+    /// Public Ed25519 key (hex) the file is signed with; `None` if unsigned.
+    pub signer: Option<String>,
     /// Whether it is in effect in this session.
     pub active: bool,
 }
@@ -172,6 +180,7 @@ struct Plugin {
     catalogs: Vec<(String, String)>,
     modules: HashMap<String, Vec<u8>>,
     file: String,
+    signer: Option<String>,
 }
 
 struct Loaded {
@@ -220,6 +229,11 @@ fn read_archive(bytes: &[u8], file: &str) -> std::result::Result<Plugin, String>
         .file_names()
         .map(|n| n.map(|n| n.into_owned()).map_err(|e| format!("archive: {e}")))
         .collect::<std::result::Result<_, String>>()?;
+    let signer = if names.iter().any(|n| n == signature::FILE) {
+        Some(check_signature(&mut zip, &names)?)
+    } else {
+        None
+    };
     let mut catalogs = Vec::new();
     let mut english = Vec::new();
     for name in &names {
@@ -247,7 +261,26 @@ fn read_archive(bytes: &[u8], file: &str) -> std::result::Result<Plugin, String>
         wasm::check(&module).map_err(|e| format!("{path}: {e}"))?;
         modules.insert(path.to_string(), module);
     }
-    Ok(Plugin { manifest, catalogs, modules, file: file.to_string() })
+    Ok(Plugin { manifest, catalogs, modules, file: file.to_string(), signer })
+}
+
+/// Verify `signature.json` over every other file; the signer's key if it holds.
+fn check_signature<R: Read + std::io::Seek>(
+    zip: &mut zip::ZipArchive<R>,
+    names: &[String],
+) -> std::result::Result<String, String> {
+    let mut files = Vec::new();
+    let mut total = 0u64;
+    for name in names.iter().filter(|n| !n.ends_with('/') && *n != signature::FILE) {
+        let data = read_entry(zip, name, MAX_ENTRY_BYTES)?;
+        total += data.len() as u64;
+        if total > MAX_SIGNED_BYTES {
+            return Err("the archive is too large to check its signature".to_string());
+        }
+        files.push((name.clone(), data));
+    }
+    let signature = read_entry(zip, signature::FILE, 64 << 10)?;
+    signature::verify(&signature, &files)
 }
 
 fn read_file(path: &Path) -> std::result::Result<(Plugin, Vec<u8>), String> {
@@ -342,6 +375,7 @@ impl Plugin {
             tools: self.entries(false),
             diagnostics: self.entries(true),
             compatibility: m.compatibility.len() as u32,
+            signer: self.signer.clone(),
             active,
         }
     }
@@ -456,9 +490,39 @@ pub fn inspect(l: &Localizer, path: &Path) -> Result<PluginInfo> {
 /// change between checking and copying. Takes effect at the next start.
 pub fn install(l: &Localizer, path: &Path) -> Result<PluginInfo> {
     let (plugin, bytes) = read_file(path).map_err(|r| invalid(l, &r))?;
+    write(l, &plugin, &bytes)
+}
+
+fn checked_bytes(bytes: &[u8], file: &str) -> std::result::Result<Plugin, String> {
+    if bytes.len() as u64 > MAX_ARCHIVE_BYTES {
+        return Err("the file is too large for a plugin".to_string());
+    }
+    read_archive(bytes, file)
+}
+
+/// Check a plugin downloaded from a source, without installing it.
+pub fn inspect_bytes(l: &Localizer, bytes: &[u8], file: &str) -> Result<PluginInfo> {
+    Ok(checked_bytes(bytes, file).map_err(|r| invalid(l, &r))?.info(false))
+}
+
+/// Install a plugin downloaded from a source, checked as a file is.
+pub fn install_bytes(l: &Localizer, bytes: &[u8], file: &str) -> Result<PluginInfo> {
+    let plugin = checked_bytes(bytes, file).map_err(|r| invalid(l, &r))?;
+    write(l, &plugin, bytes)
+}
+
+fn write(l: &Localizer, plugin: &Plugin, bytes: &[u8]) -> Result<PluginInfo> {
     let dir = plugin_dir().ok_or_else(|| Error::Operation(l.tr("plugin-no-folder")))?;
+    let target = dir.join(format!("{}.{EXTENSION}", plugin.manifest.id));
+    // Like an app update: a signed plugin is only replaced by its own signer.
+    if let Ok((installed, _)) = read_file(&target)
+        && installed.signer.is_some()
+        && installed.signer != plugin.signer
+    {
+        return Err(Error::Operation(l.tr_arg("plugin-signer-changed", "id", &plugin.manifest.id)));
+    }
     std::fs::create_dir_all(&dir)?;
-    std::fs::write(dir.join(format!("{}.{EXTENSION}", plugin.manifest.id)), &bytes)?;
+    std::fs::write(target, bytes)?;
     Ok(plugin.info(false))
 }
 
@@ -500,24 +564,51 @@ fn collect(root: &Path, dir: &Path, out: &mut Vec<(String, PathBuf)>) -> std::io
 /// Build a plugin file from a folder, checked exactly as installing checks it.
 ///
 /// For plugin authors: the folder holds `plugin.json`, `locales/` and the
-/// modules. Nothing is written unless the result would install.
-pub fn pack(l: &Localizer, dir: &Path, out: &Path) -> Result<PluginInfo> {
+/// modules. With `key` (a file written by [`generate_key`]) the plugin is
+/// signed. Nothing is written unless the result would install.
+pub fn pack(l: &Localizer, dir: &Path, out: &Path, key: Option<&Path>) -> Result<PluginInfo> {
     use std::io::Write;
 
+    let mut paths = Vec::new();
+    collect(dir, dir, &mut paths)?;
     let mut files = Vec::new();
-    collect(dir, dir, &mut files)?;
+    for (name, path) in paths {
+        // A signature left in the folder by an earlier run would no longer match.
+        if name != signature::FILE {
+            files.push((name, std::fs::read(path)?));
+        }
+    }
+    if let Some(key) = key {
+        let (signed, _) =
+            signature::sign(&std::fs::read(key)?, &files).map_err(|r| invalid(l, &r))?;
+        files.push((signature::FILE.to_string(), signed));
+    }
     files.sort();
     let mut zip = zip::ZipWriter::new(Cursor::new(Vec::new()));
-    for (name, path) in &files {
+    for (name, data) in &files {
         zip.start_file(name.as_str(), zip::write::SimpleFileOptions::default())
             .map_err(std::io::Error::other)?;
-        zip.write_all(&std::fs::read(path)?)?;
+        zip.write_all(data)?;
     }
     let bytes = zip.finish().map_err(std::io::Error::other)?.into_inner();
     let file = out.file_name().map(|f| f.to_string_lossy().into_owned()).unwrap_or_default();
     let plugin = read_archive(&bytes, &file).map_err(|r| invalid(l, &r))?;
     std::fs::write(out, &bytes)?;
     Ok(plugin.info(false))
+}
+
+/// Create a signing key for [`pack`] at `out`, which must not exist yet; the
+/// public key (hex). The file is the author's secret.
+pub fn generate_key(l: &Localizer, out: &Path) -> Result<String> {
+    use std::io::Write;
+
+    let (pkcs8, public_key) = signature::generate().map_err(|r| invalid(l, &r))?;
+    let mut options = std::fs::OpenOptions::new();
+    options.write(true).create_new(true);
+    #[cfg(unix)]
+    std::os::unix::fs::OpenOptionsExt::mode(&mut options, 0o600);
+    options.open(out)?.write_all(&pkcs8)?;
+    Ok(public_key)
 }
 
 /// The compatibility rows the loaded plugins add.
@@ -628,11 +719,39 @@ mod tests {
         let plugin = data_plugin(MANIFEST, "plg-demo-flag = Demo flag\n").unwrap();
         let info = plugin.info(false);
         assert_eq!(info.id, "demo");
+        assert_eq!(info.signer, None);
         assert_eq!(info.languages, ["eo"]);
         assert_eq!(info.tweaks, ["plg-demo-flag"]);
         assert_eq!(info.compatibility, 1);
         assert_eq!(info.permissions, ["languages", "camera-settings", "compatibility"]);
         assert_eq!((info.name_key, info.description_key), (None, None));
+    }
+
+    #[test]
+    fn a_signed_archive_names_its_signer_and_a_tampered_one_is_refused() {
+        let english: &[u8] = b"plg-demo-flag = Demo flag\n";
+        let files = vec![
+            ("plugin.json".to_string(), MANIFEST.as_bytes().to_vec()),
+            ("locales/en-US.ftl".to_string(), english.to_vec()),
+        ];
+        let (key, public) = signature::generate().unwrap();
+        let (signed, _) = signature::sign(&key, &files).unwrap();
+
+        let good = archive(&[
+            ("plugin.json", MANIFEST.as_bytes()),
+            ("locales/en-US.ftl", english),
+            (signature::FILE, &signed),
+        ]);
+        let plugin = read_archive(&good, "demo.pmcaplugin").unwrap();
+        assert_eq!(plugin.info(false).signer, Some(public));
+
+        let tampered = archive(&[
+            ("plugin.json", MANIFEST.as_bytes()),
+            ("locales/en-US.ftl", b"plg-demo-flag = Changed\n"),
+            (signature::FILE, &signed),
+        ]);
+        let err = read_archive(&tampered, "demo.pmcaplugin").err().unwrap();
+        assert!(err.contains("signature"), "{err}");
     }
 
     #[test]

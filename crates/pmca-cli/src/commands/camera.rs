@@ -94,6 +94,7 @@ pub(crate) fn install_command(
     l: &Localizer,
     apk_path: Option<&std::path::Path>,
     package: Option<&str>,
+    source: Option<&str>,
     out_path: Option<&std::path::Path>,
     cert: Option<&std::path::Path>,
 ) -> Result<(), Box<dyn std::error::Error>> {
@@ -110,7 +111,10 @@ pub(crate) fn install_command(
     // Downloading happens before the camera session so a store or network
     // failure cannot leave the camera in app-install mode.
     let downloaded = match package {
-        Some(package) => Some(pmca_app::store::download_community_app(l, package, &mut sink)?.data),
+        Some(package) => {
+            let source = pick_source(l, package, source, pmca_market::appstore::EntryKind::App)?;
+            Some(pmca_app::store::download_community_app(l, &source, package, &mut sink)?.data)
+        }
         None => None,
     };
     let apk = match (apk_path, downloaded.as_deref()) {
@@ -134,26 +138,33 @@ pub(crate) fn install_command(
     Ok(())
 }
 
-/// List the apps published in the community app store.
+/// List the apps the user's sources offer.
 ///
-/// Only the list itself is fetched; resolving each entry's newest build would
-/// cost one API request per app, so that happens on install.
+/// Only the lists themselves are fetched; resolving each entry's newest build
+/// would cost one API request per app, so that happens on install.
 pub(crate) fn apps_command(l: &Localizer) -> Result<(), Box<dyn std::error::Error>> {
-    let apps = pmca_app::store::community_apps()?;
-    if apps.is_empty() {
+    if pmca_app::sources::list().is_empty() {
+        println!("{}", l.tr("store-no-sources"));
+        return Ok(());
+    }
+    let list = pmca_app::store::community_apps();
+    print_failed_sources(l, &list.failed);
+    if list.entries.is_empty() {
         println!("{}", l.tr("msg-no-apps"));
         return Ok(());
     }
-    for app in apps {
+    for app in list.entries {
         let note = if app.installable {
             String::new()
         } else {
             format!(" ({})", l.tr("store-not-installable"))
         };
-        println!("{:<44} {}{}", app.package, app.name, note);
+        println!("{:<44} {}{}  [{}]", app.package, app.name, note, app.source);
         if let Some(desc) = app.description.filter(|d| !d.is_empty()) {
             println!("{:<44} {}", "", desc);
         }
     }
+    println!();
+    println!("{}", l.tr("store-sources-hint"));
     Ok(())
 }

@@ -11,10 +11,13 @@ import {
   showError,
   showErrorKey,
   showNotice,
+  showStatus,
   statusLine,
 } from "../dom";
 import { browseButton } from "../drop";
 import type {
+  CommunityApp,
+  CommunityList,
   PluginEntry,
   PluginInfo,
   PluginList,
@@ -22,10 +25,18 @@ import type {
   PluginToolResult,
 } from "../dto";
 import { tr, trFill } from "../i18n";
+import { detailsLine, entryDetails, starsBadge } from "./sources";
 
 /** The translated lines saying what a plugin may do. */
 function permissionLines(info: PluginInfo): string[] {
   return info.permissions.map((p) => `• ${tr(`plugin-perm-${p}`)}`);
+}
+
+/** "Signed, key ab12 cd34 …" or "Not signed"; the first 16 hex digits tell keys apart. */
+function signerText(info: PluginInfo): string {
+  if (info.signer === null) return tr("plugin-unsigned");
+  const short = info.signer.slice(0, 16).match(/.{4}/g)?.join(" ") ?? info.signer;
+  return trFill("plugin-signed", { key: `${short} …` });
 }
 
 /** A plugin's own text in the window's language, else as its manifest has it. */
@@ -37,12 +48,12 @@ export function pluginText(key: string | null, written: string): string {
 }
 
 /**
- * Installed plugins, installing from a file and removing.
+ * Installed plugins, installing from a file or from a source, and removing.
  *
- * A plugin comes only from a file the user picks; there is no store. Before
- * installing, the dialog lists what the plugin may do, so the decision is made
- * knowing it. Changes apply at the next start, which the card says whenever
- * the installed set differs from the one in effect.
+ * Before installing, the dialog lists what the plugin may do, so the decision
+ * is made knowing it; one from a source also says that nothing about it was
+ * checked. Changes apply at the next start, which the card says whenever the
+ * installed set differs from the one in effect.
  */
 export function cardPlugins(): HTMLElement {
   const status = statusLine();
@@ -88,6 +99,7 @@ export function cardPlugins(): HTMLElement {
     if (plugin.description) {
       body.push(make("p", { textContent: pluginText(plugin.descriptionKey, plugin.description) }));
     }
+    body.push(make("p", { className: "hint", textContent: signerText(plugin), title: plugin.signer ?? "" }));
     body.push(make("ul", {}, ...plugin.permissions.map((p) => make("li", { i18n: `plugin-perm-${p}` }))));
     return make("div", { className: "plugin-row" }, ...body);
   }
@@ -99,16 +111,7 @@ export function cardPlugins(): HTMLElement {
       const path = await invoke<string | null>("pick_file", { kind: "plugin" });
       if (path === null) return;
       const info = await invoke<PluginInfo>("plugins_inspect", { path });
-      const message = [
-        `${pluginText(info.nameKey, info.name)} ${info.version} (${info.id})`,
-        info.author ? `${tr("plugin-author")}: ${info.author}` : "",
-        "",
-        tr("plugin-install-confirm"),
-        ...permissionLines(info),
-      ]
-        .filter((line, i) => line !== "" || i === 2)
-        .join("\n");
-      if (!(await confirmed(message, tr("btn-confirm-plugin-install")))) return;
+      if (!(await confirmed(installMessage(info, null), tr("btn-confirm-plugin-install")))) return;
       await invoke<PluginInfo>("plugins_install", { path });
       showDone(status, tr("plugin-installed"));
       await refresh();
@@ -116,6 +119,78 @@ export function cardPlugins(): HTMLElement {
       showError(status, e);
     } finally {
       install.disabled = false;
+    }
+  });
+
+  const sourceStatus = statusLine();
+  const sourceList = make("div", { className: "plugin-list" });
+  const loadSources = make("button", { i18n: "btn-plugin-sources-load" });
+
+  function sourceRow(entry: CommunityApp): HTMLElement {
+    const get = make("button", { i18n: "btn-plugin-source-install", disabled: !entry.installable });
+    get.addEventListener("click", async () => {
+      get.disabled = true;
+      const ids = { source: entry.source, id: entry.package };
+      try {
+        showBusy(sourceStatus, tr("store-resolving"));
+        const info = await invoke<PluginInfo>("download_community_plugin", ids);
+        clearStatusState(sourceStatus);
+        sourceStatus.textContent = "";
+        if (!(await confirmed(installMessage(info, entry.source), tr("btn-confirm-plugin-install")))) {
+          await invoke("discard_plugin_download", ids);
+          return;
+        }
+        await invoke<PluginInfo>("install_downloaded_plugin", ids);
+        showDone(sourceStatus, tr("plugin-installed"));
+        await refresh();
+      } catch (e) {
+        showError(sourceStatus, e);
+      } finally {
+        get.disabled = !entry.installable;
+      }
+    });
+    const panel = entryDetails(entry);
+    const head = make(
+      "div",
+      { className: "row" },
+      make("strong", { textContent: entry.name }),
+      make("span", { className: "hint", textContent: entry.package }),
+      make("span", { className: "hint", textContent: entry.source }),
+      starsBadge(entry.source),
+      get,
+    );
+    const body: (Node | string)[] = [head, detailsLine(panel)];
+    if (!entry.installable) body.push(make("p", { className: "hint", i18n: "store-not-installable" }));
+    body.push(panel);
+    return make("div", { className: "plugin-row" }, ...body);
+  }
+
+  loadSources.addEventListener("click", async () => {
+    loadSources.disabled = true;
+    sourceList.replaceChildren();
+    showBusy(sourceStatus, tr("store-loading"));
+    try {
+      const state = await invoke<{ sources: unknown[] }>("sources_list");
+      if (state.sources.length === 0) {
+        showStatus(sourceStatus, tr("store-no-sources"));
+        return;
+      }
+      const found = await invoke<CommunityList>("list_community_plugins");
+      for (const failure of found.failed) {
+        sourceList.append(
+          make("p", { className: "error-text", textContent: trFill("source-failed", { ...failure }) }),
+        );
+      }
+      if (found.entries.length === 0) showStatus(sourceStatus, tr("plugin-sources-none"));
+      else {
+        clearStatusState(sourceStatus);
+        sourceStatus.textContent = "";
+      }
+      sourceList.append(...found.entries.map(sourceRow));
+    } catch (e) {
+      showError(sourceStatus, e);
+    } finally {
+      loadSources.disabled = false;
     }
   });
 
@@ -127,7 +202,27 @@ export function cardPlugins(): HTMLElement {
     restart,
     make("div", { className: "row" }, install),
     status,
+    make("h3", { i18n: "plugin-sources-heading" }),
+    make("p", { className: "hint", i18n: "plugin-sources-hint" }),
+    make("div", { className: "row" }, loadSources),
+    sourceStatus,
+    sourceList,
   );
+}
+
+/** What installing would do, and for a plugin from a source that it is unchecked. */
+function installMessage(info: PluginInfo, source: string | null): string {
+  return [
+    `${pluginText(info.nameKey, info.name)} ${info.version} (${info.id})`,
+    info.author ? `${tr("plugin-author")}: ${info.author}` : "",
+    signerText(info),
+    source === null ? "" : trFill("plugin-source-unchecked", { source }),
+    "",
+    tr("plugin-install-confirm"),
+    ...permissionLines(info),
+  ]
+    .filter((line, i) => line !== "" || i === 4)
+    .join("\n");
 }
 
 /** Show a plugin's verdict in the status line and its report below. */

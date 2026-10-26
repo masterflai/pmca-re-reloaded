@@ -22,6 +22,7 @@
   <a href="#getting-started">Getting started</a> ·
   <a href="#what-it-does">What it does</a> ·
   <a href="#supported-devices">Supported devices</a> ·
+  <a href="#publish-your-own-apps-and-plugins"><b>Publish apps &amp; plugins</b></a> ·
   <a href="#safety">Safety</a> ·
   <a href="CHANGELOG.md">Changelog</a>
 </p>
@@ -64,6 +65,7 @@ in Rust, and it needs neither Python nor extra driver tools.
 | **Your keys, not ours** | No Sony key material and no Sony firmware files ship with the program. Functions that need keys use material you import yourself. |
 | **Private by design** | No telemetry, no account. The network is used only by the features that obviously need it, and only when you use them. |
 | **Extensible** | Plugins add languages, compatibility notes, settings and sandboxed WebAssembly tools. |
+| **Open to every developer** | Anyone can publish camera apps and plugins from a GitHub repository of their own — no store, no approval, no central hosting. Users add the sources they choose. [How to publish](#publish-your-own-apps-and-plugins) |
 | **27 languages** | Every text is translated, and each translation can be edited from within the app. |
 
 ## What it does
@@ -80,8 +82,9 @@ a glance; the shutter count, read from any ARW, JPEG or HEIF photo the camera
 took; and the camera's usage log, decoded. No keys and no driver change needed.
 
 **Apps** — Sony's PlayMemories store has been shut down; installing apps still
-works. Install an `.apk` file you have, or pick one from the community app
-list. Recommended start: [OpenMemories: Tweak](https://github.com/ma1co/OpenMemories-Tweak).
+works. Install an `.apk` file you have, or pick one from the
+[sources](#app-and-plugin-sources) you have added. Recommended start:
+[OpenMemories: Tweak](https://github.com/ma1co/OpenMemories-Tweak).
 
 **Firmware** — check an official Sony firmware file against the connected camera
 and install it, or start the updater shell: the camera boots its update mode
@@ -255,11 +258,55 @@ that itself:
 
 Power-cycling the camera always returns it to normal mode.
 
+## App and plugin sources
+
+Apps and plugins from other developers come from **sources**: public GitHub
+repositories in which their authors publish them. The program ships no source,
+hosts nothing and checks nothing; the author of a source alone is responsible
+for it. You add the sources you choose — in the app under *Settings → App and
+plugin sources*, or with `pmca-console sources add owner/repository`.
+
+* The app list of the original project, kept by ma1co, is offered there as a
+  suggestion you can switch on.
+* *Search GitHub* (`pmca-console sources search`) lists repositories with the
+  topic `pmca-source`, with their GitHub stars. The search only runs when you
+  ask, and its results are no recommendation: look at a repository before you
+  add it.
+* The first time an app or plugin is downloaded from a source, the program
+  remembers who signed it, and refuses a later version signed by someone else.
+
+To publish your own apps or plugins, see
+[Publish your own apps and plugins](#publish-your-own-apps-and-plugins).
+
+## Publish your own apps and plugins
+
+You do not need anyone's permission to offer camera apps or plugins to users
+of PMCA-RE RELOADED, and nobody reviews or hosts them for you. Your work stays
+in your own GitHub repository, under your name and your license:
+
+1. **Build** your app (a signed `.apk` for the camera) or your plugin
+   (`pmca-console plugins pack <folder> <file> --key <keyfile>`, with a key
+   from `pmca-console plugins keygen`).
+2. **Release** it on GitHub: attach the `.apk` or `.pmcaplugin` to a release
+   of the repository it is developed in.
+3. **Describe** it in a `pmca-source.yaml` at the root of a public repository
+   — the same repository or one that lists several of your projects.
+4. **Tag** that repository with the topic `pmca-source`, so the search in the
+   app finds it, and tell your users its name (`owner/repository`).
+
+Every new release reaches your users without any change to the source file.
+Sign every version with the same key: the program remembers it at the first
+download and refuses an update signed by someone else.
+
+**The complete guide — file format, release types, signing and limits:
+[Publishing apps and plugins](docs/app-sources.md).**
+
 ## Plugins
 
-A plugin is a `.pmcaplugin` file you install from your own disk — in the app
-under *Settings → Plugins*, or with `pmca-console plugins install <file>`.
-There is no plugin store and nothing is downloaded automatically. A plugin can
+A plugin is a `.pmcaplugin` file — from your own disk, or from one of your
+[sources](#app-and-plugin-sources). Install it in the app under
+*Settings → Plugins*, or with `pmca-console plugins install <file>` or
+`pmca-console plugins get <id>`. Nothing is downloaded automatically. A plugin can
 bring a complete translation, compatibility notes, switches for camera settings
 (limited to two exact values and, optionally, to named models), and tools or
 diagnostics as WebAssembly modules that run in a sandbox without access to
@@ -269,7 +316,9 @@ change a camera's identity.
 
 To write one, see [`crates/pmca-plugin-sdk`](crates/pmca-plugin-sdk/src/lib.rs)
 and its [examples](crates/pmca-plugin-sdk/examples);
-`pmca-console plugins pack <folder> <file>` builds and checks a plugin file.
+`pmca-console plugins pack <folder> <file>` builds and checks a plugin file;
+with `--key` (a key made by `pmca-console plugins keygen`) it also signs it.
+An installed signed plugin is only replaced by a file signed with the same key.
 
 ## Safety
 
@@ -346,7 +395,9 @@ signed, and every signing request is approved by hand.
 Privacy: this program will not transfer any information to other networked
 systems unless specifically requested by the user or the person installing or
 operating it. The features that reach the network do so only when used: the
-GPS assist data (from Sony), the community app list (from GitHub) and the key
+GPS assist data (from Sony), the sources you have added (read from GitHub, with
+their stars and, when you ask, a search there; apps and plugins come from the
+addresses those sources name) and the key
 import (from the address you enter). If you switch on the update notification
 in the settings, the app also asks GitHub for the newest release at every
 start; it is off by default. There is no telemetry.

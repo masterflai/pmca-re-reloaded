@@ -63,6 +63,10 @@ diagnostics: Array<PluginEntry>,
  */
 compatibility: number, 
 /**
+ * Public Ed25519 key (hex) the file is signed with; `None` if unsigned.
+ */
+signer: string | null, 
+/**
  * Whether it is in effect in this session.
  */
 active: boolean, };

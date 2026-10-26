@@ -13,6 +13,7 @@ export type { AboutLink } from "./bindings/AboutLink";
 export type { AvailableUpdate } from "./bindings/AvailableUpdate";
 export type { CameraSummary } from "./bindings/CameraSummary";
 export type { CommunityApp } from "./bindings/CommunityApp";
+export type { CommunityList } from "./bindings/CommunityList";
 export type { FirmwareOutcome } from "./bindings/FirmwareOutcome";
 export type { InstallOutcome } from "./bindings/InstallOutcome";
 export type { InstalledDevice } from "./bindings/InstalledDevice";
@@ -25,12 +26,21 @@ export type { PluginInfo } from "./bindings/PluginInfo";
 export type { PluginList } from "./bindings/PluginList";
 export type { PluginRunOutcome } from "./bindings/PluginRunOutcome";
 export type { ProgressEvent as ProgressPayload } from "./bindings/ProgressEvent";
+export type { Source } from "./bindings/Source";
+export type { SourceRepo } from "./bindings/SourceRepo";
+export type { SourceSuggestion } from "./bindings/SourceSuggestion";
 export type { StreamingSettings } from "./bindings/StreamingSettings";
 export type { TweakReport } from "./bindings/TweakReport";
 export type { WifiAccessPoint } from "./bindings/WifiAccessPoint";
 
 /** Event the Rust backend streams installation progress on. */
 export const PROGRESS_EVENT = "pmca://progress";
+
+/** The sources the user has added and the suggestions not yet switched on (Tauri shell). */
+export interface SourcesState {
+  sources: import("./bindings/Source").Source[];
+  suggestions: import("./bindings/SourceSuggestion").SourceSuggestion[];
+}
 
 /** A plugin tool's result and where its output was saved (Tauri shell). */
 export interface PluginToolResult {

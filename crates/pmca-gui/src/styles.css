@@ -720,12 +720,73 @@ summary {
   margin-inline-start: auto;
 }
 
-.plugin-list .error-text {
+.plugin-list .error-text,
+.card > div > .error-text {
   color: var(--danger);
 }
 
 .plugin-list {
   margin-bottom: 16px;
+}
+
+/* GitHub stars of a source: a count, not a rating, so kept muted. */
+.stars {
+  color: var(--text-muted);
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Below a list, the next field keeps its distance whether or not a row's rule ends the list. */
+.field-label.after-list {
+  margin-top: 16px;
+}
+
+/* "Details": folds an entry's description and addresses away. */
+.content button.details-toggle {
+  padding: 2px 10px;
+  font-size: 0.85em;
+}
+
+.details-line {
+  margin-top: 4px;
+}
+
+.details-panel {
+  margin: 6px 0 4px;
+  padding: 8px 12px;
+  background: var(--control);
+  border-inline-start: 3px solid var(--accent);
+  border-radius: var(--radius);
+}
+
+.details-panel p {
+  margin: 4px 0;
+}
+
+.details-panel .row {
+  margin: 6px 0 0;
+}
+
+/* An address to paste into the browser: whole, selectable, wrapping inside the panel. */
+.address-row code {
+  flex: 1 1 14rem;
+  min-width: 0;
+  word-break: break-all;
+  user-select: text;
+}
+
+.store-table tr.store-detail-row td {
+  padding-top: 0;
+}
+
+.store-table tr.expanded > * {
+  border-bottom: none;
+}
+
+/* Under the name, whatever its length, so every row looks the same. */
+.store-table tbody th .details-toggle {
+  display: block;
+  margin-top: 4px;
 }
 
 /* A notice raised by the running operation, shown under its status line. */
@@ -954,10 +1015,11 @@ summary {
 }
 
 .store-table th:nth-child(1) { width: 2.5rem; }
-.store-table th:nth-child(2) { width: 26%; }
-.store-table th:nth-child(3) { width: 11%; }
-.store-table th:nth-child(4) { width: 16%; }
-.store-table th:nth-child(5) { width: 14%; }
+.store-table th:nth-child(2) { width: 22%; }
+.store-table th:nth-child(3) { width: 10%; }
+.store-table th:nth-child(4) { width: 13%; }
+.store-table th:nth-child(5) { width: 17%; }
+.store-table th:nth-child(6) { width: 12%; }
 
 .store-table th,
 .store-table td {

@@ -15,6 +15,8 @@ pmca-market = { path = "../pmca-market" }
 pmca-platform = { path = "../pmca-platform" }
 serde.workspace = true
 serde_json.workspace = true
+sha2.workspace = true
+ring = "0.17"
 thiserror.workspace = true
 # Reads the archive a key source may come as (e.g. a repository zip).
 zip.workspace = true

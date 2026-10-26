@@ -99,9 +99,12 @@ enum Command {
         /// Install a local APK file instead of a store app.
         #[arg(long, conflicts_with = "app")]
         apk: Option<PathBuf>,
-        /// Install an app from the community store by package name.
+        /// Install an app from one of your sources by package name.
         #[arg(long, value_name = "PACKAGE")]
         app: Option<String>,
+        /// The source (`owner/repo`) to take `--app` from, when several offer it.
+        #[arg(long, value_name = "SOURCE", requires = "app")]
+        source: Option<String>,
         /// Write the camera's install result (JSON) to this file.
         #[arg(long)]
         out: Option<PathBuf>,
@@ -110,8 +113,18 @@ enum Command {
         #[arg(long, value_name = "FILE")]
         cert: Option<PathBuf>,
     },
-    /// List the apps offered by the community app store.
+    /// List the apps your sources offer.
     Apps,
+    /// Show, add, remove or search for the GitHub repositories apps and
+    /// plugins come from.
+    ///
+    /// The program ships no source and checks none: a source is a repository
+    /// whose author publishes `pmca-source.yaml`, and its author alone is
+    /// responsible for what it offers. Look at a repository before adding it.
+    Sources {
+        #[command(subcommand)]
+        action: SourcesAction,
+    },
     /// Launch the firmware-updater debug shell.
     ///
     /// Switching to updater mode and writing the payload modifies the camera
@@ -290,11 +303,11 @@ enum Command {
     },
     /// Install, remove, list and run plugins.
     ///
-    /// A plugin is a `.pmcaplugin` file from your own disk; there is no plugin
-    /// store. It can add languages, switches for camera settings, rows for the
-    /// compatibility overview, tools and diagnostics. Its code runs in a
-    /// sandbox without access to files, network or key material. Changes take
-    /// effect at the next start.
+    /// A plugin is a `.pmcaplugin` file from your own disk or from one of your
+    /// sources (see `sources`). It can add languages, switches for camera
+    /// settings, rows for the compatibility overview, tools and diagnostics.
+    /// Its code runs in a sandbox without access to files, network or key
+    /// material. Changes take effect at the next start.
     Plugins {
         #[command(subcommand)]
         action: PluginsAction,
@@ -326,7 +339,43 @@ enum PluginsAction {
         output: Option<PathBuf>,
     },
     /// Build a plugin file from a folder, checked as installing would check it.
-    Pack { dir: PathBuf, file: PathBuf },
+    Pack {
+        dir: PathBuf,
+        file: PathBuf,
+        /// Sign the plugin with this key (made with `plugins keygen`).
+        #[arg(long, value_name = "KEYFILE")]
+        key: Option<PathBuf>,
+    },
+    /// Create a key for signing your plugins. Keep the file secret: whoever
+    /// has it can sign plugins in your name, and without it you cannot
+    /// publish an update your users' installations accept.
+    Keygen { file: PathBuf },
+    /// List the plugins your sources offer.
+    Available,
+    /// Install or update a plugin from one of your sources.
+    Get {
+        /// Plugin id.
+        id: String,
+        /// The source (`owner/repo`) to take it from, when several offer it.
+        #[arg(long, value_name = "SOURCE")]
+        source: Option<String>,
+    },
+}
+
+/// What [`Command::Sources`] should do.
+#[derive(Subcommand)]
+enum SourcesAction {
+    /// List your sources and the suggestion you have not switched on.
+    List,
+    /// Add a source: `owner/repo` or the repository's address on GitHub.
+    Add { repo: String },
+    /// Remove a source, and the signers remembered for its apps.
+    Remove { id: String },
+    /// Search GitHub for repositories with the topic `pmca-source`.
+    ///
+    /// The results are not checked by this program. The stars only say how
+    /// many GitHub users have marked a repository.
+    Search,
 }
 
 /// What [`Command::Keys`] should do.
@@ -508,6 +557,7 @@ fn uses_camera(cmd: &Command) -> bool {
         | Command::GuessFirmware { .. }
         | Command::XpdChecksum { .. }
         | Command::Apps
+        | Command::Sources { .. }
         | Command::Driver { .. }
         | Command::Keys { .. } => false,
         // Spelled out, so a new plugin action has to decide as well.
@@ -517,7 +567,10 @@ fn uses_camera(cmd: &Command) -> bool {
             | PluginsAction::Install { .. }
             | PluginsAction::Remove { .. }
             | PluginsAction::Run { .. }
-            | PluginsAction::Pack { .. } => false,
+            | PluginsAction::Pack { .. }
+            | PluginsAction::Keygen { .. }
+            | PluginsAction::Available
+            | PluginsAction::Get { .. } => false,
         },
     }
 }
@@ -560,11 +613,21 @@ fn run(cmd: &Command, l: &Localizer) -> Result<(), Box<dyn std::error::Error>> {
         Command::Updatershell { model, fdat_file, fdat_dir, flash } => {
             updatershell_command(l, model.as_deref(), fdat_file.as_deref(), fdat_dir, *flash)?;
         }
-        Command::Install { apk, app, out, cert } => {
-            install_command(l, apk.as_deref(), app.as_deref(), out.as_deref(), cert.as_deref())?;
+        Command::Install { apk, app, source, out, cert } => {
+            install_command(
+                l,
+                apk.as_deref(),
+                app.as_deref(),
+                source.as_deref(),
+                out.as_deref(),
+                cert.as_deref(),
+            )?;
         }
         Command::Apps => {
             apps_command(l)?;
+        }
+        Command::Sources { action } => {
+            sources_command(l, action)?;
         }
         Command::Serviceshell => {
             serviceshell_command(l)?;

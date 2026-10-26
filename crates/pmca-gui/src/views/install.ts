@@ -15,10 +15,18 @@ import {
   withProgressTarget,
 } from "../dom";
 import { filePicker } from "../drop";
-import type { CommunityApp, DownloadedApp, InstallOutcome, InstalledDevice } from "../dto";
+import type {
+  CommunityApp,
+  CommunityList,
+  DownloadedApp,
+  InstallOutcome,
+  InstalledDevice,
+  SourcesState,
+} from "../dto";
 import { errorText, tr, trFill } from "../i18n";
 import { capableDevices, lowRiskCheck } from "./camera";
 import { deviceToggle } from "./network";
+import { disclosure, entryDetails, starsBadge } from "./sources";
 
 export function viewInstall(host: HTMLElement): void {
   const status = statusLine();
@@ -110,6 +118,7 @@ export function viewInstall(host: HTMLElement): void {
           "store-col-app",
           "store-col-version",
           "store-col-author",
+          "store-col-source",
           "store-col-camera",
           "store-col-status",
         ].map((key) => make("th", { scope: "col", i18n: key })),
@@ -151,6 +160,7 @@ export function viewInstall(host: HTMLElement): void {
       if (!row.app.installable) continue;
       try {
         const version = await invoke<string>("community_app_version", {
+          source: row.app.source,
           package: row.app.package,
         });
         if (generation === listGeneration && row.version.textContent === "…") {
@@ -221,7 +231,32 @@ export function viewInstall(host: HTMLElement): void {
     rows = [];
     table.hidden = true;
     try {
-      const apps = await invoke<CommunityApp[]>("list_community_apps");
+      const state = await invoke<SourcesState>("sources_list");
+      if (state.sources.length === 0) {
+        // Nothing to list yet: offer the original project's list, as Settings would.
+        const suggestion = state.suggestions[0];
+        const accepted =
+          suggestion !== undefined &&
+          (await chosen(
+            trFill("store-activate-suggestion", { source: suggestion.source.id }),
+            tr("btn-activate-list"),
+            tr("btn-cancel"),
+          ));
+        if (!accepted) {
+          showStatus(storeStatus, tr("store-no-sources"));
+          return;
+        }
+        showBusy(storeStatus, tr("sources-adding"));
+        await invoke("sources_add", { spec: suggestion.source.id });
+        showBusy(storeStatus, tr("store-loading"));
+      }
+      const list = await invoke<CommunityList>("list_community_apps");
+      const apps = list.entries;
+      for (const failure of list.failed) {
+        storeDetails.append(
+          make("p", { className: "error-text", textContent: trFill("source-failed", { ...failure }) }),
+        );
+      }
       // An empty list is not a success worth ticking off — nothing was found.
       if (apps.length === 0) {
         showStatus(storeStatus, tr("msg-no-apps"));
@@ -238,22 +273,30 @@ export function viewInstall(host: HTMLElement): void {
         const row: StoreRow = { app, check, version, camera: make("td"), status, result: null };
         setCameraCell(row);
         rows.push(row);
-        tbody.append(
-          make(
-            "tr",
-            { className: app.installable ? "" : "unavailable" },
-            make("td", {}, check),
-            make(
-              "th",
-              { scope: "row" },
-              make("label", { htmlFor: id, textContent: app.name, title: app.description ?? "" }),
-            ),
-            row.version,
-            make("td", { textContent: app.author ?? "" }),
-            row.camera,
-            make("td", {}, status),
-          ),
+        const detailRow = make(
+          "tr",
+          { className: "store-detail-row" },
+          make("td", { colSpan: 7 }, entryDetails(app)),
         );
+        const nameCell = make(
+          "th",
+          { scope: "row" },
+          make("label", { htmlFor: id, textContent: app.name, title: app.description ?? "" }),
+        );
+        const appRow = make(
+          "tr",
+          { className: app.installable ? "" : "unavailable" },
+          make("td", {}, check),
+          nameCell,
+          row.version,
+          make("td", { textContent: app.author ?? "" }),
+          make("td", {}, `${app.source} `, starsBadge(app.source)),
+          row.camera,
+          make("td", {}, status),
+        );
+        // The row's rule would otherwise cut the app off from its own details.
+        nameCell.append(disclosure(detailRow, false, (open) => appRow.classList.toggle("expanded", open)));
+        tbody.append(appRow, detailRow);
       });
       table.hidden = apps.length === 0;
       void fillVersions(++listGeneration);
@@ -335,7 +378,10 @@ export function viewInstall(host: HTMLElement): void {
         showBusy(row.status, tr("store-loading"));
         try {
           const download = await withProgressTarget(row.status, () =>
-            invoke<DownloadedApp>("download_community_app", { package: row.app.package }),
+            invoke<DownloadedApp>("download_community_app", {
+              source: row.app.source,
+              package: row.app.package,
+            }),
           );
           versions.set(row, download.version);
           // The APK's own versionName, which is what the camera will report.
@@ -392,7 +438,10 @@ export function viewInstall(host: HTMLElement): void {
         current = row;
         showBusy(row.status, tr("install-starting"));
         const outcome = await withProgressTarget(row.status, () =>
-          invoke<InstallOutcome>("install_downloaded_app", { package: row.app.package }),
+          invoke<InstallOutcome>("install_downloaded_app", {
+            source: row.app.source,
+            package: row.app.package,
+          }),
         );
         current = null;
         row.result = "done";
@@ -474,6 +523,7 @@ export function viewInstall(host: HTMLElement): void {
     ),
     card(
       make("h2", { i18n: "store-heading" }),
+      make("p", { className: "hint", i18n: "store-sources-hint" }),
       make("div", { className: "row" }, loadCommunity, sync),
       storeStatus,
       storeDetails,

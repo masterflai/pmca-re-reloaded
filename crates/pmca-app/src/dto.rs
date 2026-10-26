@@ -140,7 +140,7 @@ pub struct FirmwareOutcome {
     pub flashed: bool,
 }
 
-/// An application offered by the community app store (`OpenMemories-AppList`).
+/// An app or plugin one of the user's sources offers.
 ///
 /// The newest build is *not* resolved while listing: every entry would cost one
 /// GitHub API request, and the unauthenticated rate limit is low. Use
@@ -149,7 +149,9 @@ pub struct FirmwareOutcome {
 #[serde(rename_all = "camelCase")]
 #[cfg_attr(test, derive(ts_rs::TS), ts(export))]
 pub struct CommunityApp {
-    /// Android package name; the identifier used to install the app.
+    /// The source (`owner/repo`) that offers it.
+    pub source: String,
+    /// Android package name or plugin id; with the source, what names it.
     pub package: String,
     /// Display name.
     pub name: String,
@@ -159,22 +161,59 @@ pub struct CommunityApp {
     pub description: Option<String>,
     /// Project homepage.
     pub homepage: Option<String>,
+    /// The GitHub repository it is released from, when the source names one.
+    pub repository: Option<String>,
     /// Whether the entry declares a usable release source.
     pub installable: bool,
 }
 
-impl From<pmca_market::appstore::StoreApp> for CommunityApp {
-    fn from(a: pmca_market::appstore::StoreApp) -> Self {
-        let installable = !matches!(a.release, pmca_market::appstore::ReleaseSource::None);
+impl CommunityApp {
+    /// Describe an entry of `source`.
+    #[must_use]
+    pub fn new(source: String, a: pmca_market::appstore::StoreApp) -> Self {
+        use pmca_market::appstore::{ReleaseSource, valid_repo_name};
+        let installable = !matches!(a.release, ReleaseSource::None);
+        let repository = match &a.release {
+            ReleaseSource::Github { user, repo }
+                if valid_repo_name(user) && valid_repo_name(repo) =>
+            {
+                Some(format!("https://github.com/{user}/{repo}"))
+            }
+            _ => None,
+        };
         Self {
+            source,
             package: a.package,
             name: a.name,
             author: a.author,
             description: a.desc,
             homepage: a.homepage,
+            repository,
             installable,
         }
     }
+}
+
+/// A source that could not be read while listing.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+#[cfg_attr(test, derive(ts_rs::TS), ts(export))]
+pub struct SourceFailure {
+    /// The source (`owner/repo`).
+    pub source: String,
+    /// Why, as the network layer put it.
+    pub reason: String,
+}
+
+/// What the user's sources offer of one kind, and which could not be read.
+#[derive(Debug, Clone, Default, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+#[cfg_attr(test, derive(ts_rs::TS), ts(export))]
+pub struct CommunityList {
+    /// The entries, source by source in the order the sources were added.
+    pub entries: Vec<CommunityApp>,
+    /// The sources that could not be read.
+    pub failed: Vec<SourceFailure>,
 }
 
 /// Metadata read out of the APK that is about to be installed.

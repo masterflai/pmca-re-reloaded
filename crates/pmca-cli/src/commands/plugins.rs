@@ -58,9 +58,46 @@ pub(crate) fn plugins_command(
                 println!("{}", l.tr_arg("tools-written", "path", &path.display().to_string()));
             }
         }
-        PluginsAction::Pack { dir, file } => {
-            print_plugin(l, &plugins::pack(l, dir, file)?);
+        PluginsAction::Pack { dir, file, key } => {
+            print_plugin(l, &plugins::pack(l, dir, file, key.as_deref())?);
             println!("{}", l.tr_arg("tools-written", "path", &file.display().to_string()));
+        }
+        PluginsAction::Keygen { file } => {
+            let public_key = plugins::generate_key(l, file)?;
+            let path = file.display().to_string();
+            println!(
+                "{}",
+                l.tr_args("plugin-key-written", &[("path", &path), ("key", &public_key)])
+            );
+        }
+        PluginsAction::Available => {
+            if pmca_app::sources::list().is_empty() {
+                println!("{}", l.tr("store-no-sources"));
+                return Ok(());
+            }
+            let list = pmca_app::store::community_plugins();
+            print_failed_sources(l, &list.failed);
+            if list.entries.is_empty() {
+                println!("{}", l.tr("plugin-sources-none"));
+            }
+            for entry in &list.entries {
+                println!("{:<32} {}  [{}]", entry.package, entry.name, entry.source);
+                if let Some(desc) = entry.description.as_deref().filter(|d| !d.is_empty()) {
+                    println!("{:<32} {desc}", "");
+                }
+            }
+        }
+        PluginsAction::Get { id, source } => {
+            let kind = pmca_market::appstore::EntryKind::Plugin;
+            let source = pick_source(l, id, source.as_deref(), kind)?;
+            let mut sink = |event: pmca_app::ProgressEvent| println!("{}", event.message);
+            let (info, bytes) =
+                pmca_app::store::download_community_plugin(l, &source, id, &mut sink)?;
+            print_plugin(l, &info);
+            println!("{}", l.tr_arg("plugin-source-unchecked", "source", &source));
+            plugins::install_bytes(l, &bytes, &format!("{id}.pmcaplugin"))?;
+            println!("{}", l.tr("plugin-installed"));
+            println!("{}", l.tr("plugin-restart"));
         }
     }
     Ok(())
@@ -79,6 +116,10 @@ fn print_plugin(l: &Localizer, plugin: &pmca_app::plugins::PluginInfo) {
     }
     if !plugin.description.is_empty() {
         println!("  {}", own(&plugin.description_key, &plugin.description));
+    }
+    match &plugin.signer {
+        Some(key) => println!("  {}", l.tr_arg("plugin-signed", "key", key)),
+        None => println!("  {}", l.tr("plugin-unsigned")),
     }
     for permission in &plugin.permissions {
         println!("  - {}", l.tr(&format!("plugin-perm-{permission}")));

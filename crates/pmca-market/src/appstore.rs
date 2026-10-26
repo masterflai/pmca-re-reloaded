@@ -1,9 +1,10 @@
-//! Community app store – port of `pmca/appstore`.
+//! Community app sources – grown out of the port of `pmca/appstore`.
 //!
-//! The list of installable community apps lives in a YAML file in a GitHub
-//! repository (`ma1co/OpenMemories-AppList` by default). Each entry names a
-//! release source, which is resolved to a downloadable APK either through the
-//! GitHub releases API, through a second YAML feed, or directly.
+//! A source is a YAML file in a GitHub repository: `pmca-source.yaml` by
+//! default, or the `apps.yaml` of `ma1co/OpenMemories-AppList`, whose format it
+//! extends. Each entry names an app or a plugin and a release source, which is
+//! resolved to a downloadable file either through the GitHub releases API,
+//! through a second YAML feed, or directly.
 //!
 //! Everything that interprets remote data ([`parse_app_list`],
 //! [`parse_github_releases`], [`parse_release_feed`]) is pure and unit-tested;
@@ -26,17 +27,36 @@
 
 use crate::{Error, Result};
 
-/// GitHub user owning the default app list.
-pub const DEFAULT_LIST_USER: &str = "ma1co";
-/// Repository holding the default app list.
-pub const DEFAULT_LIST_REPO: &str = "OpenMemories-AppList";
-/// Branch of the default app list.
-pub const DEFAULT_LIST_BRANCH: &str = "master";
-/// File name of the default app list.
-pub const DEFAULT_LIST_FILE: &str = "apps.yaml";
+/// File a source repository publishes at its root.
+pub const SOURCE_FILE: &str = "pmca-source.yaml";
+/// GitHub topic that makes a source repository findable.
+pub const SOURCE_TOPIC: &str = "pmca-source";
+/// The branch raw.githubusercontent.com resolves to the default branch.
+pub const DEFAULT_BRANCH: &str = "HEAD";
 
 /// Asset content type GitHub reports for an APK.
 const APK_CONTENT_TYPE: &str = "application/vnd.android.package-archive";
+
+/// What an entry of a source offers.
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq)]
+pub enum EntryKind {
+    /// A camera app (`.apk`); also every entry without `kind`.
+    #[default]
+    App,
+    /// A plugin for this program (`.pmcaplugin`).
+    Plugin,
+}
+
+impl EntryKind {
+    /// The file name ending of a release asset of this kind.
+    #[must_use]
+    pub fn suffix(self) -> &'static str {
+        match self {
+            EntryKind::App => ".apk",
+            EntryKind::Plugin => ".pmcaplugin",
+        }
+    }
+}
 
 /// Where the newest build of an app can be found.
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -72,10 +92,12 @@ pub struct Release {
     pub desc: Option<String>,
 }
 
-/// An app offered by the community store.
+/// An app or plugin offered by a source.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct StoreApp {
-    /// Android package name; the store's primary key.
+    /// App or plugin.
+    pub kind: EntryKind,
+    /// Android package name, or the plugin id; the source's primary key.
     pub package: String,
     /// Display name.
     pub name: String,
@@ -89,17 +111,25 @@ pub struct StoreApp {
     pub release: ReleaseSource,
 }
 
-/// Parse `apps.yaml` into the list of apps, in file order.
+/// Parse a source file (`pmca-source.yaml`, `apps.yaml`) into its entries, in
+/// file order.
 ///
-/// Entries without both `package` and `name` are skipped.
+/// Entries without both `package` and `name`, and entries of an unknown `kind`,
+/// are skipped.
 pub fn parse_app_list(data: &[u8]) -> Result<Vec<StoreApp>> {
     let text = String::from_utf8_lossy(data);
     Ok(yaml::documents(&text)
         .into_iter()
         .filter_map(|doc| {
+            let kind = match doc.scalar("kind") {
+                None | Some("app") => EntryKind::App,
+                Some("plugin") => EntryKind::Plugin,
+                Some(_) => return None,
+            };
             let package = doc.scalar("package")?.to_string();
             let name = doc.scalar("name")?.to_string();
             Some(StoreApp {
+                kind,
                 package,
                 name,
                 author: doc.scalar("author").map(str::to_string),
@@ -141,23 +171,30 @@ fn release_source(doc: &yaml::Document) -> ReleaseSource {
     }
 }
 
-/// Pick the newest GitHub release that ships an APK asset.
+/// Pick the newest GitHub release that ships an asset of `kind`.
 ///
 /// `data` is the JSON body of `/repos/{user}/{repo}/releases`, which GitHub
 /// returns newest-first.
-pub fn parse_github_releases(data: &[u8]) -> Result<Option<Release>> {
+pub fn parse_github_releases(data: &[u8], kind: EntryKind) -> Result<Option<Release>> {
     let value: serde_json::Value = serde_json::from_slice(data)?;
     let releases = value.as_array().ok_or(Error::MissingField("releases"))?;
 
+    let matches = |asset: &serde_json::Value| {
+        let named = asset
+            .get("name")
+            .and_then(|n| n.as_str())
+            .is_some_and(|n| n.to_ascii_lowercase().ends_with(kind.suffix()));
+        named
+            || (kind == EntryKind::App
+                && asset.get("content_type").and_then(|c| c.as_str()) == Some(APK_CONTENT_TYPE))
+    };
     for release in releases {
         let Some(url) = release
             .get("assets")
             .and_then(|a| a.as_array())
             .into_iter()
             .flatten()
-            .find(|asset| {
-                asset.get("content_type").and_then(|c| c.as_str()) == Some(APK_CONTENT_TYPE)
-            })
+            .find(|asset| matches(asset))
             .and_then(|asset| asset.get("browser_download_url"))
             .and_then(|u| u.as_str())
             .filter(|u| is_https(u))
@@ -198,6 +235,72 @@ pub fn parse_release_feed(data: &[u8]) -> Result<Option<Release>> {
 /// Only `https://` URLs are accepted from the (third-party) app list.
 fn is_https(url: &str) -> bool {
     url.len() > 8 && url[..8].eq_ignore_ascii_case("https://")
+}
+
+/// A GitHub repository, as the API describes it.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct RepoInfo {
+    /// Account that owns the repository.
+    pub owner: String,
+    /// Repository name.
+    pub name: String,
+    /// The repository's own one-line description.
+    pub description: Option<String>,
+    /// How many GitHub users have starred it.
+    pub stars: u32,
+    /// Last push, ISO-8601.
+    pub pushed_at: Option<String>,
+    /// Whether the owner has archived it.
+    pub archived: bool,
+}
+
+/// Whether `name` can be a GitHub account or repository name.
+///
+/// Both end up in URLs, so anything else is refused rather than escaped.
+#[must_use]
+pub fn valid_repo_name(name: &str) -> bool {
+    !name.is_empty()
+        && name.len() <= 100
+        && name != "."
+        && name != ".."
+        && name.bytes().all(|b| b.is_ascii_alphanumeric() || matches!(b, b'-' | b'_' | b'.'))
+}
+
+fn repo_from_json(value: &serde_json::Value) -> Option<RepoInfo> {
+    let owner = value.get("owner")?.get("login")?.as_str()?;
+    let name = value.get("name")?.as_str()?;
+    if !valid_repo_name(owner) || !valid_repo_name(name) {
+        return None;
+    }
+    Some(RepoInfo {
+        owner: owner.to_string(),
+        name: name.to_string(),
+        description: value
+            .get("description")
+            .and_then(|d| d.as_str())
+            .filter(|d| !d.is_empty())
+            .map(str::to_string),
+        stars: value
+            .get("stargazers_count")
+            .and_then(serde_json::Value::as_u64)
+            .map_or(0, |n| u32::try_from(n).unwrap_or(u32::MAX)),
+        pushed_at: value.get("pushed_at").and_then(|d| d.as_str()).map(str::to_string),
+        archived: value.get("archived").and_then(serde_json::Value::as_bool).unwrap_or(false),
+    })
+}
+
+/// Parse the JSON body of `/repos/{owner}/{repo}`.
+pub fn parse_repo(data: &[u8]) -> Result<RepoInfo> {
+    let value: serde_json::Value = serde_json::from_slice(data)?;
+    repo_from_json(&value).ok_or(Error::MissingField("repository"))
+}
+
+/// Parse the JSON body of `/search/repositories`, in the order GitHub ranked it.
+pub fn parse_repo_search(data: &[u8]) -> Result<Vec<RepoInfo>> {
+    let value: serde_json::Value = serde_json::from_slice(data)?;
+    let items =
+        value.get("items").and_then(|i| i.as_array()).ok_or(Error::MissingField("items"))?;
+    Ok(items.iter().filter_map(repo_from_json).collect())
 }
 
 /// Minimal reader for the flat YAML subset the app lists use.
@@ -353,8 +456,10 @@ mod net {
     const MAX_ASSET_SIZE: u64 = 64 * 1024 * 1024;
     /// Upper bound for a metadata document.
     const MAX_METADATA_SIZE: u64 = 4 * 1024 * 1024;
+    /// How many search results are asked for; GitHub allows 100 per page.
+    const SEARCH_PAGE: u32 = 50;
 
-    /// Fetch and parse the community app list.
+    /// Fetch and parse the source file `file` of `user/repo` at `branch`.
     pub fn get_store_apps(
         user: &str,
         repo: &str,
@@ -365,12 +470,28 @@ mod net {
         parse_app_list(&fetch(&url, MAX_METADATA_SIZE)?)
     }
 
-    /// Resolve an app's [`ReleaseSource`] to a concrete [`Release`].
-    pub fn resolve_release(source: &ReleaseSource) -> Result<Option<Release>> {
+    /// Describe one GitHub repository, its stars included.
+    pub fn repo_info(owner: &str, repo: &str) -> Result<RepoInfo> {
+        parse_repo(&fetch(&format!("{API_BASE}/repos/{owner}/{repo}"), MAX_METADATA_SIZE)?)
+    }
+
+    /// The repositories tagged with [`SOURCE_TOPIC`], most-starred first.
+    pub fn search_sources() -> Result<Vec<RepoInfo>> {
+        let url = format!(
+            "{API_BASE}/search/repositories?q=topic:{SOURCE_TOPIC}&sort=stars&order=desc&per_page={SEARCH_PAGE}"
+        );
+        parse_repo_search(&fetch(&url, MAX_METADATA_SIZE)?)
+    }
+
+    /// Resolve an entry's [`ReleaseSource`] to a concrete [`Release`].
+    pub fn resolve_release(source: &ReleaseSource, kind: EntryKind) -> Result<Option<Release>> {
         match source {
             ReleaseSource::Github { user, repo } => {
+                if !valid_repo_name(user) || !valid_repo_name(repo) {
+                    return Ok(None);
+                }
                 let url = format!("{API_BASE}/repos/{user}/{repo}/releases");
-                parse_github_releases(&fetch(&url, MAX_METADATA_SIZE)?)
+                parse_github_releases(&fetch(&url, MAX_METADATA_SIZE)?, kind)
             }
             ReleaseSource::Yaml { url } => parse_release_feed(&fetch(url, MAX_METADATA_SIZE)?),
             ReleaseSource::Direct(release) => Ok(Some(release.clone())),
@@ -412,7 +533,9 @@ mod net {
 }
 
 #[cfg(feature = "client")]
-pub use net::{download, download_asset, get_store_apps, resolve_release};
+pub use net::{
+    download, download_asset, get_store_apps, repo_info, resolve_release, search_sources,
+};
 
 #[cfg(test)]
 mod tests {
@@ -472,28 +595,83 @@ mod tests {
              "assets":[{"content_type":"application/vnd.android.package-archive",
                         "browser_download_url":"https://x/a.apk"}]}
         ]"#;
-        let release = parse_github_releases(json).unwrap().unwrap();
+        let release = parse_github_releases(json, EntryKind::App).unwrap().unwrap();
         assert_eq!(release.version, "v1");
         assert_eq!(release.url, "https://x/a.apk");
         assert_eq!(release.date.as_deref(), Some("2023-01-02T03:04:05Z"));
     }
 
     #[test]
+    fn a_plugin_entry_picks_the_pmcaplugin_asset() {
+        let json = br#"[{"tag_name":"v3","assets":[
+            {"name":"app.apk","content_type":"application/vnd.android.package-archive","browser_download_url":"https://x/app.apk"},
+            {"name":"Demo.PMCAPLUGIN","content_type":"application/zip","browser_download_url":"https://x/demo.pmcaplugin"}]}]"#;
+        let plugin = parse_github_releases(json, EntryKind::Plugin).unwrap().unwrap();
+        assert_eq!(plugin.url, "https://x/demo.pmcaplugin");
+        let app = parse_github_releases(json, EntryKind::App).unwrap().unwrap();
+        assert_eq!(app.url, "https://x/app.apk");
+    }
+
+    #[test]
+    fn an_apk_is_recognised_by_its_name_too() {
+        let json = br#"[{"tag_name":"v1","assets":[{"name":"a.apk","content_type":"application/octet-stream","browser_download_url":"https://x/a.apk"}]}]"#;
+        assert!(parse_github_releases(json, EntryKind::App).unwrap().is_some());
+        assert!(parse_github_releases(json, EntryKind::Plugin).unwrap().is_none());
+    }
+
+    #[test]
+    fn entries_name_their_kind() {
+        let list = "---\npackage: a\nname: A\n---\nkind: plugin\npackage: demo\nname: Demo\n---\nkind: theme\npackage: t\nname: T\n";
+        let entries = parse_app_list(list.as_bytes()).unwrap();
+        assert_eq!(entries.len(), 2);
+        assert_eq!(entries[0].kind, EntryKind::App);
+        assert_eq!(entries[1].kind, EntryKind::Plugin);
+        assert_eq!(entries[1].package, "demo");
+    }
+
+    #[test]
+    fn reads_a_repository_and_a_search() {
+        let repo = br#"{"name":"src","owner":{"login":"dev"},"description":"","stargazers_count":42,"pushed_at":"2026-01-02T00:00:00Z","archived":true}"#;
+        let info = parse_repo(repo).unwrap();
+        assert_eq!((info.owner.as_str(), info.name.as_str(), info.stars), ("dev", "src", 42));
+        assert!(info.description.is_none());
+        assert!(info.archived);
+
+        let search = br#"{"total_count":2,"items":[
+            {"name":"a","owner":{"login":"x"},"stargazers_count":5},
+            {"name":"bad/name","owner":{"login":"y"},"stargazers_count":9}]}"#;
+        let hits = parse_repo_search(search).unwrap();
+        assert_eq!(hits.len(), 1);
+        assert_eq!(hits[0].stars, 5);
+        assert!(parse_repo_search(br#"{"message":"rate limited"}"#).is_err());
+    }
+
+    #[test]
+    fn repository_names_are_checked() {
+        assert!(valid_repo_name("OpenMemories-AppList"));
+        assert!(valid_repo_name("a.b_c"));
+        assert!(!valid_repo_name(""));
+        assert!(!valid_repo_name(".."));
+        assert!(!valid_repo_name("a/b"));
+        assert!(!valid_repo_name("a?b"));
+    }
+
+    #[test]
     fn falls_back_to_the_tag_name() {
         let json = br#"[{"tag_name":"v9","assets":[{"content_type":"application/vnd.android.package-archive","browser_download_url":"https://x/a.apk"}]}]"#;
-        assert_eq!(parse_github_releases(json).unwrap().unwrap().version, "v9");
+        assert_eq!(parse_github_releases(json, EntryKind::App).unwrap().unwrap().version, "v9");
     }
 
     #[test]
     fn releases_without_an_apk_yield_nothing() {
-        assert!(parse_github_releases(b"[]").unwrap().is_none());
-        assert!(parse_github_releases(br#"[{"assets":[]}]"#).unwrap().is_none());
+        assert!(parse_github_releases(b"[]", EntryKind::App).unwrap().is_none());
+        assert!(parse_github_releases(br#"[{"assets":[]}]"#, EntryKind::App).unwrap().is_none());
     }
 
     #[test]
     fn a_non_array_release_response_is_rejected() {
-        assert!(parse_github_releases(br#"{"message":"rate limited"}"#).is_err());
-        assert!(parse_github_releases(b"not json").is_err());
+        assert!(parse_github_releases(br#"{"message":"rate limited"}"#, EntryKind::App).is_err());
+        assert!(parse_github_releases(b"not json", EntryKind::App).is_err());
     }
 
     #[test]

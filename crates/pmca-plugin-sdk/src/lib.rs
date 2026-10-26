@@ -1,15 +1,18 @@
 //! # pmca-plugin-sdk
 //!
 //! Extensions for PMCA-RE RELOADED are plugin files the user installs from
-//! their own disk (Settings → Plugins, or `pmca-console plugins install`).
-//! There is no plugin store. This crate is for writing the parts of a plugin
+//! their own disk (Settings → Plugins, or `pmca-console plugins install`) or
+//! from a source they added (see `docs/app-sources.md`). This crate is for
+//! writing the parts of a plugin
 //! that run code — tools and diagnostics — in Rust compiled to WebAssembly.
 //! Plugins that only bring data need no code at all.
 //!
 //! ## The plugin file
 //!
 //! A `*.pmcaplugin` file is a ZIP archive. `pmca-console plugins pack <dir>
-//! <file>` builds one from a folder and checks it the way installing would.
+//! <file>` builds one from a folder and checks it the way installing would;
+//! with `--key <keyfile>` (from `pmca-console plugins keygen`) it adds
+//! `signature.json`, so an installed copy only accepts updates you signed.
 //!
 //! ```text
 //! plugin.json            the manifest (required)

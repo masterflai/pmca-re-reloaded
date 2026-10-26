@@ -6,121 +6,58 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+## [1.3.0] - 2026-10-26
+
+**Apps and plugins from anyone.** Developers publish camera apps and plugins
+in a GitHub repository of their own; users add the sources they choose. The
+program hosts nothing and checks nothing. How to publish:
+[Publishing apps and plugins](https://github.com/masterflai/pmca-re-reloaded/blob/main/docs/app-sources.md).
+
+**macOS:** firmware updates and the updater shell have still not been tried
+on a Mac with a camera. Until a successful update on a Mac has been reported,
+update the firmware from Windows or with Sony's own updater.
+
+**macOS 26:** reading the camera information with the camera's USB connection
+set to MTP is confirmed. The reworked mass-storage connection below, which the
+tweaks, the service shell, the function analysis, firmware updates and the
+updater shell need, has not yet been confirmed on macOS 26.
+
 ### Added
 
+- App and plugin sources. Apps and plugins from other developers now come from
+  sources you add yourself: public GitHub repositories with a
+  `pmca-source.yaml` (format in `docs/app-sources.md`, compatible with the
+  OpenMemories app list). The program ships no source and checks none. Under
+  *Settings → App and plugin sources* you add or remove sources, switch on the
+  original project's app list as a suggestion, and search GitHub for
+  repositories with the topic `pmca-source`; stars are shown for every source.
+  Plugins can be installed from your sources in the plugin card. Console:
+  `sources list|add|remove|search`, `plugins available|get`,
+  `install --app <package> [--source <owner/repo>]`.
+- The first download of an app from a source remembers its signing
+  certificate; a later version signed by someone else is refused.
+- Plugin signatures (Ed25519). `pmca-console plugins keygen` creates a key,
+  `plugins pack --key` signs a plugin. The program shows the key before
+  installing, remembers it for plugins from a source like an app's
+  certificate, and replaces an installed signed plugin only with a file signed
+  by the same key.
+- A plugin can translate its name and description: the messages
+  `plg-<id>-name` and `plg-<id>-description` in its own language files are
+  shown in place of the manifest's text once the plugin is installed.
 - Six more languages: Traditional Chinese (Taiwan and Hong Kong), Korean,
   Vietnamese, Thai and Ukrainian. 27 languages in total.
 
 ### Changed
 
+- The OpenMemories app list is no longer read without being asked: after the
+  update the app list stays empty until you add a source or switch on the
+  suggestion. Loading the apps without any source offers to switch it on.
+- Apps, plugins and sources have a *Details* panel with the description and
+  the addresses of their repository, project page and source, each with a
+  copy button: the program still opens no browser itself.
 - Every file field now has its "Browse…" button at the start of the line.
 - The areas a file can be dropped onto are outlined and tinted in the accent
   colour, so they stand out before a file is dragged over them.
-
-## [1.3.0-rc.8] - 2026-10-24
-
-Pre-release for testing on macOS. Contains everything from 1.3.0-rc.1 to
-1.3.0-rc.7.
-
-### Fixed
-
-- macOS 26: the camera's mass-storage connection is now tried in several ways
-  after taking the camera from the system. Selecting the same USB
-  configuration again did not replace the refused interface, so the camera is
-  now unconfigured first. If IOUSBHost still refuses the interface, the
-  program claims it the earlier way while the system's driver is held off,
-  and finally after letting go of the camera without a reset. If nothing
-  works, the camera is reset so its card comes back, and the error lists every
-  step.
-
-## [1.3.0-rc.7] - 2026-10-24
-
-Pre-release for testing on macOS. Contains everything from 1.3.0-rc.1 to
-1.3.0-rc.6.
-
-### Fixed
-
-- macOS 26: after taking the camera from the system, the program now sets up
-  the camera's USB configuration afresh, so its mass-storage connection can be
-  opened. The interface the system's driver had been stopped on refused it
-  (error 0xe00002c9).
-
-## [1.3.0-rc.6] - 2026-10-24
-
-Pre-release for testing on macOS. Contains everything from 1.3.0-rc.1 to
-1.3.0-rc.5.
-
-### Fixed
-
-- macOS 26: the camera's mass-storage connection is now taken over through
-  Apple's IOUSBHost framework. macOS 26 no longer lets programs reach a USB
-  interface that one of its own drivers holds through the older interface the
-  program used before, even with administrator rights; IOUSBHost can still
-  take the camera from the system's disk driver. This is what the tweaks, the
-  service shell, the function analysis, firmware updates and reading the
-  camera information in Auto or Mass Storage mode need on a Mac.
-
-## [1.3.0-rc.5] - 2026-10-24
-
-Pre-release for testing on macOS. Contains everything from 1.3.0-rc.1 to
-1.3.0-rc.4.
-
-### Changed
-
-- macOS: when taking the camera's mass-storage connection fails, the error
-  message also names the macOS version and which system drivers hold the
-  camera before and after the attempt.
-
-## [1.3.0-rc.4] - 2026-10-24
-
-Pre-release for testing on macOS. Contains everything from 1.3.0-rc.1 to
-1.3.0-rc.3.
-
-### Fixed
-
-- macOS: taking the camera's mass-storage connection from the system now
-  keeps hold of the camera for as long as the program works with it. Before,
-  the program let go straight after asking, so macOS handed the camera back
-  to its disk driver before the program could use it.
-
-## [1.3.0-rc.3] - 2026-10-24
-
-Pre-release for testing on macOS. Contains everything from 1.3.0-rc.1 and
-1.3.0-rc.2.
-
-### Fixed
-
-- macOS: before taking the camera's mass-storage connection from the system,
-  the program unmounts the camera's card, which otherwise kept macOS from
-  letting go of the camera. If taking it fails, the card is mounted again.
-  The step trace in the error message is shorter and also shows the unmount.
-
-## [1.3.0-rc.2] - 2026-10-24
-
-Pre-release for testing on macOS. Contains everything from 1.3.0-rc.1.
-
-### Fixed
-
-- macOS: taking the camera's mass-storage connection from the system now
-  also starts when macOS refuses it with "no resources" instead of
-  "exclusive access", waits up to 15 seconds for the camera to come back, and
-  sets its configuration again if claiming keeps failing. If it still fails,
-  the error message lists each step with its timing, so a report shows where
-  it stopped.
-
-## [1.3.0-rc.1] - 2026-10-24
-
-Pre-release for testing on macOS: camera information with the USB connection
-set to Auto, and the tweaks after the camera has switched to mass-storage mode.
-
-### Added
-
-- A plugin can translate its name and description: the messages
-  `plg-<id>-name` and `plg-<id>-description` in its own language files are
-  shown in place of the manifest's text once the plugin is installed.
-
-### Changed
-
 - "No camera found" now says what to check when the camera's display keeps
   saying that it is connecting: a charge-only cable carries no data, so the
   computer never sees the camera. The message suggests a data cable, a direct
@@ -132,15 +69,22 @@ set to Auto, and the tweaks after the camera has switched to mass-storage mode.
   app now reads the camera information as well. It asks for your
   administrator password for this, as it does for the tweaks; in MTP mode no
   password is needed.
+- macOS: when taking the camera's mass-storage connection fails, the error
+  message names the macOS version, the system drivers that hold the camera
+  before and after the attempt, and every step with its timing.
 
 ### Fixed
 
-- macOS: the tweaks, the service shell and the other functions that go
-  through the camera's mass-storage connection failed with "The USB transfer
-  failed" (error 0xe00002be) once the camera had switched to mass-storage
-  mode. Taking the camera from macOS makes it reconnect under a new identity,
-  and the program kept addressing the old one. It now waits for the camera to
-  come back and continues with it.
+- macOS: the camera's mass-storage connection, which the tweaks, the service
+  shell and the other functions in service or updater mode go through, was
+  reworked. The program unmounts the camera's card first, takes the camera
+  from the system through Apple's IOUSBHost framework (macOS 26 no longer lets
+  programs reach an interface held by one of its drivers through the older
+  interface, even with administrator rights), keeps hold of it while working,
+  and sets up its USB configuration afresh. If that is refused, it tries the
+  earlier ways in turn; if nothing works, the camera is reset so its card comes
+  back. Before, these functions failed with "The USB transfer failed" (error
+  0xe00002be) once the camera had switched to mass-storage mode.
 
 ### Security
 
