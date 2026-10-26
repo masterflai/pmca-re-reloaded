@@ -427,6 +427,18 @@ tweak-usb-installer = 启用 USB 应用安装器
 
 # 调整流程
 tweaks-warning = 警告：应用调整会重写相机的备份存储区。写入过程中断可能会永久损坏相机。
+tweaks-info-toggle = 调整项有什么作用？
+tweaks-info-what-heading = 调整项是什么
+tweaks-info-what = 调整项是相机本就具备、却不在菜单中提供的设置。本程序让它们可以使用：无时长限制录制视频（包括 4K）、固件中包含的所有菜单语言、PAL 与 NTSC 的选择，以及 USB 应用安装器。插件还可以添加更多调整项。显示哪些调整项取决于相机型号。
+tweaks-info-how-heading = 工作原理
+tweaks-info-how = “显示可用调整项”会让相机短暂进入服务模式，并读取其备份存储区。此过程不会更改任何内容。随后您会看到哪些调整项已开启或关闭，以及相机标识（仅供查看）。“应用”只写入您更改过的条目。之后程序会再次读取存储区，并检查相机是否已全部接受。
+tweaks-info-undo-heading = 如何恢复
+tweaks-info-undo = 每次写入之前，程序都会将之前的状态保存在这台电脑上。每一项调整都可以用同一个开关重新关闭。对于逐项写入设置值的相机，还会提供“撤销更改”。
+tweaks-info-needs-heading = 所需条件
+tweaks-info-needs = 需要密钥材料（参见“欢迎”页面），并按下文所述将相机的 USB 连接设为“自动”。Windows 和 macOS 会请求管理员权限，以便程序能在服务模式下访问相机。写入期间请勿拔线，也勿取出电池。
+app-backup-target = 目标文件夹
+btn-choose-folder = 选择文件夹…
+btn-default-folder = 使用默认文件夹
 tweaks-reading = 正在读取相机设置…
 tweaks-writing = 正在写入相机设置…
 tweaks-done = 相机设置已更新。

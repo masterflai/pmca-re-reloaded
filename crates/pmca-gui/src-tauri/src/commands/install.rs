@@ -78,6 +78,50 @@ pub(crate) async fn backup_apps(
     .await
 }
 
+/// Where the next backup goes, and whether the user chose that folder.
+#[derive(serde::Serialize)]
+#[serde(rename_all = "camelCase")]
+pub(crate) struct BackupFolder {
+    path: Option<String>,
+    chosen: bool,
+}
+
+fn backup_folder_state() -> BackupFolder {
+    BackupFolder {
+        path: pmca_app::app_backup::backups_dir().map(|p| p.display().to_string()),
+        chosen: pmca_app::app_backup::chosen_dir().is_some(),
+    }
+}
+
+/// The folder the next backup goes to.
+#[tauri::command]
+pub(crate) fn backup_folder() -> BackupFolder {
+    backup_folder_state()
+}
+
+/// Let the user pick the backup folder in the system dialog; `None` when dismissed.
+///
+/// The dialog runs here so the window never supplies a path to write to.
+#[tauri::command(async)]
+pub(crate) fn choose_backup_folder(
+    app: AppHandle,
+    window: Window,
+) -> Result<Option<BackupFolder>, CommandError> {
+    let Some(picked) = app.dialog().file().set_parent(&window).blocking_pick_folder() else {
+        return Ok(None);
+    };
+    let folder = picked.into_path().map_err(CommandError::internal)?;
+    pmca_app::app_backup::choose_dir(Some(&folder))?;
+    Ok(Some(backup_folder_state()))
+}
+
+/// Return to the default backup folder.
+#[tauri::command]
+pub(crate) fn reset_backup_folder() -> Result<BackupFolder, CommandError> {
+    pmca_app::app_backup::choose_dir(None)?;
+    Ok(backup_folder_state())
+}
+
 /// Install an APK, or serve the camera an empty task when `apk` is `None`.
 ///
 /// With `series` set the task belongs to a batch: the camera stays in

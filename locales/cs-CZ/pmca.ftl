@@ -432,6 +432,18 @@ tweak-usb-installer = Povolit instalátor aplikací přes USB
 
 # Postup při úpravách
 tweaks-warning = Varování: použití úprav přepisuje zálohovací paměť fotoaparátu. Přerušený zápis může fotoaparát trvale poškodit.
+tweaks-info-toggle = K čemu slouží úpravy?
+tweaks-info-what-heading = Co to je
+tweaks-info-what = Úpravy jsou nastavení, která váš fotoaparát již má, ale nenabízí je ve svém menu. Tento program je zpřístupní: nahrávání videa bez časového omezení (i ve 4K), všechny jazyky menu obsažené ve firmwaru, volbu mezi PAL a NTSC a instalátor aplikací přes USB. Zásuvné moduly mohou přidat další. Které úpravy se zobrazí, závisí na modelu fotoaparátu.
+tweaks-info-how-heading = Jak to probíhá
+tweaks-info-how = „Zobrazit dostupné úpravy“ krátce přepne fotoaparát do servisního režimu a přečte jeho záložní paměť. Nic se přitom nemění. Poté uvidíte, které úpravy jsou zapnuté nebo vypnuté, a identitu fotoaparátu, která se pouze zobrazuje. „Použít“ zapíše jen položky, které jste změnili. Potom program paměť znovu přečte a zkontroluje, zda fotoaparát vše převzal.
+tweaks-info-undo-heading = Cesta zpět
+tweaks-info-undo = Před každým zápisem program uloží předchozí stav do tohoto počítače. Každou úpravu lze týmž přepínačem opět vypnout. U fotoaparátů, jejichž hodnoty se zapisují jednotlivě, je navíc k dispozici „Vrátit změny“.
+tweaks-info-needs-heading = Co potřebujete
+tweaks-info-needs = Klíčový materiál (viz stránka „Vítejte“) a připojení USB fotoaparátu nastavené na „Auto“, jak je popsáno níže. Windows a macOS si vyžádají práva správce, aby se program mohl k fotoaparátu v servisním režimu připojit. Během zápisu neodpojujte kabel ani nevyjímejte baterii.
+app-backup-target = Cílová složka
+btn-choose-folder = Vybrat složku…
+btn-default-folder = Použít výchozí složku
 tweaks-reading = Načítá se nastavení fotoaparátu…
 tweaks-writing = Zapisuje se nastavení fotoaparátu…
 tweaks-done = Nastavení fotoaparátu bylo aktualizováno.

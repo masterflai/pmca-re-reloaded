@@ -432,6 +432,18 @@ tweak-usb-installer = Activar el instalador de aplicaciones por USB
 
 # Proceso de ajustes
 tweaks-warning = Aviso: aplicar ajustes reescribe la memoria de copia de seguridad de la cámara. Una escritura interrumpida puede dañarla de forma permanente.
+tweaks-info-toggle = ¿Para qué sirven los ajustes ocultos?
+tweaks-info-what-heading = Qué son
+tweaks-info-what = Los ajustes ocultos son opciones que su cámara ya tiene pero no ofrece en su menú. Este programa los pone a su disposición: grabación de vídeo sin límite de tiempo (también en 4K), todos los idiomas de menú que contiene el firmware, la elección entre PAL y NTSC y el instalador de aplicaciones por USB. Los complementos pueden añadir más. Los ajustes que aparecen dependen del modelo de cámara.
+tweaks-info-how-heading = Cómo funciona
+tweaks-info-how = «Mostrar ajustes disponibles» pone la cámara brevemente en modo de servicio y lee su memoria de respaldo. Con ello no se modifica nada. A continuación verá qué ajustes están activados o desactivados, y la identidad de la cámara, que solo se muestra. «Aplicar» escribe únicamente las entradas que usted ha cambiado. Después, el programa vuelve a leer la memoria y comprueba que la cámara lo ha aceptado todo.
+tweaks-info-undo-heading = El camino de vuelta
+tweaks-info-undo = Antes de cada escritura, el programa guarda el estado anterior en este ordenador. Cada ajuste puede desactivarse de nuevo con el mismo interruptor. En las cámaras cuyos valores se escriben uno a uno, también se ofrece «Deshacer cambios».
+tweaks-info-needs-heading = Qué necesita
+tweaks-info-needs = El material de claves (véase la página «Bienvenida») y la conexión USB de la cámara en «Auto», como se describe más abajo. Windows y macOS piden derechos de administrador para que el programa pueda acceder a la cámara en modo de servicio. Durante la escritura, no desconecte el cable ni retire la batería.
+app-backup-target = Carpeta de destino
+btn-choose-folder = Elegir carpeta…
+btn-default-folder = Usar la carpeta predeterminada
 tweaks-reading = Leyendo la configuración de la cámara…
 tweaks-writing = Escribiendo la configuración de la cámara…
 tweaks-done = Configuración de la cámara actualizada.

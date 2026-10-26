@@ -444,6 +444,18 @@ tweak-usb-installer = 啟用 USB 應用程式安裝程式
 
 # 調整項目流程
 tweaks-warning = 警告：套用調整項目會改寫相機的備份記憶體。寫入中斷可能會永久損壞您的相機。
+tweaks-info-toggle = 調整項目有什麼作用？
+tweaks-info-what-heading = 調整項目是什麼
+tweaks-info-what = 調整項目是相機本身已具備、但未在選單中提供的設定。本程式讓它們可以使用：不受時間限制的錄影（包含 4K）、韌體中包含的所有選單語言、PAL 與 NTSC 的選擇，以及 USB 應用程式安裝程式。外掛程式還能新增更多調整項目。會出現哪些調整項目取決於相機型號。
+tweaks-info-how-heading = 運作方式
+tweaks-info-how = 「顯示可用的調整項目」會讓相機短暫進入服務模式，並讀取其備份記憶體。此過程不會變更任何內容。接著您會看到哪些調整項目已開啟或關閉，以及相機識別資訊（僅供顯示）。「套用」只會寫入您變更過的項目。之後本程式會再次讀取記憶體，並檢查相機是否已全部採用。
+tweaks-info-undo-heading = 如何復原
+tweaks-info-undo = 每次寫入前，本程式都會將先前的狀態儲存在這部電腦上。每個調整項目都能以同一個開關再次關閉。對於逐一寫入數值的相機，另外也會提供「復原變更」。
+tweaks-info-needs-heading = 所需條件
+tweaks-info-needs = 需要金鑰資料（請參閱「歡迎」頁面），並依下方說明將相機的 USB 連接設為「自動」。Windows 與 macOS 會要求系統管理員權限，讓本程式能在服務模式下存取相機。寫入期間請勿拔除傳輸線或取出電池。
+app-backup-target = 目標資料夾
+btn-choose-folder = 選擇資料夾…
+btn-default-folder = 使用預設資料夾
 tweaks-reading = 正在讀取相機設定…
 tweaks-writing = 正在寫入相機設定…
 tweaks-done = 相機設定已更新。

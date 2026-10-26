@@ -59,9 +59,43 @@ pub struct BackupRequest {
     pub confirm: bool,
 }
 
-/// Where backups go by default: `app-backups` in the user's data folder.
+/// Where backups go: the folder the user chose, else [`default_dir`].
 pub fn backups_dir() -> Option<PathBuf> {
+    chosen_dir().or_else(default_dir)
+}
+
+/// `app-backups` in the user's data folder.
+pub fn default_dir() -> Option<PathBuf> {
     Some(pmca_i18n::catalog::user_data_dir()?.join("app-backups"))
+}
+
+/// Remembers the chosen folder, so the console uses the one picked in the window.
+const SETTINGS_FILE: &str = "app-backup.json";
+
+#[derive(Debug, Default, serde::Serialize, serde::Deserialize)]
+struct Settings {
+    folder: Option<PathBuf>,
+}
+
+fn settings_path() -> Option<PathBuf> {
+    Some(pmca_i18n::catalog::user_data_dir()?.join(SETTINGS_FILE))
+}
+
+/// The folder the user chose for backups, if any.
+pub fn chosen_dir() -> Option<PathBuf> {
+    let text = std::fs::read_to_string(settings_path()?).ok()?;
+    serde_json::from_str::<Settings>(&text).ok()?.folder
+}
+
+/// Remember `folder` for later backups; `None` returns to [`default_dir`].
+pub fn choose_dir(folder: Option<&Path>) -> Result<()> {
+    let path = settings_path().ok_or_else(|| Error::Io(std::io::ErrorKind::NotFound.into()))?;
+    if let Some(dir) = path.parent() {
+        std::fs::create_dir_all(dir)?;
+    }
+    let settings = Settings { folder: folder.map(Path::to_path_buf) };
+    std::fs::write(path, serde_json::to_vec_pretty(&settings)?)?;
+    Ok(())
 }
 
 /// Copy every app installed on the attached camera into a folder of its own.

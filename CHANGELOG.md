@@ -13,6 +13,10 @@ All notable changes to this project are documented here. The format follows
   checksum, in a folder per camera. The camera restarts into updater mode for
   it; its app storage is mounted read-only. A saved app is restored with the
   normal installation.
+- The backup folder can be chosen on the Apps page; the choice is remembered
+  and also used by `pmca-console apps backup` without `--out`.
+- Tweaks page: a folded explanation of what tweaks are, how reading and
+  writing them works, the way back, and what is needed.
 - Console: `pmca-console photo <file>` reads the shutter count from a photo,
   and `pmca-console mass-storage` switches a camera in MTP mode to mass
   storage; a command that fails on an MTP camera points to it.

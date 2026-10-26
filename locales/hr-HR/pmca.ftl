@@ -432,6 +432,18 @@ tweak-usb-installer = Omogući USB instalaciju aplikacija
 
 # Tijek primjene prilagodbi
 tweaks-warning = Upozorenje: primjena prilagodbi ponovno zapisuje sigurnosnu memoriju fotoaparata. Prekinuto zapisivanje može trajno oštetiti fotoaparat.
+tweaks-info-toggle = Čemu služe prilagodbe?
+tweaks-info-what-heading = Što su
+tweaks-info-what = Prilagodbe su postavke koje vaš fotoaparat već ima, ali ih ne nudi u svom izborniku. Ovaj ih program čini dostupnima: videosnimanje bez vremenskog ograničenja (i u 4K), svi jezici izbornika sadržani u firmveru, izbor između PAL-a i NTSC-a te USB instalacija aplikacija. Dodaci mogu donijeti još prilagodbi. Koje se prilagodbe pojavljuju, ovisi o modelu fotoaparata.
+tweaks-info-how-heading = Kako to funkcionira
+tweaks-info-how = „Prikaži dostupne prilagodbe“ nakratko prebacuje fotoaparat u servisni način i čita njegovu sigurnosnu memoriju. Pritom se ništa ne mijenja. Zatim vidite koje su prilagodbe uključene ili isključene te identitet fotoaparata, koji se samo prikazuje. „Primijeni“ zapisuje samo stavke koje ste promijenili. Nakon toga program ponovno čita memoriju i provjerava je li fotoaparat sve preuzeo.
+tweaks-info-undo-heading = Put natrag
+tweaks-info-undo = Prije svakog zapisivanja program sprema prethodno stanje na ovo računalo. Svaka se prilagodba istim prekidačem može ponovno isključiti. Na fotoaparatima čije se vrijednosti zapisuju jedna po jedna dodatno se nudi „Poništi promjene“.
+tweaks-info-needs-heading = Što vam treba
+tweaks-info-needs = Materijal ključeva (vidjeti stranicu „Dobro došli“) i USB veza fotoaparata postavljena na „Auto“, kako je opisano u nastavku. Windows i macOS traže administratorska prava kako bi program mogao pristupiti fotoaparatu u servisnom načinu. Tijekom zapisivanja nemojte ni odspajati kabel ni vaditi bateriju.
+app-backup-target = Odredišna mapa
+btn-choose-folder = Odaberi mapu…
+btn-default-folder = Upotrijebi zadanu mapu
 tweaks-reading = Čitanje postavki fotoaparata…
 tweaks-writing = Zapisivanje postavki fotoaparata…
 tweaks-done = Postavke fotoaparata su ažurirane.

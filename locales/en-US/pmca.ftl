@@ -444,6 +444,18 @@ tweak-usb-installer = Enable USB app installer
 
 # Tweak workflow
 tweaks-warning = Warning: applying tweaks rewrites the camera's backup memory. An interrupted write can permanently damage your camera.
+tweaks-info-toggle = What do tweaks do?
+tweaks-info-what-heading = What they are
+tweaks-info-what = Tweaks are settings your camera already has but does not offer in its menu. This program makes them available: video recording without a time limit (also in 4K), all menu languages contained in the firmware, the choice between PAL and NTSC, and the USB app installer. Plugins can add more. Which tweaks appear depends on the camera model.
+tweaks-info-how-heading = How it works
+tweaks-info-how = “Show available tweaks” briefly puts the camera into service mode and reads its backup memory. Nothing is changed by this. You then see which tweaks are on or off, and the camera's identity, which is only shown. “Apply” writes only the entries you changed. Afterwards the program reads the memory again and checks that the camera has taken everything over.
+tweaks-info-undo-heading = The way back
+tweaks-info-undo = Before every write, the program saves the previous state on this computer. Every tweak can be switched off again with the same switch. On cameras whose values are written one at a time, “Undo changes” is offered as well.
+tweaks-info-needs-heading = What you need
+tweaks-info-needs = The key material (see the Welcome page) and the camera's USB connection set to “Auto”, as described below. Windows and macOS ask for administrator rights so that the program can reach the camera in service mode. While writing, do not unplug the cable or remove the battery.
+app-backup-target = Target folder
+btn-choose-folder = Choose folder…
+btn-default-folder = Use default folder
 tweaks-reading = Reading camera settings…
 tweaks-writing = Writing camera settings…
 tweaks-done = Camera settings updated.

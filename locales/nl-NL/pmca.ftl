@@ -434,6 +434,18 @@ tweak-usb-installer = USB-app-installatieprogramma inschakelen
 
 # Verloop van de aanpassingen
 tweaks-warning = Waarschuwing: het toepassen van aanpassingen herschrijft het back-upgeheugen van de camera. Een onderbroken schrijfactie kan uw camera blijvend beschadigen.
+tweaks-info-toggle = Wat doen aanpassingen?
+tweaks-info-what-heading = Wat ze zijn
+tweaks-info-what = Aanpassingen zijn instellingen die uw camera al heeft maar niet in zijn menu aanbiedt. Dit programma maakt ze beschikbaar: video-opname zonder tijdslimiet (ook in 4K), alle menutalen die in de firmware zitten, de keuze tussen PAL en NTSC en het USB-app-installatieprogramma. Plug-ins kunnen er meer toevoegen. Welke aanpassingen verschijnen, hangt af van het cameramodel.
+tweaks-info-how-heading = Hoe het werkt
+tweaks-info-how = „Beschikbare aanpassingen tonen” zet de camera kort in de servicemodus en leest het back-upgeheugen. Daarbij wordt niets gewijzigd. Vervolgens ziet u welke aanpassingen in- of uitgeschakeld zijn, en de identiteit van de camera, die alleen wordt weergegeven. „Toepassen” schrijft alleen de items die u hebt gewijzigd. Daarna leest het programma het geheugen opnieuw en controleert het of de camera alles heeft overgenomen.
+tweaks-info-undo-heading = De weg terug
+tweaks-info-undo = Vóór elke schrijfactie slaat het programma de vorige toestand op deze computer op. Elke aanpassing kan met dezelfde schakelaar weer worden uitgeschakeld. Bij camera's waarvan de waarden één voor één worden geschreven, wordt ook „Wijzigingen ongedaan maken” aangeboden.
+tweaks-info-needs-heading = Wat u nodig hebt
+tweaks-info-needs = Het sleutelmateriaal (zie de pagina „Welkom”) en de USB-verbinding van de camera op „Auto”, zoals hieronder beschreven. Windows en macOS vragen om beheerdersrechten, zodat het programma de camera in de servicemodus kan bereiken. Koppel tijdens het schrijven de kabel niet los en haal de accu er niet uit.
+app-backup-target = Doelmap
+btn-choose-folder = Map kiezen…
+btn-default-folder = Standaardmap gebruiken
 tweaks-reading = Camera-instellingen worden gelezen…
 tweaks-writing = Camera-instellingen worden geschreven…
 tweaks-done = Camera-instellingen bijgewerkt.

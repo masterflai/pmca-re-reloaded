@@ -444,6 +444,18 @@ tweak-usb-installer = Bật trình cài đặt ứng dụng qua USB
 
 # Quy trình tinh chỉnh
 tweaks-warning = Cảnh báo: áp dụng tinh chỉnh sẽ ghi lại bộ nhớ sao lưu của máy ảnh. Việc ghi bị gián đoạn có thể làm hỏng máy ảnh vĩnh viễn.
+tweaks-info-toggle = Tinh chỉnh dùng để làm gì?
+tweaks-info-what-heading = Tinh chỉnh là gì
+tweaks-info-what = Tinh chỉnh là những cài đặt mà máy ảnh của bạn đã có nhưng không cung cấp trong menu. Chương trình này giúp bạn sử dụng chúng: quay video không giới hạn thời gian (kể cả 4K), tất cả ngôn ngữ menu có trong phần sụn, lựa chọn giữa PAL và NTSC, và trình cài đặt ứng dụng qua USB. Plugin có thể bổ sung thêm. Những tinh chỉnh nào xuất hiện tùy thuộc vào kiểu máy ảnh.
+tweaks-info-how-heading = Cách hoạt động
+tweaks-info-how = “Hiển thị các tinh chỉnh có sẵn” chuyển máy ảnh sang chế độ dịch vụ trong giây lát và đọc bộ nhớ sao lưu của máy ảnh. Thao tác này không thay đổi gì. Sau đó bạn sẽ thấy tinh chỉnh nào đang bật hoặc tắt, cùng với nhận dạng máy ảnh (chỉ để xem). “Áp dụng” chỉ ghi những mục bạn đã thay đổi. Sau đó chương trình đọc lại bộ nhớ và kiểm tra xem máy ảnh đã tiếp nhận tất cả hay chưa.
+tweaks-info-undo-heading = Cách quay lại
+tweaks-info-undo = Trước mỗi lần ghi, chương trình lưu trạng thái trước đó trên máy tính này. Mỗi tinh chỉnh đều có thể được tắt lại bằng chính công tắc đó. Trên những máy ảnh có các giá trị được ghi lần lượt từng cái một, còn có thêm “Hoàn tác thay đổi”.
+tweaks-info-needs-heading = Những gì bạn cần
+tweaks-info-needs = Dữ liệu khóa (xem trang “Chào mừng”) và kết nối USB của máy ảnh được đặt thành “Tự động” như mô tả bên dưới. Windows và macOS sẽ yêu cầu quyền quản trị viên để chương trình có thể truy cập máy ảnh ở chế độ dịch vụ. Trong khi ghi, đừng rút cáp hoặc tháo pin.
+app-backup-target = Thư mục đích
+btn-choose-folder = Chọn thư mục…
+btn-default-folder = Dùng thư mục mặc định
 tweaks-reading = Đang đọc cài đặt máy ảnh…
 tweaks-writing = Đang ghi cài đặt máy ảnh…
 tweaks-done = Đã cập nhật cài đặt máy ảnh.

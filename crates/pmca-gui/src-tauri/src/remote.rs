@@ -247,8 +247,17 @@ fn run(
         Request::AppsBackup { fdat_dir, confirm } => {
             let request = pmca_app::app_backup::BackupRequest { fdat_dir, out_dir: None, confirm };
             let outcome = pmca_app::app_backup::backup_apps(l, &request, sink);
-            // Running as root; the backups belong to the user.
+            // Running as root; the backups belong to the user, wherever they went.
             pmca_app::ownership::return_user_data();
+            if let Ok(outcome) = &outcome {
+                let folder = PathBuf::from(&outcome.folder);
+                let mut paths = vec![folder.clone()];
+                for app in &outcome.apps {
+                    paths.push(folder.join(&app.file));
+                    paths.push(folder.join(format!("{}.sha256", app.file)));
+                }
+                pmca_app::ownership::return_paths(&paths);
+            }
             json(outcome?)
         }
     }

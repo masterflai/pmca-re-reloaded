@@ -432,6 +432,18 @@ tweak-usb-installer = Slå på USB-appinstallerer
 
 # Tilpasningsforløpet
 tweaks-warning = Advarsel: å ta i bruk tilpasninger skriver om kameraets sikkerhetskopiminne. En avbrutt skriving kan skade kameraet permanent.
+tweaks-info-toggle = Hva gjør tilpasninger?
+tweaks-info-what-heading = Hva de er
+tweaks-info-what = Tilpasninger er innstillinger kameraet ditt allerede har, men ikke tilbyr i menyen sin. Dette programmet gjør dem tilgjengelige: videoopptak uten tidsgrense (også i 4K), alle menyspråk som finnes i fastvaren, valget mellom PAL og NTSC og USB-appinstallereren. Programtillegg kan legge til flere. Hvilke tilpasninger som vises, avhenger av kameramodellen.
+tweaks-info-how-heading = Slik foregår det
+tweaks-info-how = «Vis tilgjengelige tilpasninger» setter kameraet kort i servicemodus og leser sikkerhetskopiminnet. Ingenting endres av dette. Deretter ser du hvilke tilpasninger som er slått på eller av, og kameraets identitet, som bare vises. «Bruk» skriver bare oppføringene du har endret. Etterpå leser programmet minnet på nytt og kontrollerer at kameraet har tatt imot alt.
+tweaks-info-undo-heading = Veien tilbake
+tweaks-info-undo = Før hver skriving lagrer programmet den forrige tilstanden på denne datamaskinen. Hver tilpasning kan slås av igjen med den samme bryteren. På kameraer der verdiene skrives én om gangen, tilbys i tillegg «Angre endringer».
+tweaks-info-needs-heading = Hva du trenger
+tweaks-info-needs = Nøkkelmaterialet (se siden «Velkommen») og kameraets USB-tilkobling satt til «Auto», som beskrevet nedenfor. Windows og macOS ber om administratorrettigheter slik at programmet kan nå kameraet i servicemodus. Trekk verken ut kabelen eller batteriet mens det skrives.
+app-backup-target = Målmappe
+btn-choose-folder = Velg mappe …
+btn-default-folder = Bruk standardmappe
 tweaks-reading = Leser kamerainnstillingene …
 tweaks-writing = Skriver kamerainnstillingene …
 tweaks-done = Kamerainnstillingene er oppdatert.

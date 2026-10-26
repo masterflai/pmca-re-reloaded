@@ -432,6 +432,18 @@ tweak-usb-installer = Włącz instalator aplikacji USB
 
 # Przebieg stosowania modyfikacji
 tweaks-warning = Ostrzeżenie: stosowanie modyfikacji nadpisuje pamięć kopii zapasowej aparatu. Przerwany zapis może trwale uszkodzić aparat.
+tweaks-info-toggle = Do czego służą modyfikacje?
+tweaks-info-what-heading = Czym są
+tweaks-info-what = Modyfikacje to ustawienia, które aparat już ma, ale których nie oferuje w swoim menu. Ten program je udostępnia: nagrywanie wideo bez limitu czasu (także w 4K), wszystkie języki menu zawarte w oprogramowaniu układowym, wybór między PAL a NTSC oraz instalator aplikacji USB. Wtyczki mogą dodawać kolejne. To, które modyfikacje się pojawią, zależy od modelu aparatu.
+tweaks-info-how-heading = Jak to działa
+tweaks-info-how = „Pokaż dostępne modyfikacje” na chwilę przełącza aparat w tryb serwisowy i odczytuje jego pamięć kopii zapasowej. Nic przy tym nie jest zmieniane. Następnie widzisz, które modyfikacje są włączone, a które wyłączone, oraz tożsamość aparatu, która jest tylko wyświetlana. „Zastosuj” zapisuje wyłącznie zmienione pozycje. Potem program ponownie odczytuje pamięć i sprawdza, czy aparat przyjął wszystkie zmiany.
+tweaks-info-undo-heading = Droga powrotu
+tweaks-info-undo = Przed każdym zapisem program zachowuje poprzedni stan na tym komputerze. Każdą modyfikację można ponownie wyłączyć tym samym przełącznikiem. W aparatach, których wartości są zapisywane pojedynczo, dostępny jest też przycisk „Cofnij zmiany”.
+tweaks-info-needs-heading = Czego potrzebujesz
+tweaks-info-needs = Materiał klucza (zobacz stronę „Powitanie”) oraz połączenie USB aparatu ustawione na „Auto”, jak opisano poniżej. Windows i macOS proszą o uprawnienia administratora, aby program mógł połączyć się z aparatem w trybie serwisowym. Podczas zapisu nie odłączaj kabla ani nie wyjmuj akumulatora.
+app-backup-target = Folder docelowy
+btn-choose-folder = Wybierz folder…
+btn-default-folder = Użyj folderu domyślnego
 tweaks-reading = Odczyt ustawień aparatu…
 tweaks-writing = Zapis ustawień aparatu…
 tweaks-done = Ustawienia aparatu zaktualizowane.

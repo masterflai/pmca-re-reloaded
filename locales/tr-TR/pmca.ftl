@@ -432,6 +432,18 @@ tweak-usb-installer = USB uygulama kurucusunu etkinleştir
 
 # İnce ayar akışı
 tweaks-warning = Uyarı: ince ayarların uygulanması kameranın yedek belleğini yeniden yazar. Yarıda kesilen bir yazma işlemi kameranıza kalıcı zarar verebilir.
+tweaks-info-toggle = İnce ayarlar ne işe yarar?
+tweaks-info-what-heading = Nedirler?
+tweaks-info-what = İnce ayarlar, kameranızın zaten sahip olduğu ama menüsünde sunmadığı ayarlardır. Bu program onları kullanılabilir hâle getirir: süre sınırı olmadan video kaydı (4K'da da), bellenimde bulunan tüm menü dilleri, PAL ile NTSC arasındaki seçim ve USB uygulama kurucusu. Eklentiler başka ince ayarlar da ekleyebilir. Hangi ince ayarların görüneceği kamera modeline bağlıdır.
+tweaks-info-how-heading = Nasıl çalışır?
+tweaks-info-how = “Kullanılabilir ince ayarları göster” kamerayı kısa süreliğine servis kipine alır ve yedek belleğini okur. Bu sırada hiçbir şey değiştirilmez. Ardından hangi ince ayarların açık, hangilerinin kapalı olduğunu ve yalnızca gösterilen kamera kimliğini görürsünüz. “Uygula” yalnızca değiştirdiğiniz girdileri yazar. Ardından program belleği yeniden okur ve kameranın her şeyi kabul edip etmediğini denetler.
+tweaks-info-undo-heading = Geri dönüş yolu
+tweaks-info-undo = Program her yazma işleminden önce önceki durumu bu bilgisayara kaydeder. Her ince ayar aynı anahtarla yeniden kapatılabilir. Değerleri tek tek yazılan kameralarda ayrıca “Değişiklikleri geri al” da sunulur.
+tweaks-info-needs-heading = Neye ihtiyacınız var?
+tweaks-info-needs = Anahtar malzemesi (bkz. “Hoş geldiniz” sayfası) ve kameranın USB bağlantısının aşağıda anlatıldığı gibi “Otomatik” olarak ayarlanması. Windows ve macOS, programın servis kipindeki kameraya erişebilmesi için yönetici hakları ister. Yazma sırasında ne kabloyu çıkarın ne de bataryayı alın.
+app-backup-target = Hedef klasör
+btn-choose-folder = Klasör seç…
+btn-default-folder = Varsayılan klasörü kullan
 tweaks-reading = Kamera ayarları okunuyor…
 tweaks-writing = Kamera ayarları yazılıyor…
 tweaks-done = Kamera ayarları güncellendi.

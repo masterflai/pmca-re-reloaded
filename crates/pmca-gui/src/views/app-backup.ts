@@ -61,10 +61,56 @@ export function cardAppBackup(): HTMLElement {
     make("h2", { i18n: "app-backup-heading" }),
     make("p", { i18n: "app-backup-intro" }),
     make("p", { className: "hint", i18n: "app-backup-own-camera" }),
+    targetFolder(status),
     make("div", { className: "row" }, backup),
     status,
     result,
     make("p", { className: "hint", i18n: "app-backup-restore-hint" }),
+  );
+}
+
+/** Where the next backup goes (Tauri shell); the backend remembers the choice. */
+interface BackupFolder {
+  path: string | null;
+  chosen: boolean;
+}
+
+/**
+ * The folder the backups go to, with buttons to choose another or return to
+ * the default. The dialog runs in the backend, so the window never names a
+ * folder to write to.
+ */
+function targetFolder(status: HTMLElement): HTMLElement {
+  const path = make("code");
+  const choose = make("button", { i18n: "btn-choose-folder" });
+  const reset = make("button", { i18n: "btn-default-folder", hidden: true });
+  const show = (folder: BackupFolder): void => {
+    path.textContent = folder.path ?? "";
+    reset.hidden = !folder.chosen;
+  };
+  invoke<BackupFolder>("backup_folder").then(show).catch(() => undefined);
+  choose.addEventListener("click", async () => {
+    try {
+      const folder = await invoke<BackupFolder | null>("choose_backup_folder");
+      if (folder) show(folder);
+    } catch (e) {
+      showError(status, e);
+    }
+  });
+  reset.addEventListener("click", async () => {
+    try {
+      show(await invoke<BackupFolder>("reset_backup_folder"));
+    } catch (e) {
+      showError(status, e);
+    }
+  });
+  return make(
+    "div",
+    { className: "row address-row" },
+    make("span", { className: "hint", i18n: "app-backup-target" }),
+    path,
+    choose,
+    reset,
   );
 }
 

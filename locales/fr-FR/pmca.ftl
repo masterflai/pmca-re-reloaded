@@ -432,6 +432,18 @@ tweak-usb-installer = Activer l'installateur d'apps USB
 
 # Déroulement des réglages
 tweaks-warning = Avertissement : l'application des réglages avancés réécrit la mémoire de sauvegarde de l'appareil. Une écriture interrompue peut endommager définitivement votre appareil.
+tweaks-info-toggle = À quoi servent les réglages avancés ?
+tweaks-info-what-heading = De quoi il s'agit
+tweaks-info-what = Les réglages avancés sont des réglages que votre appareil possède déjà mais qu'il ne propose pas dans son menu. Ce programme les rend accessibles : enregistrement vidéo sans limite de durée (y compris en 4K), toutes les langues de menu présentes dans le micrologiciel, le choix entre PAL et NTSC et l'installateur d'apps USB. Des extensions peuvent en ajouter d'autres. Les réglages avancés proposés dépendent du modèle de l'appareil.
+tweaks-info-how-heading = Comment cela fonctionne
+tweaks-info-how = « Afficher les réglages disponibles » fait brièvement passer l'appareil en mode service et lit sa mémoire de sauvegarde. Rien n'est modifié à cette occasion. Vous voyez ensuite quels réglages avancés sont activés ou désactivés, ainsi que l'identité de l'appareil photo, qui est seulement affichée. « Appliquer » n'écrit que les entrées que vous avez modifiées. Le programme relit ensuite la mémoire et vérifie que l'appareil a bien tout pris en compte.
+tweaks-info-undo-heading = Le retour en arrière
+tweaks-info-undo = Avant chaque écriture, le programme enregistre l'état précédent sur cet ordinateur. Chaque réglage avancé peut être désactivé avec le même interrupteur. Sur les appareils dont les valeurs sont écrites une par une, « Annuler les modifications » est également proposé.
+tweaks-info-needs-heading = Ce qu'il vous faut
+tweaks-info-needs = Le matériel de clés (voir la page « Bienvenue ») et la connexion USB de l'appareil réglée sur « Auto », comme décrit ci-dessous. Windows et macOS demandent des droits d'administrateur pour que le programme puisse atteindre l'appareil en mode service. Pendant l'écriture, ne débranchez pas le câble et ne retirez pas la batterie.
+app-backup-target = Dossier de destination
+btn-choose-folder = Choisir un dossier…
+btn-default-folder = Utiliser le dossier par défaut
 tweaks-reading = Lecture des réglages de l'appareil…
 tweaks-writing = Écriture des réglages de l'appareil…
 tweaks-done = Réglages de l'appareil mis à jour.

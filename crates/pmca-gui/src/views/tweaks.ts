@@ -248,6 +248,7 @@ export function viewTweaks(host: HTMLElement): void {
 
   host.append(
     card(
+      tweaksExplanation(),
       make("p", { className: "warning", i18n: "tweaks-warning" }),
       make("p", { className: "hint", i18n: "usb-mode-advice" }),
       make("div", { className: "row" }, load, writing(apply), writing(undo)),
@@ -257,4 +258,18 @@ export function viewTweaks(host: HTMLElement): void {
       list,
     ),
   );
+}
+
+/** What tweaks are and how reading and writing them works, folded away until asked for. */
+function tweaksExplanation(): HTMLDetailsElement {
+  const details = make("details", {}, make("summary", { i18n: "tweaks-info-toggle" }));
+  for (const [heading, body] of [
+    ["tweaks-info-what-heading", "tweaks-info-what"],
+    ["tweaks-info-how-heading", "tweaks-info-how"],
+    ["tweaks-info-undo-heading", "tweaks-info-undo"],
+    ["tweaks-info-needs-heading", "tweaks-info-needs"],
+  ]) {
+    details.append(make("h3", { i18n: heading }), make("p", { i18n: body }));
+  }
+  return details;
 }

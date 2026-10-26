@@ -438,6 +438,18 @@ tweak-usb-installer = USB-App-Installer aktivieren
 
 # Tweak-Ablauf
 tweaks-warning = Warnung: Das Anwenden von Tweaks überschreibt den Backup-Speicher der Kamera. Ein unterbrochener Schreibvorgang kann die Kamera dauerhaft beschädigen.
+tweaks-info-toggle = Was machen Tweaks?
+tweaks-info-what-heading = Was das ist
+tweaks-info-what = Tweaks sind Einstellungen, die Ihre Kamera bereits besitzt, in ihrem Menü aber nicht anbietet. Dieses Programm schaltet sie frei: Videoaufnahme ohne Zeitbegrenzung (auch in 4K), alle Menüsprachen, die in der Firmware stecken, die Wahl zwischen PAL und NTSC und den USB-App-Installer. Plugins können weitere hinzufügen. Welche Tweaks erscheinen, hängt vom Kameramodell ab.
+tweaks-info-how-heading = Wie es abläuft
+tweaks-info-how = „Verfügbare Tweaks anzeigen“ bringt die Kamera kurz in den Servicemodus und liest ihren Sicherungsspeicher. Dabei wird nichts verändert. Danach sehen Sie, welche Tweaks ein- oder ausgeschaltet sind, und die Identität der Kamera, die nur angezeigt wird. „Übernehmen“ schreibt nur die Einträge, die Sie geändert haben. Danach liest das Programm den Speicher erneut und prüft, ob die Kamera alles übernommen hat.
+tweaks-info-undo-heading = Der Weg zurück
+tweaks-info-undo = Vor jedem Schreiben sichert das Programm den bisherigen Stand auf diesem Computer. Jeder Tweak lässt sich mit demselben Schalter wieder ausschalten. Bei Kameras, deren Werte einzeln geschrieben werden, gibt es zusätzlich „Änderungen zurücknehmen“.
+tweaks-info-needs-heading = Was Sie brauchen
+tweaks-info-needs = Das Schlüsselmaterial (siehe Seite „Willkommen“) und die USB-Verbindung der Kamera auf „Auto“, wie unten beschrieben. Windows und macOS fragen nach Administratorrechten, damit das Programm die Kamera im Servicemodus erreicht. Während des Schreibens weder das Kabel ziehen noch den Akku entnehmen.
+app-backup-target = Zielordner
+btn-choose-folder = Ordner wählen…
+btn-default-folder = Standardordner verwenden
 tweaks-reading = Kameraeinstellungen werden gelesen…
 tweaks-writing = Kameraeinstellungen werden geschrieben…
 tweaks-done = Kameraeinstellungen aktualisiert.

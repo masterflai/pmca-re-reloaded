@@ -432,6 +432,18 @@ tweak-usb-installer = Ativar o instalador de aplicativos por USB
 
 # Fluxo dos ajustes
 tweaks-warning = Aviso: aplicar ajustes regrava a memória de backup da câmera. Uma gravação interrompida pode danificá-la permanentemente.
+tweaks-info-toggle = Para que servem os ajustes ocultos?
+tweaks-info-what-heading = O que são
+tweaks-info-what = Ajustes ocultos são configurações que sua câmera já possui, mas não oferece em seu menu. Este programa os disponibiliza: gravação de vídeo sem limite de tempo (também em 4K), todos os idiomas de menu contidos no firmware, a escolha entre PAL e NTSC e o instalador de aplicativos por USB. Plug-ins podem adicionar outros. Os ajustes exibidos dependem do modelo da câmera.
+tweaks-info-how-heading = Como funciona
+tweaks-info-how = “Mostrar ajustes disponíveis” coloca a câmera brevemente no modo de serviço e lê sua memória de backup. Nada é alterado com isso. Em seguida, você vê quais ajustes estão ativados ou desativados e a identidade da câmera, que é apenas exibida. “Aplicar” grava somente as entradas que você alterou. Depois, o programa lê a memória novamente e verifica se a câmera aceitou tudo.
+tweaks-info-undo-heading = O caminho de volta
+tweaks-info-undo = Antes de cada gravação, o programa salva o estado anterior neste computador. Cada ajuste pode ser desativado novamente com o mesmo interruptor. Nas câmeras cujos valores são gravados um a um, também é oferecido “Desfazer alterações”.
+tweaks-info-needs-heading = Do que você precisa
+tweaks-info-needs = O material de chaves (veja a página “Boas-vindas”) e a conexão USB da câmera definida como “Auto”, conforme descrito abaixo. O Windows e o macOS pedem direitos de administrador para que o programa possa acessar a câmera no modo de serviço. Durante a gravação, não desconecte o cabo nem retire a bateria.
+app-backup-target = Pasta de destino
+btn-choose-folder = Escolher pasta…
+btn-default-folder = Usar a pasta padrão
 tweaks-reading = Lendo as configurações da câmera…
 tweaks-writing = Gravando as configurações da câmera…
 tweaks-done = Configurações da câmera atualizadas.

@@ -388,8 +388,8 @@ enum AppsAction {
     /// folder named after the camera's model and serial number. Install a
     /// saved file with `install --apk`. Back up your own camera only.
     Backup {
-        /// The folder to create the camera's folder in (default: `app-backups`
-        /// in the program's data folder).
+        /// The folder to create the camera's folder in (default: the folder
+        /// chosen in the window, else `app-backups` in the program's data folder).
         #[arg(long)]
         out: Option<PathBuf>,
         /// Directory holding the bundled updater firmware images.

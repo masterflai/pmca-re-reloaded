@@ -432,6 +432,18 @@ tweak-usb-installer = Aktifkan pemasang aplikasi USB
 
 # Alur penyesuaian
 tweaks-warning = Peringatan: menerapkan penyesuaian menulis ulang memori cadangan kamera. Penulisan yang terputus dapat merusak kamera secara permanen.
+tweaks-info-toggle = Apa fungsi penyesuaian?
+tweaks-info-what-heading = Apa itu penyesuaian
+tweaks-info-what = Penyesuaian adalah pengaturan yang sudah dimiliki kamera Anda tetapi tidak ditawarkan di menunya. Program ini membuatnya dapat digunakan: perekaman video tanpa batas waktu (juga dalam 4K), semua bahasa menu yang ada di firmware, pilihan antara PAL dan NTSC, dan pemasang aplikasi USB. Plugin dapat menambahkan lebih banyak lagi. Penyesuaian mana yang muncul bergantung pada model kamera.
+tweaks-info-how-heading = Cara kerjanya
+tweaks-info-how = “Tampilkan penyesuaian yang tersedia” sebentar mengalihkan kamera ke mode servis dan membaca memori cadangannya. Tidak ada yang diubah dalam proses ini. Setelah itu Anda melihat penyesuaian mana yang aktif atau nonaktif, serta identitas kamera, yang hanya ditampilkan. “Terapkan” hanya menulis entri yang Anda ubah. Sesudahnya program membaca memori lagi dan memeriksa apakah kamera sudah menerima semuanya.
+tweaks-info-undo-heading = Jalan kembali
+tweaks-info-undo = Sebelum setiap penulisan, program menyimpan keadaan sebelumnya di komputer ini. Setiap penyesuaian dapat dimatikan lagi dengan sakelar yang sama. Pada kamera yang nilainya ditulis satu per satu, tersedia juga “Batalkan perubahan”.
+tweaks-info-needs-heading = Yang Anda perlukan
+tweaks-info-needs = Materi kunci (lihat halaman “Selamat datang”) dan koneksi USB kamera yang diatur ke “Otomatis”, seperti dijelaskan di bawah. Windows dan macOS meminta hak administrator agar program dapat menjangkau kamera dalam mode servis. Selama penulisan, jangan cabut kabel maupun lepas baterai.
+app-backup-target = Folder tujuan
+btn-choose-folder = Pilih folder…
+btn-default-folder = Gunakan folder bawaan
 tweaks-reading = Membaca pengaturan kamera…
 tweaks-writing = Menulis pengaturan kamera…
 tweaks-done = Pengaturan kamera diperbarui.
