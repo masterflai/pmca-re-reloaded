@@ -6,6 +6,17 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+## [1.4.0] - 2026-10-26
+
+**Back up your camera's apps.** The apps installed on a camera can now be
+copied to your computer and installed again later, even once their source is
+gone. The console catches up with the window: shutter count from a photo, the
+switch to mass storage and the warnings about models the lists do not cover.
+
+**macOS:** the app backup uses the camera's updater mode, which has still not
+been tried on a Mac with a camera. Until it has been reported to work there,
+make backups from Windows or Linux.
+
 ### Added
 
 - App backup: the apps installed on a camera are copied to this computer

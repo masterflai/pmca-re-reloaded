@@ -11,7 +11,7 @@ this file is for. It ships alongside `LICENSE.txt` in every release archive.
 The licence of this project itself is in [LICENSE.txt](LICENSE.txt) and is not
 repeated here.
 
-Generated: 2026-10-23
+Generated: 2026-10-26
 
 * Packages: **526**
 * With a copyright notice recovered from their sources: **381**
