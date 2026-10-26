@@ -13,8 +13,8 @@ use std::path::{Path, PathBuf};
 use std::sync::{Mutex, MutexGuard, PoisonError};
 
 use pmca_app::dto::{
-    CameraSummary, CommunityList, FirmwareOutcome, InstallOutcome, PhotoSummary, ProgressEvent,
-    StreamingSettings, TweakChange, TweakReport, WifiAccessPoint,
+    AppBackupOutcome, CameraSummary, CommunityList, FirmwareOutcome, InstallOutcome, PhotoSummary,
+    ProgressEvent, StreamingSettings, TweakChange, TweakReport, WifiAccessPoint,
 };
 use pmca_app::{ApkSource, InstallRequest, InstallSeries};
 use pmca_i18n::Localizer;
@@ -384,6 +384,7 @@ pub fn run() {
             install_downloaded_app,
             finish_install_series,
             discard_downloads,
+            backup_apps,
             list_tweaks,
             apply_tweaks,
             apply_tweaks_whole_image,

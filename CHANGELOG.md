@@ -6,6 +6,14 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+### Added
+
+- App backup: the apps installed on a camera are copied to this computer
+  (Apps page, `pmca-console apps backup --confirm`), one `.apk` per app with a
+  checksum, in a folder per camera. The camera restarts into updater mode for
+  it; its app storage is mounted read-only. A saved app is restored with the
+  normal installation.
+
 ### Fixed
 
 - Windows: entering updater mode (firmware update, updater shell) sometimes

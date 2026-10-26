@@ -55,6 +55,7 @@ pub(crate) enum Request {
     UpdaterOpen { fdat_file: Option<PathBuf>, fdat_dir: PathBuf, flash: bool },
     UpdaterRun { line: String },
     UpdaterClose,
+    AppsBackup { fdat_dir: PathBuf, confirm: bool },
 }
 
 /// A request with the window's current language.
@@ -242,6 +243,13 @@ fn run(
         Request::UpdaterClose => {
             s.updater.take();
             json(())
+        }
+        Request::AppsBackup { fdat_dir, confirm } => {
+            let request = pmca_app::app_backup::BackupRequest { fdat_dir, out_dir: None, confirm };
+            let outcome = pmca_app::app_backup::backup_apps(l, &request, sink);
+            // Running as root; the backups belong to the user.
+            pmca_app::ownership::return_user_data();
+            json(outcome?)
         }
     }
 }

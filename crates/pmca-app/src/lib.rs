@@ -18,6 +18,7 @@
 
 pub mod about;
 pub mod analysis;
+pub mod app_backup;
 pub mod broker;
 mod direct;
 pub mod drivers;
@@ -45,9 +46,9 @@ use pmca_i18n::Localizer;
 use pmca_usb::discovery::{self, CameraMode};
 
 pub use dto::{
-    ApkSummary, CameraSummary, CommunityApp, DeviceProperty, FirmwareOutcome, InstallOutcome,
-    InstalledDevice, PhotoSummary, ProgressEvent, ProgressKind, TweakChange, TweakChoice,
-    TweakReport, TweakState,
+    ApkSummary, AppBackupOutcome, BackedUpApp, CameraSummary, CommunityApp, DeviceProperty,
+    FirmwareOutcome, InstallOutcome, InstalledDevice, PhotoSummary, ProgressEvent, ProgressKind,
+    TweakChange, TweakChoice, TweakReport, TweakState,
 };
 
 /// The XPD content type the camera expects for the install task payload.

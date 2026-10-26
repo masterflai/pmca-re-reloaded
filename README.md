@@ -85,6 +85,9 @@ took; and the camera's usage log, decoded. No keys and no driver change needed.
 works. Install an `.apk` file you have, or pick one from the
 [sources](#app-and-plugin-sources) you have added. Recommended start:
 [OpenMemories: Tweak](https://github.com/ma1co/OpenMemories-Tweak).
+The apps installed on your camera can be backed up to your computer and
+installed again later, even once their source is gone. The backup restarts the
+camera into its update mode and only reads its app storage.
 
 **Firmware** — check an official Sony firmware file against the connected camera
 and install it, or start the updater shell: the camera boots its update mode

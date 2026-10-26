@@ -123,6 +123,34 @@ pub struct InstallOutcome {
     pub raw: Option<serde_json::Value>,
 }
 
+/// The apps copied off a camera by [`crate::app_backup::backup_apps`].
+#[derive(Debug, Clone, Default, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+#[cfg_attr(test, derive(ts_rs::TS), ts(export))]
+pub struct AppBackupOutcome {
+    /// The folder holding this camera's backups.
+    pub folder: String,
+    /// One entry per app found on the camera.
+    pub apps: Vec<BackedUpApp>,
+}
+
+/// One app copied off a camera.
+#[derive(Debug, Clone, Default, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+#[cfg_attr(test, derive(ts_rs::TS), ts(export))]
+pub struct BackedUpApp {
+    /// Package name from the APK, or the camera's file name if it is unreadable.
+    pub package: String,
+    /// `versionName`, else `versionCode`, if the APK says.
+    pub version: Option<String>,
+    /// File name inside [`AppBackupOutcome::folder`].
+    pub file: String,
+    /// SHA-256 of the file, lowercase hex.
+    pub sha256: String,
+    /// Whether an identical file was already in the folder.
+    pub already_saved: bool,
+}
+
 /// What a firmware image did — or would do — to the attached camera.
 ///
 /// The version pair is reported even when nothing was written, so a front-end

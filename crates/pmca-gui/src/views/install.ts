@@ -24,6 +24,7 @@ import type {
   SourcesState,
 } from "../dto";
 import { errorText, tr, trFill } from "../i18n";
+import { cardAppBackup } from "./app-backup";
 import { capableDevices, lowRiskCheck } from "./camera";
 import { deviceToggle } from "./network";
 import { disclosure, entryDetails, starsBadge } from "./sources";
@@ -530,6 +531,7 @@ export function viewInstall(host: HTMLElement): void {
       make("div", { className: "store-list" }, table),
       make("div", { className: "row" }, installSelected, stop, retry),
     ),
+    cardAppBackup(),
   );
 }
 

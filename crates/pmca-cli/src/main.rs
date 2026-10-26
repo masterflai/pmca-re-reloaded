@@ -113,8 +113,11 @@ enum Command {
         #[arg(long, value_name = "FILE")]
         cert: Option<PathBuf>,
     },
-    /// List the apps your sources offer.
-    Apps,
+    /// List the apps your sources offer, or back up the camera's apps.
+    Apps {
+        #[command(subcommand)]
+        action: Option<AppsAction>,
+    },
     /// Show, add, remove or search for the GitHub repositories apps and
     /// plugins come from.
     ///
@@ -362,6 +365,32 @@ enum PluginsAction {
     },
 }
 
+/// What [`Command::Apps`] should do.
+#[derive(Subcommand)]
+enum AppsAction {
+    /// List the apps your sources offer (the default).
+    List,
+    /// Copy the apps installed on the camera to this computer.
+    ///
+    /// The camera restarts into updater mode, and a payload that lasts until
+    /// it is switched off is written to it; its app storage is only read. Each
+    /// app is saved as `<package>-<version>.apk` with a `.sha256` file, in a
+    /// folder named after the camera's model and serial number. Install a
+    /// saved file with `install --apk`. Back up your own camera only.
+    Backup {
+        /// The folder to create the camera's folder in (default: `app-backups`
+        /// in the program's data folder).
+        #[arg(long)]
+        out: Option<PathBuf>,
+        /// Directory holding the bundled updater firmware images.
+        #[arg(long, default_value = "updatershell/bodyfs")]
+        fdat_dir: PathBuf,
+        /// Confirm the restart into updater mode and the payload write.
+        #[arg(long)]
+        confirm: bool,
+    },
+}
+
 /// What [`Command::Sources`] should do.
 #[derive(Subcommand)]
 enum SourcesAction {
@@ -549,6 +578,7 @@ fn uses_camera(cmd: &Command) -> bool {
         | Command::Wifi { .. }
         | Command::Stream { .. }
         | Command::Firmware { .. } => true,
+        Command::Apps { action } => matches!(action, Some(AppsAction::Backup { .. })),
         Command::License { .. }
         | Command::Apk2spk { .. }
         | Command::Spk2apk { .. }
@@ -556,7 +586,6 @@ fn uses_camera(cmd: &Command) -> bool {
         | Command::PrintUsageLog { .. }
         | Command::GuessFirmware { .. }
         | Command::XpdChecksum { .. }
-        | Command::Apps
         | Command::Sources { .. }
         | Command::Driver { .. }
         | Command::Keys { .. } => false,
@@ -623,8 +652,11 @@ fn run(cmd: &Command, l: &Localizer) -> Result<(), Box<dyn std::error::Error>> {
                 cert.as_deref(),
             )?;
         }
-        Command::Apps => {
+        Command::Apps { action: None | Some(AppsAction::List) } => {
             apps_command(l)?;
+        }
+        Command::Apps { action: Some(AppsAction::Backup { out, fdat_dir, confirm }) } => {
+            apps_backup_command(l, out.as_deref(), fdat_dir, *confirm)?;
         }
         Command::Sources { action } => {
             sources_command(l, action)?;

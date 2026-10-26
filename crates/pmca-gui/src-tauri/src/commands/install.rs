@@ -44,6 +44,40 @@ pub(crate) async fn list_community_apps() -> Result<CommunityList, CommandError>
     in_background(|| Ok(pmca_app::store::community_apps())).await
 }
 
+/// Copy the apps installed on the camera into the backup folder.
+///
+/// `confirm` carries the user's agreement to the restart into updater mode;
+/// without it the backend refuses before the camera is opened.
+#[tauri::command]
+pub(crate) async fn backup_apps(
+    app: AppHandle,
+    confirm: bool,
+) -> Result<Reply<AppBackupOutcome>, CommandError> {
+    with_camera(app, move |app, state| {
+        #[cfg(target_os = "macos")]
+        {
+            let request =
+                remote::Request::AppsBackup { fdat_dir: state.fdat_root.clone(), confirm };
+            remote::call(app, state, request).map(Reply::Relayed)
+        }
+        #[cfg(not(target_os = "macos"))]
+        {
+            let localizer = state.localizer()?;
+            let request = pmca_app::app_backup::BackupRequest {
+                fdat_dir: state.fdat_root.clone(),
+                out_dir: None,
+                confirm,
+            };
+            Ok(Reply::Here(pmca_app::app_backup::backup_apps(
+                &localizer,
+                &request,
+                &mut progress(app),
+            )?))
+        }
+    })
+    .await
+}
+
 /// Install an APK, or serve the camera an empty task when `apk` is `None`.
 ///
 /// With `series` set the task belongs to a batch: the camera stays in

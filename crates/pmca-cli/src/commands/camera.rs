@@ -168,3 +168,32 @@ pub(crate) fn apps_command(l: &Localizer) -> Result<(), Box<dyn std::error::Erro
     println!("{}", l.tr("store-sources-hint"));
     Ok(())
 }
+
+/// Copy the apps installed on the camera into a folder on this computer.
+pub(crate) fn apps_backup_command(
+    l: &Localizer,
+    out: Option<&std::path::Path>,
+    fdat_dir: &std::path::Path,
+    confirm: bool,
+) -> Result<(), Box<dyn std::error::Error>> {
+    let request = pmca_app::app_backup::BackupRequest {
+        fdat_dir: resolve_data_file(fdat_dir)?,
+        out_dir: out.map(std::path::Path::to_path_buf),
+        confirm,
+    };
+    let mut sink = |event: pmca_app::ProgressEvent| println!("{}", event.message);
+    let outcome = pmca_app::app_backup::backup_apps(l, &request, &mut sink)?;
+    for app in &outcome.apps {
+        let state =
+            if app.already_saved { "app-backup-state-kept" } else { "app-backup-state-new" };
+        println!(
+            "{:<40} {:<12} {}  ({})",
+            app.package,
+            app.version.as_deref().unwrap_or("-"),
+            app.file,
+            l.tr(state)
+        );
+    }
+    println!("{}: {}", l.tr("app-backup-folder"), outcome.folder);
+    Ok(())
+}
