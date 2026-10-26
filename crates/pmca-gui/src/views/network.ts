@@ -198,8 +198,8 @@ function cardGps(): HTMLElement {
   const zone = make(
     "div",
     { className: "dropzone file-picker" },
+    make("div", { className: "gps-picker-field" }, browse, path),
     make("span", { className: "file-picker-hint", i18n: "gps-hint" }),
-    make("div", { className: "gps-picker-field" }, path, browse),
   );
   setFileDrop({ suffixes: [".dat"], accept });
   void registerDragDrop(zone);

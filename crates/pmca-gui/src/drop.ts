@@ -133,7 +133,7 @@ export function filePicker(
   );
   remove.addEventListener("click", () => choose(""));
 
-  zone.append(hint, shown, make("div", { className: "file-picker-actions" }, browse, remove));
+  zone.append(browse, hint, shown, remove);
   choose("");
   fileDrop = { suffixes, accept: choose };
   void registerDragDrop(zone);

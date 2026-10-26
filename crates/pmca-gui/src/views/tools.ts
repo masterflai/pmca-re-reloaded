@@ -99,7 +99,7 @@ export function viewTools(host: HTMLElement): void {
       make("label", { className: "field-label", i18n: "tools-operation" }),
       operation,
       make("label", { className: "field-label", i18n: "tools-input" }),
-      make("div", { className: "row" }, inputPath, browseInput),
+      make("div", { className: "row" }, browseInput, inputPath),
       make("div", { className: "row" }, runButton),
       status,
       report,

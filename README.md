@@ -13,7 +13,7 @@
   <a href="https://github.com/masterflai/pmca-re-reloaded/releases/latest"><img src="https://img.shields.io/github/v/release/masterflai/pmca-re-reloaded?label=release&color=0078d4" alt="Latest release"></a>
   <a href="https://github.com/masterflai/pmca-re-reloaded/actions/workflows/ci.yml"><img src="https://github.com/masterflai/pmca-re-reloaded/actions/workflows/ci.yml/badge.svg" alt="CI status"></a>
   <img src="https://img.shields.io/badge/platform-Windows%20%7C%20macOS%20%7C%20Linux-555" alt="Windows, macOS, Linux">
-  <img src="https://img.shields.io/badge/languages-21-555" alt="21 languages">
+  <img src="https://img.shields.io/badge/languages-27-555" alt="27 languages">
   <a href="LICENSE.txt"><img src="https://img.shields.io/badge/license-MIT-green" alt="MIT license"></a>
 </p>
 
@@ -64,7 +64,7 @@ in Rust, and it needs neither Python nor extra driver tools.
 | **Your keys, not ours** | No Sony key material and no Sony firmware files ship with the program. Functions that need keys use material you import yourself. |
 | **Private by design** | No telemetry, no account. The network is used only by the features that obviously need it, and only when you use them. |
 | **Extensible** | Plugins add languages, compatibility notes, settings and sandboxed WebAssembly tools. |
-| **21 languages** | Every text is translated, and each translation can be edited from within the app. |
+| **27 languages** | Every text is translated, and each translation can be edited from within the app. |
 
 ## What it does
 
@@ -362,7 +362,7 @@ Sony-PMCA-RE targets Python 2 and depends in parts
 on services Sony has since shut down. This project continues the idea as a new
 implementation — with a desktop app, its own driver handling, key import
 instead of shipped keys, locally generated update images, a guarded write path,
-function analysis, plugins and 21 languages — so that these cameras stay usable.
+function analysis, plugins and 27 languages — so that these cameras stay usable.
 
 Thanks to ma1co and the contributors to
 [OpenMemories: Tweak](https://github.com/ma1co/OpenMemories-Tweak),

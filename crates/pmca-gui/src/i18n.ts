@@ -12,7 +12,13 @@ export const LOCALES = [
   "fr-FR",
   "ja-JP",
   "zh-CN",
+  "zh-TW",
+  "zh-HK",
+  "ko-KR",
+  "vi-VN",
+  "th-TH",
   "ru-RU",
+  "uk-UA",
   "es-ES",
   "hi-IN",
   "ar-SA",
@@ -97,7 +103,12 @@ export function detectLocale(): Locale {
     /* storage unavailable; follow the system */
   }
   const nav = navigator.language;
-  return availableLocales.find((l) => l === nav || l.startsWith(nav.split("-")[0])) ?? FALLBACK;
+  // Exact tag first: zh-TW and zh-HK must not fall to zh-CN by their shared prefix.
+  return (
+    availableLocales.find((l) => l === nav) ??
+    availableLocales.find((l) => l.startsWith(nav.split("-")[0])) ??
+    FALLBACK
+  );
 }
 
 /** Translate a key using the active catalog, falling back to en-US. */

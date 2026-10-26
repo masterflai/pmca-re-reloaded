@@ -218,7 +218,7 @@ function toolCard(tools: PluginEntry[]): HTMLElement {
     make("label", { className: "field-label", i18n: "tools-operation" }),
     select,
     hint,
-    make("div", { className: "row" }, inputPath, browse),
+    make("div", { className: "row" }, browse, inputPath),
     make("div", { className: "row" }, run),
     status,
     report,

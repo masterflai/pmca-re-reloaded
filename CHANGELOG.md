@@ -6,6 +6,17 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+### Added
+
+- Six more languages: Traditional Chinese (Taiwan and Hong Kong), Korean,
+  Vietnamese, Thai and Ukrainian. 27 languages in total.
+
+### Changed
+
+- Every file field now has its "Browse…" button at the start of the line.
+- The areas a file can be dropped onto are outlined and tinted in the accent
+  colour, so they stand out before a file is dragged over them.
+
 ## [1.3.0-rc.8] - 2026-10-24
 
 Pre-release for testing on macOS. Contains everything from 1.3.0-rc.1 to

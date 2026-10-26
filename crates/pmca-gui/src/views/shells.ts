@@ -604,8 +604,8 @@ function cardUpdaterShell(): HTMLElement {
   return card(
     make("h2", { i18n: "nav-updater" }),
     make("label", { i18n: "updater-fdat-label" }),
-    fdatInput,
-    make("div", { className: "row" }, browseFdat, connect, disconnect),
+    make("div", { className: "row" }, browseFdat, fdatInput),
+    make("div", { className: "row" }, connect, disconnect),
     output,
     make(
       "div",

@@ -733,7 +733,7 @@ summary {
   margin: 8px 0 0;
 }
 
-/* Target for dragging a file onto the window. */
+/* Target for dragging a file onto the window: accent outline and tint so it reads as a drop area. */
 .dropzone {
   display: flex;
   align-items: center;
@@ -742,25 +742,27 @@ summary {
   padding: 18px 12px;
   text-align: center;
   color: var(--text-muted);
-  border: 1px dashed var(--border);
+  background: color-mix(in srgb, var(--accent) 5%, transparent);
+  border: 2px dashed color-mix(in srgb, var(--accent) 55%, transparent);
   border-radius: var(--radius);
-  transition: border-color 120ms ease, color 120ms ease;
+  transition: border-color 120ms ease, color 120ms ease, background-color 120ms ease;
 }
 
 .dropzone.active {
   color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 12%, transparent);
   border-color: var(--accent);
   border-style: solid;
 }
 
 /*
- * A drop target that is also the field: it shows the hint while empty and the
- * chosen path once there is one, with its two buttons at the end of the line.
+ * A drop target that is also the field: "Browse…" first, then the hint while
+ * empty or the chosen path once there is one, "Remove" at the end.
  * Wrapping keeps the buttons reachable when a long path claims the width.
  */
 .dropzone.file-picker {
   flex-wrap: wrap;
-  justify-content: space-between;
+  justify-content: flex-start;
   gap: 8px 12px;
   padding: 12px;
   text-align: start;
@@ -781,16 +783,11 @@ summary {
   user-select: text;
 }
 
-.file-picker-actions {
-  display: flex;
-  gap: 8px;
-}
-
 /*
  * The GPS card's drop target holds a path field of its own. Leaving the field
- * empty is the usual answer there, so it stays typeable. Hint and field share
- * one line, as the hint and buttons of the .apk picker do, so both boxes end
- * up the same height.
+ * empty is the usual answer there, so it stays typeable. "Browse…" and field
+ * come first and share one line with the hint, as in the .apk picker, so both
+ * boxes end up the same height.
  */
 .gps-picker-field {
   display: flex;
