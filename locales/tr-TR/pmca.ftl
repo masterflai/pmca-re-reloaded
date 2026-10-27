@@ -291,6 +291,7 @@ sources-removed = Kaynak kaldırıldı: { $source }
 sources-remove-confirm = { $source } kaynağı kaldırılsın mı? Uygulamaları için hatırlanan imzalayanlar da onunla birlikte unutulur.
 sources-stars-title = GitHub'daki yıldızlar: depoyu kaç kullanıcının işaretlediğini gösterir. Kalite ya da güvenlik hakkında hiçbir şey söylemez.
 sources-suggestion-heading = Öneri
+sources-suggestion-community = Yazarları projelerini arşivlemiş kamera uygulamaları. Liste, bu programın yazarı masterflai tarafından tutulur; yalnızca uygulama yazarlarının kendi yayımladığı sürümlere işaret eder ve kendine ait dosya içermez. Uygulamalar denetlenmemiştir.
 sources-suggestion-applist = Özgün proje Sony-PMCA-RE'nin uygulama listesi. Bu programın değil, yazarı ma1co'nun bakımındadır ve yıllardır güncellenmemiştir.
 btn-source-activate = Etkinleştir
 sources-search-heading = GitHub'da kaynak bul

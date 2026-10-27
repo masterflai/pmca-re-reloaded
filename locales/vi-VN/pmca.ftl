@@ -300,6 +300,7 @@ sources-removed = Đã xóa nguồn: { $source }
 sources-remove-confirm = Xóa nguồn { $source }? Những người ký đã được ghi nhớ cho các ứng dụng của nguồn này cũng sẽ bị xóa theo.
 sources-stars-title = Số sao trên GitHub: số người dùng đã gắn sao cho kho mã. Con số này không nói lên điều gì về chất lượng hay độ an toàn.
 sources-suggestion-heading = Đề xuất
+sources-suggestion-community = Các ứng dụng máy ảnh mà tác giả đã lưu trữ dự án. Danh sách này do masterflai, tác giả của chương trình này, duy trì; nó chỉ trỏ đến các bản phát hành do chính tác giả ứng dụng công bố và không chứa tệp riêng nào. Các ứng dụng chưa được kiểm tra.
 sources-suggestion-applist = Danh sách ứng dụng của dự án gốc Sony-PMCA-RE. Danh sách này do tác giả ma1co duy trì, không phải do chương trình này, và đã nhiều năm không được cập nhật.
 btn-source-activate = Kích hoạt
 sources-search-heading = Tìm nguồn trên GitHub

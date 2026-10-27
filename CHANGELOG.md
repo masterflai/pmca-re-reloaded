@@ -15,6 +15,9 @@ All notable changes to this project are documented here. The format follows
 - An app entry can name the SHA-256 of its signing certificate (`cert_sha256`).
   Every download is then checked against it, the first one included; an APK
   signed otherwise is refused before it reaches the camera.
+- A second source is offered as a suggestion under *Settings → App and plugin
+  sources*: `masterflai/pmca-community-sources`, for apps whose authors have
+  archived their projects. It points only to the authors' own releases.
 
 ## [1.4.1] - 2026-10-27
 

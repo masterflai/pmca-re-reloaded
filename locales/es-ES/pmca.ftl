@@ -291,6 +291,7 @@ sources-removed = Fuente quitada: { $source }
 sources-remove-confirm = ¿Quitar la fuente { $source }? Con ella se olvidan también los firmantes recordados para sus aplicaciones.
 sources-stars-title = Estrellas en GitHub: cuántos usuarios han marcado el repositorio. No dicen nada sobre su calidad ni su seguridad.
 sources-suggestion-heading = Sugerencia
+sources-suggestion-community = Aplicaciones de cámara cuyos autores han archivado sus proyectos. La lista la mantiene masterflai, el autor de este programa; solo remite a las versiones que los propios autores publicaron y no contiene archivos propios. Las aplicaciones no se han comprobado.
 sources-suggestion-applist = La lista de aplicaciones del proyecto original Sony-PMCA-RE. La mantiene su autor, ma1co, no este programa, y lleva años sin actualizarse.
 btn-source-activate = Activar
 sources-search-heading = Buscar fuentes en GitHub

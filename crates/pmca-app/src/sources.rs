@@ -3,8 +3,10 @@
 //! The program ships no source and recommends none. A source is a public
 //! repository whose author publishes `pmca-source.yaml` (see
 //! `docs/app-sources.md`); the user adds it by name, and only then are its
-//! entries read. The one exception is a *suggestion* the user can switch on:
-//! the list of the original project, kept by its own author.
+//! entries read. The exception are *suggestions* the user can switch on: the
+//! list of the original project, kept by its own author, and a list of archived
+//! apps kept by this program's author that only points to the apps' own
+//! releases.
 //!
 //! Nothing is checked on anyone's behalf. What the program does keep is the
 //! signer of every app at its first download, so a later version signed by
@@ -102,7 +104,7 @@ pub struct SourceSuggestion {
     pub note_key: String,
 }
 
-/// A suggestion: a repository whose list does not follow the default layout.
+/// A repository offered for the user to switch on, and where its list lives.
 struct Suggestion {
     owner: &'static str,
     repo: &'static str,
@@ -111,14 +113,23 @@ struct Suggestion {
     note_key: &'static str,
 }
 
-/// The original project's list, kept by ma1co; offered, never switched on.
-const SUGGESTIONS: &[Suggestion] = &[Suggestion {
-    owner: "ma1co",
-    repo: "OpenMemories-AppList",
-    branch: "master",
-    path: "apps.yaml",
-    note_key: "sources-suggestion-applist",
-}];
+/// Offered, never switched on. The first one is what an empty app list offers.
+const SUGGESTIONS: &[Suggestion] = &[
+    Suggestion {
+        owner: "ma1co",
+        repo: "OpenMemories-AppList",
+        branch: "master",
+        path: "apps.yaml",
+        note_key: "sources-suggestion-applist",
+    },
+    Suggestion {
+        owner: "masterflai",
+        repo: "pmca-community-sources",
+        branch: appstore::DEFAULT_BRANCH,
+        path: appstore::SOURCE_FILE,
+        note_key: "sources-suggestion-community",
+    },
+];
 
 /// Serialises read-modify-write of [`FILE`] within the process.
 static LOCK: Mutex<()> = Mutex::new(());
@@ -390,10 +401,18 @@ mod tests {
     }
 
     #[test]
-    fn the_suggestion_reads_the_original_list() {
+    fn the_first_suggestion_reads_the_original_list() {
         let s = &SUGGESTIONS[0];
         assert_eq!((s.owner, s.repo, s.path), ("ma1co", "OpenMemories-AppList", "apps.yaml"));
-        assert!(pmca_i18n::Localizer::new("en-US").tr(s.note_key) != s.note_key);
+    }
+
+    #[test]
+    fn every_suggestion_is_described() {
+        let l = pmca_i18n::Localizer::new("en-US");
+        for s in SUGGESTIONS {
+            assert!(l.tr(s.note_key) != s.note_key, "{}", s.note_key);
+            assert!(appstore::valid_repo_name(s.owner) && appstore::valid_repo_name(s.repo));
+        }
     }
 
     #[test]

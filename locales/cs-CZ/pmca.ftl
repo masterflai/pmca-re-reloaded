@@ -291,6 +291,7 @@ sources-removed = Zdroj odebrán: { $source }
 sources-remove-confirm = Odebrat zdroj { $source }? Zapamatované údaje o tom, kdo podepsal jeho aplikace, budou zapomenuty spolu s ním.
 sources-stars-title = Hvězdičky na GitHubu: kolik uživatelů si úložiště označilo. O kvalitě ani bezpečnosti nic nevypovídají.
 sources-suggestion-heading = Návrh
+sources-suggestion-community = Aplikace pro fotoaparáty, jejichž autoři své projekty archivovali. Seznam spravuje masterflai, autor tohoto programu; odkazuje jen na vydání, která autoři aplikací sami zveřejnili, a neobsahuje žádné vlastní soubory. Aplikace nebyly zkontrolovány.
 sources-suggestion-applist = Seznam aplikací původního projektu Sony-PMCA-RE. Spravuje ho jeho autor ma1co, nikoli tento program, a už léta nebyl aktualizován.
 btn-source-activate = Aktivovat
 sources-search-heading = Najít zdroje na GitHubu

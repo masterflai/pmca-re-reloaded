@@ -290,6 +290,7 @@ sources-removed = Kilde fjernet: { $source }
 sources-remove-confirm = Vil du fjerne kilden { $source }? Oplysningerne om, hvem dens apps er signeret af, glemmes samtidig.
 sources-stars-title = Stjerner på GitHub: hvor mange brugere der har markeret repositoryet. De siger intet om kvalitet eller sikkerhed.
 sources-suggestion-heading = Forslag
+sources-suggestion-community = Kameraapps, hvis forfattere har arkiveret deres projekter. Listen vedligeholdes af masterflai, forfatteren af dette program; den henviser kun til de udgivelser, som appforfatterne selv har offentliggjort, og indeholder ingen egne filer. Appene er ikke blevet kontrolleret.
 sources-suggestion-applist = Applisten fra det oprindelige projekt Sony-PMCA-RE. Den vedligeholdes af dens forfatter ma1co, ikke af dette program, og er ikke blevet opdateret i årevis.
 btn-source-activate = Aktivér
 sources-search-heading = Find kilder på GitHub

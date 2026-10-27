@@ -300,6 +300,7 @@ sources-removed = 已移除來源：{ $source }
 sources-remove-confirm = 要移除來源 { $source } 嗎？為其應用程式記下的簽署者亦會一併清除。
 sources-stars-title = GitHub 上的星星：表示有多少用戶標記了此儲存庫。星星並不代表質素或安全性。
 sources-suggestion-heading = 建議
+sources-suggestion-community = 作者已將其項目封存的相機應用程式。此清單由本程式的作者 masterflai 維護；它只指向應用程式作者自行發佈的版本，不包含任何自有檔案。這些應用程式未經檢查。
 sources-suggestion-applist = 原有項目 Sony-PMCA-RE 的應用程式清單。它由其作者 ma1co 維護，而非由本程式維護，並已多年未有更新。
 btn-source-activate = 啟用
 sources-search-heading = 在 GitHub 上尋找來源

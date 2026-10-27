@@ -300,6 +300,7 @@ sources-removed = 소스를 제거했습니다: { $source }
 sources-remove-confirm = 소스 { $source }을(를) 제거하시겠습니까? 이 소스의 앱에 대해 기억해 둔 서명자 정보도 함께 삭제됩니다.
 sources-stars-title = GitHub 스타: 이 저장소에 스타를 표시한 사용자 수입니다. 품질이나 안전성에 대해서는 아무것도 알려 주지 않습니다.
 sources-suggestion-heading = 제안
+sources-suggestion-community = 작성자가 프로젝트를 보관 처리한 카메라 앱입니다. 이 목록은 이 프로그램의 작성자 masterflai가 관리하며, 앱 작성자가 직접 게시한 릴리스만 가리키고 자체 파일은 포함하지 않습니다. 앱은 검사되지 않았습니다.
 sources-suggestion-applist = 원래 프로젝트인 Sony-PMCA-RE의 앱 목록입니다. 이 프로그램이 아니라 작성자 ma1co가 관리하며, 수년째 업데이트되지 않았습니다.
 btn-source-activate = 활성화
 sources-search-heading = GitHub에서 소스 찾기

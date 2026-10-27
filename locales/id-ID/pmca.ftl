@@ -291,6 +291,7 @@ sources-removed = Sumber dihapus: { $source }
 sources-remove-confirm = Hapus sumber { $source }? Penanda tangan yang diingat untuk aplikasinya juga akan dilupakan bersamanya.
 sources-stars-title = Bintang di GitHub: berapa banyak pengguna yang telah menandai repositori ini. Bintang tidak menunjukkan apa pun tentang kualitas atau keamanan.
 sources-suggestion-heading = Saran
+sources-suggestion-community = Aplikasi kamera yang proyeknya telah diarsipkan oleh pembuatnya. Daftar ini dikelola oleh masterflai, pembuat program ini; daftar ini hanya menunjuk ke rilis yang diterbitkan sendiri oleh pembuat aplikasi dan tidak berisi berkas sendiri. Aplikasinya belum diperiksa.
 sources-suggestion-applist = Daftar aplikasi dari proyek asli Sony-PMCA-RE. Daftar ini dikelola oleh pembuatnya, ma1co, bukan oleh program ini, dan sudah bertahun-tahun tidak diperbarui.
 btn-source-activate = Aktifkan
 sources-search-heading = Temukan sumber di GitHub

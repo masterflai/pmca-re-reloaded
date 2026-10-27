@@ -272,8 +272,11 @@ hosts nothing and checks nothing; the author of a source alone is responsible
 for it. You add the sources you choose — in the app under *Settings → App and
 plugin sources*, or with `pmca-console sources add owner/repository`.
 
-* The app list of the original project, kept by ma1co, is offered there as a
-  suggestion you can switch on.
+* Two lists are offered there as suggestions you can switch on: the app list of
+  the original project, kept by ma1co, and
+  [pmca-community-sources](https://github.com/masterflai/pmca-community-sources),
+  kept by the author of this program, which points to the own releases of apps
+  whose authors have archived their projects.
 * *Search GitHub* (`pmca-console sources search`) lists repositories with the
   topic `pmca-source`, with their GitHub stars. The search only runs when you
   ask, and its results are no recommendation: look at a repository before you
