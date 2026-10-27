@@ -6,6 +6,13 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+## [1.5.0] - 2026-10-28
+
+**More ways to publish and to trust apps.** Sources can point to a JSON
+release document and name the certificate their apps are signed with, a second
+list is offered for apps whose authors have archived their projects, and the
+app list can be narrowed to one source.
+
 ### Added
 
 - Sources can name an app's release through a JSON document of the author's
@@ -18,6 +25,15 @@ All notable changes to this project are documented here. The format follows
 - A second source is offered as a suggestion under *Settings → App and plugin
   sources*: `masterflai/pmca-community-sources`, for apps whose authors have
   archived their projects. It points only to the authors' own releases.
+- Community app store: once the list comes from more than one source, it can
+  be narrowed to a single source.
+
+### Changed
+
+- Console: `install --app` no longer asks for `--source` when several sources
+  offer the same app in the same way (same release and certificate); the
+  source added first is used. Only offers that lead to different files still
+  need the choice.
 
 ## [1.4.1] - 2026-10-27
 

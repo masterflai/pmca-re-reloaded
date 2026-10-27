@@ -92,14 +92,33 @@ pub fn community_plugins() -> CommunityList {
 }
 
 /// The sources offering `package`, for a front-end that names only the package.
+///
+/// Entries that publish the same way (same release source and certificate pin)
+/// lead to the same file, so they count once, under the source added first.
 #[must_use]
 pub fn sources_offering(package: &str, kind: EntryKind) -> Vec<String> {
     let (entries, _) = fetch_all();
-    entries
-        .into_iter()
-        .filter(|(_, app)| app.kind == kind && app.package == package)
-        .map(|(source, _)| source)
-        .collect()
+    distinct_offers(entries, package, kind)
+}
+
+fn distinct_offers(
+    entries: Vec<(String, appstore::StoreApp)>,
+    package: &str,
+    kind: EntryKind,
+) -> Vec<String> {
+    let mut seen: Vec<(ReleaseSource, Option<String>)> = Vec::new();
+    let mut sources = Vec::new();
+    for (source, app) in entries {
+        if app.kind != kind || app.package != package {
+            continue;
+        }
+        let offer = (app.release, app.cert_sha256);
+        if !seen.contains(&offer) {
+            seen.push(offer);
+            sources.push(source);
+        }
+    }
+    sources
 }
 
 /// The newest release of an entry, resolved once per process.
@@ -246,5 +265,38 @@ mod tests {
         assert!(matches_pin(Some("aa"), Some("aa")));
         assert!(!matches_pin(Some("aa"), Some("bb")));
         assert!(!matches_pin(Some("aa"), None));
+    }
+
+    fn offers(sources: &[(&str, &str)]) -> Vec<(String, appstore::StoreApp)> {
+        sources
+            .iter()
+            .flat_map(|(source, yaml)| {
+                appstore::parse_app_list(yaml.as_bytes())
+                    .unwrap()
+                    .into_iter()
+                    .map(|app| (source.to_string(), app))
+            })
+            .collect()
+    }
+
+    const GITHUB: &str =
+        "---\npackage: a.b\nname: A\nrelease:\n  type: github\n  user: dev\n  repo: a\n";
+    const FORK: &str =
+        "---\npackage: a.b\nname: A\nrelease:\n  type: github\n  user: other\n  repo: a\n";
+
+    #[test]
+    fn identical_offers_count_once_under_the_first_source() {
+        let entries = offers(&[("x/list", GITHUB), ("y/list", GITHUB)]);
+        assert_eq!(distinct_offers(entries, "a.b", EntryKind::App), ["x/list"]);
+    }
+
+    #[test]
+    fn offers_of_different_builds_stay_apart() {
+        let entries = offers(&[("x/list", GITHUB), ("y/list", FORK), ("z/list", GITHUB)]);
+        assert_eq!(distinct_offers(entries, "a.b", EntryKind::App), ["x/list", "y/list"]);
+        let pinned = format!("{GITHUB}cert_sha256: aa\n");
+        let entries = offers(&[("x/list", GITHUB), ("y/list", &pinned)]);
+        assert_eq!(distinct_offers(entries, "a.b", EntryKind::App).len(), 2);
+        assert!(distinct_offers(offers(&[("x/list", GITHUB)]), "c.d", EntryKind::App).is_empty());
     }
 }

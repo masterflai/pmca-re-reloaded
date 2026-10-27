@@ -95,6 +95,18 @@ export function viewInstall(host: HTMLElement): void {
   const stop = make("button", { i18n: "btn-store-stop", hidden: true });
   const retry = make("button", { i18n: "btn-store-retry", hidden: true });
   const selectAll = make("input", { type: "checkbox", disabled: true });
+  const sourceFilter = make("select", { className: "field-select", id: "store-source-filter" });
+  // Only worth offering once the list comes from more than one source.
+  const filterBlock = make(
+    "div",
+    { hidden: true },
+    make("label", {
+      className: "field-label",
+      htmlFor: "store-source-filter",
+      i18n: "store-filter-source",
+    }),
+    sourceFilter,
+  );
   const tbody = make("tbody");
   const table = make(
     "table",
@@ -138,6 +150,8 @@ export function viewInstall(host: HTMLElement): void {
     camera: HTMLTableCellElement;
     status: HTMLElement;
     result: BatchResult | null;
+    appRow: HTMLTableRowElement;
+    detailRow: HTMLTableRowElement;
   }
 
   let rows: StoreRow[] = [];
@@ -199,7 +213,7 @@ export function viewInstall(host: HTMLElement): void {
   };
 
   const updateSelection = (): void => {
-    const selectable = rows.filter((row) => row.app.installable);
+    const selectable = rows.filter((row) => row.app.installable && !row.appRow.hidden);
     const count = selectable.filter((row) => row.check.checked).length;
     countLabel.textContent = count > 0 ? ` (${count})` : "";
     installSelected.disabled = running || count === 0;
@@ -207,19 +221,35 @@ export function viewInstall(host: HTMLElement): void {
     selectAll.indeterminate = count > 0 && count < selectable.length;
   };
 
+  /** Show only the rows of the chosen source; a hidden row is deselected. */
+  const applyFilter = (): void => {
+    const wanted = sourceFilter.value;
+    for (const row of rows) {
+      const hide = wanted !== "" && row.app.source !== wanted;
+      row.appRow.hidden = hide;
+      row.detailRow.hidden = hide || !row.appRow.classList.contains("expanded");
+      if (hide) row.check.checked = false;
+    }
+    lock(running);
+  };
+  sourceFilter.addEventListener("change", applyFilter);
+
   /** Block every install while one is running, in either card. */
   const lock = (on: boolean): void => {
     running = on;
     install.disabled = on;
     loadCommunity.disabled = on;
+    sourceFilter.disabled = on;
     sync.disabled = on || rows.length === 0;
-    selectAll.disabled = on || !rows.some((row) => row.app.installable);
+    selectAll.disabled = on || !rows.some((row) => row.app.installable && !row.appRow.hidden);
     for (const row of rows) row.check.disabled = on || !row.app.installable;
     updateSelection();
   };
 
   selectAll.addEventListener("change", () => {
-    for (const row of rows) if (row.app.installable) row.check.checked = selectAll.checked;
+    for (const row of rows) {
+      if (row.app.installable && !row.appRow.hidden) row.check.checked = selectAll.checked;
+    }
     updateSelection();
   });
 
@@ -231,6 +261,7 @@ export function viewInstall(host: HTMLElement): void {
     tbody.replaceChildren();
     rows = [];
     table.hidden = true;
+    filterBlock.hidden = true;
     try {
       const state = await invoke<SourcesState>("sources_list");
       if (state.sources.length === 0) {
@@ -271,9 +302,7 @@ export function viewInstall(host: HTMLElement): void {
         const status = make("p", { className: "status row-status" });
         if (!app.installable) showStateKey(status, "idle", "store-not-installable");
         const version = make("td", { textContent: app.installable ? "…" : "–" });
-        const row: StoreRow = { app, check, version, camera: make("td"), status, result: null };
-        setCameraCell(row);
-        rows.push(row);
+        const camera = make("td");
         const detailRow = make(
           "tr",
           { className: "store-detail-row" },
@@ -289,16 +318,25 @@ export function viewInstall(host: HTMLElement): void {
           { className: app.installable ? "" : "unavailable" },
           make("td", {}, check),
           nameCell,
-          row.version,
+          version,
           make("td", { textContent: app.author ?? "" }),
           make("td", {}, `${app.source} `, starsBadge(app.source)),
-          row.camera,
+          camera,
           make("td", {}, status),
         );
         // The row's rule would otherwise cut the app off from its own details.
         nameCell.append(disclosure(detailRow, false, (open) => appRow.classList.toggle("expanded", open)));
         tbody.append(appRow, detailRow);
+        const row: StoreRow = { app, check, version, camera, status, result: null, appRow, detailRow };
+        setCameraCell(row);
+        rows.push(row);
       });
+      const sources = [...new Set(apps.map((app) => app.source))];
+      sourceFilter.replaceChildren(
+        make("option", { value: "", i18n: "store-filter-all" }),
+        ...sources.map((source) => make("option", { value: source, textContent: source })),
+      );
+      filterBlock.hidden = sources.length < 2;
       table.hidden = apps.length === 0;
       void fillVersions(++listGeneration);
     } catch (e) {
@@ -528,6 +566,7 @@ export function viewInstall(host: HTMLElement): void {
       make("div", { className: "row" }, loadCommunity, sync),
       storeStatus,
       storeDetails,
+      filterBlock,
       make("div", { className: "store-list" }, table),
       make("div", { className: "row" }, installSelected, stop, retry),
     ),
