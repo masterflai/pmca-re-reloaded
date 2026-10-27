@@ -171,7 +171,8 @@ fn parse_string_pool(chunk: &[u8]) -> Result<Vec<String>> {
 fn parse_resource_map(chunk: &[u8]) -> Result<Vec<u32>> {
     let header_size = u16le(chunk, 2)? as usize;
     let body = chunk.get(header_size..).ok_or(Error::Axml("resource map header out of bounds"))?;
-    Ok(body.chunks_exact(4).map(|b| u32::from_le_bytes([b[0], b[1], b[2], b[3]])).collect())
+    let (ids, _) = body.as_chunks::<4>();
+    Ok(ids.iter().map(|b| u32::from_le_bytes(*b)).collect())
 }
 
 /// Read a length-prefixed UTF-16 pool entry.
