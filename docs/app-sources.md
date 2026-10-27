@@ -121,7 +121,8 @@ Three forms are understood. Every address must start with `https://`.
     download: https://dl.example.com/MyApp-v{version}.apk?build={build}
   ```
 
-  Version and build may contain only letters, digits, `.`, `-` and `_`.
+  Version and build may contain only letters, digits, `.`, `-` and `_`. Write
+  the version as a string: as a number, `2.50` arrives as `2.5`.
 * **A fixed build** — `version` and `url` directly in the `release:` block.
 
 ## Signing
