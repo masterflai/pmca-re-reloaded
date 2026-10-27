@@ -203,8 +203,11 @@ The Windows downloads are to be signed through SignPath (see the
 given release is. Until then, and on the other systems:
 
 * **Windows** shows a SmartScreen warning for an unsigned release: *More info* → *Run anyway*.
-* **macOS** reports the app as *damaged*. It is not — the file carries a
-  quarantine flag. Right-click it and choose *Open*, or run
+* **macOS** refuses to open the app on first start, or reports it as
+  *damaged*. It is not — the file carries a quarantine flag. Open
+  *System Settings → Privacy & Security*, scroll to *Security* and click
+  *Open Anyway* (macOS 15 and later no longer offer this through right-click →
+  *Open*). Alternatively run
   `xattr -dr com.apple.quarantine "/Applications/PMCA-RE RELOADED.app"`.
 * **Linux** starts the packages without complaint.
 

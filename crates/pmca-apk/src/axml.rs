@@ -2,8 +2,8 @@
 //! APK).
 //!
 //! Only the parts required to describe an application are decoded: the string
-//! pool and the start-element chunks with their attributes. Namespaces,
-//! styles, CDATA and the resource map are skipped.
+//! pool, the resource map and the start-element chunks with their attributes.
+//! Namespaces, styles and CDATA are skipped.
 //!
 //! The original Python used the `axmlparserpy` package, which indexes into the
 //! buffer without validation. Every read here is bounds-checked and returns
@@ -17,6 +17,13 @@ const RES_XML_TYPE: u16 = 0x0003;
 const RES_STRING_POOL_TYPE: u16 = 0x0001;
 /// `RES_XML_START_ELEMENT_TYPE`.
 const RES_XML_START_ELEMENT_TYPE: u16 = 0x0102;
+/// `RES_XML_RESOURCE_MAP_TYPE` — the `android.R.attr` id of each attribute name.
+const RES_XML_RESOURCE_MAP_TYPE: u16 = 0x0180;
+
+/// Names for attribute ids, for manifests whose name strings were blanked.
+/// Android looks attributes up by id only, so obfuscators may strip the names.
+const ATTRIBUTE_IDS: [(u32, &str); 3] =
+    [(0x0101_021b, "versionCode"), (0x0101_021c, "versionName"), (0x0101_020c, "minSdkVersion")];
 
 /// String-pool flag marking the entries as (modified) UTF-8 rather than UTF-16.
 const UTF8_FLAG: u32 = 1 << 8;
@@ -106,6 +113,7 @@ pub fn parse(data: &[u8]) -> Result<Vec<Element>> {
 
     let mut pos = u16le(data, 2)? as usize;
     let mut pool: Option<Vec<String>> = None;
+    let mut resource_ids = Vec::new();
     let mut elements = Vec::new();
 
     while pos.saturating_add(8) <= end {
@@ -122,10 +130,11 @@ pub fn parse(data: &[u8]) -> Result<Vec<Element>> {
 
         match chunk_type {
             RES_STRING_POOL_TYPE => pool = Some(parse_string_pool(chunk)?),
+            RES_XML_RESOURCE_MAP_TYPE => resource_ids = parse_resource_map(chunk)?,
             RES_XML_START_ELEMENT_TYPE => {
                 let pool =
                     pool.as_deref().ok_or(Error::Axml("start element before string pool"))?;
-                elements.push(parse_start_element(chunk, pool)?);
+                elements.push(parse_start_element(chunk, pool, &resource_ids)?);
             }
             _ => {}
         }
@@ -156,6 +165,13 @@ fn parse_string_pool(chunk: &[u8]) -> Result<Vec<String>> {
         strings.push(if utf8 { read_utf8(chunk, pos)? } else { read_utf16(chunk, pos)? });
     }
     Ok(strings)
+}
+
+/// Decode the resource map: one attribute id per leading string-pool entry.
+fn parse_resource_map(chunk: &[u8]) -> Result<Vec<u32>> {
+    let header_size = u16le(chunk, 2)? as usize;
+    let body = chunk.get(header_size..).ok_or(Error::Axml("resource map header out of bounds"))?;
+    Ok(body.chunks_exact(4).map(|b| u32::from_le_bytes([b[0], b[1], b[2], b[3]])).collect())
 }
 
 /// Read a length-prefixed UTF-16 pool entry.
@@ -201,7 +217,7 @@ fn read_varint8(chunk: &[u8], pos: usize) -> Result<(usize, usize)> {
 }
 
 /// Decode one `RES_XML_START_ELEMENT_TYPE` chunk.
-fn parse_start_element(chunk: &[u8], pool: &[String]) -> Result<Element> {
+fn parse_start_element(chunk: &[u8], pool: &[String], resource_ids: &[u32]) -> Result<Element> {
     let base = u16le(chunk, 2)? as usize;
     let name = string_at(pool, u32le(chunk, base + 4)?)
         .ok_or(Error::Axml("element name not in string pool"))?
@@ -222,7 +238,11 @@ fn parse_start_element(chunk: &[u8], pool: &[String]) -> Result<Element> {
     let mut attributes = Vec::with_capacity(attr_count);
     for i in 0..attr_count {
         let at = first + i * attr_size;
-        let Some(name) = string_at(pool, u32le(chunk, at + 4)?) else {
+        let name_index = u32le(chunk, at + 4)?;
+        let Some(name) = string_at(pool, name_index)
+            .filter(|n| !n.is_empty())
+            .or_else(|| attribute_name_by_id(resource_ids, name_index))
+        else {
             // An attribute we cannot name is useless but not fatal.
             continue;
         };
@@ -243,6 +263,12 @@ fn parse_start_element(chunk: &[u8], pool: &[String]) -> Result<Element> {
         attributes.push(Attribute { name: name.to_string(), value });
     }
     Ok(Element { name, attributes })
+}
+
+/// The name of a known attribute through the resource map.
+fn attribute_name_by_id(resource_ids: &[u32], name_index: u32) -> Option<&'static str> {
+    let id = *resource_ids.get(name_index as usize)?;
+    ATTRIBUTE_IDS.iter().find(|(known, _)| *known == id).map(|(_, name)| *name)
 }
 
 /// Resolve a string-pool index, treating [`NO_STRING`] and out-of-range indices
@@ -275,13 +301,20 @@ pub(crate) mod tests {
     /// Build a minimal but structurally valid binary XML document containing a
     /// `<manifest>` and a `<uses-sdk>` element.
     pub(crate) fn sample(utf8: bool) -> Vec<u8> {
+        build(utf8, false)
+    }
+
+    /// As [`sample`]; `stripped` blanks the `android:` attribute names and adds
+    /// a resource map with their ids, as obfuscators leave it.
+    fn build(utf8: bool, stripped: bool) -> Vec<u8> {
+        let named = |s: &'static str| if stripped { "" } else { s };
         let strings = [
             "manifest",
             "package",
-            "versionCode",
-            "versionName",
+            named("versionCode"),
+            named("versionName"),
             "uses-sdk",
-            "minSdkVersion",
+            named("minSdkVersion"),
             "com.example.app",
             "1.2.3",
         ];
@@ -325,6 +358,18 @@ pub(crate) mod tests {
         }
         pool.extend_from_slice(&data);
 
+        // --- resource map ---
+        let mut map = Vec::new();
+        if stripped {
+            let ids = [0u32, 0, 0x0101_021b, 0x0101_021c, 0, 0x0101_020c];
+            map.extend_from_slice(&RES_XML_RESOURCE_MAP_TYPE.to_le_bytes());
+            map.extend_from_slice(&8u16.to_le_bytes());
+            map.extend_from_slice(&((8 + ids.len() * 4) as u32).to_le_bytes());
+            for id in ids {
+                map.extend_from_slice(&id.to_le_bytes());
+            }
+        }
+
         // --- start elements ---
         let element = |name: u32, attrs: &[(u32, u8, u32)]| -> Vec<u8> {
             let size = 16 + 20 + attrs.len() * ATTRIBUTE_SIZE;
@@ -358,12 +403,13 @@ pub(crate) mod tests {
             element(0, &[(1, TYPE_STRING, 6), (2, TYPE_INT_DEC, 42), (3, TYPE_STRING, 7)]);
         let uses_sdk = element(4, &[(5, TYPE_INT_DEC, 10)]);
 
-        let total = 8 + pool.len() + manifest.len() + uses_sdk.len();
+        let total = 8 + pool.len() + map.len() + manifest.len() + uses_sdk.len();
         let mut out = Vec::with_capacity(total);
         out.extend_from_slice(&RES_XML_TYPE.to_le_bytes());
         out.extend_from_slice(&8u16.to_le_bytes());
         out.extend_from_slice(&(total as u32).to_le_bytes());
         out.extend_from_slice(&pool);
+        out.extend_from_slice(&map);
         out.extend_from_slice(&manifest);
         out.extend_from_slice(&uses_sdk);
         out
@@ -386,6 +432,17 @@ pub(crate) mod tests {
         let elements = parse(&sample(true)).unwrap();
         assert_eq!(elements[0].attr("package").unwrap().as_str(), Some("com.example.app"));
         assert_eq!(elements[1].attr("minSdkVersion").unwrap().as_int(), Some(10));
+    }
+
+    #[test]
+    fn stripped_attribute_names_resolve_through_the_resource_map() {
+        for utf8 in [false, true] {
+            let elements = parse(&build(utf8, true)).unwrap();
+            assert_eq!(elements[0].attr("package").unwrap().as_str(), Some("com.example.app"));
+            assert_eq!(elements[0].attr("versionCode").unwrap().as_int(), Some(42));
+            assert_eq!(elements[0].attr("versionName").unwrap().as_str(), Some("1.2.3"));
+            assert_eq!(elements[1].attr("minSdkVersion").unwrap().as_int(), Some(10));
+        }
     }
 
     #[test]

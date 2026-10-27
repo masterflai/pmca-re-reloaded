@@ -6,6 +6,20 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+## [1.4.1] - 2026-10-27
+
+Two small fixes: apps with an obfuscated manifest are read correctly, and the
+README describes how to open the app on current macOS versions.
+
+### Fixed
+
+- Apps whose manifest has blanked attribute names (left by some obfuscators)
+  now show their version and minimum Android version; the names are taken from
+  the attribute ids.
+- README: on macOS 15 and later a blocked first start is allowed under
+  *System Settings → Privacy & Security → Open Anyway*; right-click → *Open*
+  no longer does it.
+
 ## [1.4.0] - 2026-10-26
 
 **Back up your camera's apps.** The apps installed on a camera can now be
