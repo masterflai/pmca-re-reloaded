@@ -309,6 +309,7 @@ source-unknown = Böyle bir kaynak yok: { $source }
 source-unreadable = { $source } kaynağının varsayılan dalında okunabilir bir { $file } dosyası yok.
 source-failed = { $source } kaynağı okunamadı: { $reason }
 source-signer-changed = { $source } kaynağındaki { $name } öncekinden farklı biri tarafından imzalanmış, bu yüzden kurulmadı. Yazarı imzalama anahtarını gerçekten değiştirdiyse kaynağı kaldırın ve yeniden ekleyin.
+source-signer-pinned = { $name } from { $source } is not signed with the certificate its source names and was not installed.
 source-ambiguous = { $package } birden çok kaynak tarafından sunuluyor: { $sources }. --source ile birini seçin.
 source-plugin-mismatch = İndirilen eklentinin kimliği { $found }, ancak kaynak { $id } kimliğini bildiriyor. Eklenti kurulmadı.
 plugin-sources-heading = Eklediğiniz kaynaklardaki eklentiler

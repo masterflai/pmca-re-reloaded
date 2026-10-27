@@ -307,6 +307,7 @@ source-unknown = ऐसा कोई स्रोत नहीं है: { $sou
 source-unreadable = { $source } की डिफ़ॉल्ट ब्रांच में पढ़ने योग्य { $file } नहीं है।
 source-failed = स्रोत { $source } पढ़ा नहीं जा सका: { $reason }
 source-signer-changed = { $source } से आए { $name } पर पहले से अलग किसी व्यक्ति के हस्ताक्षर हैं, इसलिए इसे इंस्टॉल नहीं किया गया। यदि इसके लेखक ने सचमुच हस्ताक्षर कुंजी बदली है, तो स्रोत को हटाकर फिर से जोड़ें।
+source-signer-pinned = { $name } from { $source } is not signed with the certificate its source names and was not installed.
 source-ambiguous = { $package } कई स्रोतों द्वारा प्रदान किया जाता है: { $sources }। --source से एक चुनें।
 source-plugin-mismatch = डाउनलोड किए गए प्लगइन की आईडी { $found } है, लेकिन स्रोत { $id } बताता है। इसे इंस्टॉल नहीं किया गया।
 plugin-sources-heading = आपके जोड़े गए स्रोतों से प्लगइन

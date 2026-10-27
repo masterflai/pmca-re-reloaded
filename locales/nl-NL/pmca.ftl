@@ -311,6 +311,7 @@ source-unknown = Onbekende bron: { $source }
 source-unreadable = { $source } heeft in de standaardbranch geen leesbaar bestand { $file }.
 source-failed = De bron { $source } kon niet worden gelezen: { $reason }
 source-signer-changed = { $name } uit { $source } is door iemand anders ondertekend dan voorheen en is niet geïnstalleerd. Als de auteur de ondertekeningssleutel echt heeft gewijzigd, verwijder dan de bron en voeg die opnieuw toe.
+source-signer-pinned = { $name } from { $source } is not signed with the certificate its source names and was not installed.
 source-ambiguous = { $package } wordt door meerdere bronnen aangeboden: { $sources }. Kies er een met --source.
 source-plugin-mismatch = De gedownloade plug-in heeft de id { $found }, maar de bron kondigt { $id } aan. Hij is niet geïnstalleerd.
 plugin-sources-heading = Plug-ins uit de bronnen die u hebt toegevoegd

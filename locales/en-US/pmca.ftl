@@ -318,6 +318,7 @@ source-unknown = No such source: { $source }
 source-unreadable = { $source } has no readable { $file } in its default branch.
 source-failed = The source { $source } could not be read: { $reason }
 source-signer-changed = { $name } from { $source } is signed by someone other than before and was not installed. If its author really changed the signing key, remove the source and add it again.
+source-signer-pinned = { $name } from { $source } is not signed with the certificate its source names and was not installed.
 source-ambiguous = { $package } is offered by several sources: { $sources }. Choose one with --source.
 source-plugin-mismatch = The downloaded plugin has the id { $found }, but the source announces { $id }. It was not installed.
 plugin-sources-heading = Plugins from the sources you have added

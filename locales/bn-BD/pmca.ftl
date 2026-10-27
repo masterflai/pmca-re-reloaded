@@ -306,6 +306,7 @@ source-unknown = এমন কোনো উৎস নেই: { $source }
 source-unreadable = { $source } উৎসের ডিফল্ট ব্রাঞ্চে পড়ার যোগ্য কোনো { $file } ফাইল নেই।
 source-failed = { $source } উৎসটি পড়া যায়নি: { $reason }
 source-signer-changed = { $source } থেকে আসা { $name } আগের চেয়ে অন্য কারও দ্বারা স্বাক্ষরিত, তাই এটি ইনস্টল করা হয়নি। যদি এর লেখক সত্যিই স্বাক্ষরের কী বদলে থাকেন, তবে উৎসটি সরিয়ে আবার যোগ করুন।
+source-signer-pinned = { $name } from { $source } is not signed with the certificate its source names and was not installed.
 source-ambiguous = একাধিক উৎস { $package } দিচ্ছে: { $sources }। --source দিয়ে একটি বেছে নিন।
 source-plugin-mismatch = ডাউনলোড করা প্লাগইনের আইডি { $found }, কিন্তু উৎস জানাচ্ছে { $id }। এটি ইনস্টল করা হয়নি।
 plugin-sources-heading = আপনার যোগ করা উৎসগুলোর প্লাগইন

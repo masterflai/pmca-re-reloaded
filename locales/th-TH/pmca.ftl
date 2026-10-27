@@ -318,6 +318,7 @@ source-unknown = ไม่มีแหล่งที่มานี้: { $sour
 source-unreadable = { $source } ไม่มีไฟล์ { $file } ที่อ่านได้ในสาขาเริ่มต้น
 source-failed = ไม่สามารถอ่านแหล่งที่มา { $source } ได้: { $reason }
 source-signer-changed = { $name } จาก { $source } ลงนามโดยบุคคลอื่นที่ไม่ใช่ผู้ลงนามเดิม จึงไม่ได้ติดตั้ง หากผู้สร้างเปลี่ยนคีย์สำหรับลงนามจริง ให้ลบแหล่งที่มานี้แล้วเพิ่มใหม่อีกครั้ง
+source-signer-pinned = { $name } from { $source } is not signed with the certificate its source names and was not installed.
 source-ambiguous = มีหลายแหล่งที่มาที่นำเสนอ { $package }: { $sources } เลือกหนึ่งแหล่งด้วย --source
 source-plugin-mismatch = ปลั๊กอินที่ดาวน์โหลดมีรหัส { $found } แต่แหล่งที่มาระบุว่าเป็น { $id } จึงไม่ได้ติดตั้ง
 plugin-sources-heading = ปลั๊กอินจากแหล่งที่มาที่คุณเพิ่มไว้

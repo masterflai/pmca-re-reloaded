@@ -315,6 +315,7 @@ source-unknown = Keine solche Quelle: { $source }
 source-unreadable = { $source } hat in seinem Standardzweig keine lesbare Datei { $file }.
 source-failed = Die Quelle { $source } konnte nicht gelesen werden: { $reason }
 source-signer-changed = { $name } aus { $source } ist von jemand anderem signiert als zuvor und wurde nicht installiert. Hat sein Autor den Signaturschlüssel tatsächlich gewechselt, entfernen Sie die Quelle und fügen Sie sie erneut hinzu.
+source-signer-pinned = { $name } aus { $source } ist nicht mit dem Zertifikat signiert, das seine Quelle angibt, und wurde nicht installiert.
 source-ambiguous = { $package } wird von mehreren Quellen angeboten: { $sources }. Wählen Sie eine mit --source.
 source-plugin-mismatch = Das heruntergeladene Plugin hat die ID { $found }, die Quelle kündigt aber { $id } an. Es wurde nicht installiert.
 plugin-sources-heading = Plugins aus den hinzugefügten Quellen

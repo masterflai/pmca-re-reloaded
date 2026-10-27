@@ -318,6 +318,7 @@ source-unknown = 沒有這個來源：{ $source }
 source-unreadable = { $source } 的預設分支中沒有可讀取的 { $file }。
 source-failed = 無法讀取來源 { $source }：{ $reason }
 source-signer-changed = 來自 { $source } 的 { $name } 由與先前不同的簽署者簽署，因此未安裝。如果其作者確實更換了簽署金鑰，請移除此來源後再重新新增。
+source-signer-pinned = { $name } from { $source } is not signed with the certificate its source names and was not installed.
 source-ambiguous = 有多個來源提供 { $package }：{ $sources }。請使用 --source 選擇其中一個。
 source-plugin-mismatch = 下載的外掛程式 ID 為 { $found }，但來源宣告的是 { $id }。此外掛程式未安裝。
 plugin-sources-heading = 來自您已新增來源的外掛程式

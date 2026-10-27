@@ -6,6 +6,16 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+### Added
+
+- Sources can name an app's release through a JSON document of the author's
+  own: `release: type: json` with the document's `url` and a `download` address
+  containing `{version}` and `{build}`. Authors who already publish such a
+  document need not change anything (format in `docs/app-sources.md`).
+- An app entry can name the SHA-256 of its signing certificate (`cert_sha256`).
+  Every download is then checked against it, the first one included; an APK
+  signed otherwise is refused before it reaches the camera.
+
 ## [1.4.1] - 2026-10-27
 
 Two small fixes: apps with an obfuscated manifest are read correctly, and the

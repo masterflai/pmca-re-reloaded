@@ -309,6 +309,7 @@ source-unknown = Нет такого источника: { $source }
 source-unreadable = У { $source } в ветке по умолчанию нет читаемого файла { $file }.
 source-failed = Не удалось прочитать источник { $source }: { $reason }
 source-signer-changed = Приложение { $name } из { $source } подписано не тем, кто подписывал его раньше, поэтому оно не установлено. Если его автор действительно сменил ключ подписи, удалите источник и добавьте его снова.
+source-signer-pinned = { $name } from { $source } is not signed with the certificate its source names and was not installed.
 source-ambiguous = { $package } предлагается несколькими источниками: { $sources }. Выберите один с помощью --source.
 source-plugin-mismatch = Загруженный плагин имеет идентификатор { $found }, а источник заявляет { $id }. Плагин не установлен.
 plugin-sources-heading = Плагины из добавленных источников

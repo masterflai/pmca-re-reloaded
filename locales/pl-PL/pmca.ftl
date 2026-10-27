@@ -309,6 +309,7 @@ source-unknown = Nie ma takiego źródła: { $source }
 source-unreadable = { $source } nie ma w gałęzi domyślnej czytelnego pliku { $file }.
 source-failed = Nie udało się odczytać źródła { $source }: { $reason }
 source-signer-changed = Aplikacja { $name } ze źródła { $source } jest podpisana przez kogoś innego niż wcześniej i nie została zainstalowana. Jeśli jej autor rzeczywiście zmienił klucz podpisu, usuń źródło i dodaj je ponownie.
+source-signer-pinned = { $name } from { $source } is not signed with the certificate its source names and was not installed.
 source-ambiguous = Pakiet { $package } jest oferowany przez kilka źródeł: { $sources }. Wybierz jedno za pomocą --source.
 source-plugin-mismatch = Pobrana wtyczka ma identyfikator { $found }, ale źródło podaje { $id }. Nie została zainstalowana.
 plugin-sources-heading = Wtyczki z dodanych źródeł

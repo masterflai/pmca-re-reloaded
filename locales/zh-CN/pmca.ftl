@@ -308,6 +308,7 @@ source-unknown = 不存在该来源：{ $source }
 source-unreadable = { $source } 的默认分支中没有可读取的 { $file }。
 source-failed = 无法读取来源 { $source }：{ $reason }
 source-signer-changed = 来自 { $source } 的 { $name } 的签名者与之前不同，因此未安装。如果其作者确实更换了签名密钥，请移除该来源后重新添加。
+source-signer-pinned = { $name } from { $source } is not signed with the certificate its source names and was not installed.
 source-ambiguous = 有多个来源提供 { $package }：{ $sources }。请使用 --source 选择其中一个。
 source-plugin-mismatch = 下载的插件 ID 为 { $found }，但来源声明的是 { $id }。该插件未安装。
 plugin-sources-heading = 来自您添加的来源的插件
