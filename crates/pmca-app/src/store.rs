@@ -22,9 +22,17 @@ use crate::{Error, ProgressEvent, ProgressKind, ProgressSink, Result, sources};
 /// An entry is named by its source and its package (or plugin id).
 type Key = (String, String);
 
+/// What the last listing said about an entry.
+#[derive(Clone)]
+struct Known {
+    kind: EntryKind,
+    release: ReleaseSource,
+    /// The signing certificate the entry names, if any (apps only).
+    cert_sha256: Option<String>,
+}
+
 /// Where each listed entry publishes its builds, from the last listing.
-static RELEASE_SOURCES: Mutex<BTreeMap<Key, (EntryKind, ReleaseSource)>> =
-    Mutex::new(BTreeMap::new());
+static RELEASE_SOURCES: Mutex<BTreeMap<Key, Known>> = Mutex::new(BTreeMap::new());
 
 /// Releases resolved so far.
 static RELEASES: Mutex<BTreeMap<Key, Release>> = Mutex::new(BTreeMap::new());
@@ -43,7 +51,14 @@ fn fetch_all() -> (Vec<(String, appstore::StoreApp)>, Vec<SourceFailure>) {
             Ok(apps) => {
                 let mut known = RELEASE_SOURCES.lock().unwrap_or_else(PoisonError::into_inner);
                 for app in apps {
-                    known.insert(key(&id, &app.package), (app.kind, app.release.clone()));
+                    known.insert(
+                        key(&id, &app.package),
+                        Known {
+                            kind: app.kind,
+                            release: app.release.clone(),
+                            cert_sha256: app.cert_sha256.clone(),
+                        },
+                    );
                     entries.push((id.clone(), app));
                 }
             }
@@ -104,7 +119,7 @@ fn latest_release(l: &Localizer, source: &str, package: &str, kind: EntryKind) -
             lookup()
         }
     };
-    let (found, release_source) = known.ok_or_else(unknown)?;
+    let Known { kind: found, release: release_source, .. } = known.ok_or_else(unknown)?;
     if found != kind {
         return Err(unknown());
     }
@@ -140,10 +155,30 @@ fn signer(data: &[u8]) -> Option<String> {
     Some(Sha256::digest(&certificate).iter().map(|b| format!("{b:02x}")).collect())
 }
 
+/// The certificate fingerprint the source names for `package`, if any.
+fn pinned_certificate(source: &str, package: &str) -> Option<String> {
+    RELEASE_SOURCES
+        .lock()
+        .unwrap_or_else(PoisonError::into_inner)
+        .get(&key(source, package))
+        .and_then(|known| known.cert_sha256.clone())
+}
+
+/// Whether an APK signed by `signer` may be installed for an entry that names
+/// `pinned` as its certificate. Without a pin every signer passes here.
+fn matches_pin(pinned: Option<&str>, signer: Option<&str>) -> bool {
+    match pinned {
+        None => true,
+        Some(pin) => signer == Some(pin),
+    }
+}
+
 /// Resolve an app to its newest release and download the APK.
 ///
-/// The first download from a source remembers who signed the app; a later one
-/// signed by someone else is refused before it reaches the camera.
+/// When the entry names its signing certificate, the APK has to be signed with
+/// exactly that one, the first download included. Beyond that, the first
+/// download from a source remembers who signed the app; a later one signed by
+/// someone else is refused before it reaches the camera.
 pub fn download_community_app(
     l: &Localizer,
     source: &str,
@@ -158,7 +193,13 @@ pub fn download_community_app(
         format!("{} {}", l.tr("store-downloading"), release.version),
     ));
     let data = appstore::download_asset(&release.url)?;
-    sources::check_signer(l, source, package, package, signer(&data).as_deref())?;
+    let signed_by = signer(&data);
+    if !matches_pin(pinned_certificate(source, package).as_deref(), signed_by.as_deref()) {
+        return Err(Error::Operation(
+            l.tr_args("source-signer-pinned", &[("name", package), ("source", source)]),
+        ));
+    }
+    sources::check_signer(l, source, package, package, signed_by.as_deref())?;
     // The camera lists installed apps by `versionName`, so that is what a
     // comparison with an installed copy has to show.
     let version =
@@ -192,4 +233,18 @@ pub fn download_community_plugin(
     let name = info.name.clone();
     sources::check_signer(l, source, &format!("plugin:{id}"), &name, info.signer.as_deref())?;
     Ok((info, data))
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn a_pin_admits_only_its_own_certificate() {
+        assert!(matches_pin(None, Some("aa")));
+        assert!(matches_pin(None, None));
+        assert!(matches_pin(Some("aa"), Some("aa")));
+        assert!(!matches_pin(Some("aa"), Some("bb")));
+        assert!(!matches_pin(Some("aa"), None));
+    }
 }

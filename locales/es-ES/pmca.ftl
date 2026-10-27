@@ -309,6 +309,7 @@ source-unknown = No existe esa fuente: { $source }
 source-unreadable = { $source } no tiene ningún archivo { $file } legible en su rama predeterminada.
 source-failed = No se pudo leer la fuente { $source }: { $reason }
 source-signer-changed = { $name }, de { $source }, tiene una firma distinta de la anterior y no se ha instalado. Si su autor ha cambiado de verdad la clave de firma, quite la fuente y vuelva a añadirla.
+source-signer-pinned = { $name } from { $source } is not signed with the certificate its source names and was not installed.
 source-ambiguous = Varias fuentes ofrecen { $package }: { $sources }. Elija una con --source.
 source-plugin-mismatch = El complemento descargado tiene el identificador { $found }, pero la fuente anuncia { $id }. No se ha instalado.
 plugin-sources-heading = Complementos de las fuentes que ha añadido

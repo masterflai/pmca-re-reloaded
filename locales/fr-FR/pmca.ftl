@@ -309,6 +309,7 @@ source-unknown = Source inconnue : { $source }
 source-unreadable = { $source } ne contient aucun fichier { $file } lisible dans sa branche par défaut.
 source-failed = Impossible de lire la source { $source } : { $reason }
 source-signer-changed = { $name } provenant de { $source } est signé par quelqu’un d’autre qu’auparavant et n’a pas été installé. Si son auteur a réellement changé de clé de signature, supprimez la source puis ajoutez-la de nouveau.
+source-signer-pinned = { $name } from { $source } is not signed with the certificate its source names and was not installed.
 source-ambiguous = { $package } est proposé par plusieurs sources : { $sources }. Choisissez-en une avec --source.
 source-plugin-mismatch = L’extension téléchargée porte l’identifiant { $found }, mais la source annonce { $id }. Elle n’a pas été installée.
 plugin-sources-heading = Extensions des sources que vous avez ajoutées

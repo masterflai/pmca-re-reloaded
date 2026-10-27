@@ -95,6 +95,7 @@ release:
 | `desc` | no | One-line description. |
 | `homepage` | no | Project page. |
 | `release` | no | Where the newest build is. Without it the entry is listed but cannot be installed. |
+| `cert_sha256` | no | Apps only: the SHA-256 of the certificate you sign with, as `keytool -printcert -jarfile app.apk` prints it (colons and case do not matter). Every download is checked against it, the first one included. |
 
 ### `release`
 
@@ -107,6 +108,20 @@ Three forms are understood. Every address must start with `https://`.
 * **A feed of your own** — `type: yaml`, `url`. The feed is a series of
   `---`-separated documents with `version`, `url` and optionally `date` and
   `desc`; the first one is the newest.
+* **A JSON document of your own** — `type: json`, `url`, `download`. The
+  document at `url` is an object with `version` and optionally `build`, each a
+  string or a number, for example `{"schema":1,"version":"2.05","build":58}`.
+  `download` is the address of the APK with the placeholders `{version}` and,
+  if you need it, `{build}`:
+
+  ```yaml
+  release:
+    type: json
+    url: https://example.com/app-release.json
+    download: https://dl.example.com/MyApp-v{version}.apk?build={build}
+  ```
+
+  Version and build may contain only letters, digits, `.`, `-` and `_`.
 * **A fixed build** — `version` and `url` directly in the `release:` block.
 
 ## Signing
@@ -134,6 +149,11 @@ it on every install and shows the key. As with apps, the first download from
 your source remembers the key, and a later version signed with another key, or
 not signed, is refused; in addition, an installed signed plugin is only ever
 replaced by a file signed with the same key, wherever that file comes from.
+
+**Naming your certificate.** With `cert_sha256` in your entry, the program
+does not have to trust the first download: every APK of that entry has to be
+signed with exactly that certificate, or it is refused. Add it if you publish
+the fingerprint anyway, for example on your website.
 
 If you really have to change a key, tell your users: they have to remove your
 source and add it again, and remove an installed plugin before installing the

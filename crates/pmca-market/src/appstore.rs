@@ -4,11 +4,13 @@
 //! default, or the `apps.yaml` of `ma1co/OpenMemories-AppList`, whose format it
 //! extends. Each entry names an app or a plugin and a release source, which is
 //! resolved to a downloadable file either through the GitHub releases API,
-//! through a second YAML feed, or directly.
+//! through a second YAML feed, through a JSON feed with a download template, or
+//! directly. An entry may also name the SHA-256 of its signing certificate, so
+//! even the first download is checked against the author's own statement.
 //!
 //! Everything that interprets remote data ([`parse_app_list`],
-//! [`parse_github_releases`], [`parse_release_feed`]) is pure and unit-tested;
-//! only the fetching lives behind the `client` feature.
+//! [`parse_github_releases`], [`parse_release_feed`], [`parse_json_feed`]) is
+//! pure and unit-tested; only the fetching lives behind the `client` feature.
 //!
 //! ## Why a hand-written YAML reader
 //!
@@ -73,6 +75,14 @@ pub enum ReleaseSource {
         /// URL of the feed.
         url: String,
     },
+    /// A JSON document naming the newest version, and a template that turns
+    /// it into the download URL (see [`parse_json_feed`]).
+    Json {
+        /// URL of the JSON document.
+        url: String,
+        /// Download URL with `{version}` and optionally `{build}` placeholders.
+        download: String,
+    },
     /// A fixed release spelled out in the app list itself.
     Direct(Release),
     /// The app declares no usable release.
@@ -109,6 +119,11 @@ pub struct StoreApp {
     pub homepage: Option<String>,
     /// How to obtain the newest build.
     pub release: ReleaseSource,
+    /// SHA-256 of the certificate the author signs with, as lowercase hex
+    /// without separators, when the entry names one. A value that is not 64
+    /// hex digits is kept as written, so it matches no signer and the entry
+    /// cannot be installed rather than silently losing the check.
+    pub cert_sha256: Option<String>,
 }
 
 /// Parse a source file (`pmca-source.yaml`, `apps.yaml`) into its entries, in
@@ -136,9 +151,20 @@ pub fn parse_app_list(data: &[u8]) -> Result<Vec<StoreApp>> {
                 desc: doc.scalar("desc").map(str::to_string),
                 homepage: doc.scalar("homepage").map(str::to_string),
                 release: release_source(&doc),
+                cert_sha256: doc.scalar("cert_sha256").map(normalize_fingerprint),
             })
         })
         .collect())
+}
+
+/// Bring a published certificate fingerprint into the form [`StoreApp::cert_sha256`]
+/// documents: separators (`:`, spaces) removed, lowercase.
+fn normalize_fingerprint(value: &str) -> String {
+    value
+        .chars()
+        .filter(|c| *c != ':' && !c.is_whitespace())
+        .collect::<String>()
+        .to_ascii_lowercase()
 }
 
 /// Interpret the `release:` block of an app-list entry.
@@ -157,6 +183,14 @@ fn release_source(doc: &yaml::Document) -> ReleaseSource {
         },
         Some("yaml") => match get("url") {
             Some(url) if is_https(url) => ReleaseSource::Yaml { url: url.to_string() },
+            _ => ReleaseSource::None,
+        },
+        Some("json") => match (get("url"), get("download")) {
+            (Some(url), Some(download))
+                if is_https(url) && is_https(download) && download.contains("{version}") =>
+            {
+                ReleaseSource::Json { url: url.to_string(), download: download.to_string() }
+            }
             _ => ReleaseSource::None,
         },
         _ => match (get("version"), get("url")) {
@@ -229,6 +263,48 @@ pub fn parse_release_feed(data: &[u8]) -> Result<Option<Release>> {
             date: doc.scalar("date").map(str::to_string),
             desc: doc.scalar("desc").map(str::to_string),
         })
+    }))
+}
+
+/// Read a JSON release document and build the download URL from `download`.
+///
+/// The document is an object with `version` and optionally `build`, each a
+/// string or a number, for example `{"schema":1,"version":"2.05","build":58}`.
+/// `{version}` and `{build}` in `download` are replaced by those values. The
+/// values end up in a URL, so only letters, digits, `.`, `-` and `_` are
+/// accepted; anything else, a missing `build` the template asks for, or a
+/// result that is not `https://` yields no release.
+pub fn parse_json_feed(data: &[u8], download: &str) -> Result<Option<Release>> {
+    let value: serde_json::Value = serde_json::from_slice(data)?;
+    let field = |key: &str| -> Option<String> {
+        let text = match value.get(key)? {
+            serde_json::Value::String(s) => s.clone(),
+            serde_json::Value::Number(n) => n.to_string(),
+            _ => return None,
+        };
+        let safe = !text.is_empty()
+            && text.len() <= 64
+            && text.bytes().all(|b| b.is_ascii_alphanumeric() || matches!(b, b'.' | b'-' | b'_'));
+        safe.then_some(text)
+    };
+    let Some(version) = field("version") else {
+        return Ok(None);
+    };
+    let mut url = download.replace("{version}", &version);
+    if url.contains("{build}") {
+        let Some(build) = field("build") else {
+            return Ok(None);
+        };
+        url = url.replace("{build}", &build);
+    }
+    if !is_https(&url) || url.contains('{') || url.contains('}') {
+        return Ok(None);
+    }
+    Ok(Some(Release {
+        version,
+        url,
+        date: value.get("date").and_then(|v| v.as_str()).map(str::to_string),
+        desc: value.get("desc").and_then(|v| v.as_str()).map(str::to_string),
     }))
 }
 
@@ -494,6 +570,9 @@ mod net {
                 parse_github_releases(&fetch(&url, MAX_METADATA_SIZE)?, kind)
             }
             ReleaseSource::Yaml { url } => parse_release_feed(&fetch(url, MAX_METADATA_SIZE)?),
+            ReleaseSource::Json { url, download } => {
+                parse_json_feed(&fetch(url, MAX_METADATA_SIZE)?, download)
+            }
             ReleaseSource::Direct(release) => Ok(Some(release.clone())),
             ReleaseSource::None => Ok(None),
         }
@@ -686,6 +765,71 @@ mod tests {
     fn a_feed_without_a_secure_url_yields_nothing() {
         let feed = "---\nversion: 2.0\nurl: http://example.com/app.apk\n";
         assert!(parse_release_feed(feed.as_bytes()).unwrap().is_none());
+    }
+
+    const JSON_ENTRY: &str = "---\npackage: com.example.cam\nname: Cam\ncert_sha256: AB:cd 01\nrelease:\n  type: json\n  url: https://example.com/cam-release.json\n  download: https://dl.example.com/CAM-v{version}.apk?build={build}\n";
+
+    #[test]
+    fn reads_a_json_release_entry_and_its_fingerprint() {
+        let apps = parse_app_list(JSON_ENTRY.as_bytes()).unwrap();
+        assert_eq!(
+            apps[0].release,
+            ReleaseSource::Json {
+                url: "https://example.com/cam-release.json".into(),
+                download: "https://dl.example.com/CAM-v{version}.apk?build={build}".into(),
+            }
+        );
+        assert_eq!(apps[0].cert_sha256.as_deref(), Some("abcd01"));
+        assert_eq!(parse_app_list(APPS.as_bytes()).unwrap()[0].cert_sha256, None);
+    }
+
+    #[test]
+    fn a_json_entry_needs_secure_urls_and_a_version_placeholder() {
+        let entry = |url: &str, download: &str| {
+            format!(
+                "---\npackage: p\nname: n\nrelease:\n  type: json\n  url: {url}\n  download: {download}\n"
+            )
+        };
+        for (url, download) in [
+            ("http://example.com/r.json", "https://example.com/{version}.apk"),
+            ("https://example.com/r.json", "http://example.com/{version}.apk"),
+            ("https://example.com/r.json", "https://example.com/latest.apk"),
+        ] {
+            let apps = parse_app_list(entry(url, download).as_bytes()).unwrap();
+            assert_eq!(apps[0].release, ReleaseSource::None, "{url} {download}");
+        }
+    }
+
+    #[test]
+    fn a_json_feed_fills_the_download_template() {
+        let template = "https://dl.example.com/CAM-v{version}.apk?build={build}";
+        let release = parse_json_feed(br#"{"schema":1,"version":"2.05","build":58}"#, template)
+            .unwrap()
+            .unwrap();
+        assert_eq!(release.version, "2.05");
+        assert_eq!(release.url, "https://dl.example.com/CAM-v2.05.apk?build=58");
+
+        // A number works as a version, and a template without {build} needs none.
+        let release = parse_json_feed(br#"{"version":3}"#, "https://dl.example.com/{version}.apk")
+            .unwrap()
+            .unwrap();
+        assert_eq!(release.url, "https://dl.example.com/3.apk");
+    }
+
+    #[test]
+    fn a_json_feed_refuses_unsafe_or_missing_values() {
+        let template = "https://dl.example.com/CAM-v{version}.apk?build={build}";
+        for body in [
+            r#"{"build":58}"#,
+            r#"{"version":"2.05"}"#,
+            r#"{"version":"2.05/../x","build":1}"#,
+            r#"{"version":"2.05","build":"1&x=evil"}"#,
+            r#"{"version":"","build":1}"#,
+            r#"{"version":["2"],"build":1}"#,
+        ] {
+            assert!(parse_json_feed(body.as_bytes(), template).unwrap().is_none(), "{body}");
+        }
+        assert!(parse_json_feed(b"not json", template).is_err());
     }
 
     #[test]
