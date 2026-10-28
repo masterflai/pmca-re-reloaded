@@ -1,4 +1,4 @@
-/** Camera information page: identity, compatibility tables, shutter count and usage log. */
+/** Camera information page (identity, shutter count, usage log) and the compatibility page. */
 
 import { invoke } from "@tauri-apps/api/core";
 import {
@@ -65,6 +65,16 @@ export function viewCameraInfo(host: HTMLElement): void {
     }
   });
 
+  host.append(
+    card(button, status, details),
+    ...(hostPlatform === "windows" ? [cardServiceDiagnosis()] : []),
+    cardShutterCount(() => connectedModel),
+    cardUsageLog(),
+  );
+}
+
+/** The compatibility page: the device lists, open from the start, and what plugins add. */
+export function viewCompatibility(host: HTMLElement): void {
   // No shell or opener plugin is bundled, so the address is shown in full and
   // offered for copying. A link the webview silently refuses to follow would be
   // worse than plain text the user can paste into a browser.
@@ -86,25 +96,22 @@ export function viewCameraInfo(host: HTMLElement): void {
     make("p", { className: "hint", i18n: "devices-note" }),
   );
   const more = filledLater(all, (lists) => moreGroups(lists.more));
-  const devicesToggle = deviceToggle(devices);
   const moreToggle = deviceToggle(more, "btn-more-models", "btn-more-models-hide");
 
   host.append(
-    card(button, status, details),
-    ...(hostPlatform === "windows" ? [cardServiceDiagnosis()] : []),
-    cardShutterCount(() => connectedModel),
-    cardUsageLog(),
     card(
       make("h2", { i18n: "docs-compatibility" }),
-      make("p", { i18n: "docs-compatibility-hint" }),
-      make("p", { className: "doc-url", textContent: DOCS_DEVICES_URL }),
-      make("div", { className: "row" }, devicesToggle, copy),
-      linkStatus,
       devices,
       make("p", { className: "hint", i18n: "devices-more-note" }),
       moreToggle,
       more,
       pluginDevices(),
+    ),
+    card(
+      make("p", { i18n: "docs-compatibility-hint" }),
+      make("p", { className: "doc-url", textContent: DOCS_DEVICES_URL }),
+      make("div", { className: "row" }, copy),
+      linkStatus,
     ),
   );
 }
@@ -174,7 +181,7 @@ function moreGroups(groups: DeviceGroup<MoreModel>[]): Node[] {
 }
 
 /**
- * The two lists of the camera info page, cut down to the models that have the
+ * The two lists of the compatibility page, cut down to the models that have the
  * given capability, under the given notes.
  */
 export function capableDevices(capability: "updater" | "apps", ...notes: string[]): HTMLElement {

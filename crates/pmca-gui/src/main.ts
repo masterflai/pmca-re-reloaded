@@ -42,7 +42,7 @@ import { detectHostPlatform } from "./platform";
 import { applyAnalysisNav, applyTheme, setupThemeSwitch, storedTheme } from "./preferences";
 import { announceUpdate, checkForUpdateNow } from "./update";
 import { viewAnalysis } from "./views/analysis";
-import { viewCameraInfo } from "./views/camera";
+import { viewCameraInfo, viewCompatibility } from "./views/camera";
 import { viewFirmware } from "./views/firmware";
 import { viewInstall } from "./views/install";
 import { viewLicense } from "./views/license";
@@ -56,6 +56,7 @@ import { viewWelcome } from "./views/welcome";
 const VIEWS: Record<string, (host: HTMLElement) => void> = {
   welcome: viewWelcome,
   info: viewCameraInfo,
+  compat: viewCompatibility,
   install: viewInstall,
   tweaks: viewTweaks,
   analysis: viewAnalysis,

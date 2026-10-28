@@ -3,10 +3,10 @@
 //! The program ships no source and recommends none. A source is a public
 //! repository whose author publishes `pmca-source.yaml` (see
 //! `docs/app-sources.md`); the user adds it by name, and only then are its
-//! entries read. The exception are *suggestions* the user can switch on: the
-//! list of the original project, kept by its own author, and a list of archived
-//! apps kept by this program's author that only points to the apps' own
-//! releases.
+//! entries read. The exception are *suggestions* the user can switch on: a
+//! list kept by this program's author that only points to the apps' own
+//! releases, and the list of the original project, kept by its own author.
+//! The former is always listed first.
 //!
 //! Nothing is checked on anyone's behalf. What the program does keep is the
 //! signer of every app at its first download, so a later version signed by
@@ -102,6 +102,8 @@ pub struct SourceSuggestion {
     pub source: Source,
     /// Message id of the sentence that describes it.
     pub note_key: String,
+    /// Message id of the question asked before it is added to an empty list.
+    pub prompt_key: String,
 }
 
 /// A repository offered for the user to switch on, and where its list lives.
@@ -111,23 +113,27 @@ struct Suggestion {
     branch: &'static str,
     path: &'static str,
     note_key: &'static str,
+    prompt_key: &'static str,
 }
 
-/// Offered, never switched on. The first one is what an empty app list offers.
+/// Offered, never switched on; an empty app list asks for them in this order.
+/// The first one is this program's own list.
 const SUGGESTIONS: &[Suggestion] = &[
-    Suggestion {
-        owner: "ma1co",
-        repo: "OpenMemories-AppList",
-        branch: "master",
-        path: "apps.yaml",
-        note_key: "sources-suggestion-applist",
-    },
     Suggestion {
         owner: "masterflai",
         repo: "pmca-community-sources",
         branch: appstore::DEFAULT_BRANCH,
         path: appstore::SOURCE_FILE,
         note_key: "sources-suggestion-community",
+        prompt_key: "store-activate-community",
+    },
+    Suggestion {
+        owner: "ma1co",
+        repo: "OpenMemories-AppList",
+        branch: "master",
+        path: "apps.yaml",
+        note_key: "sources-suggestion-applist",
+        prompt_key: "store-activate-suggestion",
     },
 ];
 
@@ -143,10 +149,20 @@ fn path() -> Option<PathBuf> {
 
 /// The stored sources; a missing or unreadable file means none.
 fn load() -> SourceFile {
-    path()
+    let mut file: SourceFile = path()
         .and_then(|p| std::fs::read(p).ok())
         .and_then(|bytes| serde_json::from_slice(&bytes).ok())
-        .unwrap_or_default()
+        .unwrap_or_default();
+    own_list_first(&mut file.sources);
+    file
+}
+
+/// This program's own list ahead of the others, which keep the order they were added in.
+fn own_list_first(sources: &mut [Stored]) {
+    let own = &SUGGESTIONS[0];
+    sources.sort_by_key(|s| {
+        !(s.owner.eq_ignore_ascii_case(own.owner) && s.repo.eq_ignore_ascii_case(own.repo))
+    });
 }
 
 fn save(l: &Localizer, file: &SourceFile) -> Result<()> {
@@ -191,7 +207,8 @@ fn parse_spec(spec: &str) -> Option<(String, String)> {
         .then(|| (owner.to_string(), repo.to_string()))
 }
 
-/// The sources the user has added, in the order they were added.
+/// The sources the user has added, in the order they were added, this
+/// program's own list first.
 #[must_use]
 pub fn list() -> Vec<Source> {
     load().sources.iter().map(Stored::public).collect()
@@ -223,6 +240,7 @@ pub fn suggestions() -> Vec<SourceSuggestion> {
             }
             .public(),
             note_key: s.note_key.to_string(),
+            prompt_key: s.prompt_key.to_string(),
         })
         .collect()
 }
@@ -401,9 +419,37 @@ mod tests {
     }
 
     #[test]
-    fn the_first_suggestion_reads_the_original_list() {
-        let s = &SUGGESTIONS[0];
-        assert_eq!((s.owner, s.repo, s.path), ("ma1co", "OpenMemories-AppList", "apps.yaml"));
+    fn the_own_list_comes_first_then_the_original_one() {
+        let ids: Vec<_> = SUGGESTIONS.iter().map(|s| (s.owner, s.repo, s.path)).collect();
+        assert_eq!(
+            ids,
+            [
+                ("masterflai", "pmca-community-sources", appstore::SOURCE_FILE),
+                ("ma1co", "OpenMemories-AppList", "apps.yaml"),
+            ]
+        );
+    }
+
+    #[test]
+    fn the_own_list_is_listed_first_whenever_it_was_added() {
+        let stored = |owner: &str, repo: &str| Stored {
+            owner: owner.into(),
+            repo: repo.into(),
+            branch: "HEAD".into(),
+            path: "pmca-source.yaml".into(),
+            signers: BTreeMap::new(),
+        };
+        let mut sources = vec![
+            stored("ma1co", "OpenMemories-AppList"),
+            stored("dev", "apps"),
+            stored("MasterFlai", "pmca-community-sources"),
+        ];
+        own_list_first(&mut sources);
+        let ids: Vec<_> = sources.iter().map(Stored::id).collect();
+        assert_eq!(
+            ids,
+            ["MasterFlai/pmca-community-sources", "ma1co/OpenMemories-AppList", "dev/apps"]
+        );
     }
 
     #[test]
@@ -411,6 +457,8 @@ mod tests {
         let l = pmca_i18n::Localizer::new("en-US");
         for s in SUGGESTIONS {
             assert!(l.tr(s.note_key) != s.note_key, "{}", s.note_key);
+            let prompt = l.tr_args(s.prompt_key, &[("source", "x/y")]);
+            assert!(prompt != s.prompt_key, "{}", s.prompt_key);
             assert!(appstore::valid_repo_name(s.owner) && appstore::valid_repo_name(s.repo));
         }
     }

@@ -137,7 +137,7 @@ What works depends on the camera's generation, not on this program:
 | **Newer Sony cameras** (roughly 2018 onwards) | ✔ | ✖ | ✖ | many models |
 | **Other Sony imaging devices** (camcorders, action cameras, compacts without app support) | ✔ | ✖ | model-dependent | model-dependent |
 
-The exact list is in the app: *Camera info → Compatible devices* shows every
+The exact list is in the app: the page *Camera compatibility* shows every
 known model with its processor generation and which functions apply, and
 *More devices* adds further models together with what the community has
 reported. Before a function changes anything, the program checks the
@@ -272,12 +272,15 @@ hosts nothing and checks nothing; the author of a source alone is responsible
 for it. You add the sources you choose — in the app under *Settings → App and
 plugin sources*, or with `pmca-console sources add owner/repository`.
 
-* Two lists are offered there as suggestions you can switch on: the app list of
-  the original project, kept by ma1co, and
+* Two lists are offered there as suggestions you can switch on:
   [pmca-community-sources](https://github.com/masterflai/pmca-community-sources),
   kept by the author of this program, which points to the own releases of apps
   whose authors have archived their projects, and of apps whose authors asked
-  to be listed, such as [JPEGCAM](https://jpeg.cam).
+  to be listed, such as [JPEGCAM](https://jpeg.cam); and the app list of the
+  original project, kept by ma1co. With no source added yet, the app list asks
+  for both, in this order. The community list is always listed first.
+* An app whose GitHub repository its developer has archived is marked as
+  such; its details say that it is no longer actively worked on.
 * *Search GitHub* (`pmca-console sources search`) lists repositories with the
   topic `pmca-source`, with their GitHub stars. The search only runs when you
   ask, and its results are no recommendation: look at a repository before you

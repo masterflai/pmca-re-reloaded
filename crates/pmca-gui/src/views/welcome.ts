@@ -97,6 +97,7 @@ function welcomeDriverKey(): string {
 function welcomeMap(): HTMLElement {
   const rows: [string[], string][] = [
     [["nav-camera-info"], "welcome-where-info"],
+    [["docs-compatibility"], "welcome-where-compat"],
     [["nav-install-app"], "welcome-where-install"],
     [["nav-tweaks"], "welcome-where-tweaks"],
     [["nav-network"], "welcome-where-network"],

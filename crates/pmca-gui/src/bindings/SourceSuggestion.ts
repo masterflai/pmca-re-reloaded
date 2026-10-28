@@ -12,4 +12,8 @@ source: Source,
 /**
  * Message id of the sentence that describes it.
  */
-noteKey: string, };
+noteKey: string, 
+/**
+ * Message id of the question asked before it is added to an empty list.
+ */
+promptKey: string, };

@@ -27,7 +27,7 @@ import { errorText, tr, trFill } from "../i18n";
 import { cardAppBackup } from "./app-backup";
 import { capableDevices, lowRiskCheck } from "./camera";
 import { deviceToggle } from "./network";
-import { disclosure, entryDetails, starsBadge } from "./sources";
+import { disclosure, entryDetails, sourceRepo, starsBadge } from "./sources";
 
 export function viewInstall(host: HTMLElement): void {
   const status = statusLine();
@@ -152,6 +152,7 @@ export function viewInstall(host: HTMLElement): void {
     result: BatchResult | null;
     appRow: HTMLTableRowElement;
     detailRow: HTMLTableRowElement;
+    name: HTMLTableCellElement;
   }
 
   let rows: StoreRow[] = [];
@@ -172,21 +173,35 @@ export function viewInstall(host: HTMLElement): void {
   const fillVersions = async (generation: number): Promise<void> => {
     for (const row of rows) {
       if (generation !== listGeneration) return;
-      if (!row.app.installable) continue;
-      try {
-        const version = await invoke<string>("community_app_version", {
-          source: row.app.source,
-          package: row.app.package,
-        });
-        if (generation === listGeneration && row.version.textContent === "…") {
-          row.version.textContent = version;
+      if (row.app.installable) {
+        try {
+          const version = await invoke<string>("community_app_version", {
+            source: row.app.source,
+            package: row.app.package,
+          });
+          if (generation === listGeneration && row.version.textContent === "…") {
+            row.version.textContent = version;
+          }
+        } catch (e) {
+          if (generation !== listGeneration) return;
+          row.version.textContent = "–";
+          row.version.title = errorText(e);
         }
-      } catch (e) {
-        if (generation !== listGeneration) return;
-        row.version.textContent = "–";
-        row.version.title = errorText(e);
       }
+      await markArchived(row, generation);
     }
+  };
+
+  /** Flag an app whose GitHub repository its developer has archived. */
+  const markArchived = async (row: StoreRow, generation: number): Promise<void> => {
+    const id = row.app.repository?.replace(/^https:\/\/github\.com\//i, "");
+    if (!id) return;
+    const repo = await sourceRepo(id);
+    if (generation !== listGeneration || !repo?.archived) return;
+    const badge = make("span", { className: "archived-badge", i18n: "sources-archived" });
+    row.name.querySelector("label")?.after(badge);
+    const note = row.detailRow.querySelector<HTMLElement>(".archived-note");
+    if (note) note.hidden = false;
   };
 
   /** Fill the camera's version column from the last report. */
@@ -265,21 +280,22 @@ export function viewInstall(host: HTMLElement): void {
     try {
       const state = await invoke<SourcesState>("sources_list");
       if (state.sources.length === 0) {
-        // Nothing to list yet: offer the original project's list, as Settings would.
-        const suggestion = state.suggestions[0];
-        const accepted =
-          suggestion !== undefined &&
-          (await chosen(
-            trFill("store-activate-suggestion", { source: suggestion.source.id }),
+        // Nothing to list yet: offer the suggestions one by one, this program's own list first.
+        const accepted: string[] = [];
+        for (const suggestion of state.suggestions) {
+          const yes = await chosen(
+            trFill(suggestion.promptKey, { source: suggestion.source.id }),
             tr("btn-activate-list"),
             tr("btn-cancel"),
-          ));
-        if (!accepted) {
+          );
+          if (yes) accepted.push(suggestion.source.id);
+        }
+        if (accepted.length === 0) {
           showStatus(storeStatus, tr("store-no-sources"));
           return;
         }
         showBusy(storeStatus, tr("sources-adding"));
-        await invoke("sources_add", { spec: suggestion.source.id });
+        for (const id of accepted) await invoke("sources_add", { spec: id });
         showBusy(storeStatus, tr("store-loading"));
       }
       const list = await invoke<CommunityList>("list_community_apps");
@@ -327,7 +343,17 @@ export function viewInstall(host: HTMLElement): void {
         // The row's rule would otherwise cut the app off from its own details.
         nameCell.append(disclosure(detailRow, false, (open) => appRow.classList.toggle("expanded", open)));
         tbody.append(appRow, detailRow);
-        const row: StoreRow = { app, check, version, camera, status, result: null, appRow, detailRow };
+        const row: StoreRow = {
+          app,
+          check,
+          version,
+          camera,
+          status,
+          result: null,
+          appRow,
+          detailRow,
+          name: nameCell,
+        };
         setCameraCell(row);
         rows.push(row);
       });

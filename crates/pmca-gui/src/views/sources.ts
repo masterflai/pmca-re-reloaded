@@ -151,6 +151,8 @@ export function entryDetails(entry: CommunityApp): HTMLElement {
       entry.author
         ? make("p", { className: "hint" }, make("span", { i18n: "plugin-author" }), `: ${entry.author}`)
         : null,
+      // Shown once GitHub reports the repository as archived.
+      make("p", { className: "archived-note", i18n: "app-archived-note", hidden: true }),
     ],
     [
       { labelKey: "details-repository", url: entry.repository },

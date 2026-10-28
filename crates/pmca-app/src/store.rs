@@ -94,7 +94,7 @@ pub fn community_plugins() -> CommunityList {
 /// The sources offering `package`, for a front-end that names only the package.
 ///
 /// Entries that publish the same way (same release source and certificate pin)
-/// lead to the same file, so they count once, under the source added first.
+/// lead to the same file, so they count once, under the source listed first.
 #[must_use]
 pub fn sources_offering(package: &str, kind: EntryKind) -> Vec<String> {
     let (entries, _) = fetch_all();

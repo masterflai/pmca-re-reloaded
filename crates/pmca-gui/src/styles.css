@@ -769,6 +769,18 @@ summary {
   font-variant-numeric: tabular-nums;
 }
 
+/* An app whose repository its developer has archived on GitHub. */
+.archived-badge {
+  margin-inline-start: 6px;
+  padding: 0 6px;
+  border: 1px solid var(--text-muted);
+  border-radius: 4px;
+  color: var(--text-muted);
+  font-size: 0.8em;
+  font-weight: normal;
+  white-space: nowrap;
+}
+
 /* Below a list, the next field keeps its distance whether or not a row's rule ends the list. */
 .field-label.after-list {
   margin-top: 16px;

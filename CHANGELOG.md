@@ -6,6 +6,30 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+## [1.7.0] - 2026-10-28
+
+**Finding apps and cameras more easily.** Camera compatibility has its own
+page in the navigation, an empty app list offers the community list first and
+the original project's list second, and apps whose developers have archived
+their projects are marked as such.
+
+### Added
+
+- An app whose GitHub repository its developer has archived is marked
+  *archived* in the app list. Its details explain that the developer no longer
+  works on it actively and that it may not work fully on every camera.
+
+### Changed
+
+- Camera compatibility is a page of its own in the navigation, right below
+  Camera info, instead of a section at the end of that page. The device list
+  is shown at once, without a button to unfold it.
+- With no source added yet, the app list first offers this program's
+  community list (`masterflai/pmca-community-sources`) and then the original
+  project's list, each with its own question. The community list now comes
+  first among the suggestions and is always listed first among the sources;
+  an app offered identically by two sources is shown under it.
+
 ## [1.6.0] - 2026-10-28
 
 **Apps are checked in full before they reach the camera.** An app from a
