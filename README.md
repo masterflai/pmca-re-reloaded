@@ -276,7 +276,8 @@ plugin sources*, or with `pmca-console sources add owner/repository`.
   the original project, kept by ma1co, and
   [pmca-community-sources](https://github.com/masterflai/pmca-community-sources),
   kept by the author of this program, which points to the own releases of apps
-  whose authors have archived their projects.
+  whose authors have archived their projects, and of apps whose authors asked
+  to be listed, such as [JPEGCAM](https://jpeg.cam).
 * *Search GitHub* (`pmca-console sources search`) lists repositories with the
   topic `pmca-source`, with their GitHub stars. The search only runs when you
   ask, and its results are no recommendation: look at a repository before you

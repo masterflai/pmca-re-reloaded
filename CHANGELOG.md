@@ -6,6 +6,17 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+## [1.6.0] - 2026-10-28
+
+**Apps are checked in full before they reach the camera.** An app from a
+source is installed only when its signature holds for every file in it, which
+makes a pinned certificate a real promise. With that in place, the suggested
+community source `masterflai/pmca-community-sources` now also lists
+[JPEGCAM](https://jpeg.cam) by James (jbuch1984), with his permission: it is
+always downloaded from his own server and installed only if it is signed with
+his certificate. On macOS 26 the mass-storage connection is still being
+tested.
+
 ### Security
 
 - An app from a source is installed only when its v1 signature holds for every
@@ -15,23 +26,6 @@ All notable changes to this project are documented here. The format follows
   check against the first download.
 - Downloads follow redirects only over HTTPS.
 
-### Changed
-
-- After a check started from the version number, the focus moves to the
-  update notice.
-- `docs/app-sources.md` describes what happens to a published app: where it
-  is downloaded from, what is checked, that it is not changed, and that an
-  update goes over the installed copy.
-
-## [1.6.0-rc.1] - 2026-10-28
-
-**Pre-release for testing on macOS 26.** A diagnostic run on a Mac showed that
-the camera's mass-storage connection can now be reached; what failed was the
-first larger transfer over Apple's own interface. This pre-release moves the
-data through the same USB layer the other systems use, and the macOS probe has
-been rewritten to test exactly that step. Everything else is as it will be in
-1.6.0.
-
 ### Added
 
 - The key-material card on the Welcome page has a folded section that lists
@@ -40,11 +34,16 @@ been rewritten to test exactly that step. Everything else is as it will be in
   keys, updater mode the FDAT key material.
 - Clicking the version number below the navigation checks for a new version
   right away, also when the check at start is switched off, and says how it
-  ended.
+  ended. The focus then moves to the notice.
 
 ### Changed
 
 - The notice about a new version can be folded away.
+- The suggested community source is described as also listing apps whose
+  authors asked to be listed.
+- `docs/app-sources.md` describes what happens to a published app: where it
+  is downloaded from, what is checked, that it is not changed, and that an
+  update goes over the installed copy.
 - macOS: after the mass-storage drivers have been taken off the camera, its
   interface is claimed through `nusb` first and through IOUSBHost only if that
   fails.
