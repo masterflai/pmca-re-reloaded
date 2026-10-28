@@ -6,6 +6,13 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+### Added
+
+- The key-material card on the Welcome page has a folded section that lists
+  which features need which key material: camera info none, app installation
+  the XPD checksum key (and SPK for an app), service mode the service-mode
+  keys, updater mode the FDAT key material.
+
 ### Fixed
 
 - Installing an app, or reading the camera's apps, now checks for the needed

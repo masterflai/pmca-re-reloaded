@@ -10,6 +10,23 @@ export async function keyStatus(): Promise<KeyStatus> {
   return invoke<KeyStatus>("keys_status");
 }
 
+/** Which features need which key material, folded away until asked for. */
+function keyNeeds(): HTMLDetailsElement {
+  const list = make("dl");
+  for (const feature of ["info", "install", "service", "updater"]) {
+    list.append(
+      make("dt", { i18n: `keys-needs-${feature}` }),
+      make("dd", { i18n: `keys-needs-${feature}-keys` }),
+    );
+  }
+  return make(
+    "details",
+    { className: "key-needs" },
+    make("summary", { i18n: "keys-needs-toggle" }),
+    list,
+  );
+}
+
 /**
  * The card that explains the missing key material and imports it.
  *
@@ -68,6 +85,7 @@ export function keyCard(onChange?: (status: KeyStatus) => void): HTMLElement {
   return card(
     make("h2", { i18n: "keys-heading" }),
     make("p", { i18n: "keys-intro" }),
+    keyNeeds(),
     make("div", { className: "notice-block" }, make("p", { i18n: "keys-law-notice" })),
     list,
     make("label", { className: "field-label", i18n: "keys-url-label" }),

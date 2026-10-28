@@ -701,6 +701,25 @@ summary {
   resize: vertical;
 }
 
+/* Which feature needs which key class: the feature, and the keys indented below it. */
+.key-needs {
+  margin: 0 0 12px;
+}
+
+.key-needs dl {
+  margin: 4px 0 0;
+}
+
+.key-needs dt {
+  margin-top: 10px;
+  font-weight: 600;
+}
+
+.key-needs dd {
+  margin: 2px 0 0 16px;
+  color: var(--text-muted);
+}
+
 /* Installed plugins on the settings page: one block per plugin. */
 .plugin-row {
   padding: 8px 0;
