@@ -313,6 +313,7 @@ source-unreadable = { $source } tidak memiliki berkas { $file } yang dapat dibac
 source-failed = Sumber { $source } tidak dapat dibaca: { $reason }
 source-signer-changed = { $name } dari { $source } ditandatangani oleh pihak yang berbeda dari sebelumnya dan tidak dipasang. Jika pembuatnya memang mengganti kunci penandatanganannya, hapus sumber tersebut lalu tambahkan lagi.
 source-signer-pinned = { $name } dari { $source } tidak ditandatangani dengan sertifikat yang disebutkan sumbernya dan tidak dipasang.
+source-signature-invalid = { $name } dari { $source } tidak cocok dengan tanda tangannya dan tidak dipasang; berkas mungkin telah diubah di perjalanan. ({ $reason })
 source-ambiguous = { $package } ditawarkan oleh beberapa sumber: { $sources }. Pilih salah satu dengan --source.
 source-plugin-mismatch = Plugin yang diunduh memiliki ID { $found }, tetapi sumbernya menyebutkan { $id }. Plugin tidak dipasang.
 plugin-sources-heading = Plugin dari sumber yang telah Anda tambahkan

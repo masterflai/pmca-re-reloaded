@@ -322,6 +322,7 @@ source-unreadable = { $source }의 기본 브랜치에 읽을 수 있는 { $file
 source-failed = 소스 { $source }을(를) 읽을 수 없습니다: { $reason }
 source-signer-changed = { $source }의 { $name }이(가) 이전과 다른 사람에 의해 서명되어 설치하지 않았습니다. 작성자가 실제로 서명 키를 변경했다면 소스를 제거한 후 다시 추가하십시오.
 source-signer-pinned = { $source }의 { $name }이(가) 소스에 지정된 인증서로 서명되지 않아 설치하지 않았습니다.
+source-signature-invalid = { $source }의 { $name }이(가) 서명과 일치하지 않아 설치하지 않았습니다. 전송 중에 파일이 변경되었을 수 있습니다. ({ $reason })
 source-ambiguous = 여러 소스에서 { $package }을(를) 제공합니다: { $sources }. --source로 하나를 선택하십시오.
 source-plugin-mismatch = 다운로드한 플러그인의 ID는 { $found }이지만 소스에서 알린 ID는 { $id }입니다. 플러그인을 설치하지 않았습니다.
 plugin-sources-heading = 추가한 소스의 플러그인

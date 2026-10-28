@@ -312,6 +312,7 @@ source-unreadable = لا يحتوي { $source } على ملف { $file } قابل
 source-failed = تعذّرت قراءة المصدر { $source }: { $reason }
 source-signer-changed = التطبيق { $name } من { $source } موقَّع من جهة غير التي وقّعته سابقًا، ولذلك لم يُثبَّت. إذا كان مؤلفه قد غيّر مفتاح التوقيع فعلًا، فأزل المصدر ثم أضفه من جديد.
 source-signer-pinned = التطبيق { $name } من { $source } غير موقَّع بالشهادة التي يحددها مصدره، ولذلك لم يُثبَّت.
+source-signature-invalid = التطبيق { $name } من { $source } لا يطابق توقيعه، ولذلك لم يُثبَّت؛ ربما عُدِّل الملف في الطريق. ({ $reason })
 source-ambiguous = تعرض عدة مصادر { $package }: { $sources }. اختر أحدها باستخدام --source.
 source-plugin-mismatch = الإضافة التي تم تنزيلها تحمل المعرّف { $found }، لكن المصدر يعلن { $id }. لم تُثبَّت.
 plugin-sources-heading = إضافات من المصادر التي أضفتها

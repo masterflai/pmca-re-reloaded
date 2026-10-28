@@ -312,6 +312,7 @@ source-unreadable = { $source } のデフォルトブランチには、読み取
 source-failed = ソース { $source } を読み込めませんでした：{ $reason }
 source-signer-changed = { $source } の { $name } は以前とは異なる署名者によって署名されているため、インストールされませんでした。作成者が実際に署名鍵を変更した場合は、ソースを削除してから再度追加してください。
 source-signer-pinned = { $source } の { $name } はソースが指定する証明書で署名されていないため、インストールされませんでした。
+source-signature-invalid = { $source } の { $name } は署名と一致しないため、インストールされませんでした。途中でファイルが改変された可能性があります。({ $reason })
 source-ambiguous = { $package } は複数のソースから提供されています：{ $sources }。--source で一つを選んでください。
 source-plugin-mismatch = ダウンロードしたプラグインの ID は { $found } ですが、ソースでは { $id } と告知されています。インストールされませんでした。
 plugin-sources-heading = 追加したソースのプラグイン

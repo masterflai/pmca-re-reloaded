@@ -313,6 +313,7 @@ source-unreadable = { $source } nie ma w gałęzi domyślnej czytelnego pliku { 
 source-failed = Nie udało się odczytać źródła { $source }: { $reason }
 source-signer-changed = Aplikacja { $name } ze źródła { $source } jest podpisana przez kogoś innego niż wcześniej i nie została zainstalowana. Jeśli jej autor rzeczywiście zmienił klucz podpisu, usuń źródło i dodaj je ponownie.
 source-signer-pinned = Aplikacja { $name } ze źródła { $source } nie jest podpisana certyfikatem wskazanym przez źródło i nie została zainstalowana.
+source-signature-invalid = Aplikacja { $name } ze źródła { $source } nie zgadza się ze swoim podpisem i nie została zainstalowana; plik mógł zostać zmieniony po drodze. ({ $reason })
 source-ambiguous = Pakiet { $package } jest oferowany przez kilka źródeł: { $sources }. Wybierz jedno za pomocą --source.
 source-plugin-mismatch = Pobrana wtyczka ma identyfikator { $found }, ale źródło podaje { $id }. Nie została zainstalowana.
 plugin-sources-heading = Wtyczki z dodanych źródeł

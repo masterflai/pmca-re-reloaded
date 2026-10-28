@@ -132,7 +132,9 @@ signature gives your users is continuity: once they have installed something
 from you, nobody else can slip them an "update".
 
 **Apps.** Sign every APK with the same key (v1 / JAR signature, as the cameras
-require). When a user first downloads one of your apps from your source, the
+require). The program checks that signature on every download, as Android does
+before installing: every file in the archive has to match it, or the APK is
+refused. When a user first downloads one of your apps from your source, the
 program remembers the certificate it was signed with. A later version signed
 with a different certificate, or not signed at all, is refused.
 
@@ -159,6 +161,23 @@ the fingerprint anyway, for example on your website.
 If you really have to change a key, tell your users: they have to remove your
 source and add it again, and remove an installed plugin before installing the
 newly signed one.
+
+## What happens to your app
+
+* **It comes from your address.** The program downloads the APK when a user
+  installs it, from the address your entry or feed names, over HTTPS.
+  Redirects are followed, because GitHub serves release files from another
+  host, but only over HTTPS. The program keeps the file in memory until the
+  installation ends and passes it on to no one else.
+* **It is checked before it reaches the camera.** The signature has to hold
+  for every file, and with `cert_sha256` the certificate has to be the one you
+  named. Otherwise the download is refused and the camera is not touched.
+* **It is not changed.** The camera's installer accepts apps only in Sony's
+  package format (SPK), so the program puts the APK into that container as it
+  is: encrypted for the transfer, byte for byte. The camera unpacks the same
+  bytes. Nothing in the APK is changed, added or removed.
+* **An update goes over the installed copy.** The program never removes an
+  app; a newer version is installed over the one on the camera.
 
 ## Limits
 

@@ -322,6 +322,7 @@ source-unreadable = { $source } không có tệp { $file } đọc được trong
 source-failed = Không thể đọc nguồn { $source }: { $reason }
 source-signer-changed = { $name } từ { $source } được ký bởi một người khác so với trước đây nên đã không được cài đặt. Nếu tác giả thực sự đã đổi khóa ký, hãy xóa nguồn rồi thêm lại.
 source-signer-pinned = { $name } từ { $source } không được ký bằng chứng chỉ mà nguồn chỉ định nên đã không được cài đặt.
+source-signature-invalid = { $name } từ { $source } không khớp với chữ ký của nó nên đã không được cài đặt; tệp có thể đã bị thay đổi trên đường truyền. ({ $reason })
 source-ambiguous = { $package } được nhiều nguồn cung cấp: { $sources }. Hãy chọn một nguồn bằng --source.
 source-plugin-mismatch = Plugin đã tải xuống có mã { $found }, nhưng nguồn công bố mã { $id }. Plugin đã không được cài đặt.
 plugin-sources-heading = Plugin từ các nguồn bạn đã thêm

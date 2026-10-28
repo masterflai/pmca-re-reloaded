@@ -6,5 +6,6 @@ use libfuzzer_sys::fuzz_target;
 
 fuzz_target!(|data: &[u8]| {
     let _ = pmca_apk::read(data);
+    let _ = pmca_apk::verify_signature(data);
     let _ = pmca_apk::axml::parse(data);
 });

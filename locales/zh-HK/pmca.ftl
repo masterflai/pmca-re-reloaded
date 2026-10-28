@@ -322,6 +322,7 @@ source-unreadable = { $source } 的預設分支中沒有可讀取的 { $file }�
 source-failed = 無法讀取來源 { $source }：{ $reason }
 source-signer-changed = 來自 { $source } 的 { $name } 由與之前不同的簽署者簽署，因此未有安裝。如其作者確實更換了簽署金鑰，請移除此來源後再重新新增。
 source-signer-pinned = 來自 { $source } 的 { $name } 並非以其來源指定的證書簽署，因此未有安裝。
+source-signature-invalid = 來自 { $source } 的 { $name } 與其簽署不符，因此未有安裝；檔案可能在傳輸途中被改動。（{ $reason }）
 source-ambiguous = 有多個來源提供 { $package }：{ $sources }。請使用 --source 選擇其中一個。
 source-plugin-mismatch = 下載的插件 ID 為 { $found }，但來源聲明的是 { $id }。插件未有安裝。
 plugin-sources-heading = 來自您已新增的來源的插件

@@ -168,10 +168,24 @@ pub struct DownloadedApp {
     pub data: Vec<u8>,
 }
 
-/// SHA-256 of the APK's signer certificate, hex; `None` when unsigned.
-fn signer(data: &[u8]) -> Option<String> {
-    let certificate = pmca_apk::signer_certificate(data).ok().flatten()?;
-    Some(Sha256::digest(&certificate).iter().map(|b| format!("{b:02x}")).collect())
+/// SHA-256 of the APK's signer certificate, hex; `Ok(None)` when unsigned.
+///
+/// The signature has to hold for every file of the archive. One this program
+/// cannot check (DSA, EC) still names its signer for an entry without a pin,
+/// as before the check existed; an entry with a pin needs a checked one.
+fn signer(data: &[u8], pinned: bool) -> std::result::Result<Option<String>, String> {
+    use pmca_apk::Signature;
+    let fingerprint = |certificate: &[u8]| {
+        Sha256::digest(certificate).iter().map(|b| format!("{b:02x}")).collect()
+    };
+    match pmca_apk::verify_signature(data) {
+        Ok(Signature::Unsigned) => Ok(None),
+        Ok(Signature::Valid(certificate)) => Ok(Some(fingerprint(&certificate))),
+        Ok(Signature::Unsupported(certificate)) if !pinned => Ok(Some(fingerprint(&certificate))),
+        Ok(Signature::Unsupported(_)) => Err("signature cannot be checked".into()),
+        Ok(Signature::Invalid(reason)) => Err(reason.into()),
+        Err(e) => Err(e.to_string()),
+    }
 }
 
 /// The certificate fingerprint the source names for `package`, if any.
@@ -194,10 +208,11 @@ fn matches_pin(pinned: Option<&str>, signer: Option<&str>) -> bool {
 
 /// Resolve an app to its newest release and download the APK.
 ///
-/// When the entry names its signing certificate, the APK has to be signed with
-/// exactly that one, the first download included. Beyond that, the first
-/// download from a source remembers who signed the app; a later one signed by
-/// someone else is refused before it reaches the camera.
+/// The APK's signature has to hold for every file in it. When the entry names
+/// its signing certificate, the APK has to be signed with exactly that one, the
+/// first download included. Beyond that, the first download from a source
+/// remembers who signed the app; a later one signed by someone else is refused
+/// before it reaches the camera.
 pub fn download_community_app(
     l: &Localizer,
     source: &str,
@@ -212,8 +227,14 @@ pub fn download_community_app(
         format!("{} {}", l.tr("store-downloading"), release.version),
     ));
     let data = appstore::download_asset(&release.url)?;
-    let signed_by = signer(&data);
-    if !matches_pin(pinned_certificate(source, package).as_deref(), signed_by.as_deref()) {
+    let pin = pinned_certificate(source, package);
+    let signed_by = signer(&data, pin.is_some()).map_err(|reason| {
+        Error::Operation(l.tr_args(
+            "source-signature-invalid",
+            &[("name", package), ("source", source), ("reason", &reason)],
+        ))
+    })?;
+    if !matches_pin(pin.as_deref(), signed_by.as_deref()) {
         return Err(Error::Operation(
             l.tr_args("source-signer-pinned", &[("name", package), ("source", source)]),
         ));
@@ -265,6 +286,15 @@ mod tests {
         assert!(matches_pin(Some("aa"), Some("aa")));
         assert!(!matches_pin(Some("aa"), Some("bb")));
         assert!(!matches_pin(Some("aa"), None));
+    }
+
+    #[test]
+    fn only_a_readable_signature_names_a_signer() {
+        let mut writer = zip::ZipWriter::new(std::io::Cursor::new(Vec::new()));
+        writer.start_file("classes.dex", zip::write::SimpleFileOptions::default()).unwrap();
+        let unsigned = writer.finish().unwrap().into_inner();
+        assert_eq!(signer(&unsigned, true), Ok(None));
+        assert!(signer(b"not an apk", false).is_err());
     }
 
     fn offers(sources: &[(&str, &str)]) -> Vec<(String, appstore::StoreApp)> {

@@ -312,6 +312,7 @@ source-unreadable = { $source } har ingen læsbar fil { $file } i sin standardgr
 source-failed = Kilden { $source } kunne ikke læses: { $reason }
 source-signer-changed = { $name } fra { $source } er signeret af en anden end før og blev ikke installeret. Hvis forfatteren virkelig har skiftet signeringsnøgle, så fjern kilden, og tilføj den igen.
 source-signer-pinned = { $name } fra { $source } er ikke signeret med det certifikat, som kilden angiver, og blev ikke installeret.
+source-signature-invalid = { $name } fra { $source } stemmer ikke overens med sin signatur og blev ikke installeret; filen kan være ændret undervejs. ({ $reason })
 source-ambiguous = { $package } tilbydes af flere kilder: { $sources }. Vælg én med --source.
 source-plugin-mismatch = Det downloadede plugin har id'et { $found }, men kilden angiver { $id }. Det blev ikke installeret.
 plugin-sources-heading = Plugins fra de kilder, du har tilføjet

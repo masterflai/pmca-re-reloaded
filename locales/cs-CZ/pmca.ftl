@@ -313,6 +313,7 @@ source-unreadable = Zdroj { $source } nemá ve výchozí větvi čitelný soubor
 source-failed = Zdroj { $source } se nepodařilo načíst: { $reason }
 source-signer-changed = Aplikace { $name } ze zdroje { $source } je podepsána někým jiným než dříve, a proto nebyla nainstalována. Pokud její autor skutečně změnil podpisový klíč, odeberte zdroj a přidejte ho znovu.
 source-signer-pinned = Aplikace { $name } ze zdroje { $source } není podepsána certifikátem, který zdroj uvádí, a proto nebyla nainstalována.
+source-signature-invalid = Aplikace { $name } ze zdroje { $source } neodpovídá svému podpisu, a proto nebyla nainstalována; soubor mohl být cestou změněn. ({ $reason })
 source-ambiguous = { $package } nabízí více zdrojů: { $sources }. Vyberte jeden pomocí --source.
 source-plugin-mismatch = Stažený zásuvný modul má identifikátor { $found }, zdroj však ohlašuje { $id }. Nebyl nainstalován.
 plugin-sources-heading = Zásuvné moduly z přidaných zdrojů

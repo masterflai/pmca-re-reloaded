@@ -6,10 +6,22 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+### Security
+
+- An app from a source is installed only when its v1 signature holds for every
+  file in it, as Android checks before installing. Until now only the
+  certificate in the signature was compared, so a changed APK that kept the
+  original signature files would have passed a `cert_sha256` pin and the
+  check against the first download.
+- Downloads follow redirects only over HTTPS.
+
 ### Changed
 
 - After a check started from the version number, the focus moves to the
   update notice.
+- `docs/app-sources.md` describes what happens to a published app: where it
+  is downloaded from, what is checked, that it is not changed, and that an
+  update goes over the installed copy.
 
 ## [1.6.0-rc.1] - 2026-10-28
 

@@ -313,6 +313,7 @@ source-unreadable = { $source } não tem um arquivo { $file } legível no branch
 source-failed = Não foi possível ler a fonte { $source }: { $reason }
 source-signer-changed = { $name }, da fonte { $source }, foi assinado por outra pessoa, diferente da anterior, e não foi instalado. Se o autor realmente trocou a chave de assinatura, remova a fonte e adicione-a novamente.
 source-signer-pinned = { $name }, da fonte { $source }, não foi assinado com o certificado indicado pela fonte e não foi instalado.
+source-signature-invalid = { $name }, da fonte { $source }, não confere com sua assinatura e não foi instalado; o arquivo pode ter sido alterado no caminho. ({ $reason })
 source-ambiguous = { $package } é oferecido por várias fontes: { $sources }. Escolha uma com --source.
 source-plugin-mismatch = O plug-in baixado tem o identificador { $found }, mas a fonte anuncia { $id }. Ele não foi instalado.
 plugin-sources-heading = Plug-ins das fontes que você adicionou

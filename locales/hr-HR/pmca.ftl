@@ -313,6 +313,7 @@ source-unreadable = { $source } u svojoj zadanoj grani nema čitljivu datoteku {
 source-failed = Izvor { $source } nije bilo moguće pročitati: { $reason }
 source-signer-changed = Aplikaciju { $name } iz izvora { $source } potpisao je netko drugi nego prije, pa nije instalirana. Ako je njezin autor doista promijenio ključ za potpisivanje, uklonite izvor i ponovno ga dodajte.
 source-signer-pinned = Aplikacija { $name } iz izvora { $source } nije potpisana certifikatom koji navodi izvor, pa nije instalirana.
+source-signature-invalid = Aplikacija { $name } iz izvora { $source } ne odgovara svom potpisu, pa nije instalirana; datoteka je možda izmijenjena usput. ({ $reason })
 source-ambiguous = { $package } nudi više izvora: { $sources }. Odaberite jedan pomoću --source.
 source-plugin-mismatch = Preuzeti dodatak ima oznaku { $found }, ali izvor najavljuje { $id }. Nije instaliran.
 plugin-sources-heading = Dodaci iz izvora koje ste dodali

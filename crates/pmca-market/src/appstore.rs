@@ -592,11 +592,17 @@ mod net {
     }
 
     /// Perform a size-capped HTTPS GET.
+    ///
+    /// Redirects are followed (GitHub serves release files from another host),
+    /// but only over HTTPS; what a download contains is checked afterwards.
     fn fetch(url: &str, limit: u64) -> Result<Vec<u8>> {
         if !is_https(url) {
             return Err(Error::Http(format!("refusing non-https url: {url}")));
         }
         let response = ureq::get(url)
+            .config()
+            .https_only(true)
+            .build()
             .header("User-Agent", USER_AGENT)
             .call()
             .map_err(|e| Error::Http(e.to_string()))?;

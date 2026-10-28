@@ -16,3 +16,7 @@ description = "APK container and binary AndroidManifest.xml parsing for PMCA-RE 
 [dependencies]
 thiserror.workspace = true
 zip.workspace = true
+# The v1 signature check: RSA with PKCS#1 padding over SHA-1/SHA-2 digests.
+num-bigint.workspace = true
+sha1.workspace = true
+sha2.workspace = true
