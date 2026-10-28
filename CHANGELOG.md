@@ -6,6 +6,11 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+### Changed
+
+- After a check started from the version number, the focus moves to the
+  update notice.
+
 ## [1.6.0-rc.1] - 2026-10-28
 
 **Pre-release for testing on macOS 26.** A diagnostic run on a Mac showed that

@@ -27,11 +27,13 @@ export async function checkForUpdateNow(trigger: HTMLButtonElement): Promise<voi
   trigger.disabled = true;
   const status = statusLine();
   showBanner("update-check-heading", status);
+  focusBanner();
   showBusy(status, tr("update-checking"));
   try {
     const update = await invoke<AvailableUpdate | null>("check_for_update");
     if (update) {
       showUpdate(update);
+      focusBanner();
     } else {
       const version = document.querySelector("#app-version")?.textContent ?? "";
       showDone(status, trFill("update-none", { version }));
@@ -65,6 +67,10 @@ function showUpdate(update: AvailableUpdate): void {
     make("div", { className: "row" }, make("code", { textContent: url }), copy),
     status,
   );
+}
+
+function focusBanner(): void {
+  document.querySelector<HTMLElement>(".update-banner summary")?.focus();
 }
 
 /** Put a foldable notice above the view, replacing an earlier one. */
