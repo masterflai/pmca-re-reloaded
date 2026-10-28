@@ -176,6 +176,9 @@ export function translateTree(root: ParentNode): void {
   root.querySelectorAll<HTMLElement>("[data-i18n]").forEach((el) => {
     el.textContent = tr(el.dataset.i18n!);
   });
+  root.querySelectorAll<HTMLElement>("[data-i18n-title]").forEach((el) => {
+    el.title = tr(el.dataset.i18nTitle!);
+  });
 }
 
 /**

@@ -129,9 +129,18 @@ body {
 
 .nav-version {
   padding: 8px 12px 0;
+  font: inherit;
   font-size: 0.8rem;
+  text-align: start;
   color: var(--text-muted);
-  user-select: text;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.nav-version:hover:not(:disabled) {
+  color: var(--accent);
+  text-decoration: underline;
 }
 
 /*
@@ -418,15 +427,20 @@ summary {
   user-select: all;
 }
 
-/* The start-up notice about a newer release; sits above every view until hidden. */
+/* The notice about a newer release; sits above every view, foldable, until hidden. */
 .update-banner {
   margin: 20px 0 0;
   border-inline-start: 3px solid var(--accent);
 }
 
-.update-banner h2 {
-  margin: 0 0 8px;
+.update-banner summary h2 {
+  display: inline;
+  margin: 0;
   font-size: 1.05rem;
+}
+
+.update-banner[open] summary {
+  margin-bottom: 8px;
 }
 
 .update-banner code {

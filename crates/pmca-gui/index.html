@@ -38,8 +38,8 @@
         <div class="nav-spacer"></div>
         <button class="nav-item" data-view="settings" data-i18n="nav-settings">Settings</button>
         <button class="nav-item" data-view="license" data-i18n="nav-license">License</button>
-        <!-- Filled in by main.ts from the running build, never typed in here. -->
-        <div class="nav-version"><span data-i18n="about-version">Version</span> <span id="app-version"></span></div>
+        <!-- Filled in by main.ts from the running build, never typed in here. A click checks for updates. -->
+        <button type="button" id="version-check" class="nav-version" data-i18n-title="update-check-hint"><span data-i18n="about-version">Version</span> <span id="app-version"></span></button>
       </nav>
 
       <main class="content">

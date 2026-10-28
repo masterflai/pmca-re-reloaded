@@ -1,9 +1,12 @@
-/** The start-up notice about a newer release, shown only when the user switched it on. */
+/**
+ * Notices about a newer release: at start when the user switched that on, and
+ * on demand from the version number below the navigation.
+ */
 
 import { invoke } from "@tauri-apps/api/core";
-import { fieldList, make, showDone, showError, statusLine } from "./dom";
+import { fieldList, make, showBusy, showDone, showError, statusLine } from "./dom";
 import type { AvailableUpdate } from "./dto";
-import { tr } from "./i18n";
+import { tr, trFill } from "./i18n";
 import { updateCheckOn } from "./preferences";
 
 export async function announceUpdate(): Promise<void> {
@@ -16,10 +19,32 @@ export async function announceUpdate(): Promise<void> {
     console.warn("update check failed", e);
     return;
   }
-  const view = document.querySelector<HTMLElement>("#view");
-  if (!update || !view) return;
-  const url = update.url;
+  if (update) showUpdate(update);
+}
 
+/** Check now, whatever the start-up setting says, and always report how it ended. */
+export async function checkForUpdateNow(trigger: HTMLButtonElement): Promise<void> {
+  trigger.disabled = true;
+  const status = statusLine();
+  showBanner("update-check-heading", status);
+  showBusy(status, tr("update-checking"));
+  try {
+    const update = await invoke<AvailableUpdate | null>("check_for_update");
+    if (update) {
+      showUpdate(update);
+    } else {
+      const version = document.querySelector("#app-version")?.textContent ?? "";
+      showDone(status, trFill("update-none", { version }));
+    }
+  } catch (e) {
+    showError(status, e);
+  } finally {
+    trigger.disabled = false;
+  }
+}
+
+function showUpdate(update: AvailableUpdate): void {
+  const url = update.url;
   const status = statusLine();
   const copy = make("button", { i18n: "btn-copy-url" });
   copy.addEventListener("click", async () => {
@@ -30,19 +55,30 @@ export async function announceUpdate(): Promise<void> {
       showError(status, e);
     }
   });
-  const hide = make("button", { i18n: "btn-update-dismiss" });
-
   // Text plus a copy button rather than a link: no opener plugin is bundled.
-  const banner = make(
-    "div",
-    { className: "card update-banner" },
-    make("h2", { i18n: "update-available" }),
+  showBanner(
+    "update-available",
     fieldList([
       ["update-current", update.current],
       ["update-latest", update.latest],
     ]),
-    make("div", { className: "row" }, make("code", { textContent: url }), copy, hide),
+    make("div", { className: "row" }, make("code", { textContent: url }), copy),
     status,
+  );
+}
+
+/** Put a foldable notice above the view, replacing an earlier one. */
+function showBanner(headingKey: string, ...content: Node[]): void {
+  const view = document.querySelector<HTMLElement>("#view");
+  if (!view) return;
+  document.querySelector(".update-banner")?.remove();
+  const hide = make("button", { i18n: "btn-update-dismiss" });
+  const banner = make(
+    "details",
+    { className: "card update-banner", open: true },
+    make("summary", {}, make("h2", { i18n: headingKey })),
+    ...content,
+    make("div", { className: "row" }, hide),
   );
   banner.setAttribute("role", "status");
   hide.addEventListener("click", () => banner.remove());

@@ -1,8 +1,8 @@
-//! Opt-in check for a newer release of this program.
+//! Check for a newer release of this program.
 //!
 //! One request to GitHub's "latest release" endpoint, which leaves out drafts
-//! and pre-releases. Nothing calls this unless the user has switched the check
-//! on; the front-end owns that choice.
+//! and pre-releases. The front-end calls this at start only when the user has
+//! switched that on, and whenever the user asks for it.
 
 use crate::Result;
 use crate::dto::AvailableUpdate;

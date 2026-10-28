@@ -40,7 +40,7 @@ import {
 } from "./i18n";
 import { detectHostPlatform } from "./platform";
 import { applyAnalysisNav, applyTheme, setupThemeSwitch, storedTheme } from "./preferences";
-import { announceUpdate } from "./update";
+import { announceUpdate, checkForUpdateNow } from "./update";
 import { viewAnalysis } from "./views/analysis";
 import { viewCameraInfo } from "./views/camera";
 import { viewFirmware } from "./views/firmware";
@@ -179,6 +179,8 @@ async function main(): Promise<void> {
   applyAnalysisNav();
   setupNavigation();
   showAppVersion();
+  const versionCheck = document.querySelector<HTMLButtonElement>("#version-check");
+  versionCheck?.addEventListener("click", () => void checkForUpdateNow(versionCheck));
   void announceUpdate();
   await setupProgress();
   // Last, so the window is complete behind the question.

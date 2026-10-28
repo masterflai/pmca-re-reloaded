@@ -12,6 +12,13 @@ All notable changes to this project are documented here. The format follows
   which features need which key material: camera info none, app installation
   the XPD checksum key (and SPK for an app), service mode the service-mode
   keys, updater mode the FDAT key material.
+- Clicking the version number below the navigation checks for a new version
+  right away, also when the check at start is switched off, and says how it
+  ended.
+
+### Changed
+
+- The notice about a new version can be folded away.
 
 ### Fixed
 
