@@ -6,6 +6,15 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+## [1.6.0-rc.1] - 2026-10-28
+
+**Pre-release for testing on macOS 26.** A diagnostic run on a Mac showed that
+the camera's mass-storage connection can now be reached; what failed was the
+first larger transfer over Apple's own interface. This pre-release moves the
+data through the same USB layer the other systems use, and the macOS probe has
+been rewritten to test exactly that step. Everything else is as it will be in
+1.6.0.
+
 ### Added
 
 - The key-material card on the Welcome page has a folded section that lists
@@ -19,6 +28,9 @@ All notable changes to this project are documented here. The format follows
 ### Changed
 
 - The notice about a new version can be folded away.
+- macOS: after the mass-storage drivers have been taken off the camera, its
+  interface is claimed through `nusb` first and through IOUSBHost only if that
+  fails.
 
 ### Fixed
 
@@ -26,6 +38,8 @@ All notable changes to this project are documented here. The format follows
   key material before the camera is switched, and offers the key import when
   it is missing. Before, the camera could be left in app-install mode with a
   general error.
+- Switching a camera from MTP to mass storage no longer fails when the camera
+  leaves the bus before it has answered the request, which happened on macOS.
 
 ## [1.5.0] - 2026-10-28
 

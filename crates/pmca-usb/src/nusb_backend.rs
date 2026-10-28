@@ -439,10 +439,10 @@ impl CaptureTrace {
 /// the interface after that.
 ///
 /// The card is unmounted first, so the disk driver can end. Then, in turn:
-/// the interface through IOUSBHost on a fresh configuration; through `nusb`
-/// while the capture holds the drivers away; and both again after the capture
-/// was surrendered without a reset. If none works, the device is reset, the
-/// card mounted again and the error carries a trace of the steps.
+/// `nusb` while the capture holds the drivers away; the interface through
+/// IOUSBHost; and both again after the capture was surrendered without a
+/// reset. If none works, the device is reset, the card mounted again and the
+/// error carries a trace of the steps.
 #[cfg(target_os = "macos")]
 fn claim_captured(device: &DiscoveredDevice, interface_number: u8, first: &str) -> Result<Link> {
     use crate::macos_capture::{HostInterface, driver_tree};
@@ -501,29 +501,37 @@ fn reach_captured(
             handle.claim_interface(interface_number).wait().map_err(|e| format!("claim: {e}"))?;
         Ok(NusbLink::new(interface))
     };
+    let legacy_for = |wait: Duration, note: &mut dyn FnMut(String), label: &str| {
+        let deadline = std::time::Instant::now() + wait;
+        loop {
+            match legacy() {
+                Ok(link) => return Some(link),
+                Err(e) => note(format!("{label}: {e}")),
+            }
+            if std::time::Instant::now() >= deadline {
+                return None;
+            }
+            std::thread::sleep(MACOS_CAPTURE_POLL);
+        }
+    };
+    // `nusb` first: IOUSBHost's pipe stopped a bulk-OUT data phase after one
+    // packet on macOS 26 (probe of 28.10.2026), `nusb` moves it elsewhere.
+    if let Some(link) = legacy_for(MACOS_INTERFACE_WAIT, note, "nusb while captured") {
+        note("nusb while captured: claimed".into());
+        return Ok(Link::Borrowed { link, _capture: host });
+    }
     if host.open_interface(interface_number, MACOS_INTERFACE_WAIT, note) {
         return Ok(Link::Host(host));
-    }
-    match legacy() {
-        Ok(link) => return Ok(Link::Borrowed { link, _capture: host }),
-        Err(e) => note(format!("nusb while captured: {e}")),
     }
     host.surrender();
     note(format!("surrendered, drivers: {}", crate::macos_capture::driver_tree(id)));
+    if let Some(link) = legacy_for(MACOS_INTERFACE_WAIT, note, "nusb after surrender") {
+        return Ok(Link::Borrowed { link, _capture: host });
+    }
     if host.open_interface(interface_number, MACOS_INTERFACE_WAIT, note) {
         return Ok(Link::Host(host));
     }
-    let deadline = std::time::Instant::now() + MACOS_INTERFACE_WAIT;
-    loop {
-        match legacy() {
-            Ok(link) => return Ok(Link::Borrowed { link, _capture: host }),
-            Err(e) => note(format!("nusb after surrender: {e}")),
-        }
-        if std::time::Instant::now() >= deadline {
-            return Err("interface not available".into());
-        }
-        std::thread::sleep(MACOS_CAPTURE_POLL);
-    }
+    Err("interface not available".into())
 }
 
 /// Classifies a device-open failure.

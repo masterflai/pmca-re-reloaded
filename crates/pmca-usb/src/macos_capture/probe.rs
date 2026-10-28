@@ -1,7 +1,8 @@
-//! Diagnostic run for macOS: tries every known way into a Sony camera's USB
-//! interfaces, in each USB mode the camera is set to, and writes every step to
-//! a report. The `macos_probe` example starts it as root; the program itself
-//! never calls it.
+//! Diagnostic run for macOS: reaches a Sony camera's mass-storage interface
+//! through a capture, in each USB mode the camera is set to, and sends it the
+//! program's real camera-info commands both through `nusb` and through
+//! IOUSBHost, writing every step to a report. The `macos_probe` example starts
+//! it as root; the program itself never calls it.
 
 use std::collections::BTreeMap;
 use std::fs::File;
@@ -13,10 +14,12 @@ use nusb::MaybeFuture;
 use super::*;
 use crate::UsbBackend;
 use crate::discovery::{self, CameraMode};
+use crate::msc::MscDevice;
 use crate::nusb_backend::NusbBackend;
+use crate::sony_extcmd::SonyExtCmdCamera;
 
 /// Identifies the probe's logic in a report.
-const REVISION: &str = "probe 1";
+const REVISION: &str = "probe 2";
 
 /// The report, written to the current directory.
 const REPORT: &str = "pmca-macos-probe.txt";
@@ -30,20 +33,6 @@ const IO_TIMEOUT: Duration = Duration::from_secs(5);
 /// How long the mass-storage driver may take to return after a reset.
 const DRIVER_SETTLE: Duration = Duration::from_secs(8);
 
-/// `IOUSBHostObjectInitOptionsDeviceSeize`.
-const INIT_DEVICE_SEIZE: usize = 1 << 1;
-
-#[repr(C)]
-struct Timespec {
-    sec: u32,
-    nsec: i32,
-}
-
-unsafe extern "C" {
-    fn IOServiceWaitQuiet(service: io_service_t, wait: *mut Timespec) -> i32;
-    fn dispatch_queue_create(label: *const c_char, attr: *const c_void) -> Id;
-}
-
 /// Runs the probe interactively; returns the process exit code.
 pub fn run() -> i32 {
     if !is_root() {
@@ -56,8 +45,6 @@ pub fn run() -> i32 {
         r.line("!!! report file not writable here; please copy this terminal output instead");
     }
     environment(&mut r);
-    // SAFETY: creates a serial queue that lives as long as the process.
-    let queue = unsafe { dispatch_queue_create(c"pmca.probe".as_ptr(), ptr::null()) };
 
     let steps = [("Auto", "Auto"), ("Massenspeicher", "Mass Storage"), ("MTP", "MTP")];
     for (index, (german, english)) in steps.iter().enumerate() {
@@ -74,12 +61,12 @@ pub fn run() -> i32 {
         let Some(info) = wait_for_any(&mut r) else { continue };
         r.line(format!("found: {}", describe(&info)));
         if interface_of(&info, crate::class::MSC).is_some() {
-            suite(&mut r, crate::class::MSC, false, queue);
+            suite(&mut r, crate::class::MSC, false);
         } else if interface_of(&info, crate::class::PTP).is_some() {
-            suite(&mut r, crate::class::PTP, false, queue);
+            suite(&mut r, crate::class::PTP, false);
             r.mode = format!("{english}, switched to mass storage");
             r.line(format!("########## {}", r.mode));
-            suite(&mut r, crate::class::MSC, true, queue);
+            suite(&mut r, crate::class::MSC, true);
         } else {
             r.line("the camera offers neither mass storage nor PTP");
         }
@@ -393,15 +380,13 @@ fn dump_ioreg(r: &mut Report, registry_id: u64, label: &str) {
 /// What one experiment works on.
 struct Target {
     id: u64,
-    location: u32,
     number: u8,
-    class: u8,
     ep_in: u8,
     ep_out: u8,
 }
 
 type Body<'a> = &'a mut dyn FnMut(&mut Report, &Target) -> String;
-type Prepare<'a> = &'a mut dyn FnMut(&mut Report, &mut HostInterface);
+type Test<'a> = &'a mut dyn FnMut(&Target, &mut dyn Bulk) -> String;
 
 /// One experiment: wait for the camera, unmount its card, run `body`, then
 /// record the outcome and what the system logged meanwhile.
@@ -411,14 +396,7 @@ fn experiment(r: &mut Report, title: &str, class: u8, switch: bool, eps: (u8, u8
         r.result(title, "skipped, no camera".into());
         return;
     };
-    let target = Target {
-        id: info.registry_entry_id(),
-        location: info.location_id(),
-        number,
-        class,
-        ep_in: eps.0,
-        ep_out: eps.1,
-    };
+    let target = Target { id: info.registry_entry_id(), number, ep_in: eps.0, ep_out: eps.1 };
     r.line(format!("device: {}", describe(&info)));
     drop(info);
     r.line(format!("drivers: {}", driver_tree(target.id)));
@@ -453,7 +431,7 @@ fn experiment(r: &mut Report, title: &str, class: u8, switch: bool, eps: (u8, u8
     r.block("system log", &log, 200, true);
 }
 
-fn suite(r: &mut Report, class: u8, switch: bool, queue: Id) {
+fn suite(r: &mut Report, class: u8, switch: bool) {
     let Some((info, _)) = wait_for(r, class, switch) else { return };
     let eps = endpoints(&info, class).unwrap_or_else(|e| {
         r.line(format!("endpoints: {e}, assuming in 0x81 / out 0x02"));
@@ -463,69 +441,35 @@ fn suite(r: &mut Report, class: u8, switch: bool, queue: Id) {
     dump_ioreg(r, info.registry_entry_id(), "before");
     drop(info);
     let mode = if class == crate::class::MSC { CameraMode::MassStorage } else { CameraMode::Mtp };
-    let cap = INIT_DEVICE_CAPTURE;
-    let nil: Id = ptr::null_mut();
 
-    experiment(r, "app path (rc.8): read camera info", class, switch, eps, &mut |_, _| {
+    experiment(r, "app path (rc.9): read camera info", class, switch, eps, &mut |_, _| {
         production(mode)
     });
-    experiment(r, "no capture: IOUSBHost interface, then nusb", class, switch, eps, &mut |r, t| {
-        without_capture(r, t)
+    if class != crate::class::MSC {
+        return;
+    }
+    experiment(r, "capture, nusb: INQUIRY + camera info", class, switch, eps, &mut |r, t| {
+        via_nusb(r, t, &mut |t, bulk| camera_info(t, bulk, None, false))
     });
-    experiment(r, "capture: IOUSBHost interface", class, switch, eps, &mut |r, t| {
-        via_host(r, t, cap, nil, &[0], &mut |r, host| dump_ioreg(r, host.registry_id, "captured"))
-    });
-    experiment(r, "capture, wait quiet: IOUSBHost interface", class, switch, eps, &mut |r, t| {
-        via_host(r, t, cap, nil, &[0], &mut |r, host| {
-            let quiet = wait_quiet(host.registry_id, t.number);
-            r.line(format!("wait quiet: {quiet}"));
-        })
-    });
-    experiment(r, "capture + seize: IOUSBHost interface", class, switch, eps, &mut |r, t| {
-        via_host(r, t, cap | INIT_DEVICE_SEIZE, nil, &[0], &mut nothing)
-    });
-    experiment(r, "capture with queue: IOUSBHost interface", class, switch, eps, &mut |r, t| {
-        via_host(r, t, cap, queue, &[0], &mut nothing)
-    });
-    experiment(r, "capture: interface options 1, 2", class, switch, eps, &mut |r, t| {
-        via_host(r, t, cap, nil, &[1, 2], &mut nothing)
-    });
-    experiment(r, "capture, reconfigure: IOUSBHost interface", class, switch, eps, &mut |r, t| {
-        via_host(r, t, cap, nil, &[0], &mut |r, host| {
-            r.line(format!("reconfigure: {}", host.reconfigure()));
-        })
-    });
-    experiment(r, "capture, device reset: IOUSBHost interface", class, switch, eps, &mut |r, t| {
-        via_host(r, t, cap, nil, &[0], &mut |r, host| reset_device(r, host, t.location))
-    });
-    experiment(r, "capture: nusb claim", class, switch, eps, &mut |r, t| {
-        via_nusb(r, t, &mut nothing)
-    });
-    experiment(r, "capture, reconfigure: nusb claim", class, switch, eps, &mut |r, t| {
-        via_nusb(r, t, &mut |r, host| r.line(format!("reconfigure: {}", host.reconfigure())))
-    });
-    experiment(r, "capture, surrender: IOUSBHost interface", class, switch, eps, &mut |r, t| {
-        via_host(r, t, cap, nil, &[0], &mut surrender)
-    });
-    experiment(r, "capture, surrender: nusb claim", class, switch, eps, &mut |r, t| {
-        via_nusb(r, t, &mut surrender)
+    experiment(r, "capture, IOUSBHost: INQUIRY + camera info", class, switch, eps, &mut |r, t| {
+        via_host(r, t, &mut |t, bulk| camera_info(t, bulk, None, false))
     });
     experiment(
         r,
-        "capture, configure with matching: IOUSBHost interface",
+        "capture, IOUSBHost: camera info, writes in 512-byte pieces",
         class,
         switch,
         eps,
-        &mut |r, t| via_host(r, t, cap, nil, &[0], &mut configure_matching),
+        &mut |r, t| via_host(r, t, &mut |t, bulk| camera_info(t, bulk, Some(512), false)),
     );
-}
-
-fn nothing(_: &mut Report, _: &mut HostInterface) {}
-
-fn surrender(r: &mut Report, host: &mut HostInterface) {
-    host.surrender();
-    std::thread::sleep(Duration::from_millis(500));
-    r.line(format!("surrendered; drivers: {}", driver_tree(host.registry_id)));
+    experiment(
+        r,
+        "capture, IOUSBHost: bulk-only reset, then camera info",
+        class,
+        switch,
+        eps,
+        &mut |r, t| via_host(r, t, &mut |t, bulk| camera_info(t, bulk, None, true)),
+    );
 }
 
 /// The program's own way, as the GUI's broker runs it.
@@ -639,86 +583,36 @@ fn open_interface(
     }
 }
 
-/// Capture, `prepare`, then open the interface through IOUSBHost with each of
-/// `interface_options` in turn and move data on it.
-fn via_host(
-    r: &mut Report,
-    t: &Target,
-    capture_options: usize,
-    queue: Id,
-    interface_options: &[usize],
-    prepare: Prepare<'_>,
-) -> String {
-    let mut host = match capture(t.id, capture_options, queue) {
-        Ok(host) => host,
-        Err(e) => return e,
-    };
-    r.line(format!("captured; drivers: {}", driver_tree(t.id)));
-    prepare(r, &mut host);
-    let mut refused = Vec::new();
-    for &options in interface_options {
-        match open_interface(&mut host, t.number, options, queue) {
-            Ok(opened) => {
-                let test = exchange(t, &mut host);
-                refused.push(format!("options {options}: {opened}; {test}"));
-                break;
-            }
-            Err(e) => {
-                r.line(format!("interface options {options}: {e}"));
-                refused.push(format!("options {options}: {e}"));
-            }
-        }
-    }
-    refused.join(" | ")
-}
-
-/// Capture, `prepare`, then claim the interface through `nusb` and move data.
-fn via_nusb(r: &mut Report, t: &Target, prepare: Prepare<'_>) -> String {
+/// Capture, reconfigure as the program does, open the interface through
+/// IOUSBHost and run `test` on it.
+fn via_host(r: &mut Report, t: &Target, test: Test<'_>) -> String {
     let mut host = match capture(t.id, INIT_DEVICE_CAPTURE, ptr::null_mut()) {
         Ok(host) => host,
         Err(e) => return e,
     };
     r.line(format!("captured; drivers: {}", driver_tree(t.id)));
-    prepare(r, &mut host);
+    r.line(format!("reconfigure: {}", host.reconfigure()));
+    match open_interface(&mut host, t.number, 0, ptr::null_mut()) {
+        Ok(opened) => format!("{opened}; {}", test(t, &mut host)),
+        Err(e) => e,
+    }
+}
+
+/// Capture, reconfigure as the program does, claim the interface through
+/// `nusb` and run `test` on it.
+fn via_nusb(r: &mut Report, t: &Target, test: Test<'_>) -> String {
+    let host = match capture(t.id, INIT_DEVICE_CAPTURE, ptr::null_mut()) {
+        Ok(host) => host,
+        Err(e) => return e,
+    };
+    r.line(format!("captured; drivers: {}", driver_tree(t.id)));
+    r.line(format!("reconfigure: {}", host.reconfigure()));
     let outcome = match nusb_claim(host.registry_id, t.number) {
-        Ok(mut backend) => format!("nusb claimed; {}", exchange(t, &mut backend)),
+        Ok(mut backend) => format!("nusb claimed; {}", test(t, &mut backend)),
         Err(e) => format!("nusb {e}"),
     };
     drop(host);
     outcome
-}
-
-fn without_capture(r: &mut Report, t: &Target) -> String {
-    if t.class == crate::class::PTP {
-        crate::nusb_backend::evict_macos_ptp_daemons();
-        std::thread::sleep(Duration::from_millis(300));
-    }
-    let mut host = HostInterface {
-        device: ptr::null_mut(),
-        interface: ptr::null_mut(),
-        pipes: HashMap::new(),
-        registry_id: t.id,
-    };
-    let host_outcome = match open_interface(&mut host, t.number, 0, ptr::null_mut()) {
-        Ok(opened) => format!("{opened}; {}", exchange(t, &mut host)),
-        Err(e) => e,
-    };
-    // Nothing was captured, so the drop must not reset the device.
-    host.registry_id = 0;
-    drop(host);
-    r.line(format!("IOUSBHost: {host_outcome}"));
-    if t.class == crate::class::PTP {
-        crate::nusb_backend::evict_macos_ptp_daemons();
-        std::thread::sleep(Duration::from_millis(300));
-    }
-    let nusb_outcome = match nusb_claim(t.id, t.number) {
-        Ok(mut backend) => format!("claimed; {}", exchange(t, &mut backend)),
-        Err(e) => e,
-    };
-    if let Some(disk) = bsd_disk(t.id) {
-        r.line(format!("mount {disk}: {}", diskutil(&["mountDisk"], &disk)));
-    }
-    format!("IOUSBHost: {host_outcome} | nusb: {nusb_outcome}")
 }
 
 /// Open and claim through `nusb`, retrying for [`OPEN_WAIT`].
@@ -753,6 +647,9 @@ fn nusb_claim(registry_id: u64, number: u8) -> std::result::Result<NusbBackend, 
 trait Bulk {
     fn put(&mut self, ep: u8, data: &[u8]) -> Result<()>;
     fn get(&mut self, ep: u8, length: usize) -> Result<Vec<u8>>;
+    fn halt(&mut self, ep: u8) -> Result<()>;
+    /// Bulk-Only Mass Storage Reset on interface `number`.
+    fn bot_reset(&mut self, number: u8) -> Result<()>;
 }
 
 impl Bulk for HostInterface {
@@ -762,6 +659,14 @@ impl Bulk for HostInterface {
 
     fn get(&mut self, ep: u8, length: usize) -> Result<Vec<u8>> {
         self.read(ep, length, IO_TIMEOUT)
+    }
+
+    fn halt(&mut self, ep: u8) -> Result<()> {
+        self.clear_halt(ep)
+    }
+
+    fn bot_reset(&mut self, number: u8) -> Result<()> {
+        self.control_out(0x21, 0xFF, 0, u16::from(number), &[], IO_TIMEOUT)
     }
 }
 
@@ -773,135 +678,69 @@ impl Bulk for NusbBackend {
     fn get(&mut self, ep: u8, length: usize) -> Result<Vec<u8>> {
         self.read(ep, length)
     }
+
+    fn halt(&mut self, ep: u8) -> Result<()> {
+        self.clear_halt(ep)
+    }
+
+    fn bot_reset(&mut self, _number: u8) -> Result<()> {
+        self.reset()
+    }
 }
 
-/// One harmless request that proves data flows: TEST UNIT READY on mass
-/// storage, GetDeviceInfo on PTP.
-fn exchange(t: &Target, bulk: &mut dyn Bulk) -> String {
-    if t.class == crate::class::MSC {
-        let mut cbw = [0u8; 31];
-        cbw[..4].copy_from_slice(b"USBC");
-        cbw[4..8].copy_from_slice(&0x5052_4f42_u32.to_le_bytes());
-        cbw[14] = 6;
-        if let Err(e) = bulk.put(t.ep_out, &cbw) {
-            return format!("TEST UNIT READY write failed: {e:?}");
-        }
-        return match bulk.get(t.ep_in, 512) {
-            Ok(csw) if csw.len() == 13 && csw.starts_with(b"USBS") => {
-                format!("DATA OK: TEST UNIT READY answered, status {}", csw[12])
-            }
-            Ok(other) => format!("TEST UNIT READY: unexpected reply {other:02x?}"),
-            Err(e) => format!("TEST UNIT READY read failed: {e:?}"),
-        };
-    }
-    let command = crate::mtp::pack_container(1, 0x1001, 0, &[]);
-    if let Err(e) = bulk.put(t.ep_out, &command) {
-        return format!("GetDeviceInfo write failed: {e:?}");
-    }
-    let mut data = match bulk.get(t.ep_in, 4096) {
-        Ok(data) => data,
-        Err(e) => return format!("GetDeviceInfo read failed: {e:?}"),
-    };
-    let header = |b: &[u8]| -> Option<(u32, u16, u16)> {
-        Some((
-            u32::from_le_bytes(b.get(..4)?.try_into().ok()?),
-            u16::from_le_bytes(b.get(4..6)?.try_into().ok()?),
-            u16::from_le_bytes(b.get(6..8)?.try_into().ok()?),
-        ))
-    };
-    let Some((length, kind, _)) = header(&data) else {
-        return format!("GetDeviceInfo: short reply {data:02x?}");
-    };
-    if kind == 2 {
-        let mut reads = 0;
-        while data.len() < length as usize && reads < 16 {
-            match bulk.get(t.ep_in, 4096) {
-                Ok(more) => data.extend(more),
-                Err(e) => return format!("GetDeviceInfo data read failed: {e:?}"),
-            }
-            reads += 1;
-        }
-        let response = match bulk.get(t.ep_in, 512) {
-            Ok(response) => response,
-            Err(e) => return format!("GetDeviceInfo response read failed: {e:?}"),
-        };
-        return match header(&response) {
-            Some((_, 3, code)) => {
-                format!("DATA OK: GetDeviceInfo {} bytes, response 0x{code:04x}", data.len())
-            }
-            _ => format!("GetDeviceInfo: unexpected response {response:02x?}"),
-        };
-    }
-    format!("GetDeviceInfo: unexpected container {:02x?}", &data[..data.len().min(16)])
+/// A [`Bulk`] way as the backend the protocol code expects, optionally cutting
+/// every write into `pieces`-byte transfers.
+struct Pieces<'a> {
+    bulk: &'a mut dyn Bulk,
+    pieces: Option<usize>,
 }
 
-fn wait_quiet(registry_id: u64, number: u8) -> String {
-    let services = [
-        ("device", service_by_id(registry_id)),
-        ("interface", interface_service(registry_id, number)),
-    ];
-    let mut out = Vec::new();
-    for (label, service) in services {
-        match service {
-            Some(service) => {
-                let mut wait = Timespec { sec: 5, nsec: 0 };
-                // SAFETY: the service is live until released.
-                let code = unsafe {
-                    let code = IOServiceWaitQuiet(service, &mut wait);
-                    IOObjectRelease(service);
-                    code
-                };
-                out.push(format!("{label} {}", code_name(code)));
+impl UsbBackend for Pieces<'_> {
+    fn read(&mut self, ep: u8, length: usize) -> Result<Vec<u8>> {
+        self.bulk.get(ep, length)
+    }
+
+    fn write(&mut self, ep: u8, data: &[u8]) -> Result<()> {
+        match self.pieces {
+            Some(size) if data.len() > size => {
+                data.chunks(size).try_for_each(|piece| self.bulk.put(ep, piece))
             }
-            None => out.push(format!("{label} missing")),
+            _ => self.bulk.put(ep, data),
         }
     }
-    out.join(", ")
-}
 
-fn reset_device(r: &mut Report, host: &mut HostInterface, location: u32) {
-    let _pool = Pool::new();
-    let mut error: Id = ptr::null_mut();
-    // SAFETY: the captured device is live; `error` is an NSError or null.
-    let code = unsafe {
-        let ok = send!(i8; host.device, c"resetWithError:", &mut error => *mut Id);
-        if ok != 0 { kIOReturnSuccess } else { error_code(error) }
-    };
-    std::thread::sleep(Duration::from_secs(2));
-    let now = sony_devices().into_iter().find(|d| d.location_id() == location);
-    r.line(format!(
-        "reset: {}; now {}",
-        code_name(code),
-        now.as_ref().map(describe).unwrap_or_else(|| "gone".into())
-    ));
-    if let Some(device) = now {
-        host.registry_id = device.registry_entry_id();
+    fn clear_halt(&mut self, ep: u8) -> Result<()> {
+        self.bulk.halt(ep)
     }
-    r.line(format!("drivers: {}", driver_tree(host.registry_id)));
 }
 
-fn configure_matching(r: &mut Report, host: &mut HostInterface) {
-    let _pool = Pool::new();
-    // SAFETY: the captured device is live; the descriptor pointer stays valid
-    // while it is.
-    let (off, value, on) = unsafe {
-        let mut error: Id = ptr::null_mut();
-        let descriptor = send!(*const u8; host.device, c"configurationDescriptorWithIndex:error:",
-            0usize => usize, &mut error => *mut Id);
-        let value = if descriptor.is_null() { 1 } else { *descriptor.add(5) };
-        let configure = |value: u8, matching: bool| {
-            let mut error: Id = ptr::null_mut();
-            let ok = send!(i8; host.device, c"configureWithValue:matchInterfaces:error:",
-                usize::from(value) => usize, i8::from(matching) => i8, &mut error => *mut Id);
-            if ok != 0 { kIOReturnSuccess } else { error_code(error) }
-        };
-        (configure(0, false), value, configure(value, true))
-    };
-    std::thread::sleep(Duration::from_secs(1));
-    r.line(format!(
-        "configure 0: {}, {value} with matching: {}; drivers: {}",
-        code_name(off),
-        code_name(on),
-        driver_tree(host.registry_id)
-    ));
+/// SCSI INQUIRY, then the program's own camera-info command (an 8 KiB
+/// data-out phase and an 8 KiB data-in phase), each reported on its own.
+fn camera_info(t: &Target, bulk: &mut dyn Bulk, pieces: Option<usize>, reset: bool) -> String {
+    let mut steps = Vec::new();
+    if reset {
+        let reset = bulk.bot_reset(t.number);
+        let out = bulk.halt(t.ep_out);
+        let r#in = bulk.halt(t.ep_in);
+        steps.push(format!("bulk-only reset {reset:?}, clear halts {out:?} {:?}", r#in));
+    }
+    let mut msc = MscDevice::new(Pieces { bulk, pieces }, t.ep_in, t.ep_out);
+    let started = Instant::now();
+    steps.push(match msc.get_device_info() {
+        Ok(info) => format!("INQUIRY OK: {} {}", info.manufacturer, info.model),
+        Err(e) => format!("INQUIRY failed: {e:?}"),
+    });
+    let mut camera = SonyExtCmdCamera::new(msc);
+    steps.push(match camera.get_camera_info() {
+        Ok(info) => format!(
+            "DATA OK: camera info {} {}, after {:.1}s",
+            info.model_name,
+            info.model_code,
+            started.elapsed().as_secs_f32()
+        ),
+        Err(e) => {
+            format!("camera info failed after {:.1}s: {e:?}", started.elapsed().as_secs_f32())
+        }
+    });
+    steps.join("; ")
 }

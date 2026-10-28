@@ -704,7 +704,11 @@ pub fn switch_to_mass_storage(camera: &DetectedCamera) -> Result<()> {
         return Err(Error::AppInstallMode);
     }
     mtp.open_session(1)?;
-    crate::mtp::switch_to_msc(&mut mtp)
+    match crate::mtp::switch_to_msc(&mut mtp) {
+        // The camera leaves the bus to switch, on macOS before its answer arrives.
+        Err(Error::Transfer(_)) => Ok(()),
+        other => other,
+    }
 }
 
 /// Opens an MTP camera's PTP interface over raw bulk endpoints and reads its
