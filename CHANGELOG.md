@@ -17,6 +17,13 @@ always downloaded from his own server and installed only if it is signed with
 his certificate. On macOS 26 the mass-storage connection is still being
 tested.
 
+**Key material.** Installing an app, JPEGCAM included, needs key material the
+program does not ship. Import it once, on the *Welcome* page or with
+`pmca-console keys import <url or file>`, as described under
+[Key material](https://github.com/masterflai/pmca-re-reloaded#key-material) in
+the README. If it is missing, the program says so before the camera is
+switched.
+
 ### Security
 
 - An app from a source is installed only when its v1 signature holds for every
