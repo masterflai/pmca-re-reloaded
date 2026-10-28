@@ -346,6 +346,18 @@ impl InstallSeries {
     }
 }
 
+/// The keys every installation task needs: CIC signs the task file, SPK packs an app.
+fn require_install_keys(l: &Localizer, with_app: bool) -> Result<()> {
+    use pmca_core::keystore::{self, KeyClass};
+    let needed: &[KeyClass] =
+        if with_app { &[KeyClass::Cic, KeyClass::Spk] } else { &[KeyClass::Cic] };
+    if needed.iter().all(|class| keystore::class_present(*class)) {
+        Ok(())
+    } else {
+        Err(Error::MissingKeys(l.tr("keys-not-set-up")))
+    }
+}
+
 /// Tell the user that the camera remains in app-install mode.
 ///
 /// The mode offers no command that ends it (measured: its command set has none)
@@ -364,6 +376,9 @@ fn run_install_task(
     sink: &mut dyn ProgressSink,
 ) -> Result<InstallOutcome> {
     use pmca_market::server::TlsMarketServer;
+
+    // Checked before the camera switches, which it would otherwise do for nothing.
+    require_install_keys(l, request.apk.is_some())?;
 
     // 1. Obtain an app-install proxy connection, switching modes if needed.
     let camera = discovery::find_single_camera()?;
@@ -637,6 +652,17 @@ mod tests {
     fn rejects_a_payload_without_a_result_code() {
         let v = serde_json::json!({});
         assert!(check_result_code(&localizer(), &v).is_err());
+    }
+
+    #[test]
+    fn an_installation_needs_its_keys_before_the_camera_is_touched() {
+        let _g = pmca_core::keystore::test_guard();
+        pmca_core::keystore::clear();
+        let err = require_install_keys(&localizer(), false).unwrap_err();
+        assert_eq!(err.recovery(), Some(RECOVERY_IMPORT_KEYS));
+        pmca_core::keystore::install_test_keys();
+        assert!(require_install_keys(&localizer(), true).is_ok());
+        pmca_core::keystore::clear();
     }
 
     /// One error per variant, including every variant of the wrapped crates.

@@ -6,6 +6,13 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+### Fixed
+
+- Installing an app, or reading the camera's apps, now checks for the needed
+  key material before the camera is switched, and offers the key import when
+  it is missing. Before, the camera could be left in app-install mode with a
+  general error.
+
 ## [1.5.0] - 2026-10-28
 
 **More ways to publish and to trust apps.** Sources can point to a JSON
