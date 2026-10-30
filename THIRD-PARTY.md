@@ -11,7 +11,7 @@ this file is for. It ships alongside `LICENSE.txt` in every release archive.
 The licence of this project itself is in [LICENSE.txt](LICENSE.txt) and is not
 repeated here.
 
-Generated: 2026-10-26
+Generated: 2026-10-30
 
 * Packages: **526**
 * With a copyright notice recovered from their sources: **381**
@@ -2767,7 +2767,7 @@ in executable form must tell the recipients where its source is available
   > Copyright (c) 2022 Jacob Brown
   > Copyright (c) 2017-NOW Actix Team
 
-### typed-path 0.12.3
+### typed-path 0.13.0
 
 * Licence: `MIT OR Apache-2.0`
 * Source: https://github.com/chipsenkbeil/typed-path
@@ -3519,7 +3519,7 @@ in executable form must tell the recipients where its source is available
 
   > Copyright © 2020-2024 Unicode, Inc.
 
-### zip 9.0.3
+### zip 9.1.3
 
 * Licence: `MIT`
 * Source: https://github.com/zip-rs/zip2

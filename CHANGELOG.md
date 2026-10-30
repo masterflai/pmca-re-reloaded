@@ -19,6 +19,12 @@ versions read the same everywhere.
 - Versions in the app list no longer start with a `v` (`v1.11.0` is shown as
   `1.11.0`), so they read the same as the version on the camera.
 
+### Security
+
+- `zip` updated to 9.1.3 (GHSA-m665-v7pm-7grj): archives whose local and
+  central headers disagree could be read differently than they were checked.
+  The program reads apps and plugins with it.
+
 ## [1.7.0] - 2026-10-28
 
 **Finding apps and cameras more easily.** Camera compatibility has its own
