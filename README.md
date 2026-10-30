@@ -216,22 +216,39 @@ arrived intact.
 
 ## Key material
 
-Some camera protocols need keys that are not part of this program: the
-service-mode authentication keys, the checksum key for app installation, the
-key material that packs an app for the camera, and the keys for firmware
-update images. Without them, app installation, the settings memory, function
-analysis and the updater shell are unavailable. Everything else works without
-any setup.
+Most of the program works without any setup: camera info, shutter count,
+usage log, firmware checks, file tools and network settings.
 
-The program contains only the SHA-256 digests of this material. You supply the
-material from a source of your own choosing — in the app via the panel on the
-*Welcome* page, or with `pmca-console keys import <url or file>`. The program
-reads the source, keeps only byte sequences whose digest matches, and stores
-them in your user profile. Nothing from the source is executed, and nothing is
-sent anywhere.
+A few functions use camera protocols secured with keys that belong to Sony.
+These keys do **not** ship with this program:
 
-The program names no source. **Observe the laws that apply where you are, and
-work only with cameras and data that are your own.**
+| Function | Needs |
+| --- | --- |
+| **Installing apps** | checksum key for app installation, key material to pack an app |
+| **Settings memory, function analysis, service shell** | service-mode authentication keys |
+| **Updater shell** | keys for firmware update images |
+
+### Importing keys
+
+1. Open the *Welcome* page. While keys are missing, it shows an import panel
+   (or run `pmca-console keys import <URL>`).
+2. Enter the URL of a source that contains the material.
+3. The program reads it and stores every key it recognises. Functions unlock
+   as soon as their keys are present.
+
+### How the import works
+
+The program contains only the SHA-256 digests of the keys. It reads the source
+at the URL you enter, keeps only byte sequences whose digest matches, and
+stores them in your user profile. Nothing from the source is executed, and
+nothing is sent anywhere. A wrong or modified key can therefore never be
+imported.
+
+### Where to get them
+
+This project does not name or link any source. Please don't ask for or post
+sources in issues or discussions. **Observe the laws that apply where you
+are, and work only with cameras and data that are your own.**
 
 ## Drivers on Windows
 
