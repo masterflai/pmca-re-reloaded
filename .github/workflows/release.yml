@@ -158,7 +158,7 @@ jobs:
         run: |
           sudo apt-get $APT_OPTS update
           sudo apt-get $APT_OPTS install -y libwebkit2gtk-4.1-dev libappindicator3-dev \
-            librsvg2-dev patchelf libudev-dev
+            librsvg2-dev patchelf libudev-dev zsync
 
       - name: Install frontend dependencies
         working-directory: crates/pmca-gui
@@ -182,6 +182,44 @@ jobs:
           # nothing, which is easy to miss in a green log. This runs before
           # the portable archive is added, so that archive cannot mask it.
           [ -n "$(ls -A gui-artifacts)" ] || { echo "no bundle was produced"; exit 1; }
+
+      # Tauri's AppImage carries no update information, so AppImageUpdate and
+      # similar tools cannot update it. appimagetool repacks it with the address
+      # of the newest release's .zsync file and writes that file. The AppImage is
+      # renamed first to the name GitHub gives the asset (spaces become dots),
+      # because the .zsync file refers to it by name. Tool and runtime are pinned.
+      - name: Embed AppImage update information
+        if: matrix.label == 'linux'
+        shell: bash
+        working-directory: gui-artifacts
+        env:
+          APPIMAGETOOL_URL: https://github.com/AppImage/appimagetool/releases/download/1.9.1/appimagetool-x86_64.AppImage
+          APPIMAGETOOL_SHA256: ed4ce84f0d9caff66f50bcca6ff6f35aae54ce8135408b3fa33abfc3cb384eb0
+          RUNTIME_URL: https://github.com/AppImage/type2-runtime/releases/download/20251108/runtime-x86_64
+          RUNTIME_SHA256: 2fca8b443c92510f1483a883f60061ad09b46b978b2631c807cd873a47ec260d
+          UPDATE_INFORMATION: gh-releases-zsync|masterflai|pmca-re-reloaded|latest|PMCA-RE.RELOADED_*_amd64.AppImage.zsync
+        run: |
+          set -euo pipefail
+          built=(*.AppImage)
+          [ "${#built[@]}" -eq 1 ] || { echo "expected one AppImage, found ${#built[@]}"; exit 1; }
+          name="${built[0]// /.}"
+          curl -fsSL -o /tmp/appimagetool "$APPIMAGETOOL_URL"
+          curl -fsSL -o /tmp/runtime "$RUNTIME_URL"
+          echo "$APPIMAGETOOL_SHA256  /tmp/appimagetool" | sha256sum -c -
+          echo "$RUNTIME_SHA256  /tmp/runtime" | sha256sum -c -
+          chmod +x /tmp/appimagetool "${built[0]}"
+          "./${built[0]}" --appimage-extract >/dev/null
+          rm "${built[0]}"
+          ARCH=x86_64 /tmp/appimagetool --appimage-extract-and-run --no-appstream \
+            --runtime-file /tmp/runtime -u "$UPDATE_INFORMATION" squashfs-root "$name"
+          rm -rf squashfs-root
+          [ -f "$name.zsync" ] || { echo "no .zsync file was written"; exit 1; }
+          grep -aqF "$UPDATE_INFORMATION" "$name" || { echo "update information missing"; exit 1; }
+          grep -aqxF "URL: $name" "$name.zsync" || { echo "the .zsync file names another file"; exit 1; }
+          # The repacked image has to open again, not only exist.
+          chmod +x "$name"
+          "./$name" --appimage-extract >/dev/null
+          rm -rf squashfs-root
 
       # Windows is the one platform where "portable" is not the default: both
       # bundles above install. macOS ships a .app and Linux an AppImage, which
@@ -368,7 +406,7 @@ jobs:
           |---|---|---|
           | **Windows** (x64) | `…_x64-setup.exe` (installer) · `…_x64_en-US.msi` · `pmca-gui-portable-x86_64-windows.zip` (no installation) | `pmca-console-x86_64-windows.zip` |
           | **macOS** (Apple silicon and Intel) | `…_universal.dmg` | `pmca-console-aarch64-macos.tar.gz` · `pmca-console-x86_64-macos.tar.gz` |
-          | **Linux** (x64) | `….AppImage` (portable) · `…_amd64.deb` | `pmca-console-x86_64-linux.tar.gz` |
+          | **Linux** (x64) | `….AppImage` (portable; the `.zsync` file is for AppImageUpdate) · `…_amd64.deb` | `pmca-console-x86_64-linux.tar.gz` |
 
           ### Signatures
 
