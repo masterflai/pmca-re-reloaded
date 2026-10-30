@@ -6,6 +6,19 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+## [1.7.1] - 2026-10-30
+
+**Only stable app releases.** Apps from a GitHub source now come from the
+release its developer marks as *Latest*, never from a pre-release, and
+versions read the same everywhere.
+
+### Fixed
+
+- Apps from a GitHub source come from the release marked *Latest*. Before,
+  the newest release with an APK was taken, a pre-release included.
+- Versions in the app list no longer start with a `v` (`v1.11.0` is shown as
+  `1.11.0`), so they read the same as the version on the camera.
+
 ## [1.7.0] - 2026-10-28
 
 **Finding apps and cameras more easily.** Camera compatibility has its own

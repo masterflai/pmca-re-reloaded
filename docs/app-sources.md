@@ -102,9 +102,11 @@ release:
 Three forms are understood. Every address must start with `https://`.
 
 * **GitHub releases** — `type: github`, `user`, `repo`. The program takes the
-  newest release that has an asset of the right kind: a file ending in `.apk`
-  for an app, `.pmcaplugin` for a plugin. The release title, or its tag, is the
-  version shown.
+  release GitHub marks as *Latest*; drafts and pre-releases are never
+  offered. It needs an asset of the right kind: a file ending in `.apk` for an
+  app, `.pmcaplugin` for a plugin. Without one, older releases are not
+  searched and the entry cannot be installed. The release title, or its tag,
+  is the version shown, without a leading `v` (`v1.2.0` shows as `1.2.0`).
 * **A feed of your own** — `type: yaml`, `url`. The feed is a series of
   `---`-separated documents with `version`, `url` and optionally `date` and
   `desc`; the first one is the newest.

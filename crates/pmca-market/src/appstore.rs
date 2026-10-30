@@ -9,7 +9,7 @@
 //! even the first download is checked against the author's own statement.
 //!
 //! Everything that interprets remote data ([`parse_app_list`],
-//! [`parse_github_releases`], [`parse_release_feed`], [`parse_json_feed`]) is
+//! [`parse_github_latest`], [`parse_release_feed`], [`parse_json_feed`]) is
 //! pure and unit-tested; only the fetching lives behind the `client` feature.
 //!
 //! ## Why a hand-written YAML reader
@@ -195,7 +195,7 @@ fn release_source(doc: &yaml::Document) -> ReleaseSource {
         },
         _ => match (get("version"), get("url")) {
             (Some(version), Some(url)) if is_https(url) => ReleaseSource::Direct(Release {
-                version: version.to_string(),
+                version: plain_version(version).to_string(),
                 url: url.to_string(),
                 date: get("date").map(str::to_string),
                 desc: get("desc").map(str::to_string),
@@ -205,13 +205,30 @@ fn release_source(doc: &yaml::Document) -> ReleaseSource {
     }
 }
 
-/// Pick the newest GitHub release that ships an asset of `kind`.
+/// A version label without the `v` of a tag such as `v1.2.0`, so it reads as
+/// the `versionName` a camera reports.
+#[must_use]
+pub fn plain_version(label: &str) -> &str {
+    match label.strip_prefix(['v', 'V']) {
+        Some(rest) if rest.starts_with(|c: char| c.is_ascii_digit()) => rest,
+        _ => label,
+    }
+}
+
+/// Read the release GitHub flags as "Latest" and its asset of `kind`.
 ///
-/// `data` is the JSON body of `/repos/{user}/{repo}/releases`, which GitHub
-/// returns newest-first.
-pub fn parse_github_releases(data: &[u8], kind: EntryKind) -> Result<Option<Release>> {
-    let value: serde_json::Value = serde_json::from_slice(data)?;
-    let releases = value.as_array().ok_or(Error::MissingField("releases"))?;
+/// `data` is the JSON body of `/repos/{user}/{repo}/releases/latest`, which
+/// never names a draft or a pre-release. Older releases are not searched: a
+/// latest release without a matching asset yields no release.
+pub fn parse_github_latest(data: &[u8], kind: EntryKind) -> Result<Option<Release>> {
+    let release: serde_json::Value = serde_json::from_slice(data)?;
+    let Some(tag) = release.get("tag_name").and_then(|v| v.as_str()) else {
+        return Err(Error::MissingField("tag_name"));
+    };
+    let flagged = |key: &str| release.get(key).and_then(serde_json::Value::as_bool) == Some(true);
+    if flagged("draft") || flagged("prerelease") {
+        return Ok(None);
+    }
 
     let matches = |asset: &serde_json::Value| {
         let named = asset
@@ -222,33 +239,26 @@ pub fn parse_github_releases(data: &[u8], kind: EntryKind) -> Result<Option<Rele
             || (kind == EntryKind::App
                 && asset.get("content_type").and_then(|c| c.as_str()) == Some(APK_CONTENT_TYPE))
     };
-    for release in releases {
-        let Some(url) = release
-            .get("assets")
-            .and_then(|a| a.as_array())
-            .into_iter()
-            .flatten()
-            .find(|asset| matches(asset))
-            .and_then(|asset| asset.get("browser_download_url"))
-            .and_then(|u| u.as_str())
-            .filter(|u| is_https(u))
-        else {
-            continue;
-        };
-        let version = release
-            .get("name")
-            .and_then(|v| v.as_str())
-            .filter(|s| !s.is_empty())
-            .or_else(|| release.get("tag_name").and_then(|v| v.as_str()))
-            .unwrap_or_default();
-        return Ok(Some(Release {
-            version: version.to_string(),
-            url: url.to_string(),
-            date: release.get("created_at").and_then(|v| v.as_str()).map(str::to_string),
-            desc: release.get("body").and_then(|v| v.as_str()).map(str::to_string),
-        }));
-    }
-    Ok(None)
+    let Some(url) = release
+        .get("assets")
+        .and_then(|a| a.as_array())
+        .into_iter()
+        .flatten()
+        .find(|asset| matches(asset))
+        .and_then(|asset| asset.get("browser_download_url"))
+        .and_then(|u| u.as_str())
+        .filter(|u| is_https(u))
+    else {
+        return Ok(None);
+    };
+    let version =
+        release.get("name").and_then(|v| v.as_str()).filter(|s| !s.is_empty()).unwrap_or(tag);
+    Ok(Some(Release {
+        version: plain_version(version).to_string(),
+        url: url.to_string(),
+        date: release.get("created_at").and_then(|v| v.as_str()).map(str::to_string),
+        desc: release.get("body").and_then(|v| v.as_str()).map(str::to_string),
+    }))
 }
 
 /// Pick the first entry of a YAML release feed that has a version and an URL.
@@ -258,7 +268,7 @@ pub fn parse_release_feed(data: &[u8]) -> Result<Option<Release>> {
         let version = doc.scalar("version")?;
         let url = doc.scalar("url").filter(|u| is_https(u))?;
         Some(Release {
-            version: version.to_string(),
+            version: plain_version(version).to_string(),
             url: url.to_string(),
             date: doc.scalar("date").map(str::to_string),
             desc: doc.scalar("desc").map(str::to_string),
@@ -301,7 +311,7 @@ pub fn parse_json_feed(data: &[u8], download: &str) -> Result<Option<Release>> {
         return Ok(None);
     }
     Ok(Some(Release {
-        version,
+        version: plain_version(&version).to_string(),
         url,
         date: value.get("date").and_then(|v| v.as_str()).map(str::to_string),
         desc: value.get("desc").and_then(|v| v.as_str()).map(str::to_string),
@@ -566,8 +576,12 @@ mod net {
                 if !valid_repo_name(user) || !valid_repo_name(repo) {
                     return Ok(None);
                 }
-                let url = format!("{API_BASE}/repos/{user}/{repo}/releases");
-                parse_github_releases(&fetch(&url, MAX_METADATA_SIZE)?, kind)
+                let url = format!("{API_BASE}/repos/{user}/{repo}/releases/latest");
+                // GitHub answers 404 while a repository has no release flagged latest.
+                match fetch_unless_missing(&url, MAX_METADATA_SIZE)? {
+                    Some(data) => parse_github_latest(&data, kind),
+                    None => Ok(None),
+                }
             }
             ReleaseSource::Yaml { url } => parse_release_feed(&fetch(url, MAX_METADATA_SIZE)?),
             ReleaseSource::Json { url, download } => {
@@ -596,16 +610,26 @@ mod net {
     /// Redirects are followed (GitHub serves release files from another host),
     /// but only over HTTPS; what a download contains is checked afterwards.
     fn fetch(url: &str, limit: u64) -> Result<Vec<u8>> {
+        fetch_unless_missing(url, limit)?
+            .ok_or_else(|| Error::Http(ureq::Error::StatusCode(404).to_string()))
+    }
+
+    /// [`fetch`], with `Ok(None)` for a 404.
+    fn fetch_unless_missing(url: &str, limit: u64) -> Result<Option<Vec<u8>>> {
         if !is_https(url) {
             return Err(Error::Http(format!("refusing non-https url: {url}")));
         }
-        let response = ureq::get(url)
+        let response = match ureq::get(url)
             .config()
             .https_only(true)
             .build()
             .header("User-Agent", USER_AGENT)
             .call()
-            .map_err(|e| Error::Http(e.to_string()))?;
+        {
+            Ok(response) => response,
+            Err(ureq::Error::StatusCode(404)) => return Ok(None),
+            Err(e) => return Err(Error::Http(e.to_string())),
+        };
         let mut buf = Vec::new();
         response
             .into_body()
@@ -613,7 +637,7 @@ mod net {
             .take(limit)
             .read_to_end(&mut buf)
             .map_err(|e| Error::Http(e.to_string()))?;
-        Ok(buf)
+        Ok(Some(buf))
     }
 }
 
@@ -672,36 +696,42 @@ mod tests {
     }
 
     #[test]
-    fn picks_the_first_github_release_with_an_apk() {
-        let json = br#"[
-            {"name":"","tag_name":"v2","created_at":"2024-01-02T03:04:05Z","body":"notes",
-             "assets":[{"content_type":"text/plain","browser_download_url":"https://x/a.txt"}]},
-            {"name":"v1","created_at":"2023-01-02T03:04:05Z","body":"older",
-             "assets":[{"content_type":"application/vnd.android.package-archive",
-                        "browser_download_url":"https://x/a.apk"}]}
-        ]"#;
-        let release = parse_github_releases(json, EntryKind::App).unwrap().unwrap();
-        assert_eq!(release.version, "v1");
+    fn reads_the_latest_github_release() {
+        let json = br#"{"name":"v1.11.0","tag_name":"v1.11.0","created_at":"2023-01-02T03:04:05Z","body":"notes",
+             "assets":[{"content_type":"text/plain","browser_download_url":"https://x/a.txt"},
+                       {"content_type":"application/vnd.android.package-archive",
+                        "browser_download_url":"https://x/a.apk"}]}"#;
+        let release = parse_github_latest(json, EntryKind::App).unwrap().unwrap();
+        assert_eq!(release.version, "1.11.0");
         assert_eq!(release.url, "https://x/a.apk");
         assert_eq!(release.date.as_deref(), Some("2023-01-02T03:04:05Z"));
     }
 
     #[test]
+    fn drafts_and_pre_releases_are_never_offered() {
+        let asset = r#""assets":[{"name":"a.apk","browser_download_url":"https://x/a.apk"}]"#;
+        for flag in ["draft", "prerelease"] {
+            let json = format!(r#"{{"tag_name":"v1.11.1-dev.2","{flag}":true,{asset}}}"#);
+            assert!(parse_github_latest(json.as_bytes(), EntryKind::App).unwrap().is_none());
+        }
+    }
+
+    #[test]
     fn a_plugin_entry_picks_the_pmcaplugin_asset() {
-        let json = br#"[{"tag_name":"v3","assets":[
+        let json = br#"{"tag_name":"v3","assets":[
             {"name":"app.apk","content_type":"application/vnd.android.package-archive","browser_download_url":"https://x/app.apk"},
-            {"name":"Demo.PMCAPLUGIN","content_type":"application/zip","browser_download_url":"https://x/demo.pmcaplugin"}]}]"#;
-        let plugin = parse_github_releases(json, EntryKind::Plugin).unwrap().unwrap();
+            {"name":"Demo.PMCAPLUGIN","content_type":"application/zip","browser_download_url":"https://x/demo.pmcaplugin"}]}"#;
+        let plugin = parse_github_latest(json, EntryKind::Plugin).unwrap().unwrap();
         assert_eq!(plugin.url, "https://x/demo.pmcaplugin");
-        let app = parse_github_releases(json, EntryKind::App).unwrap().unwrap();
+        let app = parse_github_latest(json, EntryKind::App).unwrap().unwrap();
         assert_eq!(app.url, "https://x/app.apk");
     }
 
     #[test]
     fn an_apk_is_recognised_by_its_name_too() {
-        let json = br#"[{"tag_name":"v1","assets":[{"name":"a.apk","content_type":"application/octet-stream","browser_download_url":"https://x/a.apk"}]}]"#;
-        assert!(parse_github_releases(json, EntryKind::App).unwrap().is_some());
-        assert!(parse_github_releases(json, EntryKind::Plugin).unwrap().is_none());
+        let json = br#"{"tag_name":"v1","assets":[{"name":"a.apk","content_type":"application/octet-stream","browser_download_url":"https://x/a.apk"}]}"#;
+        assert!(parse_github_latest(json, EntryKind::App).unwrap().is_some());
+        assert!(parse_github_latest(json, EntryKind::Plugin).unwrap().is_none());
     }
 
     #[test]
@@ -743,20 +773,31 @@ mod tests {
 
     #[test]
     fn falls_back_to_the_tag_name() {
-        let json = br#"[{"tag_name":"v9","assets":[{"content_type":"application/vnd.android.package-archive","browser_download_url":"https://x/a.apk"}]}]"#;
-        assert_eq!(parse_github_releases(json, EntryKind::App).unwrap().unwrap().version, "v9");
+        let json = br#"{"name":"","tag_name":"v9","assets":[{"content_type":"application/vnd.android.package-archive","browser_download_url":"https://x/a.apk"}]}"#;
+        assert_eq!(parse_github_latest(json, EntryKind::App).unwrap().unwrap().version, "9");
     }
 
     #[test]
-    fn releases_without_an_apk_yield_nothing() {
-        assert!(parse_github_releases(b"[]", EntryKind::App).unwrap().is_none());
-        assert!(parse_github_releases(br#"[{"assets":[]}]"#, EntryKind::App).unwrap().is_none());
+    fn version_labels_lose_the_v_of_a_tag() {
+        assert_eq!(plain_version("v1.11.0"), "1.11.0");
+        assert_eq!(plain_version("V2"), "2");
+        assert_eq!(plain_version("1.0"), "1.0");
+        assert_eq!(plain_version("version 1"), "version 1");
+        assert_eq!(plain_version("v"), "v");
     }
 
     #[test]
-    fn a_non_array_release_response_is_rejected() {
-        assert!(parse_github_releases(br#"{"message":"rate limited"}"#, EntryKind::App).is_err());
-        assert!(parse_github_releases(b"not json", EntryKind::App).is_err());
+    fn a_latest_release_without_an_apk_yields_nothing() {
+        let json = br#"{"tag_name":"v1","assets":[]}"#;
+        assert!(parse_github_latest(json, EntryKind::App).unwrap().is_none());
+        assert!(parse_github_latest(br#"{"tag_name":"v1"}"#, EntryKind::App).unwrap().is_none());
+    }
+
+    #[test]
+    fn a_response_that_is_no_release_is_rejected() {
+        assert!(parse_github_latest(br#"{"message":"rate limited"}"#, EntryKind::App).is_err());
+        assert!(parse_github_latest(b"[]", EntryKind::App).is_err());
+        assert!(parse_github_latest(b"not json", EntryKind::App).is_err());
     }
 
     #[test]

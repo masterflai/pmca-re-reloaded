@@ -242,8 +242,10 @@ pub fn download_community_app(
     sources::check_signer(l, source, package, package, signed_by.as_deref())?;
     // The camera lists installed apps by `versionName`, so that is what a
     // comparison with an installed copy has to show.
-    let version =
-        pmca_apk::read(&data).ok().and_then(|info| info.version_name).unwrap_or(release.version);
+    let version = pmca_apk::read(&data)
+        .ok()
+        .and_then(|info| info.version_name)
+        .map_or(release.version, |name| appstore::plain_version(&name).to_string());
     Ok(DownloadedApp { version, data })
 }
 

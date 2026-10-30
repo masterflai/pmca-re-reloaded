@@ -617,7 +617,10 @@ function cameraApps(outcome: InstallOutcome): CameraApps | null {
   const apps: CameraApps = new Map();
   for (const entry of list as { name?: unknown; version?: unknown }[]) {
     if (typeof entry?.name !== "string") continue;
-    apps.set(entry.name, typeof entry.version === "string" ? entry.version : null);
+    apps.set(
+      entry.name,
+      typeof entry.version === "string" ? entry.version.replace(/^[vV](?=\d)/, "") : null,
+    );
   }
   return apps;
 }
