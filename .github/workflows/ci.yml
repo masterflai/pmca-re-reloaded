@@ -25,6 +25,29 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  # Commits name their human author only: an AI assistant listed as co-author
+  # turns up among the repository's contributors. Turns red so the commit can be
+  # rewritten before anything else builds on it.
+  attribution:
+    name: Commit attribution
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - name: No AI co-author
+        run: |
+          found=$(
+            git log --format='%H %an <%ae> | %cn <%ce>' | grep -iE 'anthropic|claude' || true
+            git log --format='%H%n%B' | grep -inE '^(co-authored-by:.*(claude|anthropic)|claude-session:)' || true
+          )
+          if [ -n "$found" ]; then
+            echo "$found"
+            echo "::error::A commit names Claude as author or co-author, or links a Claude session. Rewrite it."
+            exit 1
+          fi
+
   lint:
     name: Format & Clippy
     runs-on: ubuntu-latest
