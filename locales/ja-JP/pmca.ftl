@@ -206,7 +206,7 @@ apk-unreadable = 警告: .apk ファイルを解析できませんでした。
 apk-incompatible = 警告: このアプリはカメラが提供しない可能性のある SDK レベルを要求しています。
 apk-unsigned = 警告: .apk ファイルに署名がありません。
 
-# コミュニティアプリストア
+# コミュニティアプリ
 store-loading = アプリ一覧を読み込んでいます…
 store-resolving = 最新リリースを検索しています…
 store-downloading = ダウンロード中
@@ -214,9 +214,9 @@ store-unknown-app = 不明なアプリ
 store-no-release = このアプリにダウンロード可能なリリースはありません
 store-not-installable = リリースなし
 msg-no-apps = アプリが見つかりません。
-store-heading = コミュニティアプリストア
+store-heading = コミュニティアプリ
 store-discontinued = ソニーは公式の PlayMemories Camera Apps ストアを終了しました。サーバーは応答しないため、アプリの購入やダウンロードはできません。
-store-use-own-apk = 独自の .apk は引き続きインストールできます: 下でファイルを指定するか、このウィンドウにドラッグしてください。下のコミュニティアプリストアも引き続き利用できます。
+store-use-own-apk = 独自の .apk は引き続きインストールできます: 下でファイルを指定するか、このウィンドウにドラッグしてください。その他のアプリは下の「コミュニティアプリ」にあります。
 btn-store-sync = カメラと照合
 btn-install-selected = 選択したアプリをインストール
 btn-store-stop = このアプリの後で停止
@@ -244,7 +244,7 @@ store-batch-query = カメラからインストール済みアプリを読み取
 store-sync-done = カメラと照合しました。リスト中のインストール済みアプリ: { $count }
 store-batch-downloading = アプリ { $current }/{ $total } をダウンロードしています…
 store-batch-installing = アプリ { $current }/{ $total }: { $name } をインストールしています…
-store-reinstall-confirm = { $name } はすでにカメラにインストールされています。インストール済みのバージョン: { $installed }。アプリストアのバージョン: { $store }。再インストールしますか？
+store-reinstall-confirm = { $name } はすでにカメラにインストールされています。インストール済みのバージョン: { $installed }。ソースのバージョン: { $store }。再インストールしますか？
 store-state-queued = 待機中
 store-state-installed = インストール済み
 store-state-failed = 失敗

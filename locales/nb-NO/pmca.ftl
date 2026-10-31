@@ -207,7 +207,7 @@ apk-unreadable = Advarsel: .apk-filen kunne ikke analyseres.
 apk-incompatible = Advarsel: denne appen krever et minste SDK-nivå som kameraet kanskje ikke tilbyr.
 apk-unsigned = Advarsel: .apk-filen har ingen signatur.
 
-# Appbutikk fra fellesskapet
+# Apper fra fellesskapet
 store-loading = Laster inn applisten …
 store-resolving = Slår opp nyeste utgivelse …
 store-downloading = Laster ned
@@ -215,9 +215,9 @@ store-unknown-app = Ukjent app
 store-no-release = Ingen nedlastbar utgivelse for denne appen
 store-not-installable = ingen utgivelse
 msg-no-apps = Fant ingen apper.
-store-heading = Appbutikk fra fellesskapet
+store-heading = Apper fra fellesskapet
 store-discontinued = Sony har lagt ned den offisielle PlayMemories Camera Apps-butikken; tjenerne svarer ikke lenger, så apper kan ikke lenger kjøpes eller lastes ned derfra.
-store-use-own-apk = Du kan fortsatt installere din egen .apk: velg filen nedenfor eller dra den inn i dette vinduet. Appbutikken fra fellesskapet lenger nede fungerer også fortsatt.
+store-use-own-apk = Du kan fortsatt installere din egen .apk: velg filen nedenfor eller dra den inn i dette vinduet. Flere apper finner du lenger nede under «Apper fra fellesskapet».
 btn-store-sync = Sjekk kameraet
 btn-install-selected = Installer valgte
 btn-store-stop = Stopp etter denne appen
@@ -245,7 +245,7 @@ store-batch-query = Leser de installerte appene fra kameraet …
 store-sync-done = Kameraet er sjekket. Installerte apper fra listen: { $count }
 store-batch-downloading = Laster ned app { $current } av { $total } …
 store-batch-installing = App { $current } av { $total }: installerer { $name } …
-store-reinstall-confirm = { $name } er allerede installert på kameraet. Installert versjon: { $installed }. Versjon i appbutikken: { $store }. Vil du installere appen på nytt?
+store-reinstall-confirm = { $name } er allerede installert på kameraet. Installert versjon: { $installed }. Versjon i kilden: { $store }. Vil du installere appen på nytt?
 store-state-queued = venter
 store-state-installed = installert
 store-state-failed = mislyktes

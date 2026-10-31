@@ -207,7 +207,7 @@ apk-unreadable = Peringatan: berkas .apk tidak dapat dianalisis.
 apk-incompatible = Peringatan: aplikasi ini menyatakan level SDK minimum yang mungkin tidak disediakan kamera.
 apk-unsigned = Peringatan: berkas .apk tidak memiliki tanda tangan.
 
-# Toko aplikasi komunitas
+# Aplikasi komunitas
 store-loading = Memuat daftar aplikasi…
 store-resolving = Mencari rilis terbaru…
 store-downloading = Mengunduh
@@ -215,9 +215,9 @@ store-unknown-app = Aplikasi tidak dikenal
 store-no-release = Tidak ada rilis yang dapat diunduh untuk aplikasi ini
 store-not-installable = tanpa rilis
 msg-no-apps = Tidak ada aplikasi ditemukan.
-store-heading = Toko aplikasi komunitas
+store-heading = Aplikasi komunitas
 store-discontinued = Sony telah menutup toko resmi PlayMemories Camera Apps; servernya tidak lagi menjawab, sehingga aplikasi tidak dapat dibeli atau diunduh dari sana.
-store-use-own-apk = Anda tetap dapat memasang .apk milik Anda sendiri: pilih berkasnya di bawah atau seret ke jendela ini. Toko aplikasi komunitas di bawah juga masih berfungsi.
+store-use-own-apk = Anda tetap dapat memasang .apk milik Anda sendiri: pilih berkasnya di bawah atau seret ke jendela ini. Aplikasi lainnya tercantum di bawah pada “Aplikasi komunitas”.
 btn-store-sync = Periksa kamera
 btn-install-selected = Pasang yang dipilih
 btn-store-stop = Berhenti setelah aplikasi ini
@@ -245,7 +245,7 @@ store-batch-query = Membaca aplikasi yang terpasang dari kamera…
 store-sync-done = Kamera diperiksa. Aplikasi dari daftar yang terpasang: { $count }
 store-batch-downloading = Mengunduh aplikasi { $current } dari { $total }…
 store-batch-installing = Aplikasi { $current } dari { $total }: memasang { $name }…
-store-reinstall-confirm = { $name } sudah terpasang di kamera. Versi terpasang: { $installed }. Versi di toko aplikasi: { $store }. Pasang ulang?
+store-reinstall-confirm = { $name } sudah terpasang di kamera. Versi terpasang: { $installed }. Versi di sumber: { $store }. Pasang ulang?
 store-state-queued = menunggu
 store-state-installed = terpasang
 store-state-failed = gagal

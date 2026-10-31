@@ -34,7 +34,7 @@
   </picture>
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="docs/images/app-install-dark.png">
-    <img src="docs/images/app-install-light.png" width="49%" alt="Apps page: the community app store installing three selected apps one after another, the second at 64 percent">
+    <img src="docs/images/app-install-light.png" width="49%" alt="Apps page: the community apps list installing three selected apps one after another, the second at 64 percent">
   </picture>
 </p>
 

@@ -207,7 +207,7 @@ apk-unreadable = Aviso: não foi possível analisar o arquivo .apk.
 apk-incompatible = Aviso: este aplicativo declara um nível mínimo de SDK que a câmera talvez não ofereça.
 apk-unsigned = Aviso: o arquivo .apk não possui assinatura.
 
-# Loja de aplicativos da comunidade
+# Aplicativos da comunidade
 store-loading = Carregando a lista de aplicativos…
 store-resolving = Procurando a versão mais recente…
 store-downloading = Baixando
@@ -215,9 +215,9 @@ store-unknown-app = Aplicativo desconhecido
 store-no-release = Não há versão disponível para download deste aplicativo
 store-not-installable = sem versão
 msg-no-apps = Nenhum aplicativo encontrado.
-store-heading = Loja de aplicativos da comunidade
+store-heading = Aplicativos da comunidade
 store-discontinued = A Sony encerrou a loja oficial PlayMemories Camera Apps; seus servidores não respondem mais, então não é mais possível comprar nem baixar aplicativos dela.
-store-use-own-apk = Você ainda pode instalar seu próprio .apk: escolha o arquivo abaixo ou arraste-o para esta janela. A loja da comunidade, mais abaixo, também continua funcionando.
+store-use-own-apk = Você ainda pode instalar seu próprio .apk: escolha o arquivo abaixo ou arraste-o para esta janela. Mais aplicativos estão listados abaixo, em “Aplicativos da comunidade”.
 btn-store-sync = Verificar a câmera
 btn-install-selected = Instalar selecionados
 btn-store-stop = Parar após este aplicativo
@@ -245,7 +245,7 @@ store-batch-query = Lendo os aplicativos instalados na câmera…
 store-sync-done = Câmera verificada. Aplicativos da lista instalados: { $count }
 store-batch-downloading = Baixando o aplicativo { $current } de { $total }…
 store-batch-installing = Aplicativo { $current } de { $total }: instalando { $name }…
-store-reinstall-confirm = { $name } já está instalado na câmera. Versão instalada: { $installed }. Versão na loja de aplicativos: { $store }. Deseja instalá-lo novamente?
+store-reinstall-confirm = { $name } já está instalado na câmera. Versão instalada: { $installed }. Versão na fonte: { $store }. Deseja instalá-lo novamente?
 store-state-queued = aguardando
 store-state-installed = instalado
 store-state-failed = falhou

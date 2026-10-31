@@ -206,7 +206,7 @@ apk-unreadable = تحذير: تعذّر تحليل ملف ‎.apk‎.
 apk-incompatible = تحذير: يتطلب هذا التطبيق مستوى SDK أدنى قد لا توفره الكاميرا.
 apk-unsigned = تحذير: ملف ‎.apk‎ غير موقَّع.
 
-# متجر تطبيقات المجتمع
+# تطبيقات المجتمع
 store-loading = جارٍ تحميل قائمة التطبيقات…
 store-resolving = جارٍ البحث عن أحدث إصدار…
 store-downloading = جارٍ التنزيل
@@ -214,9 +214,9 @@ store-unknown-app = تطبيق غير معروف
 store-no-release = لا يوجد إصدار قابل للتنزيل لهذا التطبيق
 store-not-installable = لا يوجد إصدار
 msg-no-apps = لم يُعثر على أي تطبيق.
-store-heading = متجر تطبيقات المجتمع
+store-heading = تطبيقات المجتمع
 store-discontinued = أغلقت Sony متجر PlayMemories Camera Apps الرسمي، ولم تعد خوادمه تستجيب، لذا لم يعد بالإمكان شراء التطبيقات أو تنزيلها منه.
-store-use-own-apk = لا يزال بإمكانك تثبيت ملف ‎.apk‎ خاص بك: اختر الملف أدناه أو اسحبه إلى هذه النافذة. كما أن متجر تطبيقات المجتمع في الأسفل لا يزال يعمل.
+store-use-own-apk = لا يزال بإمكانك تثبيت ملف ‎.apk‎ خاص بك: اختر الملف أدناه أو اسحبه إلى هذه النافذة. وتجد مزيدًا من التطبيقات في الأسفل ضمن «تطبيقات المجتمع».
 btn-store-sync = مطابقة مع الكاميرا
 btn-install-selected = تثبيت المحدد
 btn-store-stop = الإيقاف بعد هذا التطبيق
@@ -244,7 +244,7 @@ store-batch-query = جارٍ قراءة التطبيقات المثبتة من �
 store-sync-done = تمت المطابقة مع الكاميرا. التطبيقات المثبتة من القائمة: { $count }
 store-batch-downloading = جارٍ تنزيل التطبيق { $current } من { $total }…
 store-batch-installing = التطبيق { $current } من { $total }: جارٍ تثبيت { $name }…
-store-reinstall-confirm = التطبيق { $name } مثبت بالفعل على الكاميرا. الإصدار المثبت: { $installed }. الإصدار في متجر التطبيقات: { $store }. هل تريد تثبيته مرة أخرى؟
+store-reinstall-confirm = التطبيق { $name } مثبت بالفعل على الكاميرا. الإصدار المثبت: { $installed }. الإصدار في المصدر: { $store }. هل تريد تثبيته مرة أخرى؟
 store-state-queued = في الانتظار
 store-state-installed = مثبت
 store-state-failed = فشل

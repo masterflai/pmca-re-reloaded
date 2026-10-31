@@ -207,7 +207,7 @@ apk-unreadable = Uyarı: .apk dosyası çözümlenemedi.
 apk-incompatible = Uyarı: bu uygulama, kameranın sağlayamayabileceği bir en düşük SDK düzeyi bildiriyor.
 apk-unsigned = Uyarı: .apk dosyasında imza yok.
 
-# Topluluk uygulama mağazası
+# Topluluk uygulamaları
 store-loading = Uygulama listesi yükleniyor…
 store-resolving = En son sürüm aranıyor…
 store-downloading = İndiriliyor
@@ -215,9 +215,9 @@ store-unknown-app = Bilinmeyen uygulama
 store-no-release = Bu uygulama için indirilebilir sürüm yok
 store-not-installable = sürüm yok
 msg-no-apps = Uygulama bulunamadı.
-store-heading = Topluluk uygulama mağazası
+store-heading = Topluluk uygulamaları
 store-discontinued = Sony resmî PlayMemories Camera Apps mağazasını kapattı; sunucuları artık yanıt vermiyor, dolayısıyla oradan uygulama satın alınamıyor ya da indirilemiyor.
-store-use-own-apk = Kendi .apk dosyanızı hâlâ kurabilirsiniz: aşağıdan dosyayı seçin ya da bu pencereye sürükleyin. Aşağıdaki topluluk uygulama mağazası da çalışmaya devam ediyor.
+store-use-own-apk = Kendi .apk dosyanızı hâlâ kurabilirsiniz: aşağıdan dosyayı seçin ya da bu pencereye sürükleyin. Daha fazla uygulama aşağıda “Topluluk uygulamaları” bölümünde yer alıyor.
 btn-store-sync = Kamerayı denetle
 btn-install-selected = Seçilenleri kur
 btn-store-stop = Bu uygulamadan sonra durdur
@@ -245,7 +245,7 @@ store-batch-query = Kurulu uygulamalar kameradan okunuyor…
 store-sync-done = Kamera denetlendi. Listeden kurulu uygulamalar: { $count }
 store-batch-downloading = Uygulama { $current } / { $total } indiriliyor…
 store-batch-installing = Uygulama { $current } / { $total }: { $name } kuruluyor…
-store-reinstall-confirm = { $name } kamerada zaten kurulu. Kurulu sürüm: { $installed }. Uygulama mağazasındaki sürüm: { $store }. Yeniden kurulsun mu?
+store-reinstall-confirm = { $name } kamerada zaten kurulu. Kurulu sürüm: { $installed }. Kaynaktaki sürüm: { $store }. Yeniden kurulsun mu?
 store-state-queued = bekliyor
 store-state-installed = kuruldu
 store-state-failed = başarısız

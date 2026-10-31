@@ -216,7 +216,7 @@ apk-unreadable = 警告：無法分析此 .apk 檔案。
 apk-incompatible = 警告：此應用程式宣告的最低 SDK 等級，相機可能無法提供。
 apk-unsigned = 警告：此 .apk 檔案沒有簽章。
 
-# 社群應用程式商店
+# 社群應用程式
 store-loading = 正在載入應用程式清單…
 store-resolving = 正在查詢最新版本…
 store-downloading = 正在下載
@@ -224,9 +224,9 @@ store-unknown-app = 未知的應用程式
 store-no-release = 此應用程式沒有可下載的版本
 store-not-installable = 無可用版本
 msg-no-apps = 找不到應用程式。
-store-heading = 社群應用程式商店
+store-heading = 社群應用程式
 store-discontinued = Sony 已關閉官方的 PlayMemories Camera Apps 商店；其伺服器已不再回應，因此無法再從該商店購買或下載應用程式。
-store-use-own-apk = 您仍然可以安裝自己的 .apk：在下方選取檔案，或將檔案拖曳到此視窗上。下方的社群應用程式商店也仍可使用。
+store-use-own-apk = 您仍然可以安裝自己的 .apk：在下方選取檔案，或將檔案拖曳到此視窗上。更多應用程式列在下方的「社群應用程式」中。
 btn-store-sync = 檢查相機
 btn-install-selected = 安裝選取項目
 btn-store-stop = 完成此應用程式後停止
@@ -254,7 +254,7 @@ store-batch-query = 正在從相機讀取已安裝的應用程式…
 store-sync-done = 相機檢查完畢。清單中已安裝的應用程式：{ $count }
 store-batch-downloading = 正在下載第 { $current } 個應用程式（共 { $total } 個）…
 store-batch-installing = 第 { $current } 個應用程式（共 { $total } 個）：正在安裝 { $name }…
-store-reinstall-confirm = { $name } 已安裝在相機上。已安裝的版本：{ $installed }。應用程式商店中的版本：{ $store }。要重新安裝嗎？
+store-reinstall-confirm = { $name } 已安裝在相機上。已安裝的版本：{ $installed }。來源中的版本：{ $store }。要重新安裝嗎？
 store-state-queued = 等待中
 store-state-installed = 已安裝
 store-state-failed = 失敗

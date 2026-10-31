@@ -207,7 +207,7 @@ apk-unreadable = Aviso: no se pudo analizar el archivo .apk.
 apk-incompatible = Aviso: esta aplicación declara un nivel mínimo de SDK que quizá la cámara no ofrezca.
 apk-unsigned = Aviso: el archivo .apk no tiene firma.
 
-# Tienda de aplicaciones de la comunidad
+# Aplicaciones de la comunidad
 store-loading = Cargando la lista de aplicaciones…
 store-resolving = Buscando la última versión publicada…
 store-downloading = Descargando
@@ -215,9 +215,9 @@ store-unknown-app = Aplicación desconocida
 store-no-release = Esta aplicación no tiene ninguna versión descargable
 store-not-installable = sin versión
 msg-no-apps = No se encontraron aplicaciones.
-store-heading = Tienda de aplicaciones de la comunidad
+store-heading = Aplicaciones de la comunidad
 store-discontinued = Sony cerró la tienda oficial PlayMemories Camera Apps; sus servidores ya no responden, así que allí no se pueden comprar ni descargar aplicaciones.
-store-use-own-apk = Aún puedes instalar tu propio .apk: elige el archivo abajo o arrástralo a esta ventana. La tienda de la comunidad, más abajo, también sigue funcionando.
+store-use-own-apk = Aún puedes instalar tu propio .apk: elige el archivo abajo o arrástralo a esta ventana. Encontrarás más aplicaciones más abajo, en «Aplicaciones de la comunidad».
 btn-store-sync = Comprobar la cámara
 btn-install-selected = Instalar seleccionadas
 btn-store-stop = Detener tras esta aplicación
@@ -245,7 +245,7 @@ store-batch-query = Leyendo las aplicaciones instaladas en la cámara…
 store-sync-done = Cámara comprobada. Aplicaciones de la lista instaladas: { $count }
 store-batch-downloading = Descargando la aplicación { $current } de { $total }…
 store-batch-installing = Aplicación { $current } de { $total }: instalando { $name }…
-store-reinstall-confirm = { $name } ya está instalada en la cámara. Versión instalada: { $installed }. Versión en la tienda de aplicaciones: { $store }. ¿Desea instalarla de nuevo?
+store-reinstall-confirm = { $name } ya está instalada en la cámara. Versión instalada: { $installed }. Versión en la fuente: { $store }. ¿Desea instalarla de nuevo?
 store-state-queued = en espera
 store-state-installed = instalada
 store-state-failed = con error

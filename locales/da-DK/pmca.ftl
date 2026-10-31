@@ -206,7 +206,7 @@ apk-unreadable = Advarsel: .apk-filen kunne ikke analyseres.
 apk-incompatible = Advarsel: denne app kræver et SDK-niveau, som kameraet måske ikke tilbyder.
 apk-unsigned = Advarsel: .apk-filen har ingen signatur.
 
-# Community-appbutik
+# Community-apps
 store-loading = Indlæser applisten…
 store-resolving = Finder den nyeste udgivelse…
 store-downloading = Downloader
@@ -214,9 +214,9 @@ store-unknown-app = Ukendt app
 store-no-release = Ingen udgivelse kan downloades til denne app
 store-not-installable = ingen udgivelse
 msg-no-apps = Ingen apps fundet.
-store-heading = Community-appbutik
+store-heading = Community-apps
 store-discontinued = Sony har lukket den officielle PlayMemories-appbutik; serverne svarer ikke længere, så apps kan ikke længere købes eller downloades derfra.
-store-use-own-apk = Du kan stadig installere din egen .apk: vælg filen nedenfor, eller træk den ind i dette vindue. Community-appbutikken længere nede virker også fortsat.
+store-use-own-apk = Du kan stadig installere din egen .apk: vælg filen nedenfor, eller træk den ind i dette vindue. Flere apps finder du længere nede under »Community-apps«.
 btn-store-sync = Tjek kameraet
 btn-install-selected = Installer valgte
 btn-store-stop = Stop efter denne app
@@ -244,7 +244,7 @@ store-batch-query = Læser de installerede apps fra kameraet…
 store-sync-done = Kameraet er tjekket. Installerede apps fra listen: { $count }
 store-batch-downloading = Henter app { $current } af { $total }…
 store-batch-installing = App { $current } af { $total }: installerer { $name }…
-store-reinstall-confirm = { $name } er allerede installeret på kameraet. Installeret version: { $installed }. Version i appbutikken: { $store }. Vil du installere appen igen?
+store-reinstall-confirm = { $name } er allerede installeret på kameraet. Installeret version: { $installed }. Version i kilden: { $store }. Vil du installere appen igen?
 store-state-queued = venter
 store-state-installed = installeret
 store-state-failed = mislykkedes

@@ -207,7 +207,7 @@ apk-unreadable = Ostrzeżenie: nie udało się przeanalizować pliku .apk.
 apk-incompatible = Ostrzeżenie: ta aplikacja wymaga minimalnego poziomu SDK, którego aparat może nie zapewniać.
 apk-unsigned = Ostrzeżenie: plik .apk nie zawiera podpisu.
 
-# Społecznościowy sklep z aplikacjami
+# Aplikacje społeczności
 store-loading = Wczytywanie listy aplikacji…
 store-resolving = Wyszukiwanie najnowszego wydania…
 store-downloading = Pobieranie
@@ -215,9 +215,9 @@ store-unknown-app = Nieznana aplikacja
 store-no-release = Brak wydania tej aplikacji do pobrania
 store-not-installable = brak wydania
 msg-no-apps = Nie znaleziono aplikacji.
-store-heading = Społecznościowy sklep z aplikacjami
+store-heading = Aplikacje społeczności
 store-discontinued = Sony zamknęło oficjalny sklep PlayMemories Camera Apps; jego serwery nie odpowiadają, więc nie można już z niego kupować ani pobierać aplikacji.
-store-use-own-apk = Nadal można zainstalować własny plik .apk: wybierz go poniżej lub przeciągnij na to okno. Społecznościowy sklep z aplikacjami niżej także nadal działa.
+store-use-own-apk = Nadal można zainstalować własny plik .apk: wybierz go poniżej lub przeciągnij na to okno. Więcej aplikacji znajdziesz niżej w sekcji „Aplikacje społeczności”.
 btn-store-sync = Sprawdź aparat
 btn-install-selected = Zainstaluj wybrane
 btn-store-stop = Zatrzymaj po tej aplikacji
@@ -245,7 +245,7 @@ store-batch-query = Odczytywanie zainstalowanych aplikacji z aparatu…
 store-sync-done = Aparat sprawdzony. Zainstalowane aplikacje z listy: { $count }
 store-batch-downloading = Pobieranie aplikacji { $current } z { $total }…
 store-batch-installing = Aplikacja { $current } z { $total }: instalowanie { $name }…
-store-reinstall-confirm = Aplikacja { $name } jest już zainstalowana na aparacie. Zainstalowana wersja: { $installed }. Wersja w sklepie z aplikacjami: { $store }. Zainstalować ją ponownie?
+store-reinstall-confirm = Aplikacja { $name } jest już zainstalowana na aparacie. Zainstalowana wersja: { $installed }. Wersja w źródle: { $store }. Zainstalować ją ponownie?
 store-state-queued = oczekuje
 store-state-installed = zainstalowana
 store-state-failed = niepowodzenie

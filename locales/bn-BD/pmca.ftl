@@ -204,7 +204,7 @@ apk-unreadable = সতর্কতা: .apk ফাইলটি বিশ্ল�
 apk-incompatible = সতর্কতা: এই অ্যাপটি এমন সর্বনিম্ন SDK স্তর দাবি করে যা ক্যামেরায় নাও থাকতে পারে।
 apk-unsigned = সতর্কতা: .apk ফাইলটিতে কোনও স্বাক্ষর নেই।
 
-# কমিউনিটি অ্যাপ স্টোর
+# কমিউনিটি অ্যাপ
 store-loading = অ্যাপের তালিকা লোড হচ্ছে…
 store-resolving = সর্বশেষ রিলিজ খোঁজা হচ্ছে…
 store-downloading = ডাউনলোড হচ্ছে
@@ -212,9 +212,9 @@ store-unknown-app = অজানা অ্যাপ
 store-no-release = এই অ্যাপের জন্য ডাউনলোডযোগ্য কোনও রিলিজ নেই
 store-not-installable = রিলিজ নেই
 msg-no-apps = কোনও অ্যাপ পাওয়া যায়নি।
-store-heading = কমিউনিটি অ্যাপ স্টোর
+store-heading = কমিউনিটি অ্যাপ
 store-discontinued = Sony সরকারি PlayMemories Camera Apps স্টোর বন্ধ করে দিয়েছে; এর সার্ভার আর সাড়া দেয় না, তাই সেখান থেকে অ্যাপ কেনা বা ডাউনলোড করা আর সম্ভব নয়।
-store-use-own-apk = আপনি এখনও নিজের .apk ইনস্টল করতে পারেন: নিচে ফাইলটি বাছুন বা এই উইন্ডোতে টেনে আনুন। নিচের কমিউনিটি অ্যাপ স্টোরটিও এখনও কাজ করে।
+store-use-own-apk = আপনি এখনও নিজের .apk ইনস্টল করতে পারেন: নিচে ফাইলটি বাছুন বা এই উইন্ডোতে টেনে আনুন। আরও অ্যাপ নিচে “কমিউনিটি অ্যাপ” অংশে পাবেন।
 btn-store-sync = ক্যামেরার সঙ্গে মিলিয়ে দেখুন
 btn-install-selected = নির্বাচিতগুলো ইনস্টল করুন
 btn-store-stop = এই অ্যাপের পরে থামুন
@@ -242,7 +242,7 @@ store-batch-query = ক্যামেরা থেকে ইনস্টল ক
 store-sync-done = ক্যামেরার সঙ্গে মেলানো হয়েছে। তালিকার ইনস্টল করা অ্যাপ: { $count }
 store-batch-downloading = অ্যাপ { $current }/{ $total } ডাউনলোড হচ্ছে…
 store-batch-installing = অ্যাপ { $current }/{ $total }: { $name } ইনস্টল হচ্ছে…
-store-reinstall-confirm = { $name } ইতিমধ্যে ক্যামেরায় ইনস্টল করা আছে। ইনস্টল করা সংস্করণ: { $installed }। অ্যাপ স্টোরের সংস্করণ: { $store }। আবার ইনস্টল করবেন?
+store-reinstall-confirm = { $name } ইতিমধ্যে ক্যামেরায় ইনস্টল করা আছে। ইনস্টল করা সংস্করণ: { $installed }। উৎসের সংস্করণ: { $store }। আবার ইনস্টল করবেন?
 store-state-queued = অপেক্ষমাণ
 store-state-installed = ইনস্টল হয়েছে
 store-state-failed = ব্যর্থ

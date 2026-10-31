@@ -213,7 +213,7 @@ apk-unreadable = Warnung: Die .apk-Datei konnte nicht analysiert werden.
 apk-incompatible = Warnung: Diese App verlangt ein SDK-Level, das die Kamera möglicherweise nicht bietet.
 apk-unsigned = Warnung: Die .apk-Datei enthält keine Signatur.
 
-# Community-App-Store
+# Community-Apps
 store-loading = App-Liste wird geladen…
 store-resolving = Neueste Version wird ermittelt…
 store-downloading = Wird heruntergeladen
@@ -221,9 +221,9 @@ store-unknown-app = Unbekannte App
 store-no-release = Keine herunterladbare Version für diese App
 store-not-installable = keine Version
 msg-no-apps = Keine Apps gefunden.
-store-heading = Community-App-Store
-store-discontinued = Sony hat den offiziellen PlayMemories-Camera-Apps-Store abgeschaltet; die Server antworten nicht mehr, Apps können dort also nicht mehr gekauft oder heruntergeladen werden.
-store-use-own-apk = Eigene .apk-Dateien lassen sich weiterhin installieren: Datei unten auswählen oder in dieses Fenster ziehen. Der Community-App-Store weiter unten funktioniert ebenfalls noch.
+store-heading = Community-Apps
+store-discontinued = Sony hat den offiziellen Store für PlayMemories-Camera-Apps abgeschaltet; dort lassen sich keine Apps mehr kaufen oder herunterladen.
+store-use-own-apk = Eigene .apk-Dateien lassen sich weiterhin installieren: Datei unten auswählen oder in dieses Fenster ziehen. Weitere Apps finden Sie weiter unten unter „Community-Apps“.
 btn-store-sync = Mit Kamera abgleichen
 btn-install-selected = Ausgewählte installieren
 btn-store-stop = Nach dieser App anhalten
@@ -251,7 +251,7 @@ store-batch-query = Installierte Apps werden von der Kamera gelesen…
 store-sync-done = Kamera abgeglichen. Installierte Apps aus der Liste: { $count }
 store-batch-downloading = App { $current } von { $total } wird heruntergeladen…
 store-batch-installing = App { $current } von { $total }: { $name } wird installiert…
-store-reinstall-confirm = { $name } ist bereits auf der Kamera installiert. Installierte Version: { $installed }. Version im App-Store: { $store }. Soll die App erneut installiert werden?
+store-reinstall-confirm = { $name } ist bereits auf der Kamera installiert. Installierte Version: { $installed }. Version in der Quelle: { $store }. Soll die App erneut installiert werden?
 store-state-queued = wartet
 store-state-installed = installiert
 store-state-failed = fehlgeschlagen

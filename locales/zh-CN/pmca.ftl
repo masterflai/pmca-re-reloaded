@@ -206,7 +206,7 @@ apk-unreadable = 警告：无法分析该 .apk 文件。
 apk-incompatible = 警告：此应用声明的最低 SDK 版本可能高于相机所提供的版本。
 apk-unsigned = 警告：该 .apk 文件没有签名。
 
-# 社区应用商店
+# 社区应用
 store-loading = 正在加载应用列表…
 store-resolving = 正在查找最新版本…
 store-downloading = 正在下载
@@ -214,9 +214,9 @@ store-unknown-app = 未知应用
 store-no-release = 此应用没有可下载的版本
 store-not-installable = 无可用版本
 msg-no-apps = 未找到应用。
-store-heading = 社区应用商店
+store-heading = 社区应用
 store-discontinued = 索尼已关闭官方 PlayMemories Camera Apps 商店，其服务器不再响应，因此无法再从中购买或下载应用。
-store-use-own-apk = 您仍然可以安装自己的 .apk：在下方选择文件，或将其拖到此窗口。下方的社区应用商店同样仍可使用。
+store-use-own-apk = 您仍然可以安装自己的 .apk：在下方选择文件，或将其拖到此窗口。更多应用列在下方的“社区应用”中。
 btn-store-sync = 与相机核对
 btn-install-selected = 安装所选应用
 btn-store-stop = 在此应用后停止
@@ -244,7 +244,7 @@ store-batch-query = 正在从相机读取已安装的应用…
 store-sync-done = 已与相机核对。列表中已安装的应用：{ $count }
 store-batch-downloading = 正在下载第 { $current }/{ $total } 个应用…
 store-batch-installing = 第 { $current }/{ $total } 个应用：正在安装 { $name }…
-store-reinstall-confirm = { $name } 已安装在相机上。已安装版本：{ $installed }。应用商店中的版本：{ $store }。是否重新安装？
+store-reinstall-confirm = { $name } 已安装在相机上。已安装版本：{ $installed }。来源中的版本：{ $store }。是否重新安装？
 store-state-queued = 等待中
 store-state-installed = 已安装
 store-state-failed = 失败

@@ -205,7 +205,7 @@ apk-unreadable = चेतावनी: .apk फ़ाइल का विश्
 apk-incompatible = चेतावनी: यह ऐप ऐसा न्यूनतम SDK स्तर माँगता है जो कैमरे में शायद उपलब्ध न हो।
 apk-unsigned = चेतावनी: .apk फ़ाइल पर कोई हस्ताक्षर नहीं है।
 
-# सामुदायिक ऐप स्टोर
+# सामुदायिक ऐप
 store-loading = ऐप सूची लोड हो रही है…
 store-resolving = नवीनतम रिलीज़ खोजी जा रही है…
 store-downloading = डाउनलोड हो रहा है
@@ -213,9 +213,9 @@ store-unknown-app = अज्ञात ऐप
 store-no-release = इस ऐप के लिए कोई डाउनलोड-योग्य रिलीज़ नहीं है
 store-not-installable = कोई रिलीज़ नहीं
 msg-no-apps = कोई ऐप नहीं मिला।
-store-heading = सामुदायिक ऐप स्टोर
+store-heading = सामुदायिक ऐप
 store-discontinued = Sony ने आधिकारिक PlayMemories Camera Apps स्टोर बंद कर दिया है; उसके सर्वर अब उत्तर नहीं देते, इसलिए वहाँ से ऐप न तो खरीदे और न ही डाउनलोड किए जा सकते हैं।
-store-use-own-apk = आप अब भी अपनी .apk इंस्टॉल कर सकते हैं: नीचे फ़ाइल चुनें या उसे इस विंडो पर खींचकर छोड़ें। नीचे दिया सामुदायिक ऐप स्टोर भी अब भी काम करता है।
+store-use-own-apk = आप अब भी अपनी .apk इंस्टॉल कर सकते हैं: नीचे फ़ाइल चुनें या उसे इस विंडो पर खींचकर छोड़ें। और ऐप नीचे “सामुदायिक ऐप” में मिलेंगे।
 btn-store-sync = कैमरे से मिलान करें
 btn-install-selected = चुने गए ऐप इंस्टॉल करें
 btn-store-stop = इस ऐप के बाद रोकें
@@ -243,7 +243,7 @@ store-batch-query = कैमरे से इंस्टॉल किए ग�
 store-sync-done = कैमरे से मिलान हो गया। सूची के इंस्टॉल किए गए ऐप: { $count }
 store-batch-downloading = ऐप { $current }/{ $total } डाउनलोड हो रहा है…
 store-batch-installing = ऐप { $current }/{ $total }: { $name } इंस्टॉल हो रहा है…
-store-reinstall-confirm = { $name } कैमरे पर पहले से इंस्टॉल है। इंस्टॉल किया गया संस्करण: { $installed }। ऐप स्टोर का संस्करण: { $store }। क्या इसे फिर से इंस्टॉल करें?
+store-reinstall-confirm = { $name } कैमरे पर पहले से इंस्टॉल है। इंस्टॉल किया गया संस्करण: { $installed }। स्रोत का संस्करण: { $store }। क्या इसे फिर से इंस्टॉल करें?
 store-state-queued = प्रतीक्षा में
 store-state-installed = इंस्टॉल हुआ
 store-state-failed = विफल

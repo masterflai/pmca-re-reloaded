@@ -37,7 +37,7 @@ export function viewInstall(host: HTMLElement): void {
   // Say so up front instead of offering a button that cannot work.
   const officialNotice = make(
     "div",
-    { className: "notice-block" },
+    {},
     make("p", { i18n: "store-discontinued" }),
     make("p", { i18n: "store-use-own-apk" }),
   );

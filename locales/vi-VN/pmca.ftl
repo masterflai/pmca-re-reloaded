@@ -216,7 +216,7 @@ apk-unreadable = Cảnh báo: không thể phân tích tệp .apk.
 apk-incompatible = Cảnh báo: ứng dụng này khai báo mức SDK tối thiểu mà máy ảnh có thể không đáp ứng.
 apk-unsigned = Cảnh báo: tệp .apk không có chữ ký.
 
-# Cửa hàng ứng dụng cộng đồng
+# Ứng dụng cộng đồng
 store-loading = Đang tải danh sách ứng dụng…
 store-resolving = Đang tìm bản phát hành mới nhất…
 store-downloading = Đang tải xuống
@@ -224,9 +224,9 @@ store-unknown-app = Ứng dụng không xác định
 store-no-release = Không có bản phát hành nào có thể tải xuống cho ứng dụng này
 store-not-installable = không có bản phát hành
 msg-no-apps = Không tìm thấy ứng dụng nào.
-store-heading = Cửa hàng ứng dụng cộng đồng
+store-heading = Ứng dụng cộng đồng
 store-discontinued = Sony đã đóng cửa hàng PlayMemories Camera Apps chính thức; máy chủ của cửa hàng không còn phản hồi, nên không thể mua hoặc tải xuống ứng dụng từ đó nữa.
-store-use-own-apk = Bạn vẫn có thể cài đặt tệp .apk của riêng mình: chọn tệp bên dưới hoặc kéo tệp vào cửa sổ này. Cửa hàng ứng dụng cộng đồng ở phía dưới cũng vẫn hoạt động.
+store-use-own-apk = Bạn vẫn có thể cài đặt tệp .apk của riêng mình: chọn tệp bên dưới hoặc kéo tệp vào cửa sổ này. Các ứng dụng khác được liệt kê bên dưới trong mục “Ứng dụng cộng đồng”.
 btn-store-sync = Kiểm tra máy ảnh
 btn-install-selected = Cài đặt mục đã chọn
 btn-store-stop = Dừng sau ứng dụng này
@@ -254,7 +254,7 @@ store-batch-query = Đang đọc các ứng dụng đã cài đặt từ máy �
 store-sync-done = Đã kiểm tra máy ảnh. Số ứng dụng trong danh sách đã được cài đặt: { $count }
 store-batch-downloading = Đang tải xuống ứng dụng { $current } trên { $total }…
 store-batch-installing = Ứng dụng { $current } trên { $total }: đang cài đặt { $name }…
-store-reinstall-confirm = { $name } đã được cài đặt trên máy ảnh. Phiên bản đã cài đặt: { $installed }. Phiên bản trong cửa hàng ứng dụng: { $store }. Cài đặt lại?
+store-reinstall-confirm = { $name } đã được cài đặt trên máy ảnh. Phiên bản đã cài đặt: { $installed }. Phiên bản trong nguồn: { $store }. Cài đặt lại?
 store-state-queued = đang chờ
 store-state-installed = đã cài đặt
 store-state-failed = thất bại

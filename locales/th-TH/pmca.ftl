@@ -216,7 +216,7 @@ apk-unreadable = คำเตือน: ไม่สามารถวิเค�
 apk-incompatible = คำเตือน: แอปนี้ระบุระดับ SDK ขั้นต่ำที่กล้องอาจไม่รองรับ
 apk-unsigned = คำเตือน: ไฟล์ .apk ไม่มีลายเซ็น
 
-# ร้านแอปของชุมชน
+# แอปของชุมชน
 store-loading = กำลังโหลดรายการแอป…
 store-resolving = กำลังค้นหารุ่นเผยแพร่ล่าสุด…
 store-downloading = กำลังดาวน์โหลด
@@ -224,9 +224,9 @@ store-unknown-app = แอปที่ไม่รู้จัก
 store-no-release = ไม่มีรุ่นเผยแพร่ที่ดาวน์โหลดได้สำหรับแอปนี้
 store-not-installable = ไม่มีรุ่นเผยแพร่
 msg-no-apps = ไม่พบแอป
-store-heading = ร้านแอปของชุมชน
+store-heading = แอปของชุมชน
 store-discontinued = Sony ได้ปิดร้านค้า PlayMemories Camera Apps อย่างเป็นทางการแล้ว เซิร์ฟเวอร์ไม่ตอบสนองอีกต่อไป จึงไม่สามารถซื้อหรือดาวน์โหลดแอปจากร้านนี้ได้อีก
-store-use-own-apk = คุณยังคงติดตั้งไฟล์ .apk ของคุณเองได้ โดยเลือกไฟล์ด้านล่างหรือลากไฟล์มาวางบนหน้าต่างนี้ ร้านแอปของชุมชนที่อยู่ถัดลงไปก็ยังใช้งานได้เช่นกัน
+store-use-own-apk = คุณยังคงติดตั้งไฟล์ .apk ของคุณเองได้ โดยเลือกไฟล์ด้านล่างหรือลากไฟล์มาวางบนหน้าต่างนี้ แอปอื่น ๆ อยู่ด้านล่างในส่วน “แอปของชุมชน”
 btn-store-sync = ตรวจสอบกล้อง
 btn-install-selected = ติดตั้งรายการที่เลือก
 btn-store-stop = หยุดหลังจากแอปนี้
@@ -254,7 +254,7 @@ store-batch-query = กำลังอ่านแอปที่ติดตั
 store-sync-done = ตรวจสอบกล้องแล้ว แอปในรายการที่ติดตั้งอยู่: { $count }
 store-batch-downloading = กำลังดาวน์โหลดแอป { $current } จาก { $total }…
 store-batch-installing = แอป { $current } จาก { $total }: กำลังติดตั้ง { $name }…
-store-reinstall-confirm = { $name } ติดตั้งอยู่บนกล้องแล้ว เวอร์ชันที่ติดตั้ง: { $installed } เวอร์ชันในร้านแอป: { $store } ต้องการติดตั้งอีกครั้งหรือไม่?
+store-reinstall-confirm = { $name } ติดตั้งอยู่บนกล้องแล้ว เวอร์ชันที่ติดตั้ง: { $installed } เวอร์ชันในแหล่งที่มา: { $store } ต้องการติดตั้งอีกครั้งหรือไม่?
 store-state-queued = กำลังรอ
 store-state-installed = ติดตั้งแล้ว
 store-state-failed = ล้มเหลว

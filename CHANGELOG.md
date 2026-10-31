@@ -15,6 +15,12 @@ All notable changes to this project are documented here. The format follows
   published beside it, so AppImageUpdate and similar tools can update it in
   place. They only offer releases marked *Latest*.
 
+### Changed
+
+- The Apps page calls its list *Community apps* instead of *Community app
+  store*, since it gathers apps from any number of sources. The note that Sony's
+  own store is gone is plain text now rather than a highlighted notice.
+
 ## [1.7.1] - 2026-10-30
 
 **Only stable app releases.** Apps from a GitHub source now come from the

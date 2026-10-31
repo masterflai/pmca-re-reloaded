@@ -207,7 +207,7 @@ apk-unreadable = Avertissement : le fichier .apk n'a pas pu être analysé.
 apk-incompatible = Avertissement : cette application exige un niveau de SDK que l'appareil photo ne fournit peut-être pas.
 apk-unsigned = Avertissement : le fichier .apk ne comporte aucune signature.
 
-# Magasin d'applications communautaire
+# Applications communautaires
 store-loading = Chargement de la liste des applications…
 store-resolving = Recherche de la dernière version…
 store-downloading = Téléchargement
@@ -215,9 +215,9 @@ store-unknown-app = Application inconnue
 store-no-release = Aucune version téléchargeable pour cette application
 store-not-installable = aucune version
 msg-no-apps = Aucune application trouvée.
-store-heading = Magasin d'applications communautaire
+store-heading = Applications communautaires
 store-discontinued = Sony a fermé le magasin officiel PlayMemories Camera Apps ; ses serveurs ne répondent plus, il n'est donc plus possible d'y acheter ou d'y télécharger des applications.
-store-use-own-apk = Vous pouvez toujours installer votre propre .apk : choisissez le fichier ci-dessous ou faites-le glisser sur cette fenêtre. Le magasin communautaire plus bas fonctionne également toujours.
+store-use-own-apk = Vous pouvez toujours installer votre propre .apk : choisissez le fichier ci-dessous ou faites-le glisser sur cette fenêtre. D'autres applications figurent plus bas, sous « Applications communautaires ».
 btn-store-sync = Vérifier l'appareil
 btn-install-selected = Installer la sélection
 btn-store-stop = Arrêter après cette application
@@ -245,7 +245,7 @@ store-batch-query = Lecture des applications installées sur l'appareil…
 store-sync-done = Appareil vérifié. Applications de la liste installées : { $count }
 store-batch-downloading = Téléchargement de l'application { $current } sur { $total }…
 store-batch-installing = Application { $current } sur { $total } : installation de { $name }…
-store-reinstall-confirm = { $name } est déjà installée sur l'appareil. Version installée : { $installed }. Version dans le magasin d'applications : { $store }. Faut-il la réinstaller ?
+store-reinstall-confirm = { $name } est déjà installée sur l'appareil. Version installée : { $installed }. Version dans la source : { $store }. Faut-il la réinstaller ?
 store-state-queued = en attente
 store-state-installed = installée
 store-state-failed = échec

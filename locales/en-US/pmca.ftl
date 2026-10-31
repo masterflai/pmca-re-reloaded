@@ -216,7 +216,7 @@ apk-unreadable = Warning: the .apk file could not be analyzed.
 apk-incompatible = Warning: this app declares a minimum SDK level the camera may not provide.
 apk-unsigned = Warning: the .apk file carries no signature.
 
-# Community app store
+# Community apps
 store-loading = Loading the app list…
 store-resolving = Looking up the latest release…
 store-downloading = Downloading
@@ -224,9 +224,9 @@ store-unknown-app = Unknown app
 store-no-release = No downloadable release for this app
 store-not-installable = no release
 msg-no-apps = No apps found.
-store-heading = Community app store
-store-discontinued = Sony shut the official PlayMemories Camera Apps store down; its servers no longer answer, so apps cannot be bought or downloaded from it any more.
-store-use-own-apk = You can still install your own .apk: pick the file below or drag it onto this window. The community app store further down also still works.
+store-heading = Community apps
+store-discontinued = Sony has shut down the official PlayMemories Camera Apps store; apps can no longer be bought or downloaded there.
+store-use-own-apk = You can still install your own .apk: pick the file below or drag it onto this window. More apps are listed further down under “Community apps”.
 btn-store-sync = Check camera
 btn-install-selected = Install selected
 btn-store-stop = Stop after this app
@@ -254,7 +254,7 @@ store-batch-query = Reading the installed apps from the camera…
 store-sync-done = Camera checked. Listed apps installed: { $count }
 store-batch-downloading = Downloading app { $current } of { $total }…
 store-batch-installing = App { $current } of { $total }: installing { $name }…
-store-reinstall-confirm = { $name } is already installed on the camera. Installed version: { $installed }. Version in the app store: { $store }. Install it again?
+store-reinstall-confirm = { $name } is already installed on the camera. Installed version: { $installed }. Version in the source: { $store }. Install it again?
 store-state-queued = waiting
 store-state-installed = installed
 store-state-failed = failed

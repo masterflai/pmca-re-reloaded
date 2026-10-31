@@ -205,7 +205,7 @@ apk-unreadable = ਚੇਤਾਵਨੀ: .apk ਫ਼ਾਈਲ ਦਾ ਵਿਸ਼
 apk-incompatible = ਚੇਤਾਵਨੀ: ਇਹ ਐਪ ਅਜਿਹਾ ਘੱਟੋ-ਘੱਟ SDK ਪੱਧਰ ਮੰਗਦੀ ਹੈ ਜੋ ਸ਼ਾਇਦ ਕੈਮਰੇ ਵਿੱਚ ਨਾ ਹੋਵੇ।
 apk-unsigned = ਚੇਤਾਵਨੀ: .apk ਫ਼ਾਈਲ ਉੱਤੇ ਕੋਈ ਦਸਤਖ਼ਤ ਨਹੀਂ ਹਨ।
 
-# ਕਮਿਊਨਿਟੀ ਐਪ ਸਟੋਰ
+# ਕਮਿਊਨਿਟੀ ਐਪਾਂ
 store-loading = ਐਪ ਸੂਚੀ ਲੋਡ ਹੋ ਰਹੀ ਹੈ…
 store-resolving = ਨਵੀਨਤਮ ਰਿਲੀਜ਼ ਲੱਭੀ ਜਾ ਰਹੀ ਹੈ…
 store-downloading = ਡਾਊਨਲੋਡ ਹੋ ਰਿਹਾ ਹੈ
@@ -213,9 +213,9 @@ store-unknown-app = ਅਣਜਾਣ ਐਪ
 store-no-release = ਇਸ ਐਪ ਲਈ ਕੋਈ ਡਾਊਨਲੋਡ-ਯੋਗ ਰਿਲੀਜ਼ ਨਹੀਂ ਹੈ
 store-not-installable = ਕੋਈ ਰਿਲੀਜ਼ ਨਹੀਂ
 msg-no-apps = ਕੋਈ ਐਪ ਨਹੀਂ ਮਿਲੀ।
-store-heading = ਕਮਿਊਨਿਟੀ ਐਪ ਸਟੋਰ
+store-heading = ਕਮਿਊਨਿਟੀ ਐਪਾਂ
 store-discontinued = ਸੋਨੀ ਨੇ ਅਧਿਕਾਰਤ PlayMemories Camera Apps ਸਟੋਰ ਬੰਦ ਕਰ ਦਿੱਤਾ ਹੈ; ਇਸਦੇ ਸਰਵਰ ਹੁਣ ਜਵਾਬ ਨਹੀਂ ਦਿੰਦੇ, ਇਸ ਲਈ ਉੱਥੋਂ ਐਪਾਂ ਨਾ ਖਰੀਦੀਆਂ ਜਾ ਸਕਦੀਆਂ ਹਨ ਅਤੇ ਨਾ ਹੀ ਡਾਊਨਲੋਡ ਕੀਤੀਆਂ ਜਾ ਸਕਦੀਆਂ ਹਨ।
-store-use-own-apk = ਤੁਸੀਂ ਹਾਲੇ ਵੀ ਆਪਣੀ .apk ਇੰਸਟਾਲ ਕਰ ਸਕਦੇ ਹੋ: ਹੇਠਾਂ ਫ਼ਾਈਲ ਚੁਣੋ ਜਾਂ ਉਸਨੂੰ ਇਸ ਵਿੰਡੋ ਉੱਤੇ ਖਿੱਚ ਕੇ ਛੱਡੋ। ਹੇਠਾਂ ਦਿੱਤਾ ਕਮਿਊਨਿਟੀ ਐਪ ਸਟੋਰ ਵੀ ਹਾਲੇ ਕੰਮ ਕਰਦਾ ਹੈ।
+store-use-own-apk = ਤੁਸੀਂ ਹਾਲੇ ਵੀ ਆਪਣੀ .apk ਇੰਸਟਾਲ ਕਰ ਸਕਦੇ ਹੋ: ਹੇਠਾਂ ਫ਼ਾਈਲ ਚੁਣੋ ਜਾਂ ਉਸਨੂੰ ਇਸ ਵਿੰਡੋ ਉੱਤੇ ਖਿੱਚ ਕੇ ਛੱਡੋ। ਹੋਰ ਐਪਾਂ ਹੇਠਾਂ “ਕਮਿਊਨਿਟੀ ਐਪਾਂ” ਵਿੱਚ ਹਨ।
 btn-store-sync = ਕੈਮਰੇ ਨਾਲ ਮਿਲਾਓ
 btn-install-selected = ਚੁਣੀਆਂ ਐਪਾਂ ਇੰਸਟਾਲ ਕਰੋ
 btn-store-stop = ਇਸ ਐਪ ਤੋਂ ਬਾਅਦ ਰੋਕੋ
@@ -243,7 +243,7 @@ store-batch-query = ਕੈਮਰੇ ਤੋਂ ਇੰਸਟਾਲ ਐਪਾਂ �
 store-sync-done = ਕੈਮਰੇ ਨਾਲ ਮਿਲਾਇਆ ਗਿਆ। ਸੂਚੀ ਦੀਆਂ ਇੰਸਟਾਲ ਐਪਾਂ: { $count }
 store-batch-downloading = ਐਪ { $current }/{ $total } ਡਾਊਨਲੋਡ ਹੋ ਰਹੀ ਹੈ…
 store-batch-installing = ਐਪ { $current }/{ $total }: { $name } ਇੰਸਟਾਲ ਹੋ ਰਹੀ ਹੈ…
-store-reinstall-confirm = { $name } ਪਹਿਲਾਂ ਹੀ ਕੈਮਰੇ ਉੱਤੇ ਇੰਸਟਾਲ ਹੈ। ਇੰਸਟਾਲ ਵਰਜਨ: { $installed }। ਐਪ ਸਟੋਰ ਵਿੱਚ ਵਰਜਨ: { $store }। ਕੀ ਇਸਨੂੰ ਦੁਬਾਰਾ ਇੰਸਟਾਲ ਕਰਨਾ ਹੈ?
+store-reinstall-confirm = { $name } ਪਹਿਲਾਂ ਹੀ ਕੈਮਰੇ ਉੱਤੇ ਇੰਸਟਾਲ ਹੈ। ਇੰਸਟਾਲ ਵਰਜਨ: { $installed }। ਸਰੋਤ ਵਿੱਚ ਵਰਜਨ: { $store }। ਕੀ ਇਸਨੂੰ ਦੁਬਾਰਾ ਇੰਸਟਾਲ ਕਰਨਾ ਹੈ?
 store-state-queued = ਉਡੀਕ ਵਿੱਚ
 store-state-installed = ਇੰਸਟਾਲ ਹੋਈ
 store-state-failed = ਅਸਫਲ

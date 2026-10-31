@@ -207,7 +207,7 @@ apk-unreadable = Upozornění: soubor .apk se nepodařilo analyzovat.
 apk-incompatible = Upozornění: tato aplikace vyžaduje minimální úroveň SDK, kterou fotoaparát nemusí poskytovat.
 apk-unsigned = Upozornění: soubor .apk neobsahuje žádný podpis.
 
-# Komunitní obchod s aplikacemi
+# Komunitní aplikace
 store-loading = Načítá se seznam aplikací…
 store-resolving = Zjišťuje se nejnovější vydání…
 store-downloading = Stahuje se
@@ -215,9 +215,9 @@ store-unknown-app = Neznámá aplikace
 store-no-release = Pro tuto aplikaci není k dispozici žádné vydání ke stažení
 store-not-installable = žádné vydání
 msg-no-apps = Nebyly nalezeny žádné aplikace.
-store-heading = Komunitní obchod s aplikacemi
+store-heading = Komunitní aplikace
 store-discontinued = Sony ukončilo provoz oficiálního obchodu PlayMemories Camera Apps; jeho servery již neodpovídají, takže z něj nelze aplikace kupovat ani stahovat.
-store-use-own-apk = Vlastní soubor .apk můžete nainstalovat i nadále: vyberte jej níže nebo jej přetáhněte do tohoto okna. Komunitní obchod s aplikacemi níže rovněž stále funguje.
+store-use-own-apk = Vlastní soubor .apk můžete nainstalovat i nadále: vyberte jej níže nebo jej přetáhněte do tohoto okna. Další aplikace najdete níže v části „Komunitní aplikace“.
 btn-store-sync = Ověřit fotoaparát
 btn-install-selected = Instalovat vybrané
 btn-store-stop = Zastavit po této aplikaci
@@ -245,7 +245,7 @@ store-batch-query = Načítají se nainstalované aplikace z fotoaparátu…
 store-sync-done = Fotoaparát ověřen. Nainstalované aplikace ze seznamu: { $count }
 store-batch-downloading = Stahuje se aplikace { $current } z { $total }…
 store-batch-installing = Aplikace { $current } z { $total }: instaluje se { $name }…
-store-reinstall-confirm = Aplikace { $name } je ve fotoaparátu již nainstalována. Nainstalovaná verze: { $installed }. Verze v obchodě s aplikacemi: { $store }. Chcete ji nainstalovat znovu?
+store-reinstall-confirm = Aplikace { $name } je ve fotoaparátu již nainstalována. Nainstalovaná verze: { $installed }. Verze ve zdroji: { $store }. Chcete ji nainstalovat znovu?
 store-state-queued = čeká
 store-state-installed = nainstalováno
 store-state-failed = selhalo

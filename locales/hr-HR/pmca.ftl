@@ -207,7 +207,7 @@ apk-unreadable = Upozorenje: .apk datoteku nije bilo moguće analizirati.
 apk-incompatible = Upozorenje: ova aplikacija zahtijeva najnižu razinu SDK-a koju fotoaparat možda ne nudi.
 apk-unsigned = Upozorenje: .apk datoteka nema potpis.
 
-# Trgovina aplikacija zajednice
+# Aplikacije zajednice
 store-loading = Učitavanje popisa aplikacija…
 store-resolving = Traži se najnovije izdanje…
 store-downloading = Preuzimanje
@@ -215,9 +215,9 @@ store-unknown-app = Nepoznata aplikacija
 store-no-release = Za ovu aplikaciju nema izdanja za preuzimanje
 store-not-installable = nema izdanja
 msg-no-apps = Nije pronađena nijedna aplikacija.
-store-heading = Trgovina aplikacija zajednice
+store-heading = Aplikacije zajednice
 store-discontinued = Sony je ugasio službenu trgovinu PlayMemories Camera Apps; njezini poslužitelji više ne odgovaraju pa se aplikacije iz nje više ne mogu kupiti ni preuzeti.
-store-use-own-apk = Vlastitu .apk datoteku i dalje možete instalirati: odaberite datoteku ispod ili je povucite u ovaj prozor. Trgovina aplikacija zajednice niže na stranici također i dalje radi.
+store-use-own-apk = Vlastitu .apk datoteku i dalje možete instalirati: odaberite datoteku ispod ili je povucite u ovaj prozor. Više aplikacija nalazi se niže pod „Aplikacije zajednice”.
 btn-store-sync = Provjeri fotoaparat
 btn-install-selected = Instaliraj odabrane
 btn-store-stop = Zaustavi nakon ove aplikacije
@@ -245,7 +245,7 @@ store-batch-query = Čitaju se instalirane aplikacije s fotoaparata…
 store-sync-done = Fotoaparat provjeren. Instalirane aplikacije s popisa: { $count }
 store-batch-downloading = Preuzima se aplikacija { $current } od { $total }…
 store-batch-installing = Aplikacija { $current } od { $total }: instalira se { $name }…
-store-reinstall-confirm = Aplikacija { $name } već je instalirana na fotoaparatu. Instalirana verzija: { $installed }. Verzija u trgovini aplikacija: { $store }. Želite li je ponovno instalirati?
+store-reinstall-confirm = Aplikacija { $name } već je instalirana na fotoaparatu. Instalirana verzija: { $installed }. Verzija u izvoru: { $store }. Želite li je ponovno instalirati?
 store-state-queued = čeka
 store-state-installed = instalirano
 store-state-failed = neuspjelo

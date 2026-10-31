@@ -216,7 +216,7 @@ apk-unreadable = 경고: .apk 파일을 분석할 수 없습니다.
 apk-incompatible = 경고: 이 앱은 카메라가 제공하지 않을 수 있는 최소 SDK 수준을 선언합니다.
 apk-unsigned = 경고: .apk 파일에 서명이 없습니다.
 
-# 커뮤니티 앱 스토어
+# 커뮤니티 앱
 store-loading = 앱 목록을 불러오는 중…
 store-resolving = 최신 릴리스를 찾는 중…
 store-downloading = 다운로드 중
@@ -224,9 +224,9 @@ store-unknown-app = 알 수 없는 앱
 store-no-release = 이 앱에는 다운로드할 수 있는 릴리스가 없습니다
 store-not-installable = 릴리스 없음
 msg-no-apps = 앱을 찾을 수 없습니다.
-store-heading = 커뮤니티 앱 스토어
+store-heading = 커뮤니티 앱
 store-discontinued = Sony가 공식 PlayMemories Camera Apps 스토어를 종료했습니다. 서버가 더 이상 응답하지 않으므로 그곳에서 앱을 구입하거나 다운로드할 수 없습니다.
-store-use-own-apk = 직접 준비한 .apk 파일은 여전히 설치할 수 있습니다. 아래에서 파일을 선택하거나 이 창으로 끌어다 놓으십시오. 아래쪽의 커뮤니티 앱 스토어도 계속 작동합니다.
+store-use-own-apk = 직접 준비한 .apk 파일은 여전히 설치할 수 있습니다. 아래에서 파일을 선택하거나 이 창으로 끌어다 놓으십시오. 더 많은 앱은 아래의 ‘커뮤니티 앱’에 있습니다.
 btn-store-sync = 카메라 확인
 btn-install-selected = 선택 항목 설치
 btn-store-stop = 이 앱 다음에 중지
@@ -254,7 +254,7 @@ store-batch-query = 카메라에서 설치된 앱을 읽는 중…
 store-sync-done = 카메라를 확인했습니다. 목록에 있는 앱 중 설치된 앱: { $count }개
 store-batch-downloading = { $total }개 중 { $current }번째 앱 다운로드 중…
 store-batch-installing = { $total }개 중 { $current }번째 앱: { $name } 설치 중…
-store-reinstall-confirm = { $name }이(가) 이미 카메라에 설치되어 있습니다. 설치된 버전: { $installed }. 앱 스토어의 버전: { $store }. 다시 설치하시겠습니까?
+store-reinstall-confirm = { $name }이(가) 이미 카메라에 설치되어 있습니다. 설치된 버전: { $installed }. 소스의 버전: { $store }. 다시 설치하시겠습니까?
 store-state-queued = 대기 중
 store-state-installed = 설치됨
 store-state-failed = 실패

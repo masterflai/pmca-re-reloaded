@@ -209,7 +209,7 @@ apk-unreadable = Waarschuwing: het .apk-bestand kon niet worden geanalyseerd.
 apk-incompatible = Waarschuwing: deze app vraagt een minimaal SDK-niveau dat de camera mogelijk niet biedt.
 apk-unsigned = Waarschuwing: het .apk-bestand bevat geen handtekening.
 
-# App-winkel van de gemeenschap
+# Apps van de gemeenschap
 store-loading = De app-lijst wordt geladen…
 store-resolving = De nieuwste release wordt opgezocht…
 store-downloading = Bezig met downloaden
@@ -217,9 +217,9 @@ store-unknown-app = Onbekende app
 store-no-release = Geen downloadbare release voor deze app
 store-not-installable = geen release
 msg-no-apps = Geen apps gevonden.
-store-heading = App-winkel van de gemeenschap
+store-heading = Apps van de gemeenschap
 store-discontinued = Sony heeft de officiële PlayMemories Camera Apps-winkel gesloten; de servers antwoorden niet meer, dus er kunnen daar geen apps meer worden gekocht of gedownload.
-store-use-own-apk = U kunt nog steeds uw eigen .apk installeren: kies hieronder het bestand of sleep het naar dit venster. De app-winkel van de gemeenschap verderop werkt eveneens nog.
+store-use-own-apk = U kunt nog steeds uw eigen .apk installeren: kies hieronder het bestand of sleep het naar dit venster. Meer apps vindt u verderop onder ‘Apps van de gemeenschap’.
 btn-store-sync = Camera controleren
 btn-install-selected = Selectie installeren
 btn-store-stop = Na deze app stoppen
@@ -247,7 +247,7 @@ store-batch-query = Geïnstalleerde apps worden van de camera gelezen…
 store-sync-done = Camera gecontroleerd. Geïnstalleerde apps uit de lijst: { $count }
 store-batch-downloading = App { $current } van { $total } wordt gedownload…
 store-batch-installing = App { $current } van { $total }: { $name } wordt geïnstalleerd…
-store-reinstall-confirm = { $name } is al op de camera geïnstalleerd. Geïnstalleerde versie: { $installed }. Versie in de app-winkel: { $store }. Wilt u de app opnieuw installeren?
+store-reinstall-confirm = { $name } is al op de camera geïnstalleerd. Geïnstalleerde versie: { $installed }. Versie in de bron: { $store }. Wilt u de app opnieuw installeren?
 store-state-queued = wacht
 store-state-installed = geïnstalleerd
 store-state-failed = mislukt
