@@ -312,6 +312,7 @@ btn-source-search = ค้นหาบน GitHub
 sources-searching = กำลังค้นหาบน GitHub…
 sources-search-none = GitHub ไม่พบที่เก็บโค้ดที่มีหัวข้อ pmca-source
 sources-search-found = พบที่เก็บโค้ด { $count } รายการ ไม่มีรายการใดผ่านการตรวจสอบจากโปรแกรมนี้
+sources-search-all-added = ที่เก็บทั้งหมดที่มีหัวข้อ pmca-source ซึ่ง GitHub รู้จัก ถูกเพิ่มไว้แล้ว
 sources-updated = เปลี่ยนแปลงล่าสุด: { $date }
 sources-archived = เก็บถาวรแล้ว
 app-archived-note = ผู้พัฒนาได้เก็บถาวรโปรเจกต์นี้บน GitHub และไม่ได้พัฒนาต่ออย่างจริงจังแล้ว แอปอาจทำงานได้ไม่เต็มที่ในกล้องทุกรุ่น และปัญหาต่าง ๆ อาจไม่ได้รับการแก้ไขอีก

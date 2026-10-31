@@ -303,6 +303,7 @@ btn-source-search = GitHub'da ara
 sources-searching = GitHub'da aranıyor…
 sources-search-none = GitHub, pmca-source konusuna sahip hiçbir depo bulamadı.
 sources-search-found = { $count } depo bulundu. Hiçbiri bu program tarafından denetlenmedi.
+sources-search-all-added = GitHub'ın bildiği pmca-source konulu tüm depolar zaten eklenmiş.
 sources-updated = Son değişiklik: { $date }
 sources-archived = arşivlendi
 app-archived-note = Geliştirici projeyi GitHub'da arşivledi ve artık üzerinde etkin olarak çalışmıyor. Uygulama her kamerada tam olarak çalışmayabilir ve sorunların giderilmesi olası değildir.

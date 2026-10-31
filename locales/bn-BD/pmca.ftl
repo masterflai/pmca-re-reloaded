@@ -300,6 +300,7 @@ btn-source-search = GitHub-এ খুঁজুন
 sources-searching = GitHub-এ খোঁজা হচ্ছে…
 sources-search-none = GitHub-এ pmca-source বিষয়যুক্ত কোনো রিপোজিটরি পাওয়া যায়নি।
 sources-search-found = { $count }টি রিপোজিটরি পাওয়া গেছে। এগুলোর কোনোটিই এই প্রোগ্রাম যাচাই করেনি।
+sources-search-all-added = pmca-source বিষয়ের যত রিপোজিটরি GitHub চেনে, সবগুলো আগেই যোগ করা হয়েছে।
 sources-updated = সর্বশেষ পরিবর্তন: { $date }
 sources-archived = আর্কাইভ করা
 app-archived-note = ডেভেলপার GitHub-এ প্রকল্পটি আর্কাইভ করেছেন এবং এখন আর সক্রিয়ভাবে এতে কাজ করেন না। অ্যাপটি সব ক্যামেরায় পুরোপুরি কাজ নাও করতে পারে, এবং সমস্যাগুলো সম্ভবত আর ঠিক করা হবে না।

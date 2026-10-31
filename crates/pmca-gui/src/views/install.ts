@@ -27,7 +27,7 @@ import { errorText, tr, trFill } from "../i18n";
 import { cardAppBackup } from "./app-backup";
 import { capableDevices, lowRiskCheck } from "./camera";
 import { deviceToggle } from "./network";
-import { disclosure, entryDetails, sourceRepo, starsBadge } from "./sources";
+import { disclosure, entryDetails, sourceRepo, sourceSearch, starsBadge } from "./sources";
 
 export function viewInstall(host: HTMLElement): void {
   const status = statusLine();
@@ -84,6 +84,10 @@ export function viewInstall(host: HTMLElement): void {
   const storeStatus = statusLine();
   const storeDetails = make("div");
   const loadCommunity = make("button", { i18n: "btn-load-apps" });
+  // A source added from here is read at once, so its apps join the list.
+  const search = sourceSearch(true, () => {
+    if (!running) loadCommunity.click();
+  });
   const sync = make("button", { i18n: "btn-store-sync", disabled: true });
   const countLabel = make("span");
   const installSelected = make(
@@ -254,6 +258,7 @@ export function viewInstall(host: HTMLElement): void {
     running = on;
     install.disabled = on;
     loadCommunity.disabled = on;
+    search.button.disabled = on;
     sourceFilter.disabled = on;
     sync.disabled = on || rows.length === 0;
     selectAll.disabled = on || !rows.some((row) => row.app.installable && !row.appRow.hidden);
@@ -589,7 +594,9 @@ export function viewInstall(host: HTMLElement): void {
     card(
       make("h2", { i18n: "store-heading" }),
       make("p", { className: "hint", i18n: "store-sources-hint" }),
-      make("div", { className: "row" }, loadCommunity, sync),
+      make("div", { className: "row" }, loadCommunity, sync, search.button),
+      search.status,
+      search.results,
       storeStatus,
       storeDetails,
       filterBlock,

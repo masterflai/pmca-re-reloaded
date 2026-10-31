@@ -303,6 +303,7 @@ btn-source-search = Rechercher sur GitHub
 sources-searching = Recherche sur GitHub…
 sources-search-none = GitHub n’a trouvé aucun dépôt portant le sujet pmca-source.
 sources-search-found = { $count } dépôt(s) trouvé(s). Aucun n’a été vérifié par ce programme.
+sources-search-all-added = Tous les dépôts avec le sujet pmca-source que GitHub connaît sont déjà ajoutés.
 sources-updated = Dernière modification : { $date }
 sources-archived = archivé
 app-archived-note = Son développeur a archivé le projet sur GitHub et n’y travaille plus activement. L’application peut ne pas fonctionner entièrement sur tous les appareils, et les problèmes ne seront probablement plus corrigés.

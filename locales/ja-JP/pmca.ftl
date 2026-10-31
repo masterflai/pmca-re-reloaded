@@ -302,6 +302,7 @@ btn-source-search = GitHub を検索
 sources-searching = GitHub を検索しています…
 sources-search-none = トピック pmca-source が付いたリポジトリは GitHub で見つかりませんでした。
 sources-search-found = { $count } 件のリポジトリが見つかりました。いずれもこのプログラムは確認していません。
+sources-search-all-added = GitHub が把握しているトピック pmca-source のリポジトリはすべて追加済みです。
 sources-updated = 最終更新：{ $date }
 sources-archived = アーカイブ済み
 app-archived-note = 開発者は GitHub でこのプロジェクトをアーカイブしており、現在は積極的に開発していません。すべてのカメラで完全には動作しない可能性があり、不具合が修正される見込みは低いです。

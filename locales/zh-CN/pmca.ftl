@@ -302,6 +302,7 @@ btn-source-search = 搜索 GitHub
 sources-searching = 正在搜索 GitHub…
 sources-search-none = GitHub 未找到任何带有 pmca-source 主题的仓库。
 sources-search-found = 找到 { $count } 个仓库。它们均未经本程序检查。
+sources-search-all-added = GitHub 已知的所有带 pmca-source 主题的仓库都已添加。
 sources-updated = 最后更改：{ $date }
 sources-archived = 已归档
 app-archived-note = 开发者已在 GitHub 上将该项目归档，不再积极开发。该应用可能无法在所有相机上完整运行，问题也不太可能再得到修复。

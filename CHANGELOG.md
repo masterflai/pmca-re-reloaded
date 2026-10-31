@@ -8,6 +8,9 @@ All notable changes to this project are documented here. The format follows
 
 ### Added
 
+- *Search GitHub* on the Apps page as well, next to *Load available apps*. It
+  shows only sources not added yet, or says that every repository GitHub knows
+  is already there; an added source's apps join the list at once.
 - The Linux AppImage carries update information, and a `.zsync` file is
   published beside it, so AppImageUpdate and similar tools can update it in
   place. They only offer releases marked *Latest*.

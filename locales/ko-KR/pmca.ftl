@@ -312,6 +312,7 @@ btn-source-search = GitHub 검색
 sources-searching = GitHub를 검색하는 중…
 sources-search-none = GitHub에서 pmca-source 토픽이 있는 저장소를 찾지 못했습니다.
 sources-search-found = 저장소 { $count }개를 찾았습니다. 이 중 어느 것도 이 프로그램이 검사하지 않았습니다.
+sources-search-all-added = GitHub가 알고 있는 pmca-source 주제의 저장소는 모두 이미 추가되었습니다.
 sources-updated = 마지막 변경: { $date }
 sources-archived = 보관됨
 app-archived-note = 개발자가 GitHub에서 프로젝트를 보관 처리했으며 더 이상 적극적으로 작업하지 않습니다. 앱이 모든 카메라에서 완전히 작동하지 않을 수 있으며, 문제가 수정될 가능성은 낮습니다.

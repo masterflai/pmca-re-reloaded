@@ -301,6 +301,7 @@ btn-source-search = GitHub पर खोजें
 sources-searching = GitHub पर खोज की जा रही है…
 sources-search-none = GitHub को pmca-source विषय वाली कोई रिपॉजिटरी नहीं मिली।
 sources-search-found = { $count } रिपॉजिटरी मिलीं। इनमें से किसी की भी इस प्रोग्राम ने जाँच नहीं की है।
+sources-search-all-added = GitHub को ज्ञात pmca-source विषय वाली सभी रिपॉज़िटरी पहले से जोड़ी जा चुकी हैं।
 sources-updated = अंतिम बदलाव: { $date }
 sources-archived = संग्रहीत
 app-archived-note = डेवलपर ने GitHub पर परियोजना आर्काइव कर दी है और अब इस पर सक्रिय रूप से काम नहीं करते। हो सकता है ऐप हर कैमरे पर पूरी तरह काम न करे, और समस्याएँ शायद अब ठीक नहीं की जाएँगी।

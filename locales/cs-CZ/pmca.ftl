@@ -303,6 +303,7 @@ btn-source-search = Hledat na GitHubu
 sources-searching = Prohledává se GitHub…
 sources-search-none = GitHub nenašel žádné úložiště s tématem pmca-source.
 sources-search-found = Nalezená úložiště: { $count }. Žádné z nich tento program nekontroloval.
+sources-search-all-added = Všechny repozitáře s tématem pmca-source, které GitHub zná, jsou už přidané.
 sources-updated = Poslední změna: { $date }
 sources-archived = archivováno
 app-archived-note = Vývojář projekt na GitHubu archivoval a už na něm aktivně nepracuje. Aplikace nemusí na každém fotoaparátu fungovat úplně a chyby už pravděpodobně nebudou opraveny.

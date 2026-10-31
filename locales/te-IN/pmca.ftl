@@ -301,6 +301,7 @@ btn-source-search = GitHubలో వెతకండి
 sources-searching = GitHubలో వెతుకుతోంది…
 sources-search-none = pmca-source అంశం ఉన్న రిపోజిటరీ ఏదీ GitHubలో కనబడలేదు.
 sources-search-found = { $count } రిపోజిటరీలు కనుగొనబడ్డాయి. వాటిలో దేనినీ ఈ ప్రోగ్రామ్ తనిఖీ చేయలేదు.
+sources-search-all-added = GitHub కు తెలిసిన pmca-source అంశం ఉన్న అన్ని రిపాజిటరీలు ఇప్పటికే జోడించబడ్డాయి.
 sources-updated = చివరి మార్పు: { $date }
 sources-archived = ఆర్కైవ్ చేయబడింది
 app-archived-note = డెవలపర్ GitHub‌లో ప్రాజెక్టును ఆర్కైవ్ చేశారు, ఇకపై దానిపై చురుకుగా పని చేయడం లేదు. యాప్ ప్రతి కెమెరాలో పూర్తిగా పని చేయకపోవచ్చు, సమస్యలు సరిచేయబడే అవకాశం తక్కువ.

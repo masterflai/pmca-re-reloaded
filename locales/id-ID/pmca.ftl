@@ -303,6 +303,7 @@ btn-source-search = Cari di GitHub
 sources-searching = Mencari di GitHub…
 sources-search-none = GitHub tidak menemukan repositori dengan topik pmca-source.
 sources-search-found = { $count } repositori ditemukan. Tidak satu pun yang telah diperiksa oleh program ini.
+sources-search-all-added = Semua repositori bertopik pmca-source yang dikenal GitHub sudah ditambahkan.
 sources-updated = Perubahan terakhir: { $date }
 sources-archived = diarsipkan
 app-archived-note = Pengembangnya telah mengarsipkan proyek ini di GitHub dan tidak lagi aktif mengerjakannya. Aplikasi mungkin tidak berfungsi sepenuhnya di setiap kamera, dan masalah kemungkinan tidak akan diperbaiki lagi.

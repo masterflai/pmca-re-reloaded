@@ -171,12 +171,103 @@ function parseSpec(spec: string): string | null {
 }
 
 /**
- * Sources the user has added, the suggestion not yet switched on, adding one
- * by name and an explicit search on GitHub.
+ * Ask, naming the repository and its address, then add it; `true` once added.
  *
- * Every way of adding asks first, naming the repository and its address: the
- * program checks nothing, so the decision has to be made by someone who has
- * looked.
+ * The program checks nothing, so the decision has to be made by someone who
+ * has looked.
+ */
+async function confirmAndAdd(spec: string, id: string, status: HTMLElement): Promise<boolean> {
+  const url = `https://github.com/${id}`;
+  if (!(await confirmed(trFill("sources-add-confirm", { source: id, url }), tr("btn-confirm-source-add")))) {
+    return false;
+  }
+  showBusy(status, tr("sources-adding"));
+  try {
+    const source = await invoke<Source>("sources_add", { spec });
+    showDone(status, trFill("sources-added", { source: source.id }));
+    return true;
+  } catch (e) {
+    showError(status, e);
+    return false;
+  }
+}
+
+/** The search for sources on GitHub: its button, status line and hits. */
+export interface SourceSearch {
+  button: HTMLButtonElement;
+  status: HTMLElement;
+  results: HTMLElement;
+}
+
+/**
+ * Search GitHub for repositories with the source topic.
+ *
+ * With `onlyNew` the sources already added are left out, and a search that
+ * finds nothing else says so. `onAdded` runs after a hit has been added.
+ */
+export function sourceSearch(onlyNew: boolean, onAdded: () => void): SourceSearch {
+  const button = make("button", { i18n: "btn-source-search" });
+  const status = statusLine();
+  const results = make("div", { className: "plugin-list" });
+
+  function hitRow(hit: SourceRepo): HTMLElement {
+    const panel = detailsPanel(
+      [
+        hit.description ? make("p", { textContent: hit.description }) : null,
+        hit.pushedAt ? make("p", { className: "hint", textContent: updatedText(hit.pushedAt) }) : null,
+      ],
+      [{ labelKey: "details-repository", url: hit.url }],
+    );
+    const head = make(
+      "div",
+      { className: "row" },
+      make("strong", { textContent: hit.id }),
+      make("span", { className: "stars", title: tr("sources-stars-title"), textContent: starsText(hit.stars) }),
+    );
+    if (hit.archived) head.append(make("span", { className: "hint", i18n: "sources-archived" }));
+    // Open from the start: looking at the repository is the step the search asks for.
+    const row = make("div", { className: "plugin-row" }, head, detailsLine(panel, true), panel);
+    const already = (): HTMLElement => make("span", { className: "hint", i18n: "sources-already" });
+    if (hit.added) {
+      head.append(already());
+    } else {
+      const addHit = make("button", { i18n: "btn-source-add" });
+      addHit.addEventListener("click", async () => {
+        if (!(await confirmAndAdd(hit.id, hit.id, status))) return;
+        if (onlyNew) row.remove();
+        else addHit.replaceWith(already());
+        onAdded();
+      });
+      head.append(addHit);
+    }
+    return row;
+  }
+
+  button.addEventListener("click", async () => {
+    button.disabled = true;
+    results.replaceChildren();
+    showBusy(status, tr("sources-searching"));
+    try {
+      const hits = await invoke<SourceRepo[]>("sources_search");
+      const shown = onlyNew ? hits.filter((hit) => !hit.added) : hits;
+      if (hits.length === 0) showStatus(status, tr("sources-search-none"));
+      else if (shown.length === 0) showStatus(status, tr("sources-search-all-added"));
+      else showStatus(status, trFill("sources-search-found", { count: shown.length }));
+      if (onlyNew && shown.length > 0) results.append(make("p", { className: "hint", i18n: "sources-search-hint" }));
+      results.append(...shown.map(hitRow));
+    } catch (e) {
+      showError(status, e);
+    } finally {
+      button.disabled = false;
+    }
+  });
+
+  return { button, status, results };
+}
+
+/**
+ * Sources the user has added, the suggestion not yet switched on, adding one
+ * by name and an explicit search on GitHub. Every way of adding asks first.
  */
 export function cardSources(): HTMLElement {
   const status = statusLine();
@@ -189,9 +280,7 @@ export function cardSources(): HTMLElement {
     spellcheck: false,
   });
   const addButton = make("button", { className: "primary", i18n: "btn-source-add" });
-  const searchButton = make("button", { i18n: "btn-source-search" });
-  const searchStatus = statusLine();
-  const results = make("div", { className: "plugin-list" });
+  const search = sourceSearch(false, () => void refresh().catch((e) => showError(status, e)));
 
   async function refresh(): Promise<void> {
     const state = await invoke<SourcesState>("sources_list");
@@ -202,15 +291,9 @@ export function cardSources(): HTMLElement {
   }
 
   async function add(spec: string, id: string): Promise<void> {
-    const url = `https://github.com/${id}`;
-    if (!(await confirmed(trFill("sources-add-confirm", { source: id, url }), tr("btn-confirm-source-add")))) {
-      return;
-    }
-    showBusy(status, tr("sources-adding"));
+    if (!(await confirmAndAdd(spec, id, status))) return;
+    input.value = "";
     try {
-      const source = await invoke<Source>("sources_add", { spec });
-      showDone(status, trFill("sources-added", { source: source.id }));
-      input.value = "";
       await refresh();
     } catch (e) {
       showError(status, e);
@@ -265,32 +348,6 @@ export function cardSources(): HTMLElement {
     );
   }
 
-  function hitRow(hit: SourceRepo): HTMLElement {
-    const panel = detailsPanel(
-      [
-        hit.description ? make("p", { textContent: hit.description }) : null,
-        hit.pushedAt ? make("p", { className: "hint", textContent: updatedText(hit.pushedAt) }) : null,
-      ],
-      [{ labelKey: "details-repository", url: hit.url }],
-    );
-    const head = make(
-      "div",
-      { className: "row" },
-      make("strong", { textContent: hit.id }),
-      make("span", { className: "stars", title: tr("sources-stars-title"), textContent: starsText(hit.stars) }),
-    );
-    if (hit.archived) head.append(make("span", { className: "hint", i18n: "sources-archived" }));
-    if (hit.added) {
-      head.append(make("span", { className: "hint", i18n: "sources-already" }));
-    } else {
-      const addHit = make("button", { i18n: "btn-source-add" });
-      addHit.addEventListener("click", () => void add(hit.id, hit.id));
-      head.append(addHit);
-    }
-    // Open from the start: looking at the repository is the step the search asks for.
-    return make("div", { className: "plugin-row" }, head, detailsLine(panel, true), panel);
-  }
-
   addButton.addEventListener("click", () => {
     const spec = input.value.trim();
     if (spec === "") return;
@@ -305,22 +362,6 @@ export function cardSources(): HTMLElement {
     if (event.key === "Enter") addButton.click();
   });
 
-  searchButton.addEventListener("click", async () => {
-    searchButton.disabled = true;
-    results.replaceChildren();
-    showBusy(searchStatus, tr("sources-searching"));
-    try {
-      const hits = await invoke<SourceRepo[]>("sources_search");
-      if (hits.length === 0) showStatus(searchStatus, tr("sources-search-none"));
-      else showStatus(searchStatus, trFill("sources-search-found", { count: hits.length }));
-      results.append(...hits.map(hitRow));
-    } catch (e) {
-      showError(searchStatus, e);
-    } finally {
-      searchButton.disabled = false;
-    }
-  });
-
   refresh().catch((e) => showError(status, e));
   return card(
     make("h2", { i18n: "sources-heading" }),
@@ -332,8 +373,8 @@ export function cardSources(): HTMLElement {
     status,
     make("h3", { i18n: "sources-search-heading" }),
     make("p", { className: "hint", i18n: "sources-search-hint" }),
-    make("div", { className: "row" }, searchButton),
-    searchStatus,
-    results,
+    make("div", { className: "row" }, search.button),
+    search.status,
+    search.results,
   );
 }

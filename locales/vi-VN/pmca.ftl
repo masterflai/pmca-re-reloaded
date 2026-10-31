@@ -312,6 +312,7 @@ btn-source-search = Tìm trên GitHub
 sources-searching = Đang tìm trên GitHub…
 sources-search-none = GitHub không tìm thấy kho mã nào có chủ đề pmca-source.
 sources-search-found = Đã tìm thấy { $count } kho mã. Chưa kho mã nào trong số đó được chương trình này kiểm tra.
+sources-search-all-added = Tất cả kho có chủ đề pmca-source mà GitHub biết đều đã được thêm.
 sources-updated = Thay đổi gần nhất: { $date }
 sources-archived = đã lưu trữ
 app-archived-note = Nhà phát triển đã lưu trữ dự án trên GitHub và không còn tích cực phát triển nữa. Ứng dụng có thể không hoạt động đầy đủ trên mọi máy ảnh, và các lỗi có lẽ sẽ không được sửa nữa.

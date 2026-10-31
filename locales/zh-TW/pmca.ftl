@@ -312,6 +312,7 @@ btn-source-search = 搜尋 GitHub
 sources-searching = 正在搜尋 GitHub…
 sources-search-none = GitHub 找不到主題為 pmca-source 的存放庫。
 sources-search-found = 找到 { $count } 個存放庫。其中沒有任何一個經過本程式檢查。
+sources-search-all-added = GitHub 已知的所有帶有 pmca-source 主題的存放庫都已加入。
 sources-updated = 最後變更：{ $date }
 sources-archived = 已封存
 app-archived-note = 開發者已在 GitHub 上將此專案封存，不再積極開發。此應用程式可能無法在每台相機上完整運作，問題也不太可能再獲修正。

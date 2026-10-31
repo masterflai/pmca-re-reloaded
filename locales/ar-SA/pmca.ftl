@@ -302,6 +302,7 @@ btn-source-search = البحث في GitHub
 sources-searching = جارٍ البحث في GitHub…
 sources-search-none = لم يعثر GitHub على أي مستودع ذي الموضوع pmca-source.
 sources-search-found = المستودعات التي عُثر عليها: { $count }. لم يتحقق هذا البرنامج من أي منها.
+sources-search-all-added = كل المستودعات التي يعرفها GitHub بالموضوع pmca-source مضافة بالفعل.
 sources-updated = آخر تغيير: { $date }
 sources-archived = مؤرشف
 app-archived-note = أرشف المطوّر المشروع على GitHub ولم يعد يعمل عليه بنشاط. قد لا يعمل التطبيق بالكامل على كل كاميرا، ومن غير المرجح أن تُصلَح المشكلات.

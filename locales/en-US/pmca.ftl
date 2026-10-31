@@ -312,6 +312,7 @@ btn-source-search = Search GitHub
 sources-searching = Searching GitHub…
 sources-search-none = GitHub found no repository with the topic pmca-source.
 sources-search-found = { $count } repositories found. None of them has been checked by this program.
+sources-search-all-added = Every repository with the topic pmca-source that GitHub knows has already been added.
 sources-updated = Last change: { $date }
 sources-archived = archived
 app-archived-note = Its developer has archived the project on GitHub and no longer works on it actively. The app may not work fully on every camera, and problems are unlikely to be fixed.

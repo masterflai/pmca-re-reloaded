@@ -301,6 +301,7 @@ btn-source-search = GitHub ਉੱਤੇ ਖੋਜੋ
 sources-searching = GitHub ਉੱਤੇ ਖੋਜ ਕੀਤੀ ਜਾ ਰਹੀ ਹੈ…
 sources-search-none = GitHub ਨੂੰ pmca-source ਵਿਸ਼ੇ ਵਾਲੀ ਕੋਈ ਰਿਪੋਜ਼ਟਰੀ ਨਹੀਂ ਮਿਲੀ।
 sources-search-found = { $count } ਰਿਪੋਜ਼ਟਰੀਆਂ ਮਿਲੀਆਂ। ਇਸ ਪ੍ਰੋਗਰਾਮ ਨੇ ਇਹਨਾਂ ਵਿੱਚੋਂ ਕਿਸੇ ਦੀ ਵੀ ਜਾਂਚ ਨਹੀਂ ਕੀਤੀ।
+sources-search-all-added = GitHub ਨੂੰ ਪਤਾ pmca-source ਵਿਸ਼ੇ ਵਾਲੀਆਂ ਸਾਰੀਆਂ ਰਿਪੋਜ਼ਟਰੀਆਂ ਪਹਿਲਾਂ ਹੀ ਜੋੜੀਆਂ ਜਾ ਚੁੱਕੀਆਂ ਹਨ।
 sources-updated = ਆਖਰੀ ਤਬਦੀਲੀ: { $date }
 sources-archived = ਆਰਕਾਈਵ ਕੀਤੀ ਗਈ
 app-archived-note = ਡਿਵੈਲਪਰ ਨੇ GitHub ਉੱਤੇ ਪ੍ਰੋਜੈਕਟ ਆਰਕਾਈਵ ਕਰ ਦਿੱਤਾ ਹੈ ਅਤੇ ਹੁਣ ਇਸ ਉੱਤੇ ਸਰਗਰਮੀ ਨਾਲ ਕੰਮ ਨਹੀਂ ਕਰਦਾ। ਹੋ ਸਕਦਾ ਹੈ ਐਪ ਹਰ ਕੈਮਰੇ ਉੱਤੇ ਪੂਰੀ ਤਰ੍ਹਾਂ ਕੰਮ ਨਾ ਕਰੇ, ਅਤੇ ਸਮੱਸਿਆਵਾਂ ਸ਼ਾਇਦ ਹੁਣ ਠੀਕ ਨਹੀਂ ਕੀਤੀਆਂ ਜਾਣਗੀਆਂ।

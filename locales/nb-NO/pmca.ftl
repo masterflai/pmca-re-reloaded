@@ -303,6 +303,7 @@ btn-source-search = Søk på GitHub
 sources-searching = Søker på GitHub…
 sources-search-none = GitHub fant ingen repositorier med emnet pmca-source.
 sources-search-found = { $count } repositorier funnet. Ingen av dem er kontrollert av dette programmet.
+sources-search-all-added = Alle repositorier med emnet pmca-source som GitHub kjenner, er allerede lagt til.
 sources-updated = Sist endret: { $date }
 sources-archived = arkivert
 app-archived-note = Utvikleren har arkivert prosjektet på GitHub og arbeider ikke lenger aktivt med det. Appen virker kanskje ikke fullt ut på alle kameraer, og feil blir neppe rettet.
