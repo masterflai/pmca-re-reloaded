@@ -6,6 +6,19 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+## [1.8.1-rc.1] - 2026-11-01
+
+**Pre-release for testing on macOS 26.** The mass-storage connection takes the
+way that carried camera commands in the latest macOS test run.
+
+### Fixed
+
+- macOS: a camera in mass-storage mode is reached through Apple's IOUSBHost
+  framework first, and long commands are sent in packet-sized pieces. Only this
+  way carried camera commands on macOS 26.
+- macOS: the connection no longer begins with a Bulk-Only reset, after which
+  the camera stopped answering on macOS 26; a plain INQUIRY readies it instead.
+
 ## [1.8.0] - 2026-10-31
 
 **Find app sources from the Apps page.** *Search GitHub* now sits next to the

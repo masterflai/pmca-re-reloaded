@@ -19,7 +19,7 @@ use crate::nusb_backend::NusbBackend;
 use crate::sony_extcmd::SonyExtCmdCamera;
 
 /// Identifies the probe's logic in a report.
-const REVISION: &str = "probe 2";
+const REVISION: &str = "probe 3";
 
 /// The report, written to the current directory.
 const REPORT: &str = "pmca-macos-probe.txt";
@@ -59,6 +59,7 @@ pub fn run() -> i32 {
         r.mode = (*english).to_string();
         r.line(format!("########## USB connection set to: {english}"));
         let Some(info) = wait_for_any(&mut r) else { continue };
+        r.hide_serial(&info);
         r.line(format!("found: {}", describe(&info)));
         if interface_of(&info, crate::class::MSC).is_some() {
             suite(&mut r, crate::class::MSC, false);
@@ -86,10 +87,14 @@ fn ask(step: usize, steps: usize, german: &str, english: &str) -> Answer {
     println!();
     println!("------------------------------------------------------------------");
     println!("Schritt {step}/{steps}: An der Kamera MENU > Einstellungen > USB-Verbindung");
-    println!("auf \"{german}\" stellen. Kamera einschalten, per USB-Datenkabel anschliessen,");
-    println!("dann Enter druecken. (s + Enter = Schritt ueberspringen, q + Enter = beenden)");
+    println!("auf \"{german}\" stellen. Kamera AUS- und wieder EINschalten, per USB-Datenkabel");
+    println!(
+        "anschliessen, dann Enter druecken. (s + Enter = Schritt ueberspringen, q + Enter = beenden)"
+    );
     println!("Step {step}/{steps}: set MENU > Setup > USB Connection to \"{english}\",");
-    println!("switch the camera on, connect it, then press Enter. (s = skip, q = quit)");
+    println!(
+        "switch the camera OFF and ON again, connect it, then press Enter. (s = skip, q = quit)"
+    );
     println!("------------------------------------------------------------------");
     let mut answer = String::new();
     match std::io::stdin().lock().read_line(&mut answer) {
@@ -109,6 +114,8 @@ struct Report {
     start: Instant,
     mode: String,
     results: Vec<(String, String, String)>,
+    /// Serial numbers seen, as text and as the hex IOKit prints in signatures.
+    secrets: Vec<String>,
 }
 
 impl Report {
@@ -118,10 +125,27 @@ impl Report {
             start: Instant::now(),
             mode: "-".into(),
             results: Vec::new(),
+            secrets: Vec::new(),
         }
     }
 
+    /// Keeps `device`'s serial number out of everything written from now on.
+    fn hide_serial(&mut self, device: &nusb::DeviceInfo) {
+        let Some(serial) = device.serial_number().filter(|s| s.len() >= 4) else { return };
+        let hex: String = serial.bytes().map(|b| format!("{b:02x}")).collect();
+        for secret in [serial.to_string(), hex.to_uppercase(), hex] {
+            if !self.secrets.contains(&secret) {
+                self.secrets.push(secret);
+            }
+        }
+    }
+
+    fn redact(&self, text: &str) -> String {
+        self.secrets.iter().fold(text.to_string(), |text, secret| text.replace(secret, "<removed>"))
+    }
+
     fn write(&mut self, text: &str) {
+        let text = self.redact(text);
         if let Some(file) = &mut self.file {
             let _ = writeln!(file, "{text}");
             let _ = file.flush();
@@ -130,7 +154,7 @@ impl Report {
 
     fn line(&mut self, text: impl AsRef<str>) {
         let text = format!("[{:7.1}s] {}", self.start.elapsed().as_secs_f32(), text.as_ref());
-        println!("{text}");
+        println!("{}", self.redact(&text));
         self.write(&text);
     }
 
@@ -208,6 +232,11 @@ fn environment(r: &mut Report) {
     if !running.is_empty() {
         r.line(format!("WARNING, still running: {}", running.join("; ")));
         println!("!!! Bitte PMCA-RE RELOADED beenden / please quit PMCA-RE RELOADED !!!");
+    }
+    // Chrome keeps a USB device client open on every camera it sees.
+    if !shell("/usr/bin/pgrep", &["-x", "Google Chrome"]).is_empty() {
+        r.line("WARNING, Google Chrome is running");
+        println!("!!! Bitte Google Chrome beenden / please quit Google Chrome !!!");
     }
     let devices: Vec<String> = sony_devices().iter().map(describe).collect();
     r.line(format!("Sony devices now: {}", devices.join(" | ")));
@@ -433,6 +462,7 @@ fn experiment(r: &mut Report, title: &str, class: u8, switch: bool, eps: (u8, u8
 
 fn suite(r: &mut Report, class: u8, switch: bool) {
     let Some((info, _)) = wait_for(r, class, switch) else { return };
+    r.hide_serial(&info);
     let eps = endpoints(&info, class).unwrap_or_else(|e| {
         r.line(format!("endpoints: {e}, assuming in 0x81 / out 0x02"));
         (0x81, 0x02)
@@ -442,34 +472,30 @@ fn suite(r: &mut Report, class: u8, switch: bool) {
     drop(info);
     let mode = if class == crate::class::MSC { CameraMode::MassStorage } else { CameraMode::Mtp };
 
-    experiment(r, "app path (rc.9): read camera info", class, switch, eps, &mut |_, _| {
-        production(mode)
-    });
+    experiment(r, "app path: read camera info", class, switch, eps, &mut |_, _| production(mode));
     if class != crate::class::MSC {
         return;
     }
+    // Every way twice, the program's own first: probe 2 could not tell the
+    // way apart from the camera settling after earlier failures.
+    let pieces = "capture, IOUSBHost: camera info, writes in 512-byte pieces";
+    let whole = "capture, IOUSBHost: INQUIRY + camera info";
+    experiment(r, pieces, class, switch, eps, &mut |r, t| {
+        via_host(r, t, &mut |t, bulk| camera_info(t, bulk, Some(512)))
+    });
+    experiment(r, whole, class, switch, eps, &mut |r, t| {
+        via_host(r, t, &mut |t, bulk| camera_info(t, bulk, None))
+    });
+    experiment(r, "app path again", class, switch, eps, &mut |_, _| production(mode));
+    experiment(r, pieces, class, switch, eps, &mut |r, t| {
+        via_host(r, t, &mut |t, bulk| camera_info(t, bulk, Some(512)))
+    });
+    experiment(r, whole, class, switch, eps, &mut |r, t| {
+        via_host(r, t, &mut |t, bulk| camera_info(t, bulk, None))
+    });
     experiment(r, "capture, nusb: INQUIRY + camera info", class, switch, eps, &mut |r, t| {
-        via_nusb(r, t, &mut |t, bulk| camera_info(t, bulk, None, false))
+        via_nusb(r, t, &mut |t, bulk| camera_info(t, bulk, None))
     });
-    experiment(r, "capture, IOUSBHost: INQUIRY + camera info", class, switch, eps, &mut |r, t| {
-        via_host(r, t, &mut |t, bulk| camera_info(t, bulk, None, false))
-    });
-    experiment(
-        r,
-        "capture, IOUSBHost: camera info, writes in 512-byte pieces",
-        class,
-        switch,
-        eps,
-        &mut |r, t| via_host(r, t, &mut |t, bulk| camera_info(t, bulk, Some(512), false)),
-    );
-    experiment(
-        r,
-        "capture, IOUSBHost: bulk-only reset, then camera info",
-        class,
-        switch,
-        eps,
-        &mut |r, t| via_host(r, t, &mut |t, bulk| camera_info(t, bulk, None, true)),
-    );
 }
 
 /// The program's own way, as the GUI's broker runs it.
@@ -648,8 +674,6 @@ trait Bulk {
     fn put(&mut self, ep: u8, data: &[u8]) -> Result<()>;
     fn get(&mut self, ep: u8, length: usize) -> Result<Vec<u8>>;
     fn halt(&mut self, ep: u8) -> Result<()>;
-    /// Bulk-Only Mass Storage Reset on interface `number`.
-    fn bot_reset(&mut self, number: u8) -> Result<()>;
 }
 
 impl Bulk for HostInterface {
@@ -664,10 +688,6 @@ impl Bulk for HostInterface {
     fn halt(&mut self, ep: u8) -> Result<()> {
         self.clear_halt(ep)
     }
-
-    fn bot_reset(&mut self, number: u8) -> Result<()> {
-        self.control_out(0x21, 0xFF, 0, u16::from(number), &[], IO_TIMEOUT)
-    }
 }
 
 impl Bulk for NusbBackend {
@@ -681,10 +701,6 @@ impl Bulk for NusbBackend {
 
     fn halt(&mut self, ep: u8) -> Result<()> {
         self.clear_halt(ep)
-    }
-
-    fn bot_reset(&mut self, _number: u8) -> Result<()> {
-        self.reset()
     }
 }
 
@@ -716,14 +732,8 @@ impl UsbBackend for Pieces<'_> {
 
 /// SCSI INQUIRY, then the program's own camera-info command (an 8 KiB
 /// data-out phase and an 8 KiB data-in phase), each reported on its own.
-fn camera_info(t: &Target, bulk: &mut dyn Bulk, pieces: Option<usize>, reset: bool) -> String {
+fn camera_info(t: &Target, bulk: &mut dyn Bulk, pieces: Option<usize>) -> String {
     let mut steps = Vec::new();
-    if reset {
-        let reset = bulk.bot_reset(t.number);
-        let out = bulk.halt(t.ep_out);
-        let r#in = bulk.halt(t.ep_in);
-        steps.push(format!("bulk-only reset {reset:?}, clear halts {out:?} {:?}", r#in));
-    }
     let mut msc = MscDevice::new(Pieces { bulk, pieces }, t.ep_in, t.ep_out);
     let started = Instant::now();
     steps.push(match msc.get_device_info() {

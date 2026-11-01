@@ -402,6 +402,11 @@ const MACOS_CAPTURE_POLL: Duration = Duration::from_millis(100);
 #[cfg(target_os = "macos")]
 const MACOS_INTERFACE_WAIT: Duration = Duration::from_secs(3);
 
+/// Largest single IOUSBHost bulk write: one high-speed packet. On macOS 26 a
+/// camera took 8 KiB data phases reliably only as separate writes this size.
+#[cfg(target_os = "macos")]
+const MACOS_HOST_WRITE_PIECE: usize = 512;
+
 /// What happened during a capture, for the error message if it fails.
 #[cfg(target_os = "macos")]
 struct CaptureTrace {
@@ -439,9 +444,8 @@ impl CaptureTrace {
 /// the interface after that.
 ///
 /// The card is unmounted first, so the disk driver can end. Then, in turn:
-/// `nusb` while the capture holds the drivers away; the interface through
-/// IOUSBHost; and both again after the capture was surrendered without a
-/// reset. If none works, the device is reset, the card mounted again and the
+/// the interface through IOUSBHost; `nusb` while the capture holds the drivers
+/// away; and both again after the capture was surrendered without a reset. If none works, the device is reset, the card mounted again and the
 /// error carries a trace of the steps.
 #[cfg(target_os = "macos")]
 fn claim_captured(device: &DiscoveredDevice, interface_number: u8, first: &str) -> Result<Link> {
@@ -514,14 +518,14 @@ fn reach_captured(
             std::thread::sleep(MACOS_CAPTURE_POLL);
         }
     };
-    // `nusb` first: IOUSBHost's pipe stopped a bulk-OUT data phase after one
-    // packet on macOS 26 (probe of 28.10.2026), `nusb` moves it elsewhere.
+    // IOUSBHost first: on macOS 26 only it carried camera commands (probe of
+    // 01.11.2026); `nusb` reached the interface but no command got through.
+    if host.open_interface(interface_number, MACOS_INTERFACE_WAIT, note) {
+        return Ok(Link::Host(host));
+    }
     if let Some(link) = legacy_for(MACOS_INTERFACE_WAIT, note, "nusb while captured") {
         note("nusb while captured: claimed".into());
         return Ok(Link::Borrowed { link, _capture: host });
-    }
-    if host.open_interface(interface_number, MACOS_INTERFACE_WAIT, note) {
-        return Ok(Link::Host(host));
     }
     host.surrender();
     note(format!("surrendered, drivers: {}", crate::macos_capture::driver_tree(id)));
@@ -660,7 +664,14 @@ impl UsbBackend for NusbBackend {
             #[cfg(target_os = "macos")]
             Link::Borrowed { link, .. } => link,
             #[cfg(target_os = "macos")]
-            Link::Host(host) => return host.write(ep, data, timeout),
+            Link::Host(host) => {
+                if data.len() <= MACOS_HOST_WRITE_PIECE {
+                    return host.write(ep, data, timeout);
+                }
+                return data
+                    .chunks(MACOS_HOST_WRITE_PIECE)
+                    .try_for_each(|piece| host.write(ep, piece, timeout));
+            }
         };
         let endpoint = link.endpoint_out(ep)?;
         let completion = endpoint.transfer_blocking(Buffer::from(data.to_vec()), timeout);

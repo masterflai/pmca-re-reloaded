@@ -252,6 +252,18 @@ fn describe_lens(lens: &LensInfo) -> Option<String> {
     ))
 }
 
+/// Readies a freshly opened Bulk-Only transport for the first command.
+///
+/// On macOS the capture that reached the interface has just reset the device,
+/// and a Bulk-Only reset on top left the camera unresponsive on macOS 26; an
+/// INQUIRY, which it always answered, primes it instead.
+fn prepare_msc(msc: &mut MscDevice<NusbBackend>) {
+    #[cfg(target_os = "macos")]
+    let _ = msc.get_device_info();
+    #[cfg(not(target_os = "macos"))]
+    msc.reset();
+}
+
 /// Combine a [`CameraInfo`]/lens/firmware triple into a report.
 fn build_report(
     mode: CameraMode,
@@ -330,7 +342,7 @@ pub fn read_camera_info(camera: &DetectedCamera) -> Result<CameraInfoReport> {
             }
             let (backend, iface) = NusbBackend::open_class(&camera.device, class::MSC)?;
             let mut msc = MscDevice::new(backend, iface.ep_in, iface.ep_out);
-            msc.reset();
+            prepare_msc(&mut msc);
             let (info, lens, firmware) = read_extcmd_report(msc)?;
             Ok(build_report(camera.mode, info, lens, firmware))
         }
@@ -373,7 +385,7 @@ pub fn read_camera_info(camera: &DetectedCamera) -> Result<CameraInfoReport> {
             }
             let (backend, iface) = NusbBackend::open_class(&camera.device, class::MSC)?;
             let mut msc = MscDevice::new(backend, iface.ep_in, iface.ep_out);
-            msc.reset();
+            prepare_msc(&mut msc);
             let mut updater = SonyUpdaterCamera::new(msc);
             updater.init()?;
             let firmware = updater.get_firmware_version().ok().map(|f| f.old);
@@ -420,7 +432,7 @@ pub fn open_extcmd_transport(camera: &DetectedCamera) -> Result<Box<dyn SonyExtC
             }
             let (backend, iface) = NusbBackend::open_class(&camera.device, class::MSC)?;
             let mut msc = MscDevice::new(backend, iface.ep_in, iface.ep_out);
-            msc.reset();
+            prepare_msc(&mut msc);
             Ok(Box::new(msc))
         }
         CameraMode::Mtp => {
