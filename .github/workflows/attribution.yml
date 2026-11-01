@@ -1,0 +1,77 @@
+name: Text attribution
+
+# The CI job "Commit attribution" checks commits. This workflow checks the texts
+# written on GitHub itself: pull request and issue descriptions, comments,
+# reviews and release notes. None of them may carry an AI assistant's footer
+# ("Generated with/by Claude Code", claude.ai/code links) or co-author lines.
+# Every run scans the whole repository, whatever triggered it, so an old text
+# keeps the check red until it is edited.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    types: [opened, edited, reopened, synchronize]
+  pull_request_review:
+    types: [submitted, edited]
+  pull_request_review_comment:
+    types: [created, edited]
+  issues:
+    types: [opened, edited, reopened]
+  issue_comment:
+    types: [created, edited]
+  release:
+    types: [published, edited]
+  schedule:
+    - cron: "17 4 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: read
+  pull-requests: read
+
+concurrency:
+  group: text-attribution
+  cancel-in-progress: false
+
+jobs:
+  texts:
+    name: No AI footer in PRs, issues, comments, releases
+    runs-on: ubuntu-latest
+    steps:
+      - name: Scan GitHub texts
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          pattern='generated (with|by) \[?claude code|claude\.ai/code|claude\.com/claude-code|co-authored-by:.*(claude|anthropic)|claude-session:'
+          out=$(mktemp)
+
+          # Issues and pull requests (the issues endpoint returns both).
+          gh api --paginate "repos/$REPO/issues?state=all&per_page=100" \
+            --jq '.[] | [.html_url, (.title + "\n" + (.body // ""))] | @json' >> "$out"
+          # Comments on issues and pull requests.
+          gh api --paginate "repos/$REPO/issues/comments?per_page=100" \
+            --jq '.[] | [.html_url, (.body // "")] | @json' >> "$out"
+          # Review comments on pull request diffs.
+          gh api --paginate "repos/$REPO/pulls/comments?per_page=100" \
+            --jq '.[] | [.html_url, (.body // "")] | @json' >> "$out"
+          # Review summaries, per pull request.
+          for pr in $(gh api --paginate "repos/$REPO/pulls?state=all&per_page=100" --jq '.[].number'); do
+            gh api --paginate "repos/$REPO/pulls/$pr/reviews?per_page=100" \
+              --jq '.[] | [.html_url, (.body // "")] | @json' >> "$out"
+          done
+          # Release titles and notes.
+          gh api --paginate "repos/$REPO/releases?per_page=100" \
+            --jq '.[] | [.html_url, ((.name // "") + "\n" + (.body // ""))] | @json' >> "$out"
+
+          found=$(jq -r --arg p "$pattern" \
+            'select(.[1] | test($p; "i")) | .[0]' "$out" | sort -u)
+          echo "Scanned $(wc -l < "$out") texts."
+          if [ -n "$found" ]; then
+            echo "$found"
+            echo "::error::These texts carry an AI assistant footer or co-author line. Edit them on GitHub and remove it."
+            exit 1
+          fi
