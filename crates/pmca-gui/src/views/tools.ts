@@ -11,7 +11,7 @@ import {
   showErrorKey,
   statusLine,
 } from "../dom";
-import { browseButton } from "../drop";
+import { browseButton, registerDragDrop, setFileDrop } from "../drop";
 import type { ToolOutcome } from "../dto";
 import { tr } from "../i18n";
 import { pluginToolCards } from "./plugins";
@@ -62,6 +62,64 @@ export function viewTools(host: HTMLElement): void {
     },
   );
 
+  // Drop suffixes per file kind; an empty string matches any name, for "any".
+  const INPUT_SUFFIX: Record<string, string[]> = {
+    apk: [".apk"],
+    spk: [".spk"],
+    "usage-log": [".bin"],
+    firmware: [".dat"],
+    any: [""],
+  };
+  const claimDrop = (): void =>
+    setFileDrop({
+      suffixes: INPUT_SUFFIX[INPUT_KIND[operation.value] ?? "any"] ?? [""],
+      accept: (path) => {
+        inputPath.value = path;
+      },
+    });
+  operation.addEventListener("change", claimDrop);
+  claimDrop();
+  const dropzone = make(
+    "div",
+    { className: "dropzone tools-drop" },
+    make("span", { className: "hint", i18n: "tools-drop-hint" }),
+    make("div", { className: "row" }, browseInput, inputPath),
+  );
+  void registerDragDrop(dropzone);
+
+  // The two converters write an output file; the others only print a report.
+  const CONVERTER: Record<string, { kind: string; ext: string }> = {
+    apk2spk: { kind: "spk", ext: "spk" },
+    spk2apk: { kind: "apk", ext: "apk" },
+  };
+  const outputPath = make("input", { type: "text", className: "path-input" });
+  const outputBrowse = browseButton(
+    status,
+    () => {
+      const conv = CONVERTER[operation.value];
+      if (!conv) return Promise.resolve(null);
+      const stem = (inputPath.value.trim().split(/[\\/]/).pop() ?? "").replace(/\.[^.]*$/, "");
+      return invoke<string | null>("pick_save_path", {
+        kind: conv.kind,
+        name: `${stem || "output"}.${conv.ext}`,
+      });
+    },
+    (path) => {
+      outputPath.value = path;
+    },
+  );
+  const outputField = make(
+    "div",
+    {},
+    make("label", { className: "field-label", i18n: "tools-output" }),
+    make("div", { className: "row" }, outputBrowse, outputPath),
+  );
+  const updateOutput = (): void => {
+    outputField.hidden = !CONVERTER[operation.value];
+  };
+  operation.addEventListener("change", updateOutput);
+  updateOutput();
+
   const runButton = make("button", { className: "primary", i18n: "btn-service-run" });
   runButton.addEventListener("click", async () => {
     const input = inputPath.value.trim();
@@ -73,10 +131,11 @@ export function viewTools(host: HTMLElement): void {
     report.replaceChildren();
     showBusy(status, tr("msg-working"));
     try {
-      // The converters ask for their output file in a dialog of the backend.
+      // A converter's output: the field when set, else the backend's dialog.
       const outcome = await invoke<ToolOutcome | null>("run_tool", {
         operation: operation.value,
         input,
+        output: outputPath.value.trim() || null,
       });
       if (outcome === null) {
         clearStatusState(status);
@@ -99,7 +158,8 @@ export function viewTools(host: HTMLElement): void {
       make("label", { className: "field-label", i18n: "tools-operation" }),
       operation,
       make("label", { className: "field-label", i18n: "tools-input" }),
-      make("div", { className: "row" }, browseInput, inputPath),
+      dropzone,
+      outputField,
       make("div", { className: "row" }, runButton),
       status,
       report,

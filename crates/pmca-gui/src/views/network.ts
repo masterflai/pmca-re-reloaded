@@ -1,4 +1,4 @@
-/** Network page: GPS assist data, Wi-Fi and streaming settings. */
+/** Network page (Wi-Fi and streaming) and the GPS page, split out below. */
 
 import { invoke } from "@tauri-apps/api/core";
 import {
@@ -18,7 +18,12 @@ import { tr } from "../i18n";
 import { deviceLists, lowRiskCheck } from "./camera";
 
 export function viewNetwork(host: HTMLElement): void {
-  host.append(cardGps(), cardWifi(), cardStreaming());
+  host.append(cardWifi(), cardStreaming());
+}
+
+/** GPS assist data, its own page under Applications. */
+export function viewGps(host: HTMLElement): void {
+  host.append(cardGps());
 }
 
 /**

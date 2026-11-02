@@ -127,6 +127,69 @@ body {
 
 .nav-spacer { flex: 1; }
 
+/* A clickable group heading that folds its navigation entries away. Styled
+ * like a navigation entry (not a tiny label) so it reads as the group's menu. */
+.nav-section {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 10px 12px;
+  border: none;
+  border-radius: var(--radius);
+  background: transparent;
+  font: inherit;
+  font-weight: 600;
+  text-align: start;
+  cursor: pointer;
+  color: var(--text);
+}
+.nav-section::before {
+  content: "▾";
+  font-size: 0.8em;
+  width: 0.8em;
+  color: var(--text-muted);
+}
+.nav-section.collapsed::before { content: "▸"; }
+.nav-section:hover { background: var(--border); }
+/* Entries under a heading are indented so they read as its children. */
+.nav-item[data-group] { padding-inline-start: 30px; }
+
+/* Ribbon tabs: folder-style headers whose active one merges into the content
+ * line below. No content box, so the cards underneath are not double-framed. */
+.tabs { display: flex; flex-direction: column; }
+.tabbar { display: flex; gap: 4px; }
+.tab {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1px;
+  padding: 9px 20px;
+  margin-bottom: -1px;
+  border: 1px solid transparent;
+  border-radius: calc(var(--radius) + 2px) calc(var(--radius) + 2px) 0 0;
+  background: transparent;
+  color: var(--text-muted);
+  font: inherit;
+  cursor: pointer;
+}
+.tab:hover { color: var(--text); background: var(--control-hover); }
+.tab.active {
+  position: relative;
+  z-index: 1;
+  color: var(--text);
+  background: var(--surface-solid);
+  border-color: var(--accent);
+  border-bottom-color: var(--surface-solid);
+}
+.tabpanel {
+  border-top: 1px solid var(--control-border);
+  padding-top: 16px;
+}
+.tab-label { font-size: 0.95rem; font-weight: 600; }
+.tab-sub { font-size: 0.74rem; font-weight: 400; color: var(--text-muted); }
+.tab.active .tab-sub { color: var(--accent); }
+
 .nav-version {
   padding: 8px 12px 0;
   font: inherit;
@@ -335,6 +398,9 @@ button:disabled {
   flex-wrap: wrap;
   margin-bottom: 12px;
 }
+
+/* Space between the Tweaks info disclosure and the controls below it. */
+.tweaks-info { margin-bottom: 16px; }
 
 .path-input {
   width: 100%;
@@ -875,6 +941,15 @@ summary {
   border-color: var(--accent);
   border-style: solid;
 }
+
+/* The file-tools drop target: hint stacked above the browse/path controls. */
+.dropzone.tools-drop {
+  flex-direction: column;
+  align-items: stretch;
+  gap: 10px;
+  text-align: start;
+}
+.dropzone.tools-drop .row { margin-bottom: 0; }
 
 /*
  * A drop target that is also the field: "Browse…" first, then the hint while

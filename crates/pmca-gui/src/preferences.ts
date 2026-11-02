@@ -55,17 +55,15 @@ const ANALYSIS_STORAGE_KEY = "pmca.analysis";
 /**
  * Whether the function analysis appears in the navigation.
  *
- * Off by default and off whenever storage cannot be read, for the reason given
- * at {@link advanced}: it is a tool for people who want to find out something
- * new about their camera, not something an ordinary user should stumble into.
+ * On by default; hidden only when the user has explicitly switched it off.
  */
 export let analysisOn = readAnalysisMode();
 
 function readAnalysisMode(): boolean {
   try {
-    return localStorage.getItem(ANALYSIS_STORAGE_KEY) === "on";
+    return localStorage.getItem(ANALYSIS_STORAGE_KEY) !== "off";
   } catch {
-    return false;
+    return true;
   }
 }
 
@@ -77,12 +75,74 @@ export function setAnalysisMode(on: boolean): void {
   } catch {
     /* the choice still applies to this session */
   }
-  applyAnalysisNav();
+  applyNav();
 }
 
+// ---------------------------------------------------------------------------
+// Collapsible navigation groups
+// ---------------------------------------------------------------------------
+
+const NAV_GROUPS_KEY = "pmca.nav.groups";
+const NAV_GROUPS = ["camera", "apps", "maintenance"];
+
+/** Groups that are folded shut; all of them until the user opens one. */
+let collapsedGroups = readCollapsedGroups();
+
+function readCollapsedGroups(): Set<string> {
+  try {
+    const raw: unknown = JSON.parse(localStorage.getItem(NAV_GROUPS_KEY) ?? "null");
+    if (Array.isArray(raw)) return new Set(raw.map(String));
+  } catch {
+    /* fall through to the default */
+  }
+  return new Set(NAV_GROUPS);
+}
+
+function saveCollapsedGroups(): void {
+  try {
+    localStorage.setItem(NAV_GROUPS_KEY, JSON.stringify([...collapsedGroups]));
+  } catch {
+    /* the choice still applies to this session */
+  }
+}
+
+/** Fold a group open or shut and remember it. Opening one closes the others. */
+export function toggleNavGroup(group: string): void {
+  collapsedGroups = collapsedGroups.has(group)
+    ? new Set(NAV_GROUPS.filter((g) => g !== group))
+    : new Set(NAV_GROUPS);
+  saveCollapsedGroups();
+  applyNav();
+}
+
+/** Open the group a view lives in and close the others. */
+export function expandNavGroup(group: string): void {
+  if (!group || !collapsedGroups.has(group)) return;
+  collapsedGroups = new Set(NAV_GROUPS.filter((g) => g !== group));
+  saveCollapsedGroups();
+  applyNav();
+}
+
+/**
+ * Show or hide every navigation entry from its group's folded state, keeping
+ * the analysis entry hidden until it is unlocked.
+ */
+export function applyNav(): void {
+  for (const group of NAV_GROUPS) {
+    const folded = collapsedGroups.has(group);
+    document
+      .querySelector<HTMLElement>(`.nav-section[data-group="${group}"]`)
+      ?.classList.toggle("collapsed", folded);
+    for (const item of document.querySelectorAll<HTMLElement>(`.nav-item[data-group="${group}"]`)) {
+      const locked = item.dataset.view === "analysis" && !analysisOn;
+      item.hidden = folded || locked;
+    }
+  }
+}
+
+/** Kept for callers that only mean the analysis entry; folds are applied too. */
 export function applyAnalysisNav(): void {
-  const item = document.querySelector<HTMLElement>('.nav-item[data-view="analysis"]');
-  if (item) item.hidden = !analysisOn;
+  applyNav();
 }
 
 // ---------------------------------------------------------------------------

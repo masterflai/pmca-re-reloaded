@@ -25,17 +25,21 @@
       <nav class="nav-rail" aria-label="main">
         <div class="nav-title" data-i18n="app-title">PMCA-RE RELOADED</div>
         <button class="nav-item active" data-view="welcome" data-i18n="nav-welcome">Welcome</button>
-        <button class="nav-item" data-view="info" data-i18n="nav-camera-info">Camera info</button>
-        <button class="nav-item" data-view="compat" data-i18n="docs-compatibility">Camera compatibility</button>
-        <button class="nav-item" data-view="install" data-i18n="nav-install-app">Apps</button>
-        <button class="nav-item" data-view="tweaks" data-i18n="nav-tweaks">Tweaks</button>
-        <!-- Shown only once unlocked in the settings; see applyAnalysisNav. -->
-        <button class="nav-item" data-view="analysis" data-i18n="nav-analysis" hidden>Analysis</button>
-        <button class="nav-item" data-view="network" data-i18n="nav-network">Network</button>
-        <button class="nav-item" data-view="firmware" data-i18n="nav-firmware">Update firmware</button>
-        <button class="nav-item" data-view="service" data-i18n="nav-service">Service shell</button>
-        <button class="nav-item" data-view="updater" data-i18n="nav-updater">Updater shell</button>
-        <button class="nav-item" data-view="tools" data-i18n="nav-tools">File tools</button>
+        <button class="nav-section collapsed" data-group="camera" data-i18n="nav-group-camera">Camera</button>
+        <button class="nav-item" data-view="info" data-group="camera" data-i18n="nav-camera-info">Camera info</button>
+        <button class="nav-item" data-view="compat" data-group="camera" data-i18n="docs-compatibility">Camera compatibility</button>
+        <button class="nav-section collapsed" data-group="apps" data-i18n="nav-group-apps">Applications</button>
+        <button class="nav-item" data-view="install" data-group="apps" data-i18n="nav-install-app">Apps</button>
+        <button class="nav-item" data-view="gps" data-group="apps" data-i18n="nav-gps">GPS</button>
+        <button class="nav-item" data-view="network" data-group="apps" data-i18n="nav-network">Network</button>
+        <button class="nav-section collapsed" data-group="maintenance" data-i18n="nav-group-maintenance">Maintenance</button>
+        <button class="nav-item" data-view="tweaks" data-group="maintenance" data-i18n="nav-tweaks">Tweaks</button>
+        <button class="nav-item" data-view="backup" data-group="maintenance" data-i18n="nav-backup">Backup</button>
+        <!-- Shown only once unlocked in the settings; see applyNav. -->
+        <button class="nav-item" data-view="analysis" data-group="maintenance" data-i18n="nav-analysis" hidden>Analysis</button>
+        <button class="nav-item" data-view="firmware" data-group="maintenance" data-i18n="nav-firmware">Update firmware</button>
+        <button class="nav-item" data-view="shell" data-group="maintenance" data-i18n="nav-shell">Shell</button>
+        <button class="nav-item" data-view="tools" data-group="maintenance" data-i18n="nav-tools">File tools</button>
         <div class="nav-spacer"></div>
         <button class="nav-item" data-view="settings" data-i18n="nav-settings">Settings</button>
         <button class="nav-item" data-view="license" data-i18n="nav-license">License</button>

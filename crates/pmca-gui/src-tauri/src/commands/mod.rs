@@ -2,6 +2,7 @@
 //! shared state, the worker-thread helpers and the handler list.
 
 mod analysis;
+mod backup;
 mod camera;
 mod dialogs;
 mod install;
@@ -15,6 +16,7 @@ mod tools;
 mod tweaks;
 
 pub(crate) use analysis::*;
+pub(crate) use backup::*;
 pub(crate) use camera::*;
 pub(crate) use dialogs::*;
 pub(crate) use install::*;

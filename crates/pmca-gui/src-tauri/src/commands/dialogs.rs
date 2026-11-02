@@ -29,6 +29,7 @@ pub(crate) fn dialog_filter(
         "usage-log" => Ok(("file-filter-usage-log", &["bin"])),
         "catalog" => Ok(("file-filter-catalog", &["ftl"])),
         "analysis" => Ok(("file-filter-analysis", &["json"])),
+        "backup" => Ok(("file-filter-backup", &["bin"])),
         "spk" => Ok(("file-filter-spk", &["spk"])),
         "photo" => Ok(("file-filter-photo", &["arw", "jpg", "jpeg", "hif", "heif", "heic"])),
         "plugin" => Ok(("file-filter-plugin", &["pmcaplugin"])),

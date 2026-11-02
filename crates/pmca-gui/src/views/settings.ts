@@ -114,7 +114,6 @@ function cardAnalysisMode(): HTMLElement {
   return card(
     make("h2", { i18n: "settings-analysis-heading" }),
     make("p", { i18n: "settings-analysis-purpose" }),
-    make("p", { className: "warning", i18n: "settings-analysis-why-off" }),
     make("label", { className: "row" }, toggle, make("span", { i18n: "settings-analysis-toggle" })),
     status,
   );

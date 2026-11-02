@@ -2,6 +2,7 @@
 //! dispatches here.
 
 mod analyze;
+mod backup;
 mod camera;
 mod network;
 mod plugins;
@@ -11,6 +12,7 @@ mod tweaks;
 mod updater;
 
 pub(crate) use analyze::*;
+pub(crate) use backup::*;
 pub(crate) use camera::*;
 pub(crate) use network::*;
 pub(crate) use plugins::*;

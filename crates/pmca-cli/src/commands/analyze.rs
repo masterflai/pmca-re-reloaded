@@ -100,7 +100,6 @@ pub(crate) fn analyze_command(
     let mut run = pmca_app::analysis::AnalysisRun::new(l, setting, values, write_test)?;
 
     println!("{}", l.tr("analysis-title"));
-    println!("{}", l.tr("analysis-experimental"));
     println!("{}", l.tr("analysis-purpose"));
     println!("{}", l.tr("analysis-own-hardware"));
     if pmca_app::analysis::has_pending_restore() {

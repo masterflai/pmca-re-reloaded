@@ -13,11 +13,43 @@ import {
   showError,
   showStatus,
   statusLine,
+  tabs,
 } from "../dom";
 import { appendPickedPath, browseButton } from "../drop";
 import { PROGRESS_EVENT, type ProgressPayload, type ShellOutcome } from "../dto";
 import { errorText, tr } from "../i18n";
 import { advancedMode } from "../preferences";
+
+/**
+ * The combined shell page: service mode and the updater shell as two tabs.
+ *
+ * Switching tabs ends the other tab's session, so the camera never stays in a
+ * mode behind a hidden tab; `renderView` ends both when the page is left.
+ */
+export function viewShells(host: HTMLElement): void {
+  host.append(
+    tabs(
+      [
+        {
+          id: "service",
+          labelKey: "nav-service",
+          subKey: "shell-tab-service-sub",
+          render: viewService,
+        },
+        {
+          id: "updater",
+          labelKey: "nav-updater",
+          subKey: "shell-tab-updater-sub",
+          render: viewUpdater,
+        },
+      ],
+      (id) => {
+        if (id !== "service") void invoke("service_close").catch(() => undefined);
+        if (id !== "updater") void invoke("updater_close").catch(() => undefined);
+      },
+    ),
+  );
+}
 
 /**
  * The service page.

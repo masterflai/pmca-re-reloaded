@@ -338,3 +338,255 @@ pub(crate) async fn analysis_restore_pending(app: AppHandle) -> Result<Reply<usi
     })
     .await
 }
+
+// ---------------------------------------------------------------------------
+// Reference check: verify a known finding against the connected camera.
+// ---------------------------------------------------------------------------
+
+use pmca_app::analysis::{ReferenceCheck, ReferenceEntry, ReferenceState};
+
+/// A step of the reference check, as both the window and the macOS broker run it.
+pub(crate) type ReferenceStep<'a> = Box<
+    dyn FnOnce(
+            &mut ReferenceCheck,
+            &Localizer,
+            &mut dyn pmca_app::ProgressSink,
+        ) -> Result<(), CommandError>
+        + 'a,
+>;
+
+/// Run `step` on the reference check in `slot` and return where it stands.
+pub(crate) fn reference_step(
+    slot: &mut Option<ReferenceCheck>,
+    localizer: &Localizer,
+    sink: &mut dyn pmca_app::ProgressSink,
+    step: ReferenceStep<'_>,
+) -> Result<ReferenceState, CommandError> {
+    let run = slot
+        .as_mut()
+        .ok_or_else(|| CommandError::localized(localizer.tr("reference-not-started")))?;
+    step(run, localizer, sink)?;
+    Ok(run.state())
+}
+
+/// [`reference_step`] on the window's own check.
+#[cfg_attr(target_os = "macos", allow(dead_code))]
+pub(crate) fn with_reference(
+    app: &AppHandle,
+    state: &AppState,
+    step: ReferenceStep<'_>,
+) -> Result<ReferenceState, CommandError> {
+    let localizer = state.localizer()?;
+    let mut guard = state.reference.lock().map_err(CommandError::internal)?;
+    reference_step(&mut guard, &localizer, &mut progress(app), step)
+}
+
+/// A camera step of the reference check: in the broker on macOS, here elsewhere.
+fn reference_camera_step(
+    app: &AppHandle,
+    state: &AppState,
+    #[cfg_attr(not(target_os = "macos"), allow(unused_variables))] request: remote::Request,
+    #[cfg_attr(target_os = "macos", allow(unused_variables))] step: ReferenceStep<'_>,
+) -> Result<Reply<ReferenceState>, CommandError> {
+    #[cfg(target_os = "macos")]
+    {
+        remote::call(app, state, request).map(Reply::Relayed)
+    }
+    #[cfg(not(target_os = "macos"))]
+    {
+        with_reference(app, state, step).map(Reply::Here)
+    }
+}
+
+/// Start a check in `slot`, unless the one there still has a value to restore.
+pub(crate) fn start_reference(
+    slot: &mut Option<ReferenceCheck>,
+    localizer: &Localizer,
+    entries: Vec<ReferenceEntry>,
+) -> Result<ReferenceState, CommandError> {
+    if slot.as_ref().is_some_and(|run| run.needs_restore()) {
+        return Err(CommandError::localized(localizer.tr("reference-pending")));
+    }
+    let run = ReferenceCheck::new(localizer, entries)?;
+    Ok(slot.insert(run).state())
+}
+
+/// Empty `slot`, unless its check still has a value to restore.
+pub(crate) fn discard_reference(
+    slot: &mut Option<ReferenceCheck>,
+    localizer: &Localizer,
+) -> Result<(), CommandError> {
+    if slot.as_ref().is_some_and(|run| run.needs_restore()) {
+        return Err(CommandError::localized(localizer.tr("reference-pending")));
+    }
+    slot.take();
+    Ok(())
+}
+
+/// Build findings from a shared analysis report the user picks. Local only.
+#[tauri::command]
+pub(crate) async fn reference_import(
+    app: AppHandle,
+    path: String,
+) -> Result<Vec<ReferenceEntry>, CommandError> {
+    in_background(move || {
+        let state = app.state::<AppState>();
+        let localizer = state.localizer()?;
+        let text = std::fs::read_to_string(&path)?;
+        Ok(pmca_app::analysis::entries_from_report(&localizer, &text)?)
+    })
+    .await
+}
+
+/// The reference check under way, if any. Lets the view pick up where it left off.
+#[tauri::command]
+pub(crate) async fn reference_state(
+    app: AppHandle,
+) -> Result<Option<Reply<ReferenceState>>, CommandError> {
+    in_background(move || {
+        let state = app.state::<AppState>();
+        #[cfg(target_os = "macos")]
+        {
+            let relayed = remote::call_if_running(&app, &state, remote::Request::ReferenceState)?;
+            Ok(relayed.filter(|v| !v.is_null()).map(Reply::Relayed))
+        }
+        #[cfg(not(target_os = "macos"))]
+        {
+            let guard = state.reference.lock().map_err(CommandError::internal)?;
+            Ok(guard.as_ref().map(|run| Reply::Here(run.state())))
+        }
+    })
+    .await
+}
+
+/// Begin a reference check from the entered or imported findings. Touches no
+/// camera.
+#[tauri::command]
+pub(crate) async fn reference_start(
+    app: AppHandle,
+    entries: Vec<ReferenceEntry>,
+) -> Result<Reply<ReferenceState>, CommandError> {
+    in_background(move || {
+        let state = app.state::<AppState>();
+        #[cfg(target_os = "macos")]
+        {
+            remote::call(&app, &state, remote::Request::ReferenceStart { entries })
+                .map(Reply::Relayed)
+        }
+        #[cfg(not(target_os = "macos"))]
+        {
+            let localizer = state.localizer()?;
+            let mut guard = state.reference.lock().map_err(CommandError::internal)?;
+            Ok(Reply::Here(start_reference(&mut guard, &localizer, entries)?))
+        }
+    })
+    .await
+}
+
+/// Read the findings' properties from the connected camera. Only reads.
+#[tauri::command]
+pub(crate) async fn reference_check(app: AppHandle) -> Result<Reply<ReferenceState>, CommandError> {
+    with_camera(app, |app, state| {
+        reference_camera_step(
+            app,
+            state,
+            remote::Request::ReferenceCheck,
+            Box::new(|run, l, sink| {
+                run.check(l, sink)?;
+                Ok(())
+            }),
+        )
+    })
+    .await
+}
+
+/// Write the chosen value of one finding. The front-end asks for consent twice
+/// before calling this.
+#[tauri::command]
+pub(crate) async fn reference_write(
+    app: AppHandle,
+    index: usize,
+    variant: usize,
+) -> Result<Reply<ReferenceState>, CommandError> {
+    with_camera(app, move |app, state| {
+        reference_camera_step(
+            app,
+            state,
+            remote::Request::ReferenceWrite { index, variant },
+            Box::new(move |run, l, sink| {
+                run.write(l, sink, index, variant)?;
+                Ok(())
+            }),
+        )
+    })
+    .await
+}
+
+/// Note what the camera's menu showed. Touches no camera.
+#[tauri::command]
+pub(crate) async fn reference_menu(
+    app: AppHandle,
+    observed: String,
+) -> Result<Reply<ReferenceState>, CommandError> {
+    in_background(move || {
+        let state = app.state::<AppState>();
+        #[cfg(target_os = "macos")]
+        {
+            remote::call(&app, &state, remote::Request::ReferenceMenu { observed })
+                .map(Reply::Relayed)
+        }
+        #[cfg(not(target_os = "macos"))]
+        {
+            with_reference(
+                &app,
+                &state,
+                Box::new(move |run, _, _| {
+                    run.record_menu(&observed);
+                    Ok(())
+                }),
+            )
+            .map(Reply::Here)
+        }
+    })
+    .await
+}
+
+/// Write the original value back.
+#[tauri::command]
+pub(crate) async fn reference_restore(
+    app: AppHandle,
+) -> Result<Reply<ReferenceState>, CommandError> {
+    with_camera(app, |app, state| {
+        reference_camera_step(
+            app,
+            state,
+            remote::Request::ReferenceRestore,
+            Box::new(|run, l, sink| {
+                run.restore(l, sink)?;
+                Ok(())
+            }),
+        )
+    })
+    .await
+}
+
+/// Forget the reference check under way. Refused while a written value is still
+/// waiting to be restored.
+#[tauri::command]
+pub(crate) async fn reference_discard(app: AppHandle) -> Result<(), CommandError> {
+    in_background(move || {
+        let state = app.state::<AppState>();
+        #[cfg(target_os = "macos")]
+        {
+            remote::call_if_running(&app, &state, remote::Request::ReferenceDiscard)?;
+            Ok(())
+        }
+        #[cfg(not(target_os = "macos"))]
+        {
+            let localizer = state.localizer()?;
+            let mut guard = state.reference.lock().map_err(CommandError::internal)?;
+            discard_reference(&mut guard, &localizer)
+        }
+    })
+    .await
+}

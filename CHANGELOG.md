@@ -6,6 +6,35 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+## [1.10.0] - 2026-11-03
+
+**The analysis module grew substantially and is now on by default.** Beyond
+finding a property on your own camera, you can now check a known finding against
+your camera and keep a full backup you can restore. The window was also
+reorganised so related pages sit together.
+
+### Added
+
+- *Check a finding* on the Analysis page: enter the memory location and the
+  value variants that were observed on another camera, and the program reports
+  whether your own camera holds a matching value there — with an optional,
+  reversible write test that confirms the location responds.
+- A *Backup* page, and `backup --save` / `backup --restore` on the command line,
+  to store a complete copy of the camera's writable area and put it back later.
+  Restore only accepts a backup from the same camera, keeps a safety copy of the
+  previous contents, and verifies what it wrote.
+
+### Changed
+
+- The analysis module is enabled by default. It can still be turned off in
+  Settings.
+- The Analysis page is split into *Discover* and *Check a finding* tabs, and the
+  explanatory texts are collapsed until you open them.
+- Service shell and firmware updater share one *Shell* page with tabs, the
+  navigation is grouped into collapsible sections, and GPS has moved to its own
+  page next to Wi-Fi. The Tools page accepts files by drag and drop, and the
+  converters let you choose where the result is written.
+
 ## [1.9.0] - 2026-11-02
 
 **Flash official firmware, and re-flash the same or an older version.** Firmware

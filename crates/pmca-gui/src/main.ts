@@ -39,16 +39,17 @@ import {
   type Locale,
 } from "./i18n";
 import { detectHostPlatform } from "./platform";
-import { applyAnalysisNav, applyTheme, setupThemeSwitch, storedTheme } from "./preferences";
+import { applyAnalysisNav, applyTheme, expandNavGroup, setupThemeSwitch, storedTheme, toggleNavGroup } from "./preferences";
 import { announceUpdate, checkForUpdateNow } from "./update";
 import { viewAnalysis } from "./views/analysis";
+import { viewBackup } from "./views/backup";
 import { viewCameraInfo, viewCompatibility } from "./views/camera";
 import { viewFirmware } from "./views/firmware";
 import { viewInstall } from "./views/install";
 import { viewLicense } from "./views/license";
-import { viewNetwork } from "./views/network";
+import { viewGps, viewNetwork } from "./views/network";
 import { viewSettings } from "./views/settings";
-import { viewService, viewUpdater } from "./views/shells";
+import { viewService, viewShells, viewUpdater } from "./views/shells";
 import { viewTools } from "./views/tools";
 import { viewTweaks } from "./views/tweaks";
 import { viewWelcome } from "./views/welcome";
@@ -58,10 +59,13 @@ const VIEWS: Record<string, (host: HTMLElement) => void> = {
   info: viewCameraInfo,
   compat: viewCompatibility,
   install: viewInstall,
+  gps: viewGps,
   tweaks: viewTweaks,
+  backup: viewBackup,
   analysis: viewAnalysis,
   network: viewNetwork,
   firmware: viewFirmware,
+  shell: viewShells,
   service: viewService,
   updater: viewUpdater,
   tools: viewTools,
@@ -73,19 +77,23 @@ function renderView(name: string, host: HTMLElement): void {
   host.replaceChildren();
   // The outgoing view's nodes are gone; drop its claim on dropped files too.
   setFileDrop(null);
-  // The service view's controls go with it, and a camera left in service mode
-  // stalls the next session's authentication — so navigating away ends the
-  // session rather than stranding it behind a page the user has left.
-  if (name !== "service") void invoke("service_close").catch(() => undefined);
-  // The same for the updater session, which additionally holds a firmware
-  // write open: leaving it running behind a hidden page would keep the camera
-  // waiting for a chunk nothing is going to send.
-  if (name !== "updater") void invoke("updater_close").catch(() => undefined);
+  // The shell page owns both the service and updater sessions (two tabs). A
+  // camera left in service or updater mode stalls the next session, and the
+  // updater session holds a firmware write open, so both are ended when the
+  // page is left rather than stranded behind it.
+  if (name !== "shell") {
+    void invoke("service_close").catch(() => undefined);
+    void invoke("updater_close").catch(() => undefined);
+  }
   // The tweak view keeps its session between listing and applying so the
   // second operation does not pay for the mode switch again. That saving is
   // only worth having while the view is on screen; once it is not, the camera
   // has no business staying in service mode.
   if (name !== "tweaks") void invoke("tweaks_close").catch(() => undefined);
+  // Keep the page's group open so its entry stays visible when a view is
+  // reached without a click (resume after an elevated restart, say).
+  const navItem = document.querySelector<HTMLElement>(`.nav-item[data-view="${name}"]`);
+  if (navItem?.dataset.group) expandNavGroup(navItem.dataset.group);
   (VIEWS[name] ?? viewWelcome)(host);
   translateTree(host);
   // The scrolling container is the content pane around the view, and it keeps
@@ -121,6 +129,10 @@ function setupNavigation(): void {
       item.classList.add("active");
       renderView(item.dataset.view ?? "welcome", view);
     });
+  });
+  // The group headings fold their entries away; clicking one toggles its group.
+  document.querySelectorAll<HTMLButtonElement>(".nav-section").forEach((section) => {
+    section.addEventListener("click", () => toggleNavGroup(section.dataset.group ?? ""));
   });
   renderView("welcome", view);
 }

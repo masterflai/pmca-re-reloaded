@@ -148,6 +148,12 @@ struct AppState {
     /// across navigation so a write test cannot be lost by leaving the view
     /// before its value is restored.
     analysis: Mutex<Option<pmca_app::analysis::AnalysisRun>>,
+    /// The reference check under way, if any.
+    ///
+    /// Like [`Self::analysis`] it holds no camera session and is kept across
+    /// navigation so an optional write test cannot be lost before its value is
+    /// restored.
+    reference: Mutex<Option<pmca_app::analysis::ReferenceCheck>>,
     /// Store apps downloaded ahead of a batch installation, by source and package.
     ///
     /// A batch fetches every selected app before it touches the camera, so a
@@ -179,6 +185,7 @@ impl AppState {
             updater: Mutex::new(None),
             tweaks: Mutex::new(None),
             analysis: Mutex::new(None),
+            reference: Mutex::new(None),
             downloads: Mutex::new(HashMap::new()),
             plugin_downloads: Mutex::new(HashMap::new()),
             install_series: Mutex::new(None),
@@ -410,6 +417,16 @@ pub fn run() {
             analysis_discard,
             analysis_pending,
             analysis_restore_pending,
+            reference_state,
+            reference_start,
+            reference_check,
+            reference_write,
+            reference_menu,
+            reference_restore,
+            reference_discard,
+            reference_import,
+            backup_save,
+            backup_restore,
             list_wifi,
             save_wifi,
             get_streaming_settings,
@@ -452,6 +469,7 @@ pub fn run() {
             updater_run,
             updater_close,
             run_tool,
+            pick_save_path,
         ])
         .run(tauri::generate_context!())
         .expect("failed to start the PMCA-RE RELOADED application");

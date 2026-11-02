@@ -408,10 +408,16 @@ pub struct AnalysisRun {
 }
 
 mod cross_check;
+mod reference;
 mod report;
 mod run;
 
 use cross_check::*;
+pub use reference::{
+    ReferenceCheck, ReferenceEntry, ReferenceResult, ReferenceResultView, ReferenceState,
+    ReferenceVariant, ReferenceWriteState, entries_from_report, has_pending_reference_restore,
+    restore_pending_reference,
+};
 use report::*;
 pub use report::{hex, report_dir};
 use run::*;

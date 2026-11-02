@@ -19,6 +19,7 @@
 pub mod about;
 pub mod analysis;
 pub mod app_backup;
+pub mod backup;
 pub mod broker;
 pub mod devices;
 mod direct;

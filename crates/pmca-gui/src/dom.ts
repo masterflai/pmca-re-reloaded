@@ -30,6 +30,47 @@ export function card(...children: (Node | string)[]): HTMLElement {
   return make("div", { className: "card" }, ...children);
 }
 
+/** One tab of a {@link tabs} bar. */
+export interface TabItem {
+  /** Stable identifier, reported to `onSwitch`. */
+  id: string;
+  /** Catalogue key for the tab's label. */
+  labelKey: string;
+  /** Catalogue key for a one-line subtitle under the label, if any. */
+  subKey?: string;
+  /** Fill the panel for this tab; called every time the tab is shown. */
+  render: (panel: HTMLElement) => void;
+}
+
+/**
+ * A row of tabs over a panel, for pages that hold two or more related things.
+ *
+ * The panel is rebuilt on every switch, so a tab's `render` starts from an
+ * empty panel each time; `onSwitch` runs after, for a view that has to release
+ * a resource the outgoing tab held (a camera session, say).
+ */
+export function tabs(items: TabItem[], onSwitch?: (id: string) => void): HTMLElement {
+  const bar = make("div", { className: "tabbar" });
+  const panel = make("div", { className: "tabpanel" });
+  const buttons = new Map<string, HTMLButtonElement>();
+  const show = (id: string): void => {
+    for (const [key, button] of buttons) button.classList.toggle("active", key === id);
+    panel.replaceChildren();
+    items.find((item) => item.id === id)?.render(panel);
+    onSwitch?.(id);
+  };
+  for (const item of items) {
+    const button = make("button", { className: "tab" }, make("span", { className: "tab-label", i18n: item.labelKey }));
+    if (item.subKey) button.append(make("span", { className: "tab-sub", i18n: item.subKey }));
+    button.addEventListener("click", () => show(item.id));
+    buttons.set(item.id, button);
+    bar.append(button);
+  }
+  const container = make("div", { className: "tabs" }, bar, panel);
+  if (items.length > 0) show(items[0].id);
+  return container;
+}
+
 /** A badge saying what a step does to the camera: read, write, user, local. */
 export function accessBadge(access: Access): HTMLElement {
   return make("span", {

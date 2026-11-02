@@ -6,22 +6,27 @@ use crate::*;
 ///
 /// The six operations are the console's file subcommands; naming them by
 /// string keeps the front-end from having to model the request shape, and
-/// [`pmca_app::tools`] rejects an unknown one. The two converters ask for
-/// their output file in a save dialog opened here; `None` when it was
-/// dismissed.
+/// [`pmca_app::tools`] rejects an unknown one. The two converters write an
+/// output file: the window chooses it up front and passes it in, but if it is
+/// empty a save dialog is opened here as a fallback; `None` when dismissed.
 #[tauri::command]
 pub(crate) async fn run_tool(
     app: AppHandle,
     window: Window,
     operation: String,
     input: String,
+    output: Option<String>,
 ) -> Result<Option<pmca_app::tools::ToolOutcome>, CommandError> {
     in_background(move || {
         let state = app.state::<AppState>();
         let localizer = state.localizer()?;
         let input = PathBuf::from(input);
-        let output = match converted_kind(&operation) {
-            Some((kind, extension)) => {
+        let chosen = output.map(|p| p.trim().to_string()).filter(|p| !p.is_empty());
+        let output = match (converted_kind(&operation), chosen) {
+            // A converter whose output the window already chose.
+            (Some(_), Some(path)) => Some(PathBuf::from(path)),
+            // A converter without one: ask here, as a fallback.
+            (Some((kind, extension)), None) => {
                 let name = input.file_stem().map_or_else(
                     || format!("output.{extension}"),
                     |stem| format!("{}.{extension}", stem.to_string_lossy()),
@@ -31,11 +36,26 @@ pub(crate) async fn run_tool(
                     None => return Ok(None),
                 }
             }
-            None => None,
+            (None, _) => None,
         };
         tool(&localizer, &operation, input, output).map(Some)
     })
     .await
+}
+
+/// Open a save dialog for a converter's output and return the chosen path.
+///
+/// `None` when the dialog was dismissed. Lets the window show where the result
+/// will go before the operation runs, rather than popping a dialog on run.
+#[tauri::command(async)]
+pub(crate) fn pick_save_path(
+    app: AppHandle,
+    window: Window,
+    state: State<'_, AppState>,
+    kind: String,
+    name: String,
+) -> Result<Option<String>, CommandError> {
+    Ok(ask_save_path(&app, &window, &state, &kind, &name)?.map(|p| p.display().to_string()))
 }
 
 /// The dialog kind and file extension of a converter's output.

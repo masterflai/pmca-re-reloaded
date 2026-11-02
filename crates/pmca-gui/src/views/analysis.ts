@@ -19,11 +19,13 @@ import {
   showError,
   showErrorKey,
   statusLine,
+  tabs,
   withProgressTarget,
 } from "../dom";
 import { refreshElevation, type DriverRights } from "../elevation";
 import { tr, trFill } from "../i18n";
 import { hostPlatform } from "../platform";
+import { viewReference } from "./reference";
 
 // ---------------------------------------------------------------------------
 // Function analysis
@@ -70,13 +72,12 @@ function analysisPlan(plan: AnalysisStep[]): HTMLElement {
 /**
  * What the analysis is for and what it does, in full.
  *
- * Open before a run starts, folded away during one: by then it has been read,
- * and the steps are what matters.
+ * Folded shut by default; the user opens it when they want the background.
  */
 function analysisExplanation(): HTMLDetailsElement {
   const details = make(
     "details",
-    { open: true },
+    {},
     make("summary", { i18n: "analysis-explanation-toggle" }),
   );
   const sections: [string, string, AnalysisAccess | null][] = [
@@ -136,7 +137,30 @@ function writeConsentDialog(): Promise<boolean> {
   });
 }
 
+/**
+ * The analysis page: a switch between finding a setting (the discovery run) and
+ * checking a known finding against the connected camera (the reference check).
+ */
 export function viewAnalysis(host: HTMLElement): void {
+  host.append(
+    tabs([
+      {
+        id: "discover",
+        labelKey: "analysis-mode-discover",
+        subKey: "analysis-mode-discover-sub",
+        render: viewDiscovery,
+      },
+      {
+        id: "reference",
+        labelKey: "analysis-mode-reference",
+        subKey: "analysis-mode-reference-sub",
+        render: viewReference,
+      },
+    ]),
+  );
+}
+
+function viewDiscovery(host: HTMLElement): void {
   const status = statusLine();
   const stage = make("div", { className: "analysis-stage" });
   const explanation = analysisExplanation();
@@ -148,7 +172,6 @@ export function viewAnalysis(host: HTMLElement): void {
       make(
         "div",
         { className: "notice-block" },
-        make("p", { i18n: "analysis-experimental" }),
         make("p", { i18n: "analysis-own-hardware" }),
       ),
       explanation,
@@ -159,7 +182,6 @@ export function viewAnalysis(host: HTMLElement): void {
   );
 
   const render: AnalysisRender = (state) => {
-    explanation.open = state === null;
     stage.replaceChildren(
       ...(state === null ? analysisForm(status, render) : analysisRunNodes(state, status, render)),
     );

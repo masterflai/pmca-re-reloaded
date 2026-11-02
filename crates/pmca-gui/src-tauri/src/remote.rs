@@ -51,6 +51,15 @@ pub(crate) enum Request {
     AnalysisReportJson,
     AnalysisDiscard,
     AnalysisRestorePending,
+    ReferenceState,
+    ReferenceStart { entries: Vec<pmca_app::analysis::ReferenceEntry> },
+    ReferenceCheck,
+    ReferenceWrite { index: usize, variant: usize },
+    ReferenceMenu { observed: String },
+    ReferenceRestore,
+    ReferenceDiscard,
+    BackupSave { path: PathBuf },
+    BackupRestore { path: PathBuf },
     FirmwareFlash { file: PathBuf, flash: bool, confirm: bool, reflash: bool },
     FirmwareRestoreVersion,
     FirmwareSetVersion { version: String },
@@ -73,6 +82,7 @@ pub(crate) struct Sessions {
     tweaks: Option<TweakSession>,
     service: Option<ServiceSession>,
     analysis: Option<AnalysisRun>,
+    reference: Option<pmca_app::analysis::ReferenceCheck>,
     updater: Option<UpdaterSession>,
 }
 
@@ -221,6 +231,50 @@ fn run(
             json(())
         }
         Request::AnalysisRestorePending => json(pmca_app::analysis::restore_pending(l, sink)?),
+        Request::ReferenceState => json(s.reference.as_ref().map(|r| r.state())),
+        Request::ReferenceStart { entries } => json(start_reference(&mut s.reference, l, entries)?),
+        Request::ReferenceCheck => json(reference_step(
+            &mut s.reference,
+            l,
+            sink,
+            Box::new(|run, l, sink| {
+                run.check(l, sink)?;
+                Ok(())
+            }),
+        )?),
+        Request::ReferenceWrite { index, variant } => json(reference_step(
+            &mut s.reference,
+            l,
+            sink,
+            Box::new(move |run, l, sink| {
+                run.write(l, sink, index, variant)?;
+                Ok(())
+            }),
+        )?),
+        Request::ReferenceMenu { observed } => json(reference_step(
+            &mut s.reference,
+            l,
+            sink,
+            Box::new(move |run, _, _| {
+                run.record_menu(&observed);
+                Ok(())
+            }),
+        )?),
+        Request::ReferenceRestore => json(reference_step(
+            &mut s.reference,
+            l,
+            sink,
+            Box::new(|run, l, sink| {
+                run.restore(l, sink)?;
+                Ok(())
+            }),
+        )?),
+        Request::ReferenceDiscard => {
+            discard_reference(&mut s.reference, l)?;
+            json(())
+        }
+        Request::BackupSave { path } => json(pmca_app::backup::save(l, sink, &path)?),
+        Request::BackupRestore { path } => json(pmca_app::backup::restore(l, sink, &path)?),
         Request::FirmwareFlash { file, flash, confirm, reflash } => {
             let request = pmca_app::firmware::FlashRequest { file: &file, flash, confirm, reflash };
             json(pmca_app::firmware::flash_firmware(l, &request, sink)?)

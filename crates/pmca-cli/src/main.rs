@@ -251,6 +251,25 @@ enum Command {
         #[arg(long, conflicts_with_all = ["setting", "values", "write_test", "out"])]
         restore: bool,
     },
+    /// Save the camera's whole backup image to a file, or write one back.
+    ///
+    /// `Backup.bin` is the camera's raw settings memory, not a firmware `.dat`.
+    /// Saving only reads; restoring overwrites the settings memory and needs
+    /// `--confirm` and the confirmation word. A backup can only be written back
+    /// to the camera it came from, and only on cameras whose image is small
+    /// enough to transfer in one piece (about 1 MB).
+    #[command(group(clap::ArgGroup::new("backup_action").required(true).args(["save", "restore"])))]
+    Backup {
+        /// Save the camera's backup image to this file.
+        #[arg(long, value_name = "FILE")]
+        save: Option<PathBuf>,
+        /// Write this backup image back to the camera. Needs `--confirm`.
+        #[arg(long, value_name = "FILE", requires = "confirm")]
+        restore: Option<PathBuf>,
+        /// Confirm the destructive restore.
+        #[arg(long)]
+        confirm: bool,
+    },
     /// Upload GPS assist data to the connected camera.
     ///
     /// Without `--file` the current data is downloaded from Sony over HTTPS.
@@ -614,6 +633,7 @@ fn uses_camera(cmd: &Command) -> bool {
         | Command::Serviceshell
         | Command::Tweaks { .. }
         | Command::Analyze { .. }
+        | Command::Backup { .. }
         | Command::Gps { .. }
         | Command::Wifi { .. }
         | Command::Stream { .. }
@@ -736,6 +756,9 @@ fn run(cmd: &Command, l: &Localizer) -> Result<(), Box<dyn std::error::Error>> {
                 let setting = setting.as_deref().unwrap_or_default();
                 analyze_command(l, setting, values, *write_test, out.as_deref())?;
             }
+        }
+        Command::Backup { save, restore, confirm } => {
+            backup_command(l, save.as_deref(), restore.as_deref(), *confirm)?;
         }
         Command::Gps { file } => {
             gps_command(l, file.as_deref())?;
