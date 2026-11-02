@@ -627,7 +627,7 @@ stream-invalid-json = De instellingen zijn geen geldige JSON:
 
 # Firmware-update en de officiële winkel
 firmware-warning = Waarschuwing: hiermee wordt de firmware van de camera overschreven. Onderbreek de update niet zodra die is gestart: koppel de USB-kabel niet los en zet de camera niet uit. Gebruik alleen een firmwarebestand dat voor precies dit cameramodel bedoeld is, en zorg dat de accu voldoende is opgeladen. Anders kan de camera blijvend onbruikbaar worden.
-firmware-untested = Ongetest: het flashen van firmware is overgezet, maar nooit op een echte camera geprobeerd. Een mislukte of afgebroken schrijfbewerking is onomkeerbaar; beschouw alles op deze pagina daarom als onbewezen.
+firmware-untested = Getest: het flashen van firmware is inmiddels op echte hardware geprobeerd. Het blijft de meest destructieve handeling hier en is niet bevestigd op andere modellen: een mislukte of afgebroken schrijfbewerking kan de camera onstartbaar maken. Houd de batterij geladen en koppel niet los tijdens het schrijven.
 firmware-confirm-required = Er wordt zonder --confirm niet geflasht.
 firmware-truncated = Het firmwarebestand is afgekapt: de FDAT-payload loopt door tot voorbij het einde van het bestand.
 firmware-updating = Firmware bijwerken:
@@ -644,6 +644,22 @@ btn-firmware-check = Image controleren
 btn-firmware-flash = Firmware flashen
 firmware-own-device = Bevestig dat u zich bewust bent van deze risico's en uitsluitend uw eigen apparaat bijwerkt.
 btn-firmware-accept = Risico's begrepen – flashen
+firmware-reflash = Dezelfde of een oudere versie opnieuw flashen
+firmware-reflash-when = Gebruik dit wanneer de camera een firmware weigert omdat de versie niet nieuwer is dan de geïnstalleerde — bijvoorbeeld om tijdens het ontwikkelen de huidige versie opnieuw te installeren of terug te gaan naar een oudere firmware. Laat het uit voor een normale update naar een nieuwere versie.
+btn-firmware-reflash-info = Wat doet dit?
+firmware-reflash-hint = Dezelfde of een oudere versie flashen gebeurt in twee stappen. Eerst wordt de in het image opgegeven versie tot net boven de geïnstalleerde verhoogd zodat de camera die accepteert; daarna wordt de echte versie via de servicemodus teruggeschreven, zodat de camera zijn echte versie meldt en herflashbaar blijft. Vereist de firmwaresleutel van de chip (stap 1) en de servicemodus-sleutels (stap 2).
+firmware-reflash-applied = Opnieuw-flashen: de versie van het image is verhoogd zodat de camera het accepteert; de getoonde firmwareversie blijft ongewijzigd.
+firmware-reflash-restoring = De echte firmwareversie wordt hersteld via de servicemodus…
+firmware-reflash-restored = De camera meldt weer zijn echte versie: { $version }.
+firmware-reflash-restore-failed = Kon de echte versie niet herstellen — de camera meldt nog een verhoogde versie. Rond het later af met “Echte versie herstellen” (of `firmware --restore-version`).
+firmware-reflash-needs-service-keys = Opnieuw flashen herstelt daarna de echte versie via de servicemodus, waarvoor de servicemodus-sleutels nodig zijn. Importeer ze eerst, anders zou de camera op een verhoogde versie blijven staan.
+firmware-reflash-pending = Een eerdere herflash is niet voltooid: de camera meldt een verhoogde versie in plaats van { $version }. Herstel nu de echte versie.
+firmware-restore-none = Geen onderbroken herflash om af te ronden — er is geen onthouden versie om te herstellen.
+firmware-set-version-invalid = Ongeldige versie. Gebruik de vorm major.minor, bijvoorbeeld 1.10.
+btn-firmware-restore-version = Echte versie herstellen
+firmware-set-version-label = De gemelde versie handmatig instellen
+firmware-set-version-hint = Expertgereedschap: schrijft de versie via de servicemodus. Gebruik het om een camera die op een verhoogde versie vastzit terug te dwingen naar zijn echte versie wanneer er geen openstaande registratie is. Vereist de servicemodus-sleutels.
+btn-firmware-set-version = Versie instellen
 
 # Bestandsgereedschap: de bewerkingen die helemaal geen camera nodig hebben.
 tools-hint = Deze bewerkingen werken op bestanden en raken de camera nooit aan, dus hier kan niets stukgaan. Het zijn dezelfde bewerkingen die pmca-console aanbiedt als apk2spk, spk2apk, print-backup, print-usagelog, guess-firmware en xpd-checksum.

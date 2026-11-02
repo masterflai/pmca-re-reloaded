@@ -618,7 +618,7 @@ stream-invalid-json = 设置不是有效的 JSON：
 
 # 固件更新与官方商店
 firmware-warning = 警告：此操作会覆盖相机固件。更新开始后请勿中断：不要拔下 USB 线，也不要关闭相机。只能使用专为此相机型号提供的固件文件，并确保电池电量充足。否则相机可能永久无法使用。
-firmware-untested = 未经测试：固件刷写功能已完成移植，但从未在真实相机上试验过。写入失败或中断无法撤销，因此请将本页的一切视为未经验证。
+firmware-untested = 已测试：固件刷写已在真实硬件上试验过。但它仍是此处最具破坏性的操作，且在其他机型上未经确认：写入失败或中断可能使相机无法启动。请保持电池充足，写入期间不要断开连接。
 firmware-confirm-required = 未使用 --confirm，拒绝刷写。
 firmware-truncated = 固件文件被截断：FDAT 有效载荷超出了文件末尾。
 firmware-updating = 正在更新固件：
@@ -635,6 +635,22 @@ btn-firmware-check = 检查映像
 btn-firmware-flash = 刷写固件
 firmware-own-device = 请确认您了解这些风险，并且只更新您自己的设备。
 btn-firmware-accept = 已了解风险 – 刷写
+firmware-reflash = 重新刷写相同或更旧的版本
+firmware-reflash-when = 当相机因固件版本不比已安装的更新而拒绝时使用它——例如在开发时重新安装当前版本，或退回更旧的固件。对于升级到更新版本的常规更新，请保持关闭。
+btn-firmware-reflash-info = 这有什么用？
+firmware-reflash-hint = 刷写相同或更低版本需分两步。先将映像声明的版本提升到略高于已装版本，使相机接受；再通过服务模式写回真实版本，使相机报告其真实版本并保持可重新刷写。需要该芯片的固件密钥（第 1 步）和服务模式密钥（第 2 步）。
+firmware-reflash-applied = 重刷模式：已提升映像版本以便相机接受；显示的固件版本保持不变。
+firmware-reflash-restoring = 正在通过服务模式恢复真实的固件版本…
+firmware-reflash-restored = 相机重新报告其真实版本：{ $version }。
+firmware-reflash-restore-failed = 无法恢复真实版本——相机仍报告一个被抬高的版本。稍后用“恢复真实版本”（或 `firmware --restore-version`）完成。
+firmware-reflash-needs-service-keys = 重新刷写随后会通过服务模式恢复真实版本，这需要服务模式密钥。请先导入，否则相机将一直报告一个被抬高的版本。
+firmware-reflash-pending = 之前的重新刷写未完成：相机报告一个被抬高的版本而非 { $version }。请立即恢复其真实版本。
+firmware-restore-none = 没有可完成的中断的重新刷写——没有记住的版本可恢复。
+firmware-set-version-invalid = 版本无效。请使用 major.minor 格式，例如 1.10。
+btn-firmware-restore-version = 恢复真实版本
+firmware-set-version-label = 手动设置报告的版本
+firmware-set-version-hint = 专家工具：通过服务模式写入版本。当没有待处理记录时，用它将卡在被抬高版本的相机强制恢复到其真实版本。需要服务模式密钥。
+btn-firmware-set-version = 设置版本
 
 # 文件工具：完全不需要相机的操作。
 tools-hint = 这些操作只处理文件，从不触碰相机，因此这里的任何操作都不会损坏它。它们就是 pmca-console 以 apk2spk、spk2apk、print-backup、print-usagelog、guess-firmware 和 xpd-checksum 提供的那些操作。

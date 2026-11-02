@@ -159,6 +159,7 @@ impl<T: SonyExtCmdTransport> SonyUpdaterCamera<T> {
         let mut written = 0usize;
         let mut window_size = 0usize;
         let mut complete_called = false;
+        let debug = std::env::var_os("PMCA_SCSI_DEBUG").is_some();
 
         loop {
             data_number += 1;
@@ -170,6 +171,12 @@ impl<T: SonyExtCmdTransport> SonyUpdaterCamera<T> {
             param.extend_from_slice(&((size - written) as u32).to_le_bytes());
             param.extend_from_slice(chunk);
 
+            if debug {
+                eprintln!(
+                    "[updater] cmd=0x{command:x} #{data_number} chunk={chunk_len} transfer={}",
+                    param.len() + PACKET_HEADER_SIZE
+                );
+            }
             let response = self.send_command(command, &param, BUFFER_SIZE)?;
             let (new_window, status) = Self::parse_write_response(&response)?;
             window_size = new_window as usize;

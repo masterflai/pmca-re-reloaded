@@ -625,7 +625,7 @@ stream-invalid-json = As configurações não são um JSON válido:
 
 # Atualização de firmware e loja oficial
 firmware-warning = Aviso: isto sobrescreve o firmware da câmera. Não interrompa a atualização depois de iniciada: não desconecte o cabo USB nem desligue a câmera. Use apenas um arquivo de firmware destinado exatamente a este modelo de câmera e verifique se a bateria está suficientemente carregada. Caso contrário, a câmera pode ficar permanentemente inutilizada.
-firmware-untested = Não testado: a gravação do firmware foi portada, mas nunca foi experimentada em uma câmera real. Uma gravação malsucedida ou interrompida não pode ser desfeita; portanto, considere tudo nesta página como não comprovado.
+firmware-untested = Testado: a gravação do firmware já foi experimentada em hardware real. Continua sendo a operação mais destrutiva daqui e não está confirmada em outros modelos: uma gravação malsucedida ou interrompida pode deixar a câmera sem inicializar. Mantenha a bateria carregada e não desconecte durante a gravação.
 firmware-confirm-required = A gravação não será feita sem --confirm.
 firmware-truncated = O arquivo de firmware está truncado: a carga útil FDAT ultrapassa o fim do arquivo.
 firmware-updating = Atualizando o firmware:
@@ -642,6 +642,22 @@ btn-firmware-check = Verificar imagem
 btn-firmware-flash = Gravar firmware
 firmware-own-device = Confirme que você está ciente desses riscos e que atualiza somente o seu próprio dispositivo.
 btn-firmware-accept = Riscos entendidos – gravar
+firmware-reflash = Regravar a mesma versão ou uma anterior
+firmware-reflash-when = Use quando a câmera recusar um firmware porque sua versão não é mais recente que a instalada — por exemplo, para reinstalar a versão atual durante o desenvolvimento ou voltar a um firmware anterior. Deixe desativado para uma atualização normal para uma versão mais recente.
+btn-firmware-reflash-info = O que isso faz?
+firmware-reflash-hint = Gravar a mesma versão ou uma anterior ocorre em dois passos. Primeiro a versão declarada na imagem é elevada para um pouco acima da instalada para que a câmera a aceite; depois a versão real é regravada pelo modo de serviço, para que a câmera informe sua versão real e permaneça regravável. Requer a chave de firmware do chip (passo 1) e as chaves do modo de serviço (passo 2).
+firmware-reflash-applied = Modo de regravação: a versão da imagem foi elevada para a câmera aceitá-la; a versão de firmware exibida permanece inalterada.
+firmware-reflash-restoring = Restaurando a versão real do firmware pelo modo de serviço…
+firmware-reflash-restored = A câmera informa novamente sua versão real: { $version }.
+firmware-reflash-restore-failed = Não foi possível restaurar a versão real — a câmera ainda informa uma versão elevada. Conclua depois com “Restaurar a versão real” (ou `firmware --restore-version`).
+firmware-reflash-needs-service-keys = A regravação restaura depois a versão real pelo modo de serviço, o que exige as chaves do modo de serviço. Importe-as primeiro, ou a câmera ficaria informando uma versão elevada.
+firmware-reflash-pending = Uma regravação anterior não foi concluída: a câmera informa uma versão elevada em vez de { $version }. Restaure agora sua versão real.
+firmware-restore-none = Nenhuma regravação interrompida a concluir — não há versão lembrada para restaurar.
+firmware-set-version-invalid = Versão inválida. Use a forma maior.menor, por exemplo 1.10.
+btn-firmware-restore-version = Restaurar a versão real
+firmware-set-version-label = Definir a versão informada manualmente
+firmware-set-version-hint = Ferramenta avançada: grava a versão pelo modo de serviço. Use-a para forçar uma câmera presa em uma versão elevada de volta à sua versão real quando não houver registro pendente. Requer as chaves do modo de serviço.
+btn-firmware-set-version = Definir versão
 
 # Ferramentas de arquivo: as operações que não precisam de câmera alguma.
 tools-hint = Estas operações trabalham em arquivos e nunca tocam na câmera, então nada aqui pode danificá-la. São as mesmas que o pmca-console oferece como apk2spk, spk2apk, print-backup, print-usagelog, guess-firmware e xpd-checksum.

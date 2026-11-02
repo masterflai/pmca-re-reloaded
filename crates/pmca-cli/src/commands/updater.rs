@@ -51,19 +51,38 @@ pub(crate) fn updatershell_command(
 /// lives in [`pmca_app::firmware`], shared with the GUI.
 pub(crate) fn firmware_command(
     l: &Localizer,
-    file: &std::path::Path,
+    file: Option<&std::path::Path>,
     flash: bool,
     confirm: bool,
+    reflash: bool,
+    restore_version: bool,
+    set_version: Option<&str>,
 ) -> Result<(), Box<dyn std::error::Error>> {
     let mut sink = |event: pmca_app::ProgressEvent| println!("{}", event.message);
+
+    // Plan B: finish an interrupted re-flash, or set the version by hand.
+    if restore_version {
+        pmca_app::firmware::restore_pending_version(l, &mut sink)?;
+        return Ok(());
+    }
+    if let Some(version) = set_version {
+        pmca_app::firmware::set_firmware_version(l, version, &mut sink)?;
+        return Ok(());
+    }
+
+    let file = file.ok_or_else(|| l.tr("firmware-file-required"))?;
 
     // On stderr so it stays visible even when the run is being logged.
     eprintln!("{}", l.tr("firmware-warning"));
     eprintln!("{}", l.tr("firmware-untested"));
+    // Point out an earlier re-flash that never got its version restored.
+    if let Some(version) = pmca_app::firmware::pending_version() {
+        eprintln!("{}", l.tr_arg("firmware-reflash-pending", "version", &version));
+    }
     warn_unsupported(l, pmca_app::devices::Capability::Updater);
     pmca_app::firmware::flash_firmware(
         l,
-        &pmca_app::firmware::FlashRequest { file, flash, confirm },
+        &pmca_app::firmware::FlashRequest { file, flash, confirm, reflash },
         &mut sink,
     )?;
     Ok(())

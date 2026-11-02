@@ -101,3 +101,98 @@ pub fn generate(l: &Localizer, base: &Path, model: &str) -> Result<Vec<u8>> {
 
     crypter_for(l, &info.chip)?.encrypt(&image).map_err(|e| Error::Operation(e.to_string()))
 }
+
+/// Returns every FDAT crypter whose key material is currently in the store.
+///
+/// Used to identify the chip key of an arbitrary image by trial decryption,
+/// without having to detect the camera model first.
+fn available_crypters() -> Vec<Crypter> {
+    let mut out = Vec::new();
+    for id in [KeyId::FdatCxd4105, KeyId::FdatCxd4115, KeyId::FdatCxd4115Ilc, KeyId::FdatCxd4120] {
+        if let Some(key) = keystore::get(id)
+            && let Ok(crypter) = Crypter::sha(&key)
+        {
+            out.push(crypter);
+        }
+    }
+    if let Some(key) = keystore::get(KeyId::FdatCxd4132) {
+        if let Ok(crypter) = Crypter::aes(&key) {
+            out.push(crypter);
+        }
+        if let Some(inner) = keystore::get(KeyId::FdatCxd90014)
+            && let Ok(crypter) = Crypter::double_aes(&key, &inner)
+        {
+            out.push(crypter);
+        }
+    }
+    out
+}
+
+/// An image retargeted for re-flashing, plus the version it really carries.
+pub struct ReflashImage {
+    /// The re-encrypted FDAT with its header version raised past the installed one.
+    pub payload: Vec<u8>,
+    /// The image's genuine major version (before the version was raised).
+    pub real_version_major: u8,
+    /// The image's genuine minor version.
+    pub real_version_minor: u8,
+}
+
+/// Rewrites an encrypted `FDAT` so its header declares `target_major.target_minor`,
+/// letting the camera accept it when that version beats the installed one.
+///
+/// Model, region and the firmware body are left untouched. The camera *reports*
+/// the header version after a flash, so the genuine version is returned here to
+/// be restored afterwards (see [`crate::firmware`]). The caller passes the
+/// smallest version that clears the gate (installed + 1), so an interrupted
+/// restore leaves the camera one step above its real version rather than at an
+/// unreachable maximum. The right chip key is found by trying each imported FDAT
+/// key and keeping the one that decrypts to a valid header.
+pub fn force_version(
+    l: &Localizer,
+    encrypted_fdat: &[u8],
+    target_major: u8,
+    target_minor: u8,
+) -> Result<ReflashImage> {
+    let crypters = available_crypters();
+    if crypters.is_empty() {
+        return Err(Error::MissingKeys(l.tr("keys-not-set-up")));
+    }
+    for mut crypter in crypters {
+        let Ok(mut image) = crypter.decrypt(encrypted_fdat) else { continue };
+        let Ok(header) = fdat::read_header(&image) else { continue };
+        let (real_version_major, real_version_minor) = (header.version_major, header.version_minor);
+        fdat::retarget(&mut image, header.model, header.region, target_major, target_minor)
+            .map_err(|e| Error::Operation(e.to_string()))?;
+        let payload = crypter.encrypt(&image).map_err(|e| Error::Operation(e.to_string()))?;
+        return Ok(ReflashImage { payload, real_version_major, real_version_minor });
+    }
+    Err(Error::MissingKeys(l.tr("keys-not-set-up")))
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn force_version_raises_header_but_keeps_model_and_body() {
+        let _g = keystore::test_guard();
+        keystore::install_test_keys();
+
+        // A decrypted FDAT declaring version 3.21 for a made-up model/region.
+        let model = 0x0040_0000;
+        let region = 0x0002_0000;
+        let plain = fdat::assemble(&[0u8; 32], &[0xab; 48], model, region, 3, 0x21);
+        let encrypted = Crypter::aes(&[0x66; 16]).unwrap().encrypt(&plain).unwrap();
+
+        let out = force_version(&Localizer::new("en-US"), &encrypted, 3, 0x22).unwrap();
+        assert_eq!((out.real_version_major, out.real_version_minor), (3, 0x21));
+
+        let restored = Crypter::aes(&[0x66; 16]).unwrap().decrypt(&out.payload).unwrap();
+        let header = fdat::read_header(&restored).unwrap();
+        assert_eq!((header.version_major, header.version_minor), (3, 0x22));
+        assert_eq!(header.model, model);
+        assert_eq!(header.region, region);
+        assert_eq!(&restored[header.firmware_offset as usize..], &[0xab; 48]);
+    }
+}

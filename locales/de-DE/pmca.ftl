@@ -631,7 +631,7 @@ stream-invalid-json = Die Einstellungen sind kein gültiges JSON:
 
 # Firmware-Update und offizieller Store
 firmware-warning = Achtung: Dieser Vorgang überschreibt die Firmware der Kamera. Unterbrechen Sie ihn nach dem Start nicht: Ziehen Sie das USB-Kabel nicht ab und schalten Sie die Kamera nicht aus. Verwenden Sie nur eine Firmware-Datei, die für genau dieses Kameramodell bestimmt ist, und achten Sie auf einen ausreichend geladenen Akku. Andernfalls kann die Kamera dauerhaft unbrauchbar werden.
-firmware-untested = Ungetestet: Das Flashen der Firmware ist portiert, aber nie an einer echten Kamera erprobt worden. Ein misslungener oder abgebrochener Schreibvorgang lässt sich nicht rückgängig machen; betrachten Sie daher alles auf dieser Seite als unbestätigt.
+firmware-untested = Getestet: Das Flashen der Firmware ist inzwischen an echter Hardware erprobt. Es bleibt der destruktivste Vorgang hier und ist bei anderen Modellen unbestätigt: Ein misslungener oder abgebrochener Schreibvorgang kann die Kamera unstartbar machen. Halten Sie den Akku geladen und trennen Sie die Verbindung während des Schreibens nicht.
 firmware-confirm-required = Ohne --confirm wird nicht geschrieben.
 firmware-truncated = Die Firmware-Datei ist unvollständig: Die FDAT-Payload reicht über das Dateiende hinaus.
 firmware-updating = Firmware-Aktualisierung:
@@ -648,6 +648,22 @@ btn-firmware-check = Image prüfen
 btn-firmware-flash = Firmware flashen
 firmware-own-device = Bestätigen Sie, dass Sie sich dieser Risiken bewusst sind und ausschließlich Ihr eigenes Gerät aktualisieren.
 btn-firmware-accept = Risiken verstanden – flashen
+firmware-reflash = Gleiche oder ältere Version erneut einspielen
+firmware-reflash-when = Nutze es, wenn die Kamera eine Firmware ablehnt, weil deren Version nicht neuer als die installierte ist – etwa um beim Entwickeln die aktuelle Version neu einzuspielen oder zu einer älteren Firmware zurückzukehren. Für ein normales Update auf eine neuere Version lässt du es aus.
+btn-firmware-reflash-info = Was bewirkt das?
+firmware-reflash-hint = Dieselbe oder eine ältere Version zu flashen erfolgt in zwei Schritten. Zuerst wird die im Abbild angegebene Version knapp über die installierte gesetzt, damit die Kamera sie annimmt; dann wird die echte Version über den Servicemodus zurückgeschrieben, sodass die Kamera ihre tatsächliche Version meldet und weiterhin neu flashbar bleibt. Erfordert den Firmware-Schlüssel des Chips (Schritt 1) und die Servicemodus-Schlüssel (Schritt 2).
+firmware-reflash-applied = Erneut einspielen: Die Abbildversion wurde hochgesetzt, damit die Kamera annimmt; die gemeldete Firmware-Version bleibt unverändert.
+firmware-reflash-restoring = Stelle die echte Firmware-Version über den Service-Modus wieder her…
+firmware-reflash-restored = Die Kamera meldet wieder ihre echte Version: { $version }.
+firmware-reflash-restore-failed = Die echte Version konnte nicht wiederhergestellt werden — die Kamera meldet weiter eine erhöhte Version. Schließen Sie es später mit „Echte Version wiederherstellen“ ab (oder `firmware --restore-version`).
+firmware-reflash-needs-service-keys = Beim Neu-Flashen wird anschließend die echte Version über den Servicemodus wiederhergestellt, was die Servicemodus-Schlüssel erfordert. Importieren Sie sie zuerst, sonst bliebe die Kamera bei einer erhöhten Version.
+firmware-reflash-pending = Ein früheres Neu-Flashen wurde nicht abgeschlossen: Die Kamera meldet eine erhöhte Version statt { $version }. Stellen Sie jetzt ihre echte Version wieder her.
+firmware-restore-none = Kein unterbrochenes Neu-Flashen abzuschließen — es ist keine gemerkte Version zum Wiederherstellen vorhanden.
+firmware-set-version-invalid = Ungültige Version. Verwenden Sie die Form major.minor, zum Beispiel 1.10.
+btn-firmware-restore-version = Echte Version wiederherstellen
+firmware-set-version-label = Gemeldete Version von Hand setzen
+firmware-set-version-hint = Expertenwerkzeug: schreibt die Version über den Servicemodus. Damit lässt sich eine auf einer erhöhten Version hängengebliebene Kamera auf ihre echte Version zwingen, wenn kein Pending-Eintrag vorliegt. Braucht die Servicemodus-Schlüssel.
+btn-firmware-set-version = Version setzen
 
 # Dateiwerkzeuge: die Vorgänge, die gar keine Kamera brauchen.
 tools-hint = Diese Vorgänge arbeiten auf Dateien und rühren die Kamera nie an, hier kann also nichts kaputtgehen. Es sind dieselben Vorgänge, die pmca-console als apk2spk, spk2apk, print-backup, print-usagelog, guess-firmware und xpd-checksum anbietet.

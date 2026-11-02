@@ -93,8 +93,11 @@ camera into its update mode and only reads its app storage.
 and install it, or start the updater shell: the camera boots its update mode
 and runs this project's own code instead of an update, so the installed firmware
 stays untouched. The update image for that is generated on your computer.
-*Flashing official firmware is ported but has not yet been tried on a camera —
-treat it as experimental.*
+*Flashing official firmware has been tried on a real camera; it is the
+most destructive action here and is unconfirmed on other models, so treat it
+with care. Re-flashing the same or an older version works in two steps — the
+image is accepted at a raised version, then the camera's real version is written
+back over service mode.*
 
 **Settings memory** — read and change settings the camera has but does not show
 in its menu, such as the video recording limit, all menu languages or the
@@ -364,9 +367,10 @@ beyond what Sony intends for these cameras. It is built to be careful:
   hidden behind *Advanced mode*, and function analysis only writes when you
   ask for its write test.
 * **Tested.** The protocol logic is covered by an extensive automated test
-  suite, and the core functions have been verified on real cameras. Not every
-  model and not every function has been tried on hardware — firmware flashing
-  in particular is still experimental.
+  suite, and the core functions have been verified on real cameras, including
+  firmware flashing. Not every model and not every function
+  has been tried on hardware, and firmware flashing in particular stays
+  destructive: a failed write can leave a camera that does not start.
 
 Some functions can leave a camera in a state that needs recovering, and
 flashing firmware can in principle leave one that does not start. Using this

@@ -625,7 +625,7 @@ stream-invalid-json = Innstillingene er ikke gyldig JSON:
 
 # Fastvareoppdatering og den offisielle butikken
 firmware-warning = Advarsel: dette overskriver kameraets fastvare. Ikke avbryt oppdateringen når den har startet: ikke trekk ut USB-kabelen, og ikke slå av kameraet. Bruk bare en fastvarefil som er beregnet for akkurat denne kameramodellen, og sørg for at batteriet er tilstrekkelig ladet. Ellers kan kameraet bli permanent ubrukelig.
-firmware-untested = Utestet: flashing av fastvare er portert, men aldri prøvd på et ekte kamera. En mislykket eller avbrutt skriving kan ikke angres, så betrakt alt på denne siden som ubekreftet.
+firmware-untested = Testet: flashing av fastvare er nå prøvd på ekte maskinvare. Det er fortsatt den mest destruktive operasjonen her og er ikke bekreftet på andre modeller: en mislykket eller avbrutt skriving kan gjøre kameraet ustartbart. Hold batteriet ladet og koble ikke fra under skrivingen.
 firmware-confirm-required = Nekter å skrive fastvare uten --confirm.
 firmware-truncated = Fastvarefilen er avkortet: FDAT-payloaden strekker seg forbi slutten av filen.
 firmware-updating = Oppdaterer fastvare:
@@ -642,6 +642,22 @@ btn-firmware-check = Kontroller bildet
 btn-firmware-flash = Skriv fastvare
 firmware-own-device = Bekreft at du er klar over disse risikoene og bare oppdaterer din egen enhet.
 btn-firmware-accept = Risikoene forstått – skriv
+firmware-reflash = Skriv samme eller en eldre versjon på nytt
+firmware-reflash-when = Bruk dette når kameraet avviser en fastvare fordi versjonen ikke er nyere enn den installerte — for eksempel for å installere gjeldende versjon på nytt under utvikling, eller gå tilbake til en eldre fastvare. La det stå av ved en vanlig oppdatering til en nyere versjon.
+btn-firmware-reflash-info = Hva gjør dette?
+firmware-reflash-hint = Å flashe samme eller en eldre versjon skjer i to trinn. Først heves versjonen som er oppgitt i bildet til like over den installerte, slik at kameraet godtar den; deretter skrives den ekte versjonen tilbake via servicemodus, slik at kameraet viser sin virkelige versjon og fortsatt kan reflashes. Krever brikkens fastvarenøkkel (trinn 1) og servicemodus-nøklene (trinn 2).
+firmware-reflash-applied = Omskrivingsmodus: bildeversjonen ble hevet så kameraet godtar den; den viste fastvareversjonen forblir uendret.
+firmware-reflash-restoring = Gjenoppretter den ekte fastvareversjonen via servicemodus…
+firmware-reflash-restored = Kameraet viser igjen sin ekte versjon: { $version }.
+firmware-reflash-restore-failed = Kunne ikke gjenopprette den ekte versjonen — kameraet viser fortsatt en hevet versjon. Fullfør det senere med «Gjenopprett den ekte versjonen» (eller `firmware --restore-version`).
+firmware-reflash-needs-service-keys = Reflashing gjenoppretter etterpå den ekte versjonen via servicemodus, noe som krever servicemodus-nøklene. Importer dem først, ellers ville kameraet bli stående på en hevet versjon.
+firmware-reflash-pending = En tidligere reflashing ble ikke fullført: kameraet viser en hevet versjon i stedet for { $version }. Gjenopprett den ekte versjonen nå.
+firmware-restore-none = Ingen avbrutt reflashing å fullføre — det finnes ingen husket versjon å gjenopprette.
+firmware-set-version-invalid = Ugyldig versjon. Bruk formen major.minor, for eksempel 1.10.
+btn-firmware-restore-version = Gjenopprett den ekte versjonen
+firmware-set-version-label = Angi den rapporterte versjonen manuelt
+firmware-set-version-hint = Ekspertverktøy: skriver versjonen via servicemodus. Bruk det til å tvinge et kamera som sitter fast på en hevet versjon tilbake til sin ekte versjon når det ikke finnes noen ventende oppføring. Krever servicemodus-nøklene.
+btn-firmware-set-version = Angi versjon
 
 # Filverktøy: operasjonene som ikke trenger noe kamera i det hele tatt.
 tools-hint = Disse operasjonene arbeider på filer og rører aldri kameraet, så ingenting her kan skade det. Det er de samme operasjonene som pmca-console tilbyr som apk2spk, spk2apk, print-backup, print-usagelog, guess-firmware og xpd-checksum.

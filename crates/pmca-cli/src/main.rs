@@ -294,14 +294,27 @@ enum Command {
     /// non-destructively first; writing it requires both `--flash` and
     /// `--confirm`.
     Firmware {
-        /// The firmware `.dat` file to flash.
-        file: PathBuf,
+        /// The firmware `.dat` file to flash (omit for --restore-version / --set-version).
+        file: Option<PathBuf>,
         /// Perform the destructive switch-to-updater and firmware write.
         #[arg(long)]
         flash: bool,
         /// Confirm that the camera's firmware may be overwritten.
         #[arg(long)]
         confirm: bool,
+        /// Re-flash the same (or a lower) version in two steps: raise the image's
+        /// declared version so the camera accepts it, then restore the genuine
+        /// version over service mode. Needs the chip's FDAT key and the
+        /// service-mode keys.
+        #[arg(long)]
+        reflash: bool,
+        /// Finish an interrupted re-flash: write the remembered genuine version
+        /// back to a camera left reporting 9.99.
+        #[arg(long)]
+        restore_version: bool,
+        /// Set the reported firmware version by hand (e.g. 1.10) over service mode.
+        #[arg(long, value_name = "VERSION")]
+        set_version: Option<String>,
     },
     /// Import or inspect the Sony-derived key material the program does not ship.
     ///
@@ -733,8 +746,16 @@ fn run(cmd: &Command, l: &Localizer) -> Result<(), Box<dyn std::error::Error>> {
         Command::Stream { write, out } => {
             stream_command(l, write.as_deref(), out.as_deref())?;
         }
-        Command::Firmware { file, flash, confirm } => {
-            firmware_command(l, file, *flash, *confirm)?;
+        Command::Firmware { file, flash, confirm, reflash, restore_version, set_version } => {
+            firmware_command(
+                l,
+                file.as_deref(),
+                *flash,
+                *confirm,
+                *reflash,
+                *restore_version,
+                set_version.as_deref(),
+            )?;
         }
     }
     Ok(())

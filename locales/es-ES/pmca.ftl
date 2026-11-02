@@ -625,7 +625,7 @@ stream-invalid-json = La configuración no es JSON válido:
 
 # Actualización de firmware y tienda oficial
 firmware-warning = Aviso: esto sobrescribe el firmware de la cámara. No interrumpas la actualización una vez iniciada: no desconectes el cable USB ni apagues la cámara. Usa solo un archivo de firmware destinado exactamente a este modelo de cámara y asegúrate de que la batería esté suficientemente cargada. De lo contrario, la cámara puede quedar inutilizada de forma permanente.
-firmware-untested = Sin probar: la escritura de firmware se ha portado, pero nunca se ha ensayado en una cámara real. Una escritura fallida o interrumpida no se puede deshacer; considere todo lo de esta página como no comprobado.
+firmware-untested = Probado: la escritura de firmware ya se ha ensayado en hardware real. Sigue siendo la operación más destructiva de aquí y no está confirmada en otros modelos: una escritura fallida o interrumpida puede dejar la cámara sin arrancar. Mantenga la batería cargada y no desconecte durante la escritura.
 firmware-confirm-required = No se grabará sin --confirm.
 firmware-truncated = El archivo de firmware está truncado: la carga útil FDAT se extiende más allá del final del archivo.
 firmware-updating = Actualizando el firmware:
@@ -642,6 +642,22 @@ btn-firmware-check = Comprobar imagen
 btn-firmware-flash = Grabar firmware
 firmware-own-device = Confirme que es consciente de estos riesgos y que solo actualiza su propio dispositivo.
 btn-firmware-accept = Riesgos entendidos – grabar
+firmware-reflash = Volver a grabar la misma versión o una anterior
+firmware-reflash-when = Úsalo cuando la cámara rechace un firmware porque su versión no es más reciente que la instalada: por ejemplo, para reinstalar la versión actual durante el desarrollo o volver a un firmware anterior. Déjalo desactivado para una actualización normal a una versión más reciente.
+btn-firmware-reflash-info = ¿Qué hace esto?
+firmware-reflash-hint = Escribir la misma versión o una anterior se hace en dos pasos. Primero se eleva la versión declarada en la imagen justo por encima de la instalada para que la cámara la acepte; luego se reescribe la versión real mediante el modo de servicio, de modo que la cámara informe su versión real y siga siendo regrabable. Requiere la clave de firmware del chip (paso 1) y las claves del modo de servicio (paso 2).
+firmware-reflash-applied = Modo de regrabación: se elevó la versión de la imagen para que la cámara la acepte; la versión de firmware mostrada no cambia.
+firmware-reflash-restoring = Restaurando la versión real del firmware mediante el modo de servicio…
+firmware-reflash-restored = La cámara vuelve a informar su versión real: { $version }.
+firmware-reflash-restore-failed = No se pudo restaurar la versión real: la cámara sigue informando una versión elevada. Termínelo luego con «Restaurar la versión real» (o `firmware --restore-version`).
+firmware-reflash-needs-service-keys = La regrabación restaura después la versión real mediante el modo de servicio, lo que requiere las claves del modo de servicio. Impórtelas primero, o la cámara quedaría informando una versión elevada.
+firmware-reflash-pending = Una regrabación anterior no terminó: la cámara informa una versión elevada en lugar de { $version }. Restaure ahora su versión real.
+firmware-restore-none = No hay ninguna regrabación interrumpida que terminar: no hay versión recordada que restaurar.
+firmware-set-version-invalid = Versión no válida. Use la forma mayor.menor, por ejemplo 1.10.
+btn-firmware-restore-version = Restaurar la versión real
+firmware-set-version-label = Establecer la versión informada a mano
+firmware-set-version-hint = Herramienta experta: escribe la versión mediante el modo de servicio. Úsala para forzar una cámara atascada en una versión elevada a su versión real cuando no hay ningún registro pendiente. Requiere las claves del modo de servicio.
+btn-firmware-set-version = Establecer versión
 
 # Herramientas de archivos: las operaciones que no necesitan cámara alguna.
 tools-hint = Estas operaciones trabajan sobre archivos y nunca tocan la cámara, así que nada de esto puede dañarla. Son las mismas que pmca-console ofrece como apk2spk, spk2apk, print-backup, print-usagelog, guess-firmware y xpd-checksum.

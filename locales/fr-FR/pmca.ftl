@@ -625,7 +625,7 @@ stream-invalid-json = Les paramètres ne sont pas du JSON valide :
 
 # Mise à jour du firmware et magasin officiel
 firmware-warning = Attention : cela écrase le firmware de l'appareil. N'interrompez pas la mise à jour une fois lancée : ne débranchez pas le câble USB et n'éteignez pas l'appareil. Utilisez uniquement un fichier de firmware destiné exactement à ce modèle d'appareil, et assurez-vous que la batterie est suffisamment chargée. Sinon, l'appareil peut devenir définitivement inutilisable.
-firmware-untested = Non testé : le flashage du micrologiciel a été porté mais jamais essayé sur un appareil réel. Une écriture ratée ou interrompue est irréversible ; considérez donc tout ce qui figure sur cette page comme non éprouvé.
+firmware-untested = Testé : le flashage du micrologiciel a désormais été essayé sur du matériel réel. Il reste l'opération la plus destructrice ici et n'est pas confirmé sur d'autres modèles : une écriture ratée ou interrompue peut rendre l'appareil non démarrable. Gardez la batterie chargée et ne débranchez pas pendant l'écriture.
 firmware-confirm-required = Écriture refusée sans --confirm.
 firmware-truncated = Le fichier de firmware est tronqué : la charge utile FDAT dépasse la fin du fichier.
 firmware-updating = Mise à jour du firmware :
@@ -642,6 +642,22 @@ btn-firmware-check = Vérifier l'image
 btn-firmware-flash = Flasher le firmware
 firmware-own-device = Confirmez que vous avez conscience de ces risques et que vous mettez à jour uniquement votre propre appareil.
 btn-firmware-accept = Risques compris – flasher
+firmware-reflash = Réécrire la même version ou une version antérieure
+firmware-reflash-when = À utiliser quand l'appareil refuse un firmware parce que sa version n'est pas plus récente que celle installée — par exemple pour réinstaller la version actuelle pendant le développement ou revenir à un firmware antérieur. Laissez-le désactivé pour une mise à jour normale vers une version plus récente.
+btn-firmware-reflash-info = À quoi ça sert ?
+firmware-reflash-hint = Flasher la même version ou une version antérieure se fait en deux étapes. D'abord la version déclarée dans l'image est portée juste au-dessus de celle installée pour que l'appareil l'accepte ; ensuite la version réelle est réécrite via le mode service, afin que l'appareil indique sa version réelle et reste reflashable. Nécessite la clé de firmware de la puce (étape 1) et les clés du mode service (étape 2).
+firmware-reflash-applied = Mode réécriture : la version de l'image a été relevée pour que l'appareil l'accepte ; la version de firmware affichée reste inchangée.
+firmware-reflash-restoring = Restauration de la version réelle du firmware via le mode service…
+firmware-reflash-restored = L'appareil indique de nouveau sa version réelle : { $version }.
+firmware-reflash-restore-failed = Impossible de restaurer la version réelle — l'appareil indique encore une version relevée. Terminez-le plus tard avec « Restaurer la version réelle » (ou `firmware --restore-version`).
+firmware-reflash-needs-service-keys = Le reflashage restaure ensuite la version réelle via le mode service, ce qui nécessite les clés du mode service. Importez-les d'abord, sinon l'appareil resterait sur une version relevée.
+firmware-reflash-pending = Un reflashage précédent ne s'est pas terminé : l'appareil indique une version relevée au lieu de { $version }. Restaurez maintenant sa version réelle.
+firmware-restore-none = Aucun reflashage interrompu à terminer — aucune version mémorisée à restaurer.
+firmware-set-version-invalid = Version non valide. Utilisez la forme majeure.mineure, par exemple 1.10.
+btn-firmware-restore-version = Restaurer la version réelle
+firmware-set-version-label = Définir la version indiquée à la main
+firmware-set-version-hint = Outil expert : écrit la version via le mode service. Permet de forcer un appareil bloqué sur une version relevée à revenir à sa version réelle lorsqu'aucun enregistrement en attente n'existe. Nécessite les clés du mode service.
+btn-firmware-set-version = Définir la version
 
 # Outils de fichiers : les opérations qui n'ont besoin d'aucun appareil.
 tools-hint = Ces opérations travaillent sur des fichiers et ne touchent jamais à l'appareil ; rien ici ne peut l'endommager. Ce sont les mêmes que celles que pmca-console propose sous les noms apk2spk, spk2apk, print-backup, print-usagelog, guess-firmware et xpd-checksum.

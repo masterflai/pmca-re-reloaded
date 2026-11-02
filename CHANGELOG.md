@@ -6,10 +6,29 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
-## [1.8.1-rc.1] - 2026-11-01
+## [1.9.0] - 2026-11-02
 
-**Pre-release for testing on macOS 26.** The mass-storage connection takes the
-way that carried camera commands in the latest macOS test run.
+**Flash official firmware, and re-flash the same or an older version.** Firmware
+flashing is now proven on real hardware. Re-flashing a version the camera would
+otherwise refuse runs in two steps and restores the genuine version afterwards.
+
+### Added
+
+- Flash an official Sony firmware image onto the camera, with a read-only check
+  before anything is written and a confirmation that names the exact version
+  transition.
+- Re-flash the same or an older firmware version: the image is accepted at a
+  raised version, then the genuine version is written back over service mode, so
+  the camera reports its real version and stays re-flashable. The *Re-flash*
+  option on the Firmware page, or `firmware --reflash`.
+- Restore or set the reported firmware version by hand, to recover a camera left
+  on a raised version by an interrupted re-flash — on the Firmware page, or with
+  `firmware --restore-version` and `firmware --set-version`.
+
+### Changed
+
+- Firmware flashing is no longer labelled untested: it has been exercised on real
+  hardware, while remaining the most destructive action in the program.
 
 ### Fixed
 

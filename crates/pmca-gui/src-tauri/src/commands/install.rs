@@ -15,22 +15,84 @@ pub(crate) async fn flash_firmware(
     file: String,
     flash: bool,
     confirm: bool,
+    reflash: bool,
 ) -> Result<Reply<FirmwareOutcome>, CommandError> {
     with_camera(app, move |app, state| {
         #[cfg(target_os = "macos")]
         {
-            let request =
-                remote::Request::FirmwareFlash { file: PathBuf::from(file), flash, confirm };
+            let request = remote::Request::FirmwareFlash {
+                file: PathBuf::from(file),
+                flash,
+                confirm,
+                reflash,
+            };
             remote::call(app, state, request).map(Reply::Relayed)
         }
         #[cfg(not(target_os = "macos"))]
         {
             let localizer = state.localizer()?;
-            let request =
-                pmca_app::firmware::FlashRequest { file: Path::new(&file), flash, confirm };
+            let request = pmca_app::firmware::FlashRequest {
+                file: Path::new(&file),
+                flash,
+                confirm,
+                reflash,
+            };
             Ok(Reply::Here(pmca_app::firmware::flash_firmware(
                 &localizer,
                 &request,
+                &mut progress(app),
+            )?))
+        }
+    })
+    .await
+}
+
+/// The genuine version a failed re-flash still owes the camera, if any.
+#[tauri::command]
+pub(crate) async fn firmware_pending_version() -> Result<Option<String>, CommandError> {
+    in_background(|| Ok(pmca_app::firmware::pending_version())).await
+}
+
+/// Finish an interrupted re-flash by restoring the camera's genuine version.
+#[tauri::command]
+pub(crate) async fn restore_firmware_version(
+    app: AppHandle,
+) -> Result<Reply<String>, CommandError> {
+    with_camera(app, move |app, state| {
+        #[cfg(target_os = "macos")]
+        {
+            remote::call(app, state, remote::Request::FirmwareRestoreVersion).map(Reply::Relayed)
+        }
+        #[cfg(not(target_os = "macos"))]
+        {
+            let localizer = state.localizer()?;
+            Ok(Reply::Here(pmca_app::firmware::restore_pending_version(
+                &localizer,
+                &mut progress(app),
+            )?))
+        }
+    })
+    .await
+}
+
+/// Set the reported firmware version by hand over service mode (expert tool).
+#[tauri::command]
+pub(crate) async fn set_firmware_version(
+    app: AppHandle,
+    version: String,
+) -> Result<Reply<String>, CommandError> {
+    with_camera(app, move |app, state| {
+        #[cfg(target_os = "macos")]
+        {
+            remote::call(app, state, remote::Request::FirmwareSetVersion { version })
+                .map(Reply::Relayed)
+        }
+        #[cfg(not(target_os = "macos"))]
+        {
+            let localizer = state.localizer()?;
+            Ok(Reply::Here(pmca_app::firmware::set_firmware_version(
+                &localizer,
+                &version,
                 &mut progress(app),
             )?))
         }

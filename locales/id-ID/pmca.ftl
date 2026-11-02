@@ -625,7 +625,7 @@ stream-invalid-json = Pengaturan bukan JSON yang valid:
 
 # Pembaruan firmware dan toko resmi
 firmware-warning = Peringatan: ini menimpa firmware kamera. Jangan menyela pembaruan setelah dimulai: jangan mencabut kabel USB dan jangan mematikan kamera. Gunakan hanya berkas firmware yang ditujukan tepat untuk model kamera ini, dan pastikan baterai terisi cukup. Jika tidak, kamera dapat menjadi tidak dapat digunakan secara permanen.
-firmware-untested = Belum teruji: penulisan firmware sudah dialihkan, tetapi belum pernah dicoba pada kamera sungguhan. Penulisan yang gagal atau terputus tidak dapat dibatalkan, jadi anggaplah semua di halaman ini belum terbukti.
+firmware-untested = Teruji: penulisan firmware kini sudah dicoba pada perangkat keras sungguhan. Ini tetap operasi paling merusak di sini dan belum dipastikan pada model lain: penulisan yang gagal atau terputus dapat membuat kamera tidak bisa dinyalakan. Jaga baterai tetap terisi dan jangan lepaskan saat penulisan berlangsung.
 firmware-confirm-required = Penulisan firmware ditolak tanpa --confirm.
 firmware-truncated = Berkas firmware terpotong: payload FDAT melampaui akhir berkas.
 firmware-updating = Memperbarui firmware:
@@ -642,6 +642,22 @@ btn-firmware-check = Periksa citra
 btn-firmware-flash = Tulis firmware
 firmware-own-device = Konfirmasikan bahwa Anda memahami risiko ini dan hanya memperbarui perangkat milik Anda sendiri.
 btn-firmware-accept = Risiko dipahami – tulis
+firmware-reflash = Flash ulang versi yang sama atau lebih lama
+firmware-reflash-when = Gunakan ketika kamera menolak firmware karena versinya tidak lebih baru dari yang terpasang — misalnya untuk memasang ulang versi saat ini selama pengembangan, atau kembali ke firmware lama. Biarkan mati untuk pembaruan normal ke versi yang lebih baru.
+btn-firmware-reflash-info = Apa fungsinya?
+firmware-reflash-hint = Menulis versi yang sama atau lebih lama dilakukan dalam dua langkah. Pertama versi yang dinyatakan dalam citra dinaikkan sedikit di atas yang terpasang agar kamera menerimanya; lalu versi asli ditulis kembali lewat mode layanan, sehingga kamera melaporkan versi aslinya dan tetap dapat ditulis ulang. Memerlukan kunci firmware chip (langkah 1) dan kunci mode layanan (langkah 2).
+firmware-reflash-applied = Mode flash ulang: versi citra dinaikkan agar kamera menerimanya; versi firmware yang ditampilkan tetap tidak berubah.
+firmware-reflash-restoring = Memulihkan versi firmware asli melalui mode layanan…
+firmware-reflash-restored = Kamera kembali melaporkan versi aslinya: { $version }.
+firmware-reflash-restore-failed = Tidak dapat memulihkan versi asli — kamera masih melaporkan versi yang dinaikkan. Selesaikan nanti dengan “Pulihkan versi asli” (atau `firmware --restore-version`).
+firmware-reflash-needs-service-keys = Penulisan ulang kemudian memulihkan versi asli lewat mode layanan, yang memerlukan kunci mode layanan. Impor dulu, atau kamera akan tetap melaporkan versi yang dinaikkan.
+firmware-reflash-pending = Penulisan ulang sebelumnya tidak selesai: kamera melaporkan versi yang dinaikkan alih-alih { $version }. Pulihkan versi aslinya sekarang.
+firmware-restore-none = Tidak ada penulisan ulang terputus untuk diselesaikan — tidak ada versi tersimpan untuk dipulihkan.
+firmware-set-version-invalid = Versi tidak valid. Gunakan bentuk major.minor, misalnya 1.10.
+btn-firmware-restore-version = Pulihkan versi asli
+firmware-set-version-label = Atur versi yang dilaporkan secara manual
+firmware-set-version-hint = Alat ahli: menulis versi lewat mode layanan. Gunakan untuk memaksa kamera yang macet di versi yang dinaikkan kembali ke versi aslinya saat tidak ada catatan tertunda. Memerlukan kunci mode layanan.
+btn-firmware-set-version = Atur versi
 
 # Perkakas berkas: operasi yang sama sekali tidak memerlukan kamera.
 tools-hint = Operasi ini bekerja pada berkas dan tidak pernah menyentuh kamera, jadi tidak ada di sini yang bisa merusaknya. Ini operasi yang sama dengan yang ditawarkan pmca-console sebagai apk2spk, spk2apk, print-backup, print-usagelog, guess-firmware, dan xpd-checksum.

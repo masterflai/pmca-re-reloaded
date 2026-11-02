@@ -51,7 +51,9 @@ pub(crate) enum Request {
     AnalysisReportJson,
     AnalysisDiscard,
     AnalysisRestorePending,
-    FirmwareFlash { file: PathBuf, flash: bool, confirm: bool },
+    FirmwareFlash { file: PathBuf, flash: bool, confirm: bool, reflash: bool },
+    FirmwareRestoreVersion,
+    FirmwareSetVersion { version: String },
     UpdaterOpen { fdat_file: Option<PathBuf>, fdat_dir: PathBuf, flash: bool },
     UpdaterRun { line: String },
     UpdaterClose,
@@ -219,9 +221,15 @@ fn run(
             json(())
         }
         Request::AnalysisRestorePending => json(pmca_app::analysis::restore_pending(l, sink)?),
-        Request::FirmwareFlash { file, flash, confirm } => {
-            let request = pmca_app::firmware::FlashRequest { file: &file, flash, confirm };
+        Request::FirmwareFlash { file, flash, confirm, reflash } => {
+            let request = pmca_app::firmware::FlashRequest { file: &file, flash, confirm, reflash };
             json(pmca_app::firmware::flash_firmware(l, &request, sink)?)
+        }
+        Request::FirmwareRestoreVersion => {
+            json(pmca_app::firmware::restore_pending_version(l, sink)?)
+        }
+        Request::FirmwareSetVersion { version } => {
+            json(pmca_app::firmware::set_firmware_version(l, &version, sink)?)
         }
         Request::UpdaterOpen { fdat_file, fdat_dir, flash } => {
             s.updater.take();

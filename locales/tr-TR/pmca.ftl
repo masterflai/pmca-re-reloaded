@@ -625,7 +625,7 @@ stream-invalid-json = Ayarlar geçerli JSON değil:
 
 # Bellenim güncellemesi ve resmî mağaza
 firmware-warning = Uyarı: bu işlem kameranın bellenimini değiştirir. Güncelleme başladıktan sonra onu yarıda kesmeyin: USB kablosunu çıkarmayın ve kamerayı kapatmayın. Yalnızca tam olarak bu kamera modeli için hazırlanmış bir bellenim dosyası kullanın ve pilin yeterince şarjlı olduğundan emin olun. Aksi takdirde kamera kalıcı olarak kullanılamaz hâle gelebilir.
-firmware-untested = Denenmemiştir: bellenim yazma işlevi aktarılmış ancak gerçek bir kamerada hiç denenmemiştir. Başarısız ya da yarıda kesilen bir yazma geri alınamaz; bu sayfadaki her şeyi doğrulanmamış sayın.
+firmware-untested = Test edildi: bellenim yazma işlemi artık gerçek donanımda denendi. Yine de buradaki en yıkıcı işlemdir ve diğer modellerde doğrulanmamıştır: başarısız ya da yarıda kesilen bir yazma kamerayı açılamaz hâle getirebilir. Pili dolu tutun ve yazma sırasında bağlantıyı kesmeyin.
 firmware-confirm-required = --confirm olmadan yazma yapılmayacak.
 firmware-truncated = Bellenim dosyası eksik: FDAT payload'u dosyanın sonunu aşıyor.
 firmware-updating = Bellenim güncelleniyor:
@@ -642,6 +642,22 @@ btn-firmware-check = Görüntüyü denetle
 btn-firmware-flash = Bellenimi yaz
 firmware-own-device = Bu risklerin farkında olduğunuzu ve yalnızca kendi cihazınızı güncellediğinizi onaylayın.
 btn-firmware-accept = Riskleri anladım – yaz
+firmware-reflash = Aynı veya daha eski sürümü yeniden yaz
+firmware-reflash-when = Kameranın bir bellenimi, sürümü yüklü olandan daha yeni olmadığı için reddettiğinde bunu kullanın — örneğin geliştirme sırasında mevcut sürümü yeniden yüklemek veya daha eski bir bellenime dönmek için. Daha yeni bir sürüme normal güncelleme için kapalı bırakın.
+btn-firmware-reflash-info = Bu ne yapar?
+firmware-reflash-hint = Aynı veya daha eski bir sürümü yazmak iki adımda olur. Önce görüntüde belirtilen sürüm kuruluya göre bir üst değere çıkarılır, böylece kamera onu kabul eder; ardından gerçek sürüm servis kipi üzerinden geri yazılır, böylece kamera gerçek sürümünü bildirir ve yeniden yazılabilir kalır. Yongaya ait bellenim anahtarını (adım 1) ve servis kipi anahtarlarını (adım 2) gerektirir.
+firmware-reflash-applied = Yeniden yazma modu: kameranın kabul etmesi için görüntü sürümü yükseltildi; bildirilen bellenim sürümü değişmeden kalır.
+firmware-reflash-restoring = Gerçek bellenim sürümü servis modu üzerinden geri yükleniyor…
+firmware-reflash-restored = Kamera yeniden gerçek sürümünü bildiriyor: { $version }.
+firmware-reflash-restore-failed = Gerçek sürüm geri yüklenemedi — kamera hâlâ yükseltilmiş bir sürüm bildiriyor. Bunu daha sonra «Gerçek sürümü geri yükle» ile tamamlayın (ya da `firmware --restore-version`).
+firmware-reflash-needs-service-keys = Yeniden yazma işlemi ardından gerçek sürümü servis kipi üzerinden geri yükler; bu da servis kipi anahtarlarını gerektirir. Önce onları içe aktarın, yoksa kamera yükseltilmiş bir sürüm bildirmeye devam ederdi.
+firmware-reflash-pending = Önceki bir yeniden yazma tamamlanmadı: kamera { $version } yerine yükseltilmiş bir sürüm bildiriyor. Gerçek sürümünü şimdi geri yükleyin.
+firmware-restore-none = Tamamlanacak yarıda kesilmiş bir yeniden yazma yok — geri yüklenecek hatırlanan bir sürüm yok.
+firmware-set-version-invalid = Geçersiz sürüm. major.minor biçimini kullanın, örneğin 1.10.
+btn-firmware-restore-version = Gerçek sürümü geri yükle
+firmware-set-version-label = Bildirilen sürümü elle ayarla
+firmware-set-version-hint = Uzman aracı: sürümü servis kipi üzerinden yazar. yükseltilmiş bir sürümde takılı kalan bir kamerayı, bekleyen bir kayıt yokken gerçek sürümüne döndürmek için kullanın. Servis kipi anahtarlarını gerektirir.
+btn-firmware-set-version = Sürümü ayarla
 
 # Dosya araçları: hiç kamera gerektirmeyen işlemler.
 tools-hint = Bu işlemler dosyalar üzerinde çalışır ve kameraya hiç dokunmaz, dolayısıyla buradaki hiçbir şey ona zarar veremez. Bunlar pmca-console'un apk2spk, spk2apk, print-backup, print-usagelog, guess-firmware ve xpd-checksum adıyla sunduğu işlemlerin aynısıdır.

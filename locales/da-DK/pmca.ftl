@@ -624,7 +624,7 @@ stream-invalid-json = Indstillingerne er ikke gyldig JSON:
 
 # Firmwareopdatering og den officielle butik
 firmware-warning = Advarsel: dette overskriver kameraets firmware. Afbryd ikke opdateringen, når den er startet: tag ikke USB-kablet ud, og sluk ikke kameraet. Brug kun en firmwarefil, der er beregnet til præcis denne kameramodel, og sørg for, at batteriet er tilstrækkeligt opladet. Ellers kan kameraet blive permanent ubrugeligt.
-firmware-untested = Ikke testet: flashning af firmware er overført, men aldrig prøvet på et rigtigt kamera. En mislykket eller afbrudt skrivning kan ikke gøres om, så betragt alt på denne side som ubekræftet.
+firmware-untested = Testet: flashning af firmware er nu prøvet på rigtig hardware. Det er stadig den mest destruktive handling her og er ikke bekræftet på andre modeller: en mislykket eller afbrudt skrivning kan gøre kameraet ustartbart. Hold batteriet opladet, og afbryd ikke under skrivningen.
 firmware-confirm-required = Der flashes ikke uden --confirm.
 firmware-truncated = Firmwarefilen er afkortet: FDAT-payloaden rækker ud over filens slutning.
 firmware-updating = Opdaterer firmware:
@@ -641,6 +641,22 @@ btn-firmware-check = Kontrollér image
 btn-firmware-flash = Flash firmware
 firmware-own-device = Bekræft, at du er klar over disse risici og kun opdaterer din egen enhed.
 btn-firmware-accept = Risici forstået – flash
+firmware-reflash = Flash samme eller en ældre version igen
+firmware-reflash-when = Brug dette, når kameraet afviser en firmware, fordi dens version ikke er nyere end den installerede — for eksempel for at geninstallere den aktuelle version under udvikling eller gå tilbage til en ældre firmware. Lad det være slået fra ved en normal opdatering til en nyere version.
+btn-firmware-reflash-info = Hvad gør dette?
+firmware-reflash-hint = At flashe samme eller en ældre version sker i to trin. Først hæves den version, imaget angiver, til lige over den installerede, så kameraet accepterer den; derefter skrives den rigtige version tilbage via servicetilstand, så kameraet viser sin rigtige version og fortsat kan genflashes. Kræver chippens firmwarenøgle (trin 1) og servicetilstandsnøglerne (trin 2).
+firmware-reflash-applied = Genflash-tilstand: imagets version blev hævet, så kameraet accepterer det; den viste firmwareversion forbliver uændret.
+firmware-reflash-restoring = Gendanner den rigtige firmwareversion via servicetilstand…
+firmware-reflash-restored = Kameraet viser igen sin rigtige version: { $version }.
+firmware-reflash-restore-failed = Den rigtige version kunne ikke gendannes — kameraet viser stadig en hævet version. Afslut det senere med »Gendan den rigtige version« (eller `firmware --restore-version`).
+firmware-reflash-needs-service-keys = Genflashning gendanner derefter den rigtige version via servicetilstand, hvilket kræver servicetilstandsnøglerne. Importér dem først, ellers ville kameraet blive stående på en hævet version.
+firmware-reflash-pending = En tidligere genflashning blev ikke fuldført: kameraet viser en hævet version i stedet for { $version }. Gendan dens rigtige version nu.
+firmware-restore-none = Ingen afbrudt genflashning at fuldføre — der er ingen husket version at gendanne.
+firmware-set-version-invalid = Ugyldig version. Brug formen major.minor, for eksempel 1.10.
+btn-firmware-restore-version = Gendan den rigtige version
+firmware-set-version-label = Angiv den rapporterede version manuelt
+firmware-set-version-hint = Ekspertværktøj: skriver versionen via servicetilstand. Brug det til at tvinge et kamera, der sidder fast på en hævet version, tilbage til dets rigtige version, når der ikke er nogen ventende post. Kræver servicetilstandsnøglerne.
+btn-firmware-set-version = Angiv version
 
 # Filværktøjer: de handlinger, der slet ikke kræver et kamera.
 tools-hint = Disse handlinger arbejder på filer og rører aldrig kameraet, så intet her kan ødelægge det. Det er de samme handlinger, som pmca-console tilbyder som apk2spk, spk2apk, print-backup, print-usagelog, guess-firmware og xpd-checksum.

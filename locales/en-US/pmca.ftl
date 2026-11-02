@@ -636,7 +636,7 @@ stream-invalid-json = The settings are not valid JSON:
 
 # Firmware update
 firmware-warning = Warning: this overwrites the camera's firmware. Do not interrupt the update once it has started: do not unplug the USB cable and do not switch the camera off. Use only a firmware file intended for exactly this camera model, and make sure the battery is sufficiently charged. Otherwise the camera can be rendered permanently unusable.
-firmware-untested = Untested: firmware flashing has been ported but never tried on a real camera. A failed or interrupted write cannot be undone, so treat everything on this page as unproven.
+firmware-untested = Firmware flashing is now tested on real hardware. It is still the most destructive operation here and is unconfirmed on other models: a failed or interrupted write can make the camera unbootable. Keep the battery charged and do not disconnect during the write.
 firmware-confirm-required = Refusing to flash without --confirm.
 firmware-truncated = The firmware file is truncated: the FDAT payload extends past the end of the file.
 firmware-updating = Updating firmware:
@@ -653,6 +653,22 @@ btn-firmware-check = Check image
 btn-firmware-flash = Flash firmware
 firmware-own-device = Confirm that you are aware of these risks and are updating only your own device.
 btn-firmware-accept = Risks understood – flash
+firmware-reflash = Re-flash the same or an older version
+firmware-reflash-when = Use this when the camera refuses a firmware because its version is not newer than the installed one — for example to reinstall the current version during development, or to go back to an older firmware. Leave it off for a normal update to a newer version.
+btn-firmware-reflash-info = What does this do?
+firmware-reflash-hint = Flashing the same or an older version takes two steps. First the image's declared version is raised just above the installed one so the camera accepts it; then the genuine version is written back over service mode, so the camera reports its real version and stays re-flashable. Needs the chip's firmware key (step 1) and the service-mode keys (step 2).
+firmware-reflash-applied = Re-flash mode: the image version was raised so the camera accepts it; the reported firmware version stays unchanged.
+firmware-reflash-restoring = Restoring the genuine firmware version via service mode…
+firmware-reflash-restored = The camera reports its real version again: { $version }.
+firmware-reflash-restore-failed = Could not restore the genuine version — the camera still reports a raised version. Finish it later with “Restore the real version” (or `firmware --restore-version`).
+firmware-reflash-needs-service-keys = Re-flash restores the real version over service mode afterwards, which needs the service-mode keys. Import them first, or the camera would be left reporting a raised version.
+firmware-reflash-pending = An earlier re-flash did not finish: the camera reports a raised version instead of { $version }. Restore its real version now.
+firmware-restore-none = No interrupted re-flash to finish — there is no remembered version to restore.
+firmware-set-version-invalid = Invalid version. Use the form major.minor, for example 1.10.
+btn-firmware-restore-version = Restore the real version
+firmware-set-version-label = Set the reported version by hand
+firmware-set-version-hint = Expert tool: writes the version over service mode. Use it to force a camera stuck on a raised version back to its genuine one when there is no pending record. Needs the service-mode keys.
+btn-firmware-set-version = Set version
 
 # File tools: the operations that need no camera at all.
 tools-hint = These operations work on files and never touch the camera, so nothing here can damage it. They are the same operations pmca-console offers as apk2spk, spk2apk, print-backup, print-usagelog, guess-firmware and xpd-checksum.

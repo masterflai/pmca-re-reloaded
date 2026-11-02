@@ -636,7 +636,7 @@ stream-invalid-json = 這些設定不是有效的 JSON：
 
 # 韌體更新
 firmware-warning = 警告：這會覆寫相機的韌體。更新開始後請勿中斷：請勿拔除 USB 傳輸線，也不要關閉相機電源。請只使用專為這款相機機型設計的韌體檔案，並確認電池電量充足。否則相機可能會永久無法使用。
-firmware-untested = 未經測試：韌體燒錄功能雖已移植，但從未在實際相機上試過。寫入失敗或中斷後無法復原，因此請將此頁面上的所有內容視為未經驗證。
+firmware-untested = 已測試：韌體燒錄已在實際硬體上試過。但它仍是此處最具破壞性的操作，且在其他機型上未經確認：寫入失敗或中斷可能使相機無法開機。請保持電池充足，寫入期間不要中斷連線。
 firmware-confirm-required = 未加上 --confirm，拒絕燒錄。
 firmware-truncated = 韌體檔案不完整：FDAT 酬載超出了檔案結尾。
 firmware-updating = 正在更新韌體：
@@ -653,6 +653,22 @@ btn-firmware-check = 檢查映像檔
 btn-firmware-flash = 燒錄韌體
 firmware-own-device = 請確認您了解這些風險，且只是在更新您自己的裝置。
 btn-firmware-accept = 已了解風險 – 燒錄
+firmware-reflash = 重新燒錄相同或較舊的版本
+firmware-reflash-when = 當相機因韌體版本不比已安裝的新而拒絕時使用——例如在開發時重新安裝目前版本，或退回較舊的韌體。進行升級到較新版本的一般更新時，請保持關閉。
+btn-firmware-reflash-info = 這有什麼作用？
+firmware-reflash-hint = 燒錄相同或較舊版本需分兩步。先將映像檔宣告的版本提升至略高於已安裝版本，使相機接受；再透過服務模式寫回真實版本，使相機回報其真實版本並保持可重新燒錄。需要該晶片的韌體金鑰（步驟 1）與服務模式金鑰（步驟 2）。
+firmware-reflash-applied = 重新燒錄模式：已提升映像檔版本讓相機接受；顯示的韌體版本維持不變。
+firmware-reflash-restoring = 正在透過服務模式還原真實的韌體版本…
+firmware-reflash-restored = 相機重新回報其真實版本：{ $version }。
+firmware-reflash-restore-failed = 無法還原真實版本——相機仍回報一個被抬高的版本。稍後用「還原真實版本」（或 `firmware --restore-version`）完成。
+firmware-reflash-needs-service-keys = 重新燒錄隨後會透過服務模式還原真實版本，這需要服務模式金鑰。請先匯入，否則相機將一直回報一個被抬高的版本。
+firmware-reflash-pending = 先前的重新燒錄未完成：相機回報一個被抬高的版本而非 { $version }。請立即還原其真實版本。
+firmware-restore-none = 沒有可完成的中斷的重新燒錄——沒有記住的版本可還原。
+firmware-set-version-invalid = 版本無效。請使用 major.minor 格式，例如 1.10。
+btn-firmware-restore-version = 還原真實版本
+firmware-set-version-label = 手動設定回報的版本
+firmware-set-version-hint = 專家工具：透過服務模式寫入版本。當沒有待處理記錄時，用它將卡在被抬高版本的相機強制還原到其真實版本。需要服務模式金鑰。
+btn-firmware-set-version = 設定版本
 
 # 檔案工具：完全不需要相機的操作。
 tools-hint = 這些操作只處理檔案，絕不會動到相機，因此這裡的任何操作都不會損壞相機。它們與 pmca-console 以 apk2spk、spk2apk、print-backup、print-usagelog、guess-firmware 和 xpd-checksum 提供的操作完全相同。

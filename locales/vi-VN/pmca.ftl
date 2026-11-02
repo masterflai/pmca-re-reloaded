@@ -636,7 +636,7 @@ stream-invalid-json = Cài đặt không phải là JSON hợp lệ:
 
 # Cập nhật phần sụn
 firmware-warning = Cảnh báo: thao tác này ghi đè phần sụn của máy ảnh. Không được làm gián đoạn quá trình cập nhật sau khi đã bắt đầu: không rút cáp USB và không tắt máy ảnh. Chỉ sử dụng tệp phần sụn dành riêng cho đúng kiểu máy ảnh này, và đảm bảo pin được sạc đủ. Nếu không, máy ảnh có thể bị hỏng vĩnh viễn.
-firmware-untested = Chưa kiểm thử: chức năng ghi phần sụn đã được chuyển đổi nhưng chưa bao giờ được thử trên máy ảnh thật. Việc ghi thất bại hoặc bị gián đoạn không thể hoàn tác, vì vậy hãy xem mọi thứ trên trang này là chưa được kiểm chứng.
+firmware-untested = Đã kiểm thử: việc ghi phần sụn nay đã được thử trên phần cứng thật. Đây vẫn là thao tác phá hoại nhất ở đây và chưa được xác nhận trên các mẫu khác: một lần ghi thất bại hoặc bị gián đoạn có thể khiến máy ảnh không khởi động được. Hãy giữ pin đầy và không ngắt kết nối trong khi ghi.
 firmware-confirm-required = Từ chối ghi phần sụn khi không có --confirm.
 firmware-truncated = Tệp phần sụn bị cắt cụt: tải trọng FDAT vượt quá cuối tệp.
 firmware-updating = Đang cập nhật phần sụn:
@@ -653,6 +653,22 @@ btn-firmware-check = Kiểm tra bản phần sụn
 btn-firmware-flash = Ghi phần sụn
 firmware-own-device = Hãy xác nhận rằng bạn đã biết những rủi ro này và chỉ cập nhật thiết bị của chính mình.
 btn-firmware-accept = Đã hiểu rủi ro – ghi phần sụn
+firmware-reflash = Ghi lại cùng phiên bản hoặc phiên bản cũ hơn
+firmware-reflash-when = Dùng khi máy ảnh từ chối một phần sụn vì phiên bản của nó không mới hơn bản đã cài — ví dụ để cài lại phiên bản hiện tại khi phát triển, hoặc quay về phần sụn cũ hơn. Để tắt cho bản cập nhật thông thường lên phiên bản mới hơn.
+btn-firmware-reflash-info = Tùy chọn này làm gì?
+firmware-reflash-hint = Ghi cùng phiên bản hoặc phiên bản cũ hơn diễn ra theo hai bước. Trước tiên phiên bản khai báo trong bản ảnh được nâng lên vừa trên bản đã cài để máy ảnh chấp nhận; sau đó phiên bản thật được ghi lại qua chế độ dịch vụ, nhờ vậy máy ảnh báo cáo phiên bản thật của nó và vẫn có thể ghi lại. Cần khóa phần sụn của chip (bước 1) và các khóa chế độ dịch vụ (bước 2).
+firmware-reflash-applied = Chế độ ghi lại: phiên bản bản ảnh đã được nâng để máy ảnh chấp nhận; phiên bản phần sụn hiển thị vẫn không đổi.
+firmware-reflash-restoring = Đang khôi phục phiên bản phần sụn thật qua chế độ dịch vụ…
+firmware-reflash-restored = Máy ảnh lại báo cáo phiên bản thật: { $version }.
+firmware-reflash-restore-failed = Không thể khôi phục phiên bản thật — máy ảnh vẫn báo một phiên bản được nâng. Hãy hoàn tất sau bằng “Khôi phục phiên bản thật” (hoặc `firmware --restore-version`).
+firmware-reflash-needs-service-keys = Việc ghi lại sau đó khôi phục phiên bản thật qua chế độ dịch vụ, vốn cần các khóa chế độ dịch vụ. Hãy nhập chúng trước, nếu không máy ảnh sẽ vẫn báo một phiên bản được nâng.
+firmware-reflash-pending = Một lần ghi lại trước đó chưa hoàn tất: máy ảnh báo một phiên bản được nâng thay vì { $version }. Hãy khôi phục phiên bản thật của nó ngay.
+firmware-restore-none = Không có lần ghi lại bị gián đoạn nào cần hoàn tất — không có phiên bản được ghi nhớ để khôi phục.
+firmware-set-version-invalid = Phiên bản không hợp lệ. Dùng dạng major.minor, ví dụ 1.10.
+btn-firmware-restore-version = Khôi phục phiên bản thật
+firmware-set-version-label = Đặt phiên bản báo cáo bằng tay
+firmware-set-version-hint = Công cụ chuyên gia: ghi phiên bản qua chế độ dịch vụ. Dùng nó để buộc máy ảnh kẹt ở một phiên bản được nâng về phiên bản thật khi không có bản ghi đang chờ. Cần các khóa chế độ dịch vụ.
+btn-firmware-set-version = Đặt phiên bản
 
 # Công cụ tệp: các thao tác hoàn toàn không cần máy ảnh.
 tools-hint = Các thao tác này làm việc trên tệp và không bao giờ tác động đến máy ảnh, nên không gì ở đây có thể làm hỏng máy. Đây là các thao tác mà pmca-console cung cấp dưới dạng apk2spk, spk2apk, print-backup, print-usagelog, guess-firmware và xpd-checksum.

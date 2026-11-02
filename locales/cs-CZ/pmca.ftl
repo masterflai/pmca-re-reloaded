@@ -624,7 +624,7 @@ stream-invalid-json = Nastavení není platný formát JSON:
 
 # Aktualizace firmwaru a oficiální obchod
 firmware-warning = Varování: tímto se přepíše firmware fotoaparátu. Po spuštění aktualizaci nepřerušujte: neodpojujte kabel USB a fotoaparát nevypínejte. Používejte pouze soubor firmwaru určený přesně pro tento model fotoaparátu a dbejte na dostatečně nabitou baterii. Jinak se fotoaparát může stát trvale nepoužitelným.
-firmware-untested = Neověřeno: zápis firmwaru byl přenesen, ale nikdy vyzkoušen na skutečném fotoaparátu. Nezdařený nebo přerušený zápis nelze vzít zpět, proto vše na této stránce považujte za nepotvrzené.
+firmware-untested = Otestováno: flashování firmwaru je nyní vyzkoušeno na skutečném hardwaru. Stále jde o nejničivější operaci zde a u jiných modelů není potvrzena: nezdařený nebo přerušený zápis může fotoaparát znemožnit spustit. Udržujte baterii nabitou a během zápisu neodpojujte.
 firmware-confirm-required = Zápis bez parametru --confirm byl odmítnut.
 firmware-truncated = Soubor firmwaru je neúplný: payload FDAT přesahuje za konec souboru.
 firmware-updating = Aktualizace firmwaru:
@@ -641,6 +641,22 @@ btn-firmware-check = Zkontrolovat obraz
 btn-firmware-flash = Zapsat firmware
 firmware-own-device = Potvrďte, že si jste těchto rizik vědomi a aktualizujete výhradně své vlastní zařízení.
 btn-firmware-accept = Rizikům rozumím – zapsat
+firmware-reflash = Znovu nahrát stejnou nebo starší verzi
+firmware-reflash-when = Použijte, když fotoaparát odmítne firmware, protože jeho verze není novější než nainstalovaná — například pro přeinstalaci stávající verze při vývoji nebo návrat ke staršímu firmwaru. Pro běžnou aktualizaci na novější verzi nechte vypnuté.
+btn-firmware-reflash-info = Co to dělá?
+firmware-reflash-hint = Flashování stejné nebo starší verze probíhá ve dvou krocích. Nejprve se verze uvedená v obrazu zvýší těsně nad nainstalovanou, aby ji fotoaparát přijal; poté se skutečná verze zapíše zpět přes servisní režim, takže fotoaparát hlásí svou skutečnou verzi a zůstává přeflashovatelný. Vyžaduje klíč firmwaru čipu (krok 1) a klíče servisního režimu (krok 2).
+firmware-reflash-applied = Režim opětovného nahrání: verze obrazu byla zvýšena, aby ji fotoaparát přijal; hlášená verze firmwaru zůstává nezměněná.
+firmware-reflash-restoring = Obnovuji skutečnou verzi firmwaru přes servisní režim…
+firmware-reflash-restored = Fotoaparát opět hlásí svou skutečnou verzi: { $version }.
+firmware-reflash-restore-failed = Skutečnou verzi se nepodařilo obnovit — fotoaparát stále hlásí zvýšenou verzi. Dokončete to později pomocí „Obnovit skutečnou verzi“ (nebo `firmware --restore-version`).
+firmware-reflash-needs-service-keys = Přeflashování poté obnoví skutečnou verzi přes servisní režim, což vyžaduje klíče servisního režimu. Nejprve je naimportujte, jinak by fotoaparát zůstal hlásit zvýšenou verzi.
+firmware-reflash-pending = Dřevější přeflashování nebylo dokončeno: fotoaparát hlásí zvýšenou verzi místo { $version }. Obnovte nyní jeho skutečnou verzi.
+firmware-restore-none = Žádné přerušené přeflashování k dokončení — není uložena žádná verze k obnovení.
+firmware-set-version-invalid = Neplatná verze. Použijte tvar major.minor, například 1.10.
+btn-firmware-restore-version = Obnovit skutečnou verzi
+firmware-set-version-label = Nastavit hlášenou verzi ručně
+firmware-set-version-hint = Expertní nástroj: zapíše verzi přes servisní režim. Použijte jej k vynucení skutečné verze u fotoaparátu zaseknutého na zvýšené verzi, když není žádný čekající záznam. Vyžaduje klíče servisního režimu.
+btn-firmware-set-version = Nastavit verzi
 
 # Souborové nástroje: operace, které žádný fotoaparát nepotřebují.
 tools-hint = Tyto operace pracují se soubory a fotoaparátu se nikdy nedotknou, takže tady nemůže nic poškodit. Jsou to tytéž operace, které pmca-console nabízí jako apk2spk, spk2apk, print-backup, print-usagelog, guess-firmware a xpd-checksum.

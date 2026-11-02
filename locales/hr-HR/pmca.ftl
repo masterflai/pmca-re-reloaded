@@ -624,7 +624,7 @@ stream-invalid-json = Postavke nisu valjani JSON:
 
 # Ažuriranje firmvera i službena trgovina
 firmware-warning = Upozorenje: ovo prebrisuje firmver fotoaparata. Ne prekidajte ažuriranje nakon što je počelo: ne odspajajte USB kabel i ne isključujte fotoaparat. Upotrebljavajte samo datoteku firmvera namijenjenu upravo ovom modelu fotoaparata i pobrinite se da je baterija dovoljno napunjena. U protivnom fotoaparat može trajno postati neupotrebljiv.
-firmware-untested = Neprovjereno: zapisivanje firmvera preneseno je, ali nikada isprobano na stvarnom fotoaparatu. Neuspio ili prekinut zapis ne može se poništiti, pa sve na ovoj stranici smatrajte nepotvrđenim.
+firmware-untested = Testirano: zapisivanje firmvera sada je isprobano na stvarnom hardveru. I dalje je to najrazornija operacija ovdje i nije potvrđena na drugim modelima: neuspio ili prekinut zapis može onemogućiti pokretanje fotoaparata. Držite bateriju napunjenom i ne odspajajte tijekom zapisivanja.
 firmware-confirm-required = Zapisivanje bez --confirm je odbijeno.
 firmware-truncated = Datoteka firmvera je krnja: FDAT payload proteže se izvan kraja datoteke.
 firmware-updating = Ažuriranje firmvera:
@@ -641,6 +641,22 @@ btn-firmware-check = Provjeri sliku
 btn-firmware-flash = Zapiši firmver
 firmware-own-device = Potvrdite da ste svjesni tih rizika i da ažurirate isključivo vlastiti uređaj.
 btn-firmware-accept = Rizici shvaćeni – zapiši
+firmware-reflash = Ponovno upiši istu ili stariju verziju
+firmware-reflash-when = Upotrijebite kada fotoaparat odbije firmver jer njegova verzija nije novija od instalirane — primjerice za ponovnu instalaciju trenutačne verzije tijekom razvoja ili povratak na stariji firmver. Za uobičajeno ažuriranje na noviju verziju ostavite isključeno.
+btn-firmware-reflash-info = Što ovo radi?
+firmware-reflash-hint = Zapisivanje iste ili starije verzije odvija se u dva koraka. Najprije se verzija navedena u slici podiže tek iznad instalirane kako bi je fotoaparat prihvatio; zatim se stvarna verzija zapisuje natrag preko servisnog načina, tako da fotoaparat prijavljuje svoju stvarnu verziju i ostaje ponovno zapisiv. Zahtijeva ključ firmvera čipa (korak 1) i ključeve servisnog načina (korak 2).
+firmware-reflash-applied = Način ponovnog upisivanja: verzija slike je podignuta kako bi je fotoaparat prihvatio; prikazana verzija firmvera ostaje nepromijenjena.
+firmware-reflash-restoring = Vraćanje stvarne verzije firmvera putem servisnog načina…
+firmware-reflash-restored = Fotoaparat ponovno prijavljuje svoju stvarnu verziju: { $version }.
+firmware-reflash-restore-failed = Stvarnu verziju nije bilo moguće vratiti — fotoaparat još prijavljuje povišenu verziju. Dovršite to kasnije pomoću „Vrati stvarnu verziju“ (ili `firmware --restore-version`).
+firmware-reflash-needs-service-keys = Ponovno zapisivanje zatim vraća stvarnu verziju preko servisnog načina, što zahtijeva ključeve servisnog načina. Najprije ih uvezite, inače bi fotoaparat ostao prijavljivati povišenu verziju.
+firmware-reflash-pending = Ranije ponovno zapisivanje nije dovršeno: fotoaparat prijavljuje povišenu verziju umjesto { $version }. Vratite sada njegovu stvarnu verziju.
+firmware-restore-none = Nema prekinutog ponovnog zapisivanja za dovršavanje — nema zapamćene verzije za vraćanje.
+firmware-set-version-invalid = Nevažeća verzija. Upotrijebite oblik major.minor, na primjer 1.10.
+btn-firmware-restore-version = Vrati stvarnu verziju
+firmware-set-version-label = Ručno postavi prijavljenu verziju
+firmware-set-version-hint = Stručni alat: zapisuje verziju preko servisnog načina. Upotrijebite ga da fotoaparat zaglavljen na povišenoj verziji vratite na stvarnu verziju kada nema zapisa na čekanju. Zahtijeva ključeve servisnog načina.
+btn-firmware-set-version = Postavi verziju
 
 # Alati za datoteke: postupci kojima fotoaparat uopće ne treba.
 tools-hint = Ovi postupci rade s datotekama i nikada ne diraju fotoaparat, pa ovdje ništa ne može biti oštećeno. To su isti postupci koje pmca-console nudi kao apk2spk, spk2apk, print-backup, print-usagelog, guess-firmware i xpd-checksum.

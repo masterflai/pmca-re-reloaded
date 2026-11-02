@@ -709,6 +709,15 @@ impl ServiceSession {
             crate::service_mode::leave_service_mode(&mut self.cam);
         }
     }
+
+    /// Writes `data` to the on-camera file at `remote`.
+    ///
+    /// The firmware re-flash uses this to restore the genuine version register
+    /// after the sentinel flash, so the camera reports its real version again.
+    pub fn write_camera_file(&mut self, remote: &str, data: &[u8]) -> Result<()> {
+        self.cam.write_file(remote, data)?;
+        Ok(())
+    }
 }
 
 impl Drop for ServiceSession {

@@ -624,7 +624,7 @@ stream-invalid-json = Ustawienia nie są prawidłowym formatem JSON:
 
 # Aktualizacja oprogramowania układowego i oficjalny sklep
 firmware-warning = Ostrzeżenie: ta operacja nadpisuje oprogramowanie układowe aparatu. Nie przerywaj aktualizacji po jej rozpoczęciu: nie odłączaj kabla USB i nie wyłączaj aparatu. Używaj wyłącznie pliku oprogramowania układowego przeznaczonego dokładnie dla tego modelu aparatu i upewnij się, że akumulator jest wystarczająco naładowany. W przeciwnym razie aparat może stać się trwale bezużyteczny.
-firmware-untested = Niesprawdzone: zapis oprogramowania układowego został przeniesiony, ale nigdy nie był wypróbowany na prawdziwym aparacie. Nieudanego lub przerwanego zapisu nie da się cofnąć, więc traktuj wszystko na tej stronie jako niepotwierdzone.
+firmware-untested = Przetestowane: zapis oprogramowania układowego został już wypróbowany na prawdziwym sprzęcie. Nadal jest to najbardziej niszcząca operacja tutaj i nie jest potwierdzona na innych modelach: nieudany lub przerwany zapis może uniemożliwić uruchomienie aparatu. Utrzymuj naładowany akumulator i nie odłączaj podczas zapisu.
 firmware-confirm-required = Odmowa zapisu bez --confirm.
 firmware-truncated = Plik oprogramowania układowego jest obcięty: payload FDAT wykracza poza koniec pliku.
 firmware-updating = Aktualizacja oprogramowania układowego:
@@ -641,6 +641,22 @@ btn-firmware-check = Sprawdź obraz
 btn-firmware-flash = Zapisz oprogramowanie układowe
 firmware-own-device = Potwierdź, że znasz te zagrożenia i aktualizujesz wyłącznie własne urządzenie.
 btn-firmware-accept = Rozumiem ryzyko – zapisz
+firmware-reflash = Wgraj ponownie tę samą lub starszą wersję
+firmware-reflash-when = Użyj, gdy aparat odrzuca oprogramowanie układowe, ponieważ jego wersja nie jest nowsza niż zainstalowana — na przykład aby ponownie zainstalować bieżącą wersję podczas rozwoju lub wrócić do starszego oprogramowania. Przy zwykłej aktualizacji do nowszej wersji zostaw wyłączone.
+btn-firmware-reflash-info = Co to robi?
+firmware-reflash-hint = Zapis tej samej lub starszej wersji odbywa się w dwóch krokach. Najpierw wersja zadeklarowana w obrazie jest podnoszona tuż powyżej zainstalowanej, aby aparat ją przyjął; następnie prawdziwa wersja jest zapisywana z powrotem przez tryb serwisowy, dzięki czemu aparat zgłasza swoją prawdziwą wersję i pozostaje możliwy do ponownego zapisu. Wymaga klucza oprogramowania układowego układu (krok 1) oraz kluczy trybu serwisowego (krok 2).
+firmware-reflash-applied = Tryb ponownego wgrywania: wersję obrazu podniesiono, aby aparat ją przyjął; zgłaszana wersja oprogramowania układowego pozostaje bez zmian.
+firmware-reflash-restoring = Przywracanie prawdziwej wersji oprogramowania układowego przez tryb serwisowy…
+firmware-reflash-restored = Aparat ponownie zgłasza swoją prawdziwą wersję: { $version }.
+firmware-reflash-restore-failed = Nie udało się przywrócić prawdziwej wersji — aparat nadal zgłasza podwyższoną wersję. Dokończ to później za pomocą „Przywróć prawdziwą wersję” (lub `firmware --restore-version`).
+firmware-reflash-needs-service-keys = Ponowny zapis przywraca następnie prawdziwą wersję przez tryb serwisowy, co wymaga kluczy trybu serwisowego. Zaimportuj je najpierw, inaczej aparat pozostałby ze zgłaszaniem podwyższonej wersji.
+firmware-reflash-pending = Wcześniejszy ponowny zapis nie został ukończony: aparat zgłasza podwyższoną wersję zamiast { $version }. Przywróć teraz jego prawdziwą wersję.
+firmware-restore-none = Brak przerwanego ponownego zapisu do dokończenia — nie ma zapamiętanej wersji do przywrócenia.
+firmware-set-version-invalid = Nieprawidłowa wersja. Użyj formy major.minor, na przykład 1.10.
+btn-firmware-restore-version = Przywróć prawdziwą wersję
+firmware-set-version-label = Ustaw zgłaszaną wersję ręcznie
+firmware-set-version-hint = Narzędzie eksperckie: zapisuje wersję przez tryb serwisowy. Użyj go, aby zmusić aparat zablokowany na podwyższonej wersji do powrotu do prawdziwej wersji, gdy nie ma oczekującego wpisu. Wymaga kluczy trybu serwisowego.
+btn-firmware-set-version = Ustaw wersję
 
 # Narzędzia plikowe: operacje, które w ogóle nie potrzebują aparatu.
 tools-hint = Te operacje działają na plikach i nigdy nie dotykają aparatu, więc nic tutaj nie może go uszkodzić. Są to te same operacje, które pmca-console oferuje jako apk2spk, spk2apk, print-backup, print-usagelog, guess-firmware i xpd-checksum.

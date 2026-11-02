@@ -636,7 +636,7 @@ stream-invalid-json = 설정이 올바른 JSON이 아닙니다:
 
 # 펌웨어 업데이트
 firmware-warning = 경고: 카메라의 펌웨어를 덮어씁니다. 업데이트가 시작되면 중단하지 마십시오. USB 케이블을 뽑거나 카메라 전원을 끄지 마십시오. 정확히 이 카메라 모델용 펌웨어 파일만 사용하고, 배터리가 충분히 충전되어 있는지 확인하십시오. 그렇지 않으면 카메라를 영구적으로 사용할 수 없게 될 수 있습니다.
-firmware-untested = 테스트되지 않음: 펌웨어 기록 기능은 이식되었지만 실제 카메라에서 시험한 적이 없습니다. 실패하거나 중단된 쓰기는 되돌릴 수 없으므로, 이 페이지의 모든 기능은 검증되지 않은 것으로 간주하십시오.
+firmware-untested = 테스트됨: 펌웨어 기록은 실제 하드웨어에서 시험되었습니다. 그래도 여기서 가장 파괴적인 작업이며 다른 모델에서는 확인되지 않았습니다. 실패하거나 중단된 쓰기는 카메라를 부팅 불가 상태로 만들 수 있습니다. 배터리를 충분히 충전하고 쓰기 중에는 연결을 끊지 마십시오.
 firmware-confirm-required = --confirm 없이는 펌웨어를 기록하지 않습니다.
 firmware-truncated = 펌웨어 파일이 잘려 있습니다. FDAT 페이로드가 파일 끝을 넘어갑니다.
 firmware-updating = 펌웨어 업데이트 중:
@@ -653,6 +653,22 @@ btn-firmware-check = 이미지 확인
 btn-firmware-flash = 펌웨어 기록
 firmware-own-device = 이러한 위험을 알고 있으며 본인 소유의 장치만 업데이트한다는 것을 확인하십시오.
 btn-firmware-accept = 위험을 이해함 – 기록
+firmware-reflash = 같은 버전 또는 이전 버전 다시 기록
+firmware-reflash-when = 카메라가 펌웨어 버전이 설치된 것보다 최신이 아니라서 거부할 때 사용합니다. 예를 들어 개발 중 현재 버전을 다시 설치하거나 이전 펌웨어로 되돌릴 때입니다. 더 최신 버전으로의 일반 업데이트에서는 꺼 두세요.
+btn-firmware-reflash-info = 이 기능은 무엇인가요?
+firmware-reflash-hint = 같은 버전이나 더 낮은 버전을 기록하는 것은 두 단계로 이루어집니다. 먼저 이미지에 선언된 버전을 설치된 것보다 한 단계 위로 높여 카메라가 받아들이게 하고, 그런 다음 서비스 모드를 통해 실제 버전을 다시 기록하여 카메라가 실제 버전을 보고하고 계속 재기록 가능하게 합니다. 칩의 펌웨어 키(1단계)와 서비스 모드 키(2단계)가 필요합니다.
+firmware-reflash-applied = 다시 기록 모드: 카메라가 받아들이도록 이미지 버전을 높였습니다. 표시되는 펌웨어 버전은 바뀌지 않습니다.
+firmware-reflash-restoring = 서비스 모드로 실제 펌웨어 버전을 복원하는 중…
+firmware-reflash-restored = 카메라가 다시 실제 버전을 표시합니다: { $version }.
+firmware-reflash-restore-failed = 실제 버전을 복원하지 못했습니다 — 카메라가 여전히 높인 버전을 표시합니다. 나중에 ‘실제 버전 복원’(또는 `firmware --restore-version`)으로 마무리하세요.
+firmware-reflash-needs-service-keys = 재기록은 이후 서비스 모드를 통해 실제 버전을 복원하며, 이를 위해 서비스 모드 키가 필요합니다. 먼저 가져오세요. 그렇지 않으면 카메라가 높인 버전을 계속 표시하게 됩니다.
+firmware-reflash-pending = 이전 재기록이 완료되지 않았습니다: 카메라가 { $version } 대신 높인 버전을 표시합니다. 지금 실제 버전을 복원하세요.
+firmware-restore-none = 마무리할 중단된 재기록이 없습니다 — 복원할 기억된 버전이 없습니다.
+firmware-set-version-invalid = 잘못된 버전입니다. major.minor 형식을 사용하세요(예: 1.10).
+btn-firmware-restore-version = 실제 버전 복원
+firmware-set-version-label = 보고되는 버전을 수동으로 설정
+firmware-set-version-hint = 전문가 도구: 서비스 모드를 통해 버전을 기록합니다. 대기 중인 기록이 없을 때 높인 버전에 멈춘 카메라를 실제 버전으로 되돌리는 데 사용하세요. 서비스 모드 키가 필요합니다.
+btn-firmware-set-version = 버전 설정
 
 # 파일 도구: 카메라가 전혀 필요 없는 작업.
 tools-hint = 이 작업들은 파일에서만 작동하며 카메라에는 전혀 접근하지 않으므로, 여기서는 카메라가 손상될 일이 없습니다. pmca-console이 apk2spk, spk2apk, print-backup, print-usagelog, guess-firmware, xpd-checksum으로 제공하는 작업과 같습니다.

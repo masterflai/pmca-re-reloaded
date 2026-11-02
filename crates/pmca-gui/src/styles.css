@@ -408,6 +408,21 @@ summary {
   color: var(--accent);
 }
 
+/* The re-flash explanation folds away like the Tweaks info box, and keeps a
+   gap to the Check/Flash row below so the disclosure does not touch the
+   buttons. */
+.firmware-reflash-info {
+  margin: 6px 0 16px;
+}
+
+.firmware-reflash-info > summary {
+  color: var(--text-muted);
+}
+
+.firmware-reflash-info[open] > summary {
+  margin-bottom: 8px;
+}
+
 /* A project, its address, and the button that copies the address. */
 .link-row {
   display: flex;

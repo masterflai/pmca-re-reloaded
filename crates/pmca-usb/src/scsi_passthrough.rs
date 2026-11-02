@@ -44,6 +44,19 @@ const DRIVE_REMOVABLE: u32 = 2;
 /// `IOCTL_SCSI_PASS_THROUGH_DIRECT`.
 const IOCTL_SCSI_PASS_THROUGH_DIRECT: u32 = 0x4d014;
 
+/// `IOCTL_STORAGE_QUERY_PROPERTY` (adapter limits: max transfer, alignment).
+const IOCTL_STORAGE_QUERY_PROPERTY: u32 = 0x2d1400;
+
+/// `ERROR_GEN_FAILURE`: the camera's updater device transiently refuses a bulk
+/// transfer with this even when it is within the adapter's limits.
+const ERROR_GEN_FAILURE: i32 = 31;
+
+/// How many times to re-issue a SCSI command that fails with `ERROR_GEN_FAILURE`.
+const GEN_FAILURE_RETRIES: usize = 8;
+
+/// Pause between those retries.
+const GEN_FAILURE_DELAY: Duration = Duration::from_millis(50);
+
 /// SCSI passthrough data directions.
 const SCSI_IOCTL_DATA_OUT: u8 = 0;
 const SCSI_IOCTL_DATA_IN: u8 = 1;
@@ -165,47 +178,68 @@ impl ScsiPassThroughDevice {
         wb.sptd.sense_info_length = wb.sense_buf.len() as u8;
         wb.sptd.sense_info_offset = sense_offset;
 
-        let handle = unsafe {
-            CreateFileW(
-                self.path.as_ptr(),
-                GENERIC_READ | GENERIC_WRITE,
-                FILE_SHARE_READ | FILE_SHARE_WRITE,
-                ptr::null_mut(),
-                OPEN_EXISTING,
-                0,
-                0,
-            )
-        };
-        if handle == INVALID_HANDLE_VALUE {
-            return Err(Error::Transfer(format!("cannot open {}", self.display)));
-        }
-
         let size = core::mem::size_of::<ScsiPassThroughDirectWithBuffer>() as u32;
-        let mut returned = 0u32;
         let buf_ptr = &mut wb as *mut ScsiPassThroughDirectWithBuffer as *mut c_void;
-        // The SPTD header is METHOD_BUFFERED: the same buffer serves as input
-        // and output, receiving the updated status and auto-sense in place. The
-        // transfer payload travels separately through `data_buffer` (DIRECT).
-        let ok = unsafe {
-            DeviceIoControl(
-                handle,
-                IOCTL_SCSI_PASS_THROUGH_DIRECT,
-                buf_ptr,
-                size,
-                buf_ptr,
-                size,
-                &mut returned,
-                ptr::null_mut(),
-            )
-        };
-        // Read before CloseHandle, which may overwrite the thread's last error.
-        let os_error = std::io::Error::last_os_error();
-        unsafe {
-            CloseHandle(handle);
-        }
+        let mut attempt = 0;
+        loop {
+            let handle = unsafe {
+                CreateFileW(
+                    self.path.as_ptr(),
+                    GENERIC_READ | GENERIC_WRITE,
+                    FILE_SHARE_READ | FILE_SHARE_WRITE,
+                    ptr::null_mut(),
+                    OPEN_EXISTING,
+                    0,
+                    0,
+                )
+            };
+            if handle == INVALID_HANDLE_VALUE {
+                return Err(Error::Transfer(format!("cannot open {}", self.display)));
+            }
 
-        if ok == 0 {
-            return Err(Error::Transfer(format!("SCSI pass-through ioctl failed ({os_error})")));
+            let mut returned = 0u32;
+            // The SPTD header is METHOD_BUFFERED: the same buffer serves as input
+            // and output, receiving the updated status and auto-sense in place. The
+            // transfer payload travels separately through `data_buffer` (DIRECT).
+            let ok = unsafe {
+                DeviceIoControl(
+                    handle,
+                    IOCTL_SCSI_PASS_THROUGH_DIRECT,
+                    buf_ptr,
+                    size,
+                    buf_ptr,
+                    size,
+                    &mut returned,
+                    ptr::null_mut(),
+                )
+            };
+            // Read before CloseHandle, which may overwrite the thread's last error.
+            let os_error = std::io::Error::last_os_error();
+            unsafe {
+                CloseHandle(handle);
+            }
+
+            if ok != 0 {
+                break;
+            }
+            // The updater device transiently fails a bulk transfer with
+            // ERROR_GEN_FAILURE though it is within the adapter's limit; the
+            // transfer did not reach the device, so re-issuing is safe. Retry a
+            // few times before giving up.
+            if os_error.raw_os_error() == Some(ERROR_GEN_FAILURE)
+                && attempt + 1 < GEN_FAILURE_RETRIES
+            {
+                attempt += 1;
+                if std::env::var_os("PMCA_SCSI_DEBUG").is_some() {
+                    eprintln!("[scsi] GEN_FAILURE retry #{attempt} ({}-byte transfer)", data.len());
+                }
+                std::thread::sleep(GEN_FAILURE_DELAY);
+                continue;
+            }
+            return Err(Error::Transfer(format!(
+                "SCSI pass-through ioctl failed, {}-byte transfer ({os_error})",
+                data.len()
+            )));
         }
 
         if wb.sptd.scsi_status != 0 {
@@ -235,6 +269,55 @@ impl ScsiPassThroughDevice {
     /// Sends a SCSI command with no data phase.
     pub fn send_command(&mut self, command: &[u8]) -> Result<Sense> {
         self.send_scsi(command, SCSI_IOCTL_DATA_UNSPECIFIED, &mut [])
+    }
+
+    /// Queries the storage adapter's `MaximumTransferLength` and `AlignmentMask`.
+    ///
+    /// A diagnostic for the updater-mode write failures: the OS caps a single
+    /// SCSI pass-through transfer at `MaximumTransferLength`, and that value can
+    /// change when the device re-enumerates (e.g. after a WinUSB bind/unbind).
+    fn query_adapter_limits(&self) -> Option<(u32, u32)> {
+        // STORAGE_PROPERTY_QUERY { StorageAdapterProperty = 1, StandardQuery = 0 }.
+        let mut query = [0u8; 12];
+        query[0..4].copy_from_slice(&1u32.to_le_bytes());
+        let mut out = [0u8; 64];
+        let handle = unsafe {
+            CreateFileW(
+                self.path.as_ptr(),
+                0,
+                FILE_SHARE_READ | FILE_SHARE_WRITE,
+                ptr::null_mut(),
+                OPEN_EXISTING,
+                0,
+                0,
+            )
+        };
+        if handle == INVALID_HANDLE_VALUE {
+            return None;
+        }
+        let mut returned = 0u32;
+        let ok = unsafe {
+            DeviceIoControl(
+                handle,
+                IOCTL_STORAGE_QUERY_PROPERTY,
+                query.as_mut_ptr() as *mut c_void,
+                query.len() as u32,
+                out.as_mut_ptr() as *mut c_void,
+                out.len() as u32,
+                &mut returned,
+                ptr::null_mut(),
+            )
+        };
+        unsafe {
+            CloseHandle(handle);
+        }
+        if ok == 0 || returned < 20 {
+            return None;
+        }
+        // STORAGE_ADAPTER_DESCRIPTOR: MaximumTransferLength @ 8, AlignmentMask @ 16.
+        let max_transfer = u32::from_le_bytes(out[8..12].try_into().unwrap());
+        let alignment = u32::from_le_bytes(out[16..20].try_into().unwrap());
+        Some((max_transfer, alignment))
     }
 
     /// Reads the SCSI INQUIRY vendor identification string, if any.
@@ -295,6 +378,15 @@ pub fn find_sony_scsi_device() -> Result<Option<ScsiPassThroughDevice>> {
         if let Ok(Some(vendor)) = device.inquiry_vendor()
             && vendor.eq_ignore_ascii_case("sony")
         {
+            if std::env::var_os("PMCA_SCSI_DEBUG").is_some() {
+                match device.query_adapter_limits() {
+                    Some((max, align)) => eprintln!(
+                        "[scsi] {} MaximumTransferLength=0x{max:x} AlignmentMask=0x{align:x}",
+                        device.display
+                    ),
+                    None => eprintln!("[scsi] {} adapter-limits query failed", device.display),
+                }
+            }
             return Ok(Some(device));
         }
     }
