@@ -1,0 +1,237 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PMCA-RE RELOADED – Sony camera toolkit over USB (Sony-PMCA-RE successor)</title>
+<meta name="description" content="Free, open-source desktop app for Sony cameras over USB on Windows, macOS and Linux: camera info, shutter count, install PlayMemories camera apps such as OpenMemories Tweak, firmware updates and hidden settings. A Rust rewrite of Sony-PMCA-RE.">
+<link rel="canonical" href="https://masterflai.github.io/pmca-re-reloaded/">
+<link rel="icon" type="image/png" href="images/icon.png">
+<meta name="theme-color" content="#0078d4">
+
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="PMCA-RE RELOADED">
+<meta property="og:title" content="PMCA-RE RELOADED – Sony camera toolkit over USB">
+<meta property="og:description" content="Camera info, shutter count, PlayMemories camera apps, firmware and hidden settings for Sony cameras – on Windows, macOS and Linux. Open source, MIT license.">
+<meta property="og:url" content="https://masterflai.github.io/pmca-re-reloaded/">
+<meta property="og:image" content="https://masterflai.github.io/pmca-re-reloaded/images/social-preview.png">
+<meta property="og:image:width" content="1280">
+<meta property="og:image:height" content="640">
+<meta name="twitter:card" content="summary_large_image">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "PMCA-RE RELOADED",
+  "alternateName": ["pmca-re-reloaded", "PMCA-RE Reloaded"],
+  "description": "Desktop toolkit for Sony cameras over USB: camera information, shutter count, installing PlayMemories camera apps, firmware updates and access to the camera's settings memory. A from-scratch Rust implementation of the ideas of Sony-PMCA-RE.",
+  "applicationCategory": "UtilitiesApplication",
+  "operatingSystem": "Windows, macOS, Linux",
+  "softwareVersion": "1.9.0",
+  "license": "https://opensource.org/licenses/MIT",
+  "url": "https://masterflai.github.io/pmca-re-reloaded/",
+  "downloadUrl": "https://github.com/masterflai/pmca-re-reloaded/releases/latest",
+  "codeRepository": "https://github.com/masterflai/pmca-re-reloaded",
+  "image": "https://masterflai.github.io/pmca-re-reloaded/images/social-preview.png",
+  "author": {"@type": "Person", "name": "masterflai", "url": "https://github.com/masterflai"},
+  "offers": {"@type": "Offer", "price": "0", "priceCurrency": "EUR"}
+}
+</script>
+
+<style>
+:root {
+  --bg: #ffffff;
+  --bg-alt: #f4f6f8;
+  --fg: #1b1f24;
+  --muted: #57606a;
+  --border: #d8dee4;
+  --accent: #0078d4;
+  --accent-fg: #ffffff;
+  --note-bg: #fff8e5;
+  --note-border: #e3b341;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0d1117;
+    --bg-alt: #161b22;
+    --fg: #e6edf3;
+    --muted: #9da7b3;
+    --border: #30363d;
+    --accent: #4aa3f0;
+    --accent-fg: #0d1117;
+    --note-bg: #2a2310;
+    --note-border: #9e7a1c;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0d1117;
+  --bg-alt: #161b22;
+  --fg: #e6edf3;
+  --muted: #9da7b3;
+  --border: #30363d;
+  --accent: #4aa3f0;
+  --accent-fg: #0d1117;
+  --note-bg: #2a2310;
+  --note-border: #9e7a1c;
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--fg);
+  font: 16px/1.6 system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+a { color: var(--accent); }
+.wrap { max-width: 1040px; margin: 0 auto; padding: 0 16px; }
+header.hero { text-align: center; padding: 56px 0 32px; }
+header.hero img.logo { width: 96px; height: 96px; }
+h1 { font-size: clamp(2rem, 5vw, 3rem); margin: 12px 0 8px; letter-spacing: -0.02em; }
+.tagline { font-size: 1.2rem; color: var(--muted); max-width: 680px; margin: 0 auto 24px; }
+.buttons { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+.btn {
+  display: inline-block; padding: 12px 22px; border-radius: 8px;
+  font-weight: 600; text-decoration: none; border: 1px solid var(--accent);
+}
+.btn.primary { background: var(--accent); color: var(--accent-fg); }
+.btn.secondary { color: var(--accent); }
+.platforms { margin-top: 14px; color: var(--muted); font-size: 0.95rem; }
+.shots { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 32px 0 8px; }
+.shots img { width: 100%; height: auto; border-radius: 8px; border: 1px solid var(--border); display: block; }
+.shots figcaption { font-size: 0.9rem; color: var(--muted); margin-top: 6px; text-align: center; }
+section { padding: 40px 0; border-top: 1px solid var(--border); }
+h2 { font-size: 1.6rem; margin: 0 0 16px; }
+.grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; }
+.card { background: var(--bg-alt); border: 1px solid var(--border); border-radius: 10px; padding: 18px 20px; }
+.card h3 { margin: 0 0 6px; font-size: 1.05rem; }
+.card p { margin: 0; color: var(--muted); }
+.table-wrap { overflow-x: auto; }
+table { border-collapse: collapse; width: 100%; min-width: 560px; }
+th, td { border: 1px solid var(--border); padding: 8px 10px; text-align: left; vertical-align: top; }
+th { background: var(--bg-alt); }
+td.c { text-align: center; }
+.note { background: var(--note-bg); border-left: 4px solid var(--note-border); padding: 12px 16px; border-radius: 6px; }
+ol li { margin-bottom: 6px; }
+code { background: var(--bg-alt); border: 1px solid var(--border); border-radius: 4px; padding: 1px 5px; font-size: 0.92em; }
+details { border: 1px solid var(--border); border-radius: 8px; padding: 10px 16px; margin-bottom: 10px; background: var(--bg-alt); }
+summary { cursor: pointer; font-weight: 600; }
+footer { border-top: 1px solid var(--border); padding: 28px 0 48px; color: var(--muted); font-size: 0.92rem; }
+@media (max-width: 640px) {
+  .shots { grid-template-columns: 1fr; }
+  header.hero { padding-top: 36px; }
+}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+<header class="hero">
+  <img class="logo" src="images/icon.png" width="96" height="96" alt="PMCA-RE RELOADED logo">
+  <h1>PMCA-RE RELOADED</h1>
+  <p class="tagline">A free desktop toolkit for Sony cameras over plain USB: camera information, shutter count, camera apps, firmware and the camera's settings memory, all in one application.</p>
+  <div class="buttons">
+    <a class="btn primary" href="https://github.com/masterflai/pmca-re-reloaded/releases/latest">Download</a>
+    <a class="btn secondary" href="https://github.com/masterflai/pmca-re-reloaded">Source code on GitHub</a>
+  </div>
+  <p class="platforms">Windows · macOS · Linux · 27 languages · open source (MIT)</p>
+
+  <div class="shots">
+    <figure style="margin:0">
+      <picture>
+        <source media="(prefers-color-scheme: dark)" srcset="images/camera-info-dark.png">
+        <img src="images/camera-info-light.png" width="1650" height="1080" alt="Camera info page showing model, product code, serial number, firmware version and lens of a connected Sony camera (example data)">
+      </picture>
+      <figcaption>Camera info: model, firmware, serial number, lens</figcaption>
+    </figure>
+    <figure style="margin:0">
+      <picture>
+        <source media="(prefers-color-scheme: dark)" srcset="images/app-install-dark.png">
+        <img src="images/app-install-light.png" width="1650" height="1080" alt="Apps page installing three selected camera apps from the community app list" loading="lazy">
+      </picture>
+      <figcaption>Installing camera apps from the community list</figcaption>
+    </figure>
+  </div>
+</header>
+
+<section id="what">
+  <h2>What PMCA-RE RELOADED does</h2>
+  <p>PMCA-RE RELOADED talks to Sony cameras and other Sony imaging devices through their USB interfaces, from early NEX and Alpha bodies to current models, and from compact cameras to action cameras. It is a new implementation, written from scratch in Rust, of the ideas behind <a href="https://github.com/ma1co/Sony-PMCA-RE">Sony-PMCA-RE</a> by ma1co. It needs neither Python nor Zadig.</p>
+  <div class="grid">
+    <div class="card"><h3>Camera information</h3><p>Model, firmware version, serial number and USB mode. The shutter count is read from any ARW, JPEG or HEIF photo, and the usage log is decoded. No keys and no driver change needed.</p></div>
+    <div class="card"><h3>Install camera apps</h3><p>Sony's PlayMemories Camera Apps store is closed, but installing apps still works: install an <code>.apk</code> you have, for example <a href="https://github.com/ma1co/OpenMemories-Tweak">OpenMemories: Tweak</a>, or pick one from an app source. Installed apps can be backed up and restored.</p></div>
+    <div class="card"><h3>Firmware</h3><p>Check an official Sony firmware file against the connected camera and install it, or start the updater shell without touching the installed firmware.</p></div>
+    <div class="card"><h3>Hidden settings</h3><p>Change settings the camera has but does not show in its menu, such as the video recording limit (30-minute limit), all menu languages or PAL/NTSC. Every change is backed up, verified and reversible.</p></div>
+    <div class="card"><h3>Plugins and app sources</h3><p>Anyone can publish camera apps and plugins from their own GitHub repository. There is no store and no approval. Plugins run as sandboxed WebAssembly.</p></div>
+    <div class="card"><h3>Private and careful</h3><p>No telemetry and no account. No Sony keys or firmware files ship with the program. Expert shells sit behind an <em>Advanced mode</em> switch.</p></div>
+  </div>
+</section>
+
+<section id="devices">
+  <h2>Supported Sony cameras</h2>
+  <p>What works depends on the camera's generation. The app's <em>Camera compatibility</em> page lists every known model and what applies to it.</p>
+  <div class="table-wrap">
+  <table>
+    <thead>
+      <tr><th>Device group</th><th>Camera info, shutter count, usage log</th><th>Apps</th><th>Firmware, updater shell</th><th>Settings memory, service shell</th></tr>
+    </thead>
+    <tbody>
+      <tr><td><strong>Cameras with PlayMemories Camera Apps</strong> (NEX, α, RX and other Cyber-shot models, about 2012–2017, e.g. NEX-5R, NEX-6, α5000, α6000, α7, α7 II, RX100 III–V)</td><td class="c">✔</td><td class="c">✔</td><td class="c">✔</td><td class="c">✔</td></tr>
+      <tr><td><strong>Newer Sony cameras</strong> (about 2018 onwards)</td><td class="c">✔</td><td class="c">✖</td><td class="c">✖</td><td class="c">many models</td></tr>
+      <tr><td><strong>Other Sony imaging devices</strong> (camcorders, action cameras, compacts without app support)</td><td class="c">✔</td><td class="c">✖</td><td class="c">model-dependent</td><td class="c">model-dependent</td></tr>
+    </tbody>
+  </table>
+  </div>
+</section>
+
+<section id="start">
+  <h2>Getting started</h2>
+  <ol>
+    <li><strong>Download</strong> the <a href="https://github.com/masterflai/pmca-re-reloaded/releases/latest">latest release</a> for Windows (installer, MSI or portable ZIP), macOS (universal DMG) or Linux (AppImage or .deb) and start it.</li>
+    <li><strong>Connect the camera</strong> by USB and set <em>USB Connection</em> in the camera's menu to <em>Mass Storage</em> or <em>MTP</em>.</li>
+    <li><strong>Optional:</strong> import key material for app installation and the settings memory. The <em>Welcome</em> page explains how.</li>
+  </ol>
+  <p>Everything is also available on the command line through <code>pmca-console</code>, for example <code>pmca-console info</code> or <code>pmca-console install --apk &lt;file&gt;</code>.</p>
+  <p class="note"><strong>Use it with cameras you own.</strong> Some functions change settings inside the camera and may affect your warranty. Flashing firmware is the most destructive action. Read the <a href="https://github.com/masterflai/pmca-re-reloaded#safety">safety notes</a> first.</p>
+</section>
+
+<section id="faq">
+  <h2>Questions</h2>
+  <details>
+    <summary>How does it relate to Sony-PMCA-RE?</summary>
+    <p>Sony-PMCA-RE by ma1co first worked out how to talk to these cameras. It targets Python 2 and depends in parts on Sony services that have shut down. PMCA-RE RELOADED continues the idea as a new Rust implementation with a desktop app, its own driver handling, key import instead of shipped keys, locally generated update images and a guarded write path.</p>
+  </details>
+  <details>
+    <summary>Can I still install apps now that the PlayMemories store is closed?</summary>
+    <p>Yes, on cameras that supported PlayMemories Camera Apps. Install an <code>.apk</code> file directly or choose one from an app source such as the <a href="https://github.com/masterflai/pmca-community-sources">community sources</a> list.</p>
+  </details>
+  <details>
+    <summary>Do I need Zadig or other drivers on Windows?</summary>
+    <p>No. Most functions use the drivers Windows already has. Where raw USB is needed, the program assigns a WinUSB driver itself and removes it afterwards. Old Zadig drivers from Sony-PMCA-RE are detected and can be removed.</p>
+  </details>
+  <details>
+    <summary>Is it made by Sony?</summary>
+    <p>No. It is an independent open-source project, not made by, endorsed by, or connected to Sony.</p>
+  </details>
+</section>
+
+<section id="links">
+  <h2>More</h2>
+  <ul>
+    <li><a href="https://github.com/masterflai/pmca-re-reloaded">README and source code</a></li>
+    <li><a href="https://github.com/masterflai/pmca-re-reloaded/blob/main/CHANGELOG.md">Changelog</a></li>
+    <li><a href="app-sources.html">Publishing apps and plugins</a></li>
+    <li><a href="https://github.com/masterflai/pmca-re-reloaded/issues/new?template=camera_report.yml">Report a camera model</a> · <a href="https://github.com/masterflai/pmca-re-reloaded/discussions">Discussions</a></li>
+  </ul>
+</section>
+</div>
+
+<footer>
+  <div class="wrap">
+    <p>PMCA-RE RELOADED is free software under the MIT license, by <a href="https://github.com/masterflai">masterflai</a>. It builds on the research of <a href="https://github.com/ma1co/Sony-PMCA-RE">Sony-PMCA-RE</a> and <a href="https://github.com/ma1co/fwtool.py">fwtool.py</a> by ma1co.</p>
+    <p>"Sony", "PlayMemories", "α"/"Alpha" and the camera model names are trademarks of Sony Group Corporation, used only to say which cameras this tool works with.</p>
+  </div>
+</footer>
+
+</body>
+</html>

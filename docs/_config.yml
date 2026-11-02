@@ -1,0 +1,9 @@
+# GitHub Pages: the site is published from this folder (main branch, /docs).
+# index.html is a plain page; app-sources.md is rendered by Jekyll.
+title: PMCA-RE RELOADED
+description: Desktop toolkit for Sony cameras over USB – a Rust rewrite of Sony-PMCA-RE.
+url: https://masterflai.github.io
+baseurl: /pmca-re-reloaded
+exclude:
+  - images/demo-dark.gif
+  - images/demo-light.gif

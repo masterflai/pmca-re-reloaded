@@ -191,6 +191,6 @@ newly signed one.
 
 ## Writing plugins
 
-See [`crates/pmca-plugin-sdk`](../crates/pmca-plugin-sdk/src/lib.rs) and its
+See [`crates/pmca-plugin-sdk`](https://github.com/masterflai/pmca-re-reloaded/blob/main/crates/pmca-plugin-sdk/src/lib.rs) and its
 examples. `pmca-console plugins pack <folder> <file>` builds a plugin file and
 checks it exactly as installing does.
