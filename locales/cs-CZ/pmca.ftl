@@ -438,6 +438,8 @@ tweaks-set-unknown-value = Neznámá hodnota „{ $value }“. Očekávána jedn
 tweaks-set-not-a-choice = { $id } je přepínač, ne volba. Použijte --enable nebo --disable.
 tweaks-needs-set = { $id } je volba, ne přepínač. Použijte --set { $id }=HODNOTA s jednou z: { $options }
 tweak-usb-installer = Povolit instalátor aplikací přes USB
+tweak-app-menu = Zobrazit nabídku „Aplikace“
+tweak-app-menu-note = Určuje také, zda lze aplikaci přiřadit tlačítku AEL nebo softwarovému tlačítku B. Nastavení → Inicializace vrátí hodnotu na tovární nastavení oblasti fotoaparátu, což může nabídku opět skrýt.
 
 # Postup při úpravách
 tweaks-warning = Varování: použití úprav přepisuje zálohovací paměť fotoaparátu. Přerušený zápis může fotoaparát trvale poškodit.

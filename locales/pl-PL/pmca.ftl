@@ -438,6 +438,8 @@ tweaks-set-unknown-value = Nieznana wartość „{ $value }”. Oczekiwano jedne
 tweaks-set-not-a-choice = { $id } to przełącznik, a nie wybór. Użyj --enable lub --disable.
 tweaks-needs-set = { $id } to wybór, a nie przełącznik. Użyj --set { $id }=WARTOŚĆ z jedną z: { $options }
 tweak-usb-installer = Włącz instalator aplikacji USB
+tweak-app-menu = Pokaż menu „Aplikacja”
+tweak-app-menu-note = Decyduje też, czy aplikację można przypisać do przycisku AEL lub przycisku programowalnego B. Ustawienia → Inicjalizacja przywraca wartość fabryczną regionu aparatu, co może ponownie ukryć to menu.
 
 # Przebieg stosowania modyfikacji
 tweaks-warning = Ostrzeżenie: stosowanie modyfikacji nadpisuje pamięć kopii zapasowej aparatu. Przerwany zapis może trwale uszkodzić aparat.

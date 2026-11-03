@@ -450,6 +450,8 @@ tweaks-set-unknown-value = 알 수 없는 값 "{ $value }". 다음 중 하나여
 tweaks-set-not-a-choice = { $id }은(는) 선택 항목이 아니라 스위치입니다. --enable 또는 --disable을 사용하십시오.
 tweaks-needs-set = { $id }은(는) 스위치가 아니라 선택 항목입니다. 다음 중 하나와 함께 --set { $id }=VALUE를 사용하십시오: { $options }
 tweak-usb-installer = USB 앱 설치 프로그램 사용
+tweak-app-menu = “애플리케이션” 메뉴 표시
+tweak-app-menu-note = AEL 버튼이나 소프트키 B에 앱을 지정할 수 있는지도 이 설정이 결정합니다. 설정 → 초기화를 실행하면 카메라 지역의 공장 출하값으로 되돌아가 메뉴가 다시 숨겨질 수 있습니다.
 
 # 트윅 작업 흐름
 tweaks-warning = 경고: 트윅을 적용하면 카메라의 백업 메모리를 다시 씁니다. 쓰기가 중단되면 카메라가 영구적으로 손상될 수 있습니다.

@@ -438,6 +438,8 @@ tweaks-set-unknown-value = Bilinmeyen değer "{ $value }". Beklenen değerlerden
 tweaks-set-not-a-choice = { $id } bir seçim değil, bir anahtardır. --enable veya --disable kullanın.
 tweaks-needs-set = { $id } bir anahtar değil, bir seçimdir. --set { $id }=DEĞER ile şunlardan birini kullanın: { $options }
 tweak-usb-installer = USB uygulama kurucusunu etkinleştir
+tweak-app-menu = “Uygulama” menüsünü göster
+tweak-app-menu-note = Bir uygulamanın AEL düğmesine veya yazılım tuşu B'ye atanıp atanamayacağını da belirler. Kurulum → İlkleme, değeri kameranın bölgesinin fabrika değerine döndürür; bu da menüyü yeniden gizleyebilir.
 
 # İnce ayar akışı
 tweaks-warning = Uyarı: ince ayarların uygulanması kameranın yedek belleğini yeniden yazar. Yarıda kesilen bir yazma işlemi kameranıza kalıcı zarar verebilir.

@@ -45,6 +45,8 @@ pub const PROPERTIES: &[PropDef] = &[
     PropDef { name: "palNtsc", base: 0x0107_04fd, count: 1, part_size: 1 },
     PropDef { name: "language", base: 0x010d_008f, count: 35, part_size: 1 },
     PropDef { name: "usbAppInstaller", base: 0x0164_0001, count: 1, part_size: 1 },
+    // Issue #7: NEX-6 firmware 1.03 adds the Application menu only when this reads 1.
+    PropDef { name: "appMenu", base: 0x0107_09ed, count: 1, part_size: 1 },
     // From the LAK132 fork. Newer models only: on older bodies the copyright
     // subsystem does not exist, so `BackupPatch::read` reports "not stored".
     PropDef { name: "photographer1", base: 0x02cf_0bd1, count: 1, part_size: 0x2f },

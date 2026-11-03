@@ -450,6 +450,8 @@ tweaks-set-unknown-value = 不明數值「{ $value }」。預期為以下其中�
 tweaks-set-not-a-choice = { $id } 是開關，而非選項。請使用 --enable 或 --disable。
 tweaks-needs-set = { $id } 是選項，而非開關。請使用 --set { $id }=VALUE，數值為以下其中一項：{ $options }
 tweak-usb-installer = 啟用 USB 應用程式安裝程式
+tweak-app-menu = 顯示「應用程式」選單
+tweak-app-menu-note = 這也決定應用程式能否指定給 AEL 按鈕或軟鍵 B。設定→初始化會將其還原為相機所在地區的出廠值，這可能會再次隱藏此選單。
 
 # 調整流程
 tweaks-warning = 警告：套用調整會重寫相機的備份記憶體。寫入中斷可能會永久損壞您的相機。

@@ -6,6 +6,22 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+## [1.11.0-rc.1] - 2026-11-03
+
+**Pre-release for testing a switch that brings back the Application menu on
+NEX-6, NEX-5R and NEX-5T.**
+
+### Added
+
+- *Show the Application menu* on the Tweaks page (`tweaks --enable appMenu` on
+  the command line). Some region presets of these models hide the menu for
+  installed apps, and with it the option to put an app on the AEL button or
+  soft key B. The switch is offered only on these three models and only while
+  the setting holds one of its two known values. Because the camera marks the
+  setting read-only, it is written through the full backup image. Setup →
+  Initialize on the camera turns it off again.
+  ([#7](https://github.com/masterflai/pmca-re-reloaded/issues/7))
+
 ## [1.10.0] - 2026-11-03
 
 **The analysis module grew substantially and is now on by default.** Beyond

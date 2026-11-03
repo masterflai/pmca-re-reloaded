@@ -438,6 +438,8 @@ tweaks-set-unknown-value = Valeur inconnue « { $value } ». Valeurs attendues :
 tweaks-set-not-a-choice = { $id } est un interrupteur, pas un choix. Utilisez --enable ou --disable.
 tweaks-needs-set = { $id } est un choix, pas un interrupteur. Utilisez --set { $id }=VALEUR avec l'une de : { $options }
 tweak-usb-installer = Activer l'installateur d'apps USB
+tweak-app-menu = Afficher le menu « Application »
+tweak-app-menu-note = Détermine aussi si une application peut être assignée à la touche AEL ou à la touche logicielle B. Réglages → Initialiser rétablit la valeur d'usine de la région de l'appareil, ce qui peut masquer de nouveau le menu.
 
 # Déroulement des réglages
 tweaks-warning = Avertissement : l'application des réglages avancés réécrit la mémoire de sauvegarde de l'appareil. Une écriture interrompue peut endommager définitivement votre appareil.

@@ -393,6 +393,7 @@ impl From<pmca_platform::tweaks::TweakStatus> for TweakState {
             "palNtscSelector" => "tweak-pal-ntsc",
             "palNtsc" => "tweak-pal-ntsc-mode",
             "usbAppInstaller" => "tweak-usb-installer",
+            "appMenu" => "tweak-app-menu",
             other => other,
         }
         .to_string();
@@ -414,6 +415,7 @@ impl From<pmca_platform::tweaks::TweakStatus> for TweakState {
         let note_key = match t.id.as_str() {
             "palNtsc" => Some("tweak-pal-ntsc-note".to_string()),
             "language" => Some("tweak-language-note".to_string()),
+            "appMenu" => Some("tweak-app-menu-note".to_string()),
             _ => None,
         };
         let caution_key = t.caution.map(|c| {

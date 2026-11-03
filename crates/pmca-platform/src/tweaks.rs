@@ -38,15 +38,24 @@ struct Def {
     id: &'static str,
     prop: &'static str,
     kind: Kind,
+    /// Model names the tweak is meant for; empty means any model.
+    models: &'static [&'static str],
 }
 
 const TWEAKS: &[Def] = &[
-    Def { id: "recLimit", prop: "recLimit", kind: Kind::RecLimit },
-    Def { id: "recLimit4k", prop: "recLimit4k", kind: Kind::RecLimit4k },
-    Def { id: "language", prop: "language", kind: Kind::Language },
-    Def { id: "palNtscSelector", prop: "palNtscSelector", kind: Kind::Boolean },
-    Def { id: "palNtsc", prop: "palNtsc", kind: Kind::PalNtsc },
-    Def { id: "usbAppInstaller", prop: "usbAppInstaller", kind: Kind::Boolean },
+    Def { id: "recLimit", prop: "recLimit", kind: Kind::RecLimit, models: &[] },
+    Def { id: "recLimit4k", prop: "recLimit4k", kind: Kind::RecLimit4k, models: &[] },
+    Def { id: "language", prop: "language", kind: Kind::Language, models: &[] },
+    Def { id: "palNtscSelector", prop: "palNtscSelector", kind: Kind::Boolean, models: &[] },
+    Def { id: "palNtsc", prop: "palNtsc", kind: Kind::PalNtsc, models: &[] },
+    Def { id: "usbAppInstaller", prop: "usbAppInstaller", kind: Kind::Boolean, models: &[] },
+    // The id is unmapped elsewhere and may mean something else on other bodies.
+    Def {
+        id: "appMenu",
+        prop: "appMenu",
+        kind: Kind::Boolean,
+        models: &["NEX-6", "NEX-5R", "NEX-5T"],
+    },
 ];
 
 /// Video recording limit when disabled: 29m50s, Sony's factory value.
@@ -272,8 +281,15 @@ fn describe(d: &Def, data: &[u8], enabled: bool) -> String {
     }
 }
 
-/// Whether the camera's current value is one this tweak understands.
+/// Whether the tweak is meant for this camera and its current value is one
+/// the tweak understands.
 fn is_available(d: &Def, patch: &(impl Settings + ?Sized)) -> Result<bool> {
+    if !d.models.is_empty() {
+        let model = model_name(patch)?;
+        if !d.models.iter().any(|m| m.eq_ignore_ascii_case(&model)) {
+            return Ok(false);
+        }
+    }
     let data = patch.read(d.prop)?;
     Ok(match d.kind {
         // Boolean tweaks must currently hold exactly 0 or 1; anything else
@@ -387,6 +403,58 @@ mod tests {
         image[REGION..REGION + region.len()].copy_from_slice(region.as_bytes());
         fix_checksum(&mut image);
         BackupPatch::new(image).unwrap()
+    }
+
+    /// The sample camera reporting another model name, and `appMenu` holding `value`.
+    fn patch_for_model(model: &str, value: u8) -> BackupPatch {
+        let mut name = [0u8; 16];
+        name[..model.len()].copy_from_slice(model.as_bytes());
+        let mut file = pmca_core::backup::BackupFile::new(sample_image()).unwrap();
+        file.set_property(0x003e_0005, &name).unwrap();
+        file.set_property(0x0107_09ed, &[value]).unwrap();
+        file.update_checksum();
+        BackupPatch::new(file.into_inner()).unwrap()
+    }
+
+    #[test]
+    fn the_application_menu_switch_is_offered_on_the_nex_bodies() {
+        for model in ["NEX-6", "NEX-5R", "NEX-5T"] {
+            let mut p = patch_for_model(model, 0);
+            let t = list(&p).into_iter().find(|t| t.id == "appMenu").unwrap();
+            assert!(!t.enabled, "{model}");
+            assert_eq!(t.presentation, Presentation::Toggle);
+            set_enabled(&mut p, "appMenu", true, false).unwrap();
+            assert_eq!(p.read("appMenu").unwrap(), vec![1]);
+            assert!(list(&p).into_iter().find(|t| t.id == "appMenu").unwrap().enabled);
+        }
+    }
+
+    #[test]
+    fn the_application_menu_switch_stays_away_from_other_models() {
+        let mut p = patch_for_model("ILCE-6000", 0);
+        assert!(list(&p).iter().all(|t| t.id != "appMenu"));
+        assert!(matches!(set_enabled(&mut p, "appMenu", true, false), Err(Error::Unavailable(_))));
+    }
+
+    #[test]
+    fn the_application_menu_switch_needs_a_known_value() {
+        let mut p = patch_for_model("NEX-6", 2);
+        assert!(list(&p).iter().all(|t| t.id != "appMenu"));
+        assert!(set_enabled(&mut p, "appMenu", true, false).is_err());
+    }
+
+    #[test]
+    fn the_application_menu_is_written_through_two_images() {
+        // Read-only in the preset, so the attribute is cleared and then restored.
+        let mut p = patch_for_model("NEX-6", 0);
+        set_enabled(&mut p, "appMenu", true, false).unwrap();
+        let images = p.build_images(true).unwrap();
+        assert_eq!(images.len(), 2);
+        let first = pmca_core::backup::BackupFile::new(&images[0][..]).unwrap();
+        assert_eq!(first.get_property(0x0107_09ed).unwrap().attr, 0x00);
+        let second = pmca_core::backup::BackupFile::new(&images[1][..]).unwrap();
+        let prop = second.get_property(0x0107_09ed).unwrap();
+        assert_eq!((prop.attr, prop.data), (0x01, vec![1]));
     }
 
     #[test]

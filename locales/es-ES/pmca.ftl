@@ -438,6 +438,8 @@ tweaks-set-unknown-value = Valor desconocido «{ $value }». Se esperaba uno de:
 tweaks-set-not-a-choice = { $id } es un interruptor, no una elección. Use --enable o --disable.
 tweaks-needs-set = { $id } es una elección, no un interruptor. Use --set { $id }=VALOR con uno de: { $options }
 tweak-usb-installer = Activar el instalador de aplicaciones por USB
+tweak-app-menu = Mostrar el menú «Aplicación»
+tweak-app-menu-note = También determina si se puede asignar una aplicación al botón AEL o a la tecla programable B. Configuración → Inicializar restablece el valor de fábrica de la región de la cámara, lo que puede volver a ocultar el menú.
 
 # Proceso de ajustes
 tweaks-warning = Aviso: aplicar ajustes reescribe la memoria de copia de seguridad de la cámara. Una escritura interrumpida puede dañarla de forma permanente.

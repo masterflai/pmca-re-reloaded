@@ -438,6 +438,8 @@ tweaks-set-unknown-value = Ukjent verdi «{ $value }». Forventet en av: { $opti
 tweaks-set-not-a-choice = { $id } er en bryter, ikke et valg. Bruk --enable eller --disable.
 tweaks-needs-set = { $id } er et valg, ikke en bryter. Bruk --set { $id }=VERDI med en av: { $options }
 tweak-usb-installer = Slå på USB-appinstallerer
+tweak-app-menu = Vis menyen «Applikasjon»
+tweak-app-menu-note = Avgjør også om en app kan tilordnes AEL-knappen eller softtast B. Oppsett → Initialisering stiller den tilbake til fabrikkverdien for kameraets region, noe som kan skjule menyen igjen.
 
 # Tilpasningsforløpet
 tweaks-warning = Advarsel: å ta i bruk tilpasninger skriver om kameraets sikkerhetskopiminne. En avbrutt skriving kan skade kameraet permanent.

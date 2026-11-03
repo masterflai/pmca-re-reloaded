@@ -433,6 +433,8 @@ tweaks-set-unknown-value = 未知的值“{ $value }”。应为下列之一：{
 tweaks-set-not-a-choice = { $id } 是开关，不是选项。请使用 --enable 或 --disable。
 tweaks-needs-set = { $id } 是选项，不是开关。请使用 --set { $id }=VALUE，取值为下列之一：{ $options }
 tweak-usb-installer = 启用 USB 应用安装器
+tweak-app-menu = 显示“应用程序”菜单
+tweak-app-menu-note = 这也决定了应用能否被指定给 AEL 按钮或功能键 B。设置→初始化会将其恢复为相机所在地区的出厂值，这可能会再次隐藏该菜单。
 
 # 调整流程
 tweaks-warning = 警告：应用调整会重写相机的备份存储区。写入过程中断可能会永久损坏相机。

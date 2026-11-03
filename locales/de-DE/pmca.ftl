@@ -444,6 +444,8 @@ tweaks-set-unknown-value = Unbekannter Wert "{ $value }". Erwartet wird einer vo
 tweaks-set-not-a-choice = { $id } ist ein Schalter, keine Auswahl. Bitte --enable oder --disable verwenden.
 tweaks-needs-set = { $id } ist eine Auswahl, kein Schalter. Bitte --set { $id }=WERT mit einem von: { $options }
 tweak-usb-installer = USB-App-Installer aktivieren
+tweak-app-menu = Menü „Applikation“ anzeigen
+tweak-app-menu-note = Bestimmt auch, ob sich eine App auf die AEL-Taste oder den Softkey B legen lässt. Setup → Initialisieren setzt den Wert auf den Werkszustand der Kameraregion zurück; das Menü kann dann wieder fehlen.
 
 # Tweak-Ablauf
 tweaks-warning = Warnung: Das Anwenden von Tweaks überschreibt den Backup-Speicher der Kamera. Ein unterbrochener Schreibvorgang kann die Kamera dauerhaft beschädigen.

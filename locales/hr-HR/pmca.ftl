@@ -438,6 +438,8 @@ tweaks-set-unknown-value = Nepoznata vrijednost „{ $value }“. Očekivana je 
 tweaks-set-not-a-choice = { $id } je prekidač, a ne izbor. Upotrijebite --enable ili --disable.
 tweaks-needs-set = { $id } je izbor, a ne prekidač. Upotrijebite --set { $id }=VRIJEDNOST s jednom od: { $options }
 tweak-usb-installer = Omogući USB instalaciju aplikacija
+tweak-app-menu = Prikaži izbornik „Aplikacija”
+tweak-app-menu-note = Također određuje može li se aplikacija dodijeliti tipki AEL ili softverskoj tipki B. Postavljanje → Inicijalizacija vraća vrijednost na tvorničku postavku regije fotoaparata, što može ponovno sakriti izbornik.
 
 # Tijek primjene prilagodbi
 tweaks-warning = Upozorenje: primjena prilagodbi ponovno zapisuje sigurnosnu memoriju fotoaparata. Prekinuto zapisivanje može trajno oštetiti fotoaparat.

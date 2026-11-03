@@ -285,6 +285,7 @@ mod tests {
             (0x003c_04b6, 2, 0x00, &[0x2c, 0x01]),
             (0x0107_0148, 1, 0x01, &[0]), // read-only, like on a real camera
             (0x0107_04fd, 1, 0x00, &[0]), // video system, 0 = PAL
+            (0x0107_09ed, 1, 0x01, &[0]), // Application menu, read-only like a CN2 NEX-6
             (0x0164_0001, 1, 0x00, &[0]),
             // The identifying values, all read-only on a real camera.
             (0x003e_0005, 16, 0x01, b"ILCE-5100\0\0\0\0\0\0\0"),
