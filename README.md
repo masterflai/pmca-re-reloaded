@@ -217,6 +217,16 @@ given release is. Until then, and on the other systems:
 Every download has a `.sha256` file beside it, which confirms that the file
 arrived intact.
 
+Some virus scanners judge unsigned programs by heuristics and now and then
+report a release as malware; CleanMyMac, for example, once named the macOS
+download "Morcut" ([#5](https://github.com/masterflai/pmca-re-reloaded/issues/5)).
+Every download is built from the public source by the
+[release workflow](.github/workflows/release.yml) and published by
+`github-actions[bot]`. If the release page shows that and the file's SHA-256
+(`shasum -a 256 <file>` on macOS and Linux, `Get-FileHash <file>` on Windows)
+matches its `.sha256` file, the report is a false positive. Please report it
+to the scanner's vendor, and feel free to open an issue here.
+
 ## Key material
 
 Most of the program works without any setup: camera info, shutter count,

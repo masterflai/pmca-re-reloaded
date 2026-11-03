@@ -6,6 +6,14 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+### Changed
+
+- The release notes give the current way to open the unsigned macOS app
+  (*System Settings → Privacy & Security → Open Anyway*; right-click → *Open*
+  no longer works on macOS 15 and later), and the README explains how to tell
+  a virus scanner's false positive from a real problem
+  ([#5](https://github.com/masterflai/pmca-re-reloaded/issues/5)).
+
 ## [1.11.0-rc.1] - 2026-11-03
 
 **Pre-release for testing a switch that brings back the Application menu on
