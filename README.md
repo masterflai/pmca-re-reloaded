@@ -29,12 +29,12 @@
 
 <p align="center">
   <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="docs/images/camera-info-dark.png">
-    <img src="docs/images/camera-info-light.png" width="49%" alt="Camera info page showing model, product code, serial number, firmware version and lens of a connected camera (example data)">
+    <source media="(prefers-color-scheme: dark)" srcset="docs/images/app-install-dark.png">
+    <img src="docs/images/app-install-light.png" width="49%" alt="Apps page: apps from several sources in one list, three selected apps being installed one after another, the second at 64 percent">
   </picture>
   <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="docs/images/app-install-dark.png">
-    <img src="docs/images/app-install-light.png" width="49%" alt="Apps page: the community apps list installing three selected apps one after another, the second at 64 percent">
+    <source media="(prefers-color-scheme: dark)" srcset="docs/images/analysis-dark.png">
+    <img src="docs/images/analysis-light.png" width="49%" alt="Function analysis: a finished run for the menu setting Auto Pwr OFF Temp. with one candidate value that matches the menu unambiguously">
   </picture>
 </p>
 
@@ -73,7 +73,7 @@ in Rust, and it needs neither Python nor extra driver tools.
 <p align="center">
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="docs/images/demo-dark.gif">
-    <img src="docs/images/demo-light.gif" width="720" alt="Short demo: reading the camera info, loading the community app list and installing three apps">
+    <img src="docs/images/demo-light.gif" width="720" alt="Short demo: reading the camera info, loading the app list from several sources, installing three apps and opening a finished function analysis">
   </picture>
 </p>
 

@@ -13,6 +13,8 @@ All notable changes to this project are documented here. The format follows
   no longer works on macOS 15 and later), and the README explains how to tell
   a virus scanner's false positive from a real problem
   ([#5](https://github.com/masterflai/pmca-re-reloaded/issues/5)).
+- The README and website pictures show the reorganised window, including the
+  function analysis.
 
 ## [1.11.0-rc.1] - 2026-11-03
 
