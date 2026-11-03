@@ -7,7 +7,7 @@
 //! # Limits
 //!
 //! On cameras whose backup image is larger than about 1 MB, `PDT_READ` stalls
-//! and takes the USB session with it (see [`crate::direct`]), so a whole image
+//! and takes the USB session with it (see `crate::direct`), so a whole image
 //! can be neither read nor written there. Both operations refuse such a camera
 //! with a clear message rather than risk the stall.
 //!
@@ -25,14 +25,14 @@ use pmca_platform::BackupPatch;
 use pmca_platform::direct::full_read_too_large;
 use pmca_usb::nusb_backend::NusbBackend;
 use pmca_usb::senser_camera::SenserCamera;
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 
 use crate::dto::{ProgressEvent, ProgressKind};
 use crate::service_mode::{leave_service_mode, open_service_camera};
 use crate::{Error, ProgressSink, Result, direct, tweaks};
 
 /// What a successful save wrote.
-#[derive(Debug, Clone, PartialEq, Eq, Serialize)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 #[cfg_attr(test, derive(ts_rs::TS), ts(export))]
 pub struct BackupSaveOutcome {
@@ -43,7 +43,7 @@ pub struct BackupSaveOutcome {
 }
 
 /// What a successful restore did.
-#[derive(Debug, Clone, PartialEq, Eq, Serialize)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 #[cfg_attr(test, derive(ts_rs::TS), ts(export))]
 pub struct BackupRestoreOutcome {
