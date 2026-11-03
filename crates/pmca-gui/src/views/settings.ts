@@ -81,10 +81,10 @@ function cardUpdateCheck(): HTMLElement {
 }
 
 /**
- * Unlock the function analysis.
+ * Switch the function analysis on or off.
  *
- * The card says what the analysis is for and why it starts switched off, so
- * the decision is made knowing both. Turning it on asks once more; turning it
+ * On by default since 1.10. The card says what the analysis is for, so the
+ * choice is made knowing it. Turning it on asks once more; turning it
  * off does not, and leaves a run under way in the backend untouched.
  */
 function cardAnalysisMode(): HTMLElement {
