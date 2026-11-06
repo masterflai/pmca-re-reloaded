@@ -6,6 +6,16 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+## [1.11.0-rc.3] - 2026-11-06
+
+**Pre-release for testing service mode on macOS 26; replaces rc.2.**
+
+### Fixed
+
+- macOS: when the camera cannot be taken over, the message names other
+  programs that have the camera open, such as a web browser, and asks to close
+  them. The diagnostic trace shows which program opened each connection.
+
 ## [1.11.0-rc.2] - 2026-11-06
 
 **Pre-release for testing service mode (Tweaks, service shell, function

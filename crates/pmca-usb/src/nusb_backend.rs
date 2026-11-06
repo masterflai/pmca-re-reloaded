@@ -506,6 +506,7 @@ fn claim_captured(
     trace.note(format!("first claim: {first}"));
     let location = device.info.location_id();
     let mut info = device.info.clone();
+    let mut holders = Vec::new();
     for round in 1..=MACOS_CAPTURE_ROUNDS {
         let mut note = |step: String| trace.note(format!("#{round} {step}"));
         if round > 1 {
@@ -518,22 +519,31 @@ fn claim_captured(
             }
         }
         let last = round == MACOS_CAPTURE_ROUNDS;
-        match capture_round(&info, interface_number, class, last, &mut note) {
+        match capture_round(&info, interface_number, class, last, &mut holders, &mut note) {
             Ok(link) => return Ok(link),
             Err(e) => note(e),
         }
     }
-    Err(Error::Transfer(trace.render()))
+    if holders.is_empty() {
+        return Err(Error::Transfer(trace.render()));
+    }
+    Err(Error::Transfer(format!(
+        "other programs use the camera, close them and try again: {}; {}",
+        holders.join(", "),
+        trace.render()
+    )))
 }
 
 /// One capture attempt, see [`claim_captured`]. On failure, dropping the
-/// capture resets the device.
+/// capture resets the device. Other processes found holding the device are
+/// added to `holders`.
 #[cfg(target_os = "macos")]
 fn capture_round(
     info: &nusb::DeviceInfo,
     interface_number: u8,
     class: u8,
     last: bool,
+    holders: &mut Vec<String>,
     note: &mut dyn FnMut(String),
 ) -> std::result::Result<Link, String> {
     use crate::macos_capture::{HostInterface, driver_tree};
@@ -546,6 +556,15 @@ fn capture_round(
     note(format!("quiet: {}", crate::macos_capture::wait_quiet(id, MACOS_QUIET_WAIT)));
     std::thread::sleep(MACOS_SETTLE);
     note(format!("settled, drivers: {}", driver_tree(id)));
+    let foreign = crate::macos_capture::foreign_holders(id);
+    if !foreign.is_empty() {
+        note(format!("held by other programs: {}", foreign.join(", ")));
+    }
+    for name in foreign {
+        if !holders.contains(&name) {
+            holders.push(name);
+        }
+    }
     // A mounted volume keeps the disk driver from ending.
     if let Some(disk) = &disk {
         note(format!(

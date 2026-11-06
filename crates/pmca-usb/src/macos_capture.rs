@@ -710,13 +710,112 @@ unsafe fn children(entry: io_registry_entry_t, depth: u32) -> Vec<String> {
             }
             let mut name = [0 as c_char; 128];
             IOObjectGetClass(child, name.as_mut_ptr());
-            let name = CStr::from_ptr(name.as_ptr()).to_string_lossy().into_owned();
+            let mut name = CStr::from_ptr(name.as_ptr()).to_string_lossy().into_owned();
+            if let Some(creator) = string_property(child, c"IOUserClientCreator") {
+                name = format!("{name}({creator})");
+            }
             let below = children(child, depth - 1);
             out.push(if below.is_empty() { name } else { format!("{name}[{}]", below.join(",")) });
             IOObjectRelease(child);
         }
         IOObjectRelease(iterator);
         out
+    }
+}
+
+/// The processes other than this one with a user client open on the device
+/// with IORegistry entry `registry_id`, such as a browser looking for USB
+/// devices.
+pub(crate) fn foreign_holders(registry_id: u64) -> Vec<String> {
+    let Some(service) = service_by_id(registry_id) else {
+        return Vec::new();
+    };
+    let mut creators = Vec::new();
+    // SAFETY: `service` is live until released below.
+    unsafe {
+        collect_creators(service, 3, &mut creators);
+        IOObjectRelease(service);
+    }
+    let own = std::process::id();
+    // The window runs the same executable unprivileged; the kernel cuts names short.
+    let own_name = std::env::current_exe()
+        .ok()
+        .and_then(|p| p.file_name().map(|n| n.to_string_lossy().into_owned()))
+        .unwrap_or_default();
+    let mut names = Vec::new();
+    for creator in creators {
+        // The kernel writes "pid <n>, <process name>".
+        let Some((pid, name)) = creator.strip_prefix("pid ").and_then(|c| c.split_once(',')) else {
+            continue;
+        };
+        let name = name.trim();
+        if pid.trim().parse::<u32>().ok() == Some(own)
+            || (!name.is_empty() && own_name.starts_with(name))
+        {
+            continue;
+        }
+        let name = format!("{name} (pid {})", pid.trim());
+        if !names.contains(&name) {
+            names.push(name);
+        }
+    }
+    names
+}
+
+/// # Safety
+///
+/// `entry` must be a live registry entry.
+unsafe fn collect_creators(entry: io_registry_entry_t, depth: u32, out: &mut Vec<String>) {
+    let mut iterator: io_iterator_t = 0;
+    // SAFETY: guaranteed by the caller; the iterator and every child are released.
+    unsafe {
+        if depth == 0
+            || IORegistryEntryGetChildIterator(entry, kIOServicePlane, &mut iterator)
+                != kIOReturnSuccess
+        {
+            return;
+        }
+        loop {
+            let child = IOIteratorNext(iterator);
+            if child == 0 {
+                break;
+            }
+            if let Some(creator) = string_property(child, c"IOUserClientCreator") {
+                out.push(creator);
+            }
+            collect_creators(child, depth - 1, out);
+            IOObjectRelease(child);
+        }
+        IOObjectRelease(iterator);
+    }
+}
+
+/// A string property of a registry entry.
+///
+/// # Safety
+///
+/// `entry` must be a live registry entry.
+unsafe fn string_property(entry: io_registry_entry_t, key: &CStr) -> Option<String> {
+    // SAFETY: guaranteed by the caller; the key and the value are released.
+    unsafe {
+        let key =
+            CFStringCreateWithCString(kCFAllocatorDefault, key.as_ptr(), kCFStringEncodingUTF8);
+        let value = IORegistryEntryCreateCFProperty(entry, key, kCFAllocatorDefault, 0);
+        CFRelease(key.cast());
+        if value.is_null() {
+            return None;
+        }
+        let mut buffer = [0 as c_char; 256];
+        let text = (CFGetTypeID(value) == CFStringGetTypeID()
+            && CFStringGetCString(
+                value.cast(),
+                buffer.as_mut_ptr(),
+                buffer.len() as CFIndex,
+                kCFStringEncodingUTF8,
+            ) != 0)
+            .then(|| CStr::from_ptr(buffer.as_ptr()).to_string_lossy().into_owned());
+        CFRelease(value);
+        text
     }
 }
 
