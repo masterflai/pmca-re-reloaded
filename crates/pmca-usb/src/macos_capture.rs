@@ -82,6 +82,36 @@ unsafe extern "C" {
     fn geteuid() -> u32;
 }
 
+/// `mach_timespec_t`.
+#[repr(C)]
+struct MachTimespec {
+    tv_sec: u32,
+    tv_nsec: i32,
+}
+
+// IOKit itself is linked through `io-kit-sys`.
+unsafe extern "C" {
+    fn IOServiceWaitQuiet(service: io_service_t, wait_time: *mut MachTimespec) -> i32;
+}
+
+/// Wait up to `timeout` until the registry has no matching or driver start
+/// pending for the device with IORegistry entry `registry_id`; returns the
+/// outcome for a trace.
+pub(crate) fn wait_quiet(registry_id: u64, timeout: Duration) -> String {
+    let Some(service) = service_by_id(registry_id) else {
+        return "device gone".into();
+    };
+    let start = Instant::now();
+    let mut wait = MachTimespec { tv_sec: timeout.as_secs() as u32, tv_nsec: 0 };
+    // SAFETY: the service is live until released here; `wait` outlives the call.
+    let code = unsafe {
+        let code = IOServiceWaitQuiet(service, &mut wait);
+        IOObjectRelease(service);
+        code
+    };
+    format!("0x{code:08x} after {:.1}s", start.elapsed().as_secs_f32())
+}
+
 /// Sends an Objective-C message: `send!(Ret; receiver, c"selector:", arg => Type, ...)`.
 ///
 /// `objc_msgSend` must be called through a pointer of the method's exact type.
@@ -347,18 +377,32 @@ impl HostInterface {
         let length = u16::try_from(data.len())
             .map_err(|_| Error::Protocol("control transfer data too long"))?;
         let setup = DeviceRequest { request_type, request, value, index, length };
-        // SAFETY: the target is live; the buffer is released on every path.
-        unsafe {
-            let buffer = new_data(data);
-            let mut error: Id = ptr::null_mut();
-            let ok = send!(i8; self.control_target(),
-                c"sendDeviceRequest:data:bytesTransferred:completionTimeout:error:",
-                setup => DeviceRequest, buffer => Id, ptr::null_mut() => *mut usize,
-                timeout.as_secs_f64() => f64, &mut error => *mut Id);
-            let code = error_code(error);
-            release(buffer);
-            if ok != 0 { Ok(()) } else { Err(io_error("control transfer", code)) }
+        let send = |target: Id| -> i32 {
+            // SAFETY: the target is live; the buffer is released on every path.
+            unsafe {
+                let buffer = new_data(data);
+                let mut error: Id = ptr::null_mut();
+                let ok = send!(i8; target,
+                    c"sendDeviceRequest:data:bytesTransferred:completionTimeout:error:",
+                    setup => DeviceRequest, buffer => Id, ptr::null_mut() => *mut usize,
+                    timeout.as_secs_f64() => f64, &mut error => *mut Id);
+                let code = if ok != 0 { kIOReturnSuccess } else { error_code(error) };
+                release(buffer);
+                code
+            }
+        };
+        let code = send(self.control_target());
+        if code == kIOReturnSuccess {
+            return Ok(());
         }
+        // The interface object carries device requests too.
+        if !self.device.is_null()
+            && !self.interface.is_null()
+            && send(self.interface) == kIOReturnSuccess
+        {
+            return Ok(());
+        }
+        Err(io_error("control transfer", code))
     }
 }
 

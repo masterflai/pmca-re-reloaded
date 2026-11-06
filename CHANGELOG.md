@@ -6,6 +6,11 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+## [1.11.0-rc.2] - 2026-11-06
+
+**Pre-release for testing service mode (Tweaks, service shell, function
+analysis) on macOS 26.**
+
 ### Changed
 
 - The release notes give the current way to open the unsigned macOS app
@@ -15,6 +20,14 @@ All notable changes to this project are documented here. The format follows
   ([#5](https://github.com/masterflai/pmca-re-reloaded/issues/5)).
 - The README and website pictures show the reorganised window, including the
   function analysis.
+
+### Fixed
+
+- macOS: switching to service mode right after the camera came up in mass
+  storage failed with a USB transfer error. The program now waits until macOS
+  has finished setting up the camera before taking it over, and if the camera
+  still refuses, it resets the camera and tries again up to two more times.
+  Other interfaces that macOS holds are now taken over the same way.
 
 ## [1.11.0-rc.1] - 2026-11-03
 

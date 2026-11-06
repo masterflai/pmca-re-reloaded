@@ -113,6 +113,11 @@ impl<B: UsbBackend> MscDevice<B> {
         Self { backend, ep_in, ep_out, tag: 0 }
     }
 
+    /// Returns the wrapped backend.
+    pub fn into_inner(self) -> B {
+        self.backend
+    }
+
     /// Re-initialises the transport right after opening, mirroring the intent
     /// of the reference `MscDevice.reset()`.
     ///

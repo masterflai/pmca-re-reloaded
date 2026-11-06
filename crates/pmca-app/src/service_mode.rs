@@ -329,8 +329,25 @@ fn enter_service_mode(
             sink.emit(ProgressEvent::step(ProgressKind::Switching, l.tr("service-switching")));
             let mut auth =
                 open_when_started(&camera, discovery::open_senser_auth_from_mass_storage)?;
-            auth.start();
-            auth.authenticate()?;
+            #[cfg(not(target_os = "macos"))]
+            {
+                auth.start();
+                auth.authenticate()?;
+            }
+            #[cfg(target_os = "macos")]
+            {
+                let started = auth.request_start();
+                if let Err(e) = auth.authenticate() {
+                    // Whether the start request got through the capture explains the rest.
+                    return Err(match started {
+                        Err(start) => pmca_usb::Error::Transfer(format!(
+                            "authentication: {e}; start request: {start}"
+                        ))
+                        .into(),
+                        Ok(()) => e.into(),
+                    });
+                }
+            }
 
             sink.emit(ProgressEvent::step(
                 ProgressKind::Waiting,

@@ -148,9 +148,19 @@ fn is_camera_candidate(device: &DiscoveredDevice, classes: &[u8]) -> bool {
 /// is sufficient to recognise updater and senser modes and to treat any other
 /// interface-less Sony device as mass storage.
 fn detect_mode(device: &DiscoveredDevice) -> Result<CameraMode> {
+    // macOS caches the classes reliably, and every open there leaves a user
+    // client on the device that may still be closing when a capture follows.
+    #[cfg(target_os = "macos")]
+    let mut classes = device.cached_interface_classes();
+    #[cfg(target_os = "macos")]
+    if classes.is_empty() {
+        classes = device.interface_classes().unwrap_or_default();
+    }
     // `interface_classes` needs an open handle, which a class driver refuses;
     // the cached descriptors are the next best source before giving up.
+    #[cfg(not(target_os = "macos"))]
     let mut classes = device.interface_classes().unwrap_or_default();
+    #[cfg(not(target_os = "macos"))]
     if classes.is_empty() {
         classes = device.cached_interface_classes();
     }
@@ -579,6 +589,13 @@ pub fn open_senser_auth_from_mass_storage(
     camera: &DetectedCamera,
 ) -> Result<SenserAuthDevice<NusbBackend>> {
     let (backend, iface) = NusbBackend::open_class(&camera.device, class::MSC)?;
+    // Same first command as every mass-storage session that worked on macOS 26.
+    #[cfg(target_os = "macos")]
+    let backend = {
+        let mut msc = MscDevice::new(backend, iface.ep_in, iface.ep_out);
+        prepare_msc(&mut msc);
+        msc.into_inner()
+    };
     Ok(SenserAuthDevice::new(backend, iface.ep_in, iface.ep_out, camera.device.product_id))
 }
 

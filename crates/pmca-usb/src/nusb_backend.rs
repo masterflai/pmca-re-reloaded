@@ -368,7 +368,7 @@ fn claim(
         let first = result.err().map(|e| e.to_string()).unwrap_or_default();
         // Capturing needs the device closed, which this handle keeps open.
         drop(handle);
-        return claim_captured(device, interface_number, &first);
+        return claim_captured(device, interface_number, class, &first);
     } else {
         // A device that has just re-enumerated answers "no resources" for a moment.
         let deadline = std::time::Instant::now() + MACOS_FRESH_DEVICE_GRACE;
@@ -379,10 +379,15 @@ fn claim(
             result = handle.detach_and_claim_interface(interface_number).wait();
         }
         if let Err(e) = &result {
-            return Err(map_open_error(
-                device,
-                format!("interface {interface_number}, class 0x{class:02x}: {e}"),
-            ));
+            let first = format!("interface {interface_number}, class 0x{class:02x}: {e}");
+            // Whatever holds the interface, a capture ends it.
+            if crate::macos_capture::is_root()
+                && matches!(e.kind(), nusb::ErrorKind::Busy | nusb::ErrorKind::Other)
+            {
+                drop(handle);
+                return claim_captured(device, interface_number, class, &first);
+            }
+            return Err(map_open_error(device, first));
         }
     }
     #[cfg(not(target_os = "macos"))]
@@ -400,7 +405,45 @@ const MACOS_CAPTURE_POLL: Duration = Duration::from_millis(100);
 
 /// How long a captured device's interface is tried through IOUSBHost, per way.
 #[cfg(target_os = "macos")]
-const MACOS_INTERFACE_WAIT: Duration = Duration::from_secs(3);
+const MACOS_INTERFACE_WAIT: Duration = Duration::from_secs(2);
+
+/// The first, plain try at a captured interface: it opened at once whenever
+/// the capture worked at all.
+#[cfg(target_os = "macos")]
+const MACOS_INTERFACE_FIRST: Duration = Duration::from_millis(1500);
+
+/// Capture attempts, each after a reset of the one before.
+#[cfg(target_os = "macos")]
+const MACOS_CAPTURE_ROUNDS: usize = 3;
+
+/// How long the registry may stay busy matching drivers before a capture.
+#[cfg(target_os = "macos")]
+const MACOS_QUIET_WAIT: Duration = Duration::from_secs(5);
+
+/// Pause before a capture, so user clients of the enumeration have closed.
+#[cfg(target_os = "macos")]
+const MACOS_SETTLE: Duration = Duration::from_millis(1500);
+
+/// How long a reset device may take to come back.
+#[cfg(target_os = "macos")]
+const MACOS_RETURN_WAIT: Duration = Duration::from_secs(20);
+
+/// How often the bus is looked at meanwhile.
+#[cfg(target_os = "macos")]
+const MACOS_RETURN_POLL: Duration = Duration::from_millis(250);
+
+/// After this long, a device that never left counts as back.
+#[cfg(target_os = "macos")]
+const MACOS_SAME_DEVICE_GRACE: Duration = Duration::from_secs(5);
+
+/// How long a freshly enumerated mass-storage camera may take to publish its
+/// disk, the sign that the disk driver has finished starting.
+#[cfg(target_os = "macos")]
+const MACOS_DISK_WAIT: Duration = Duration::from_secs(8);
+
+/// Pause after a disk appeared late, so the driver finishes mounting it.
+#[cfg(target_os = "macos")]
+const MACOS_DISK_SETTLE: Duration = Duration::from_secs(1);
 
 /// Largest single IOUSBHost bulk write: one high-speed packet. On macOS 26 a
 /// camera took 8 KiB data phases reliably only as separate writes this size.
@@ -443,99 +486,156 @@ impl CaptureTrace {
 /// Captures the device from its kernel drivers through IOUSBHost and reaches
 /// the interface after that.
 ///
-/// The card is unmounted first, so the disk driver can end. Then, in turn:
-/// the interface through IOUSBHost; `nusb` while the capture holds the drivers
-/// away; and both again after the capture was surrendered without a reset. If none works, the device is reset, the card mounted again and the
-/// error carries a trace of the steps.
+/// Each round lets the drivers settle (disk published, registry quiet, the
+/// enumeration's own user clients closed), unmounts the card and captures.
+/// A round that cannot open the interface resets the device; the next round
+/// waits for it to come back at the same port. The error carries a trace of
+/// every round.
 #[cfg(target_os = "macos")]
-fn claim_captured(device: &DiscoveredDevice, interface_number: u8, first: &str) -> Result<Link> {
-    use crate::macos_capture::{HostInterface, driver_tree};
-
+fn claim_captured(
+    device: &DiscoveredDevice,
+    interface_number: u8,
+    class: u8,
+    first: &str,
+) -> Result<Link> {
     if !crate::macos_capture::is_root() {
         return Err(Error::NeedsRoot);
     }
-    let id = device.info.registry_entry_id();
     let mut trace = CaptureTrace::new();
     trace.note(format!("macOS {}", crate::macos_capture::os_version()));
     trace.note(format!("first claim: {first}"));
-    trace.note(format!("drivers: {}", driver_tree(id)));
-    // A mounted volume keeps the disk driver from ending.
-    let disk = crate::macos_capture::bsd_disk(id);
-    match &disk {
-        Some(disk) => trace.note(format!(
-            "unmount {disk}: {}",
-            crate::macos_capture::diskutil(&["unmountDisk", "force"], disk)
-        )),
-        None => trace.note("no disk".into()),
-    }
-    let mut note = |step: String| trace.note(step);
-    let reached = match HostInterface::capture(id, &mut note) {
-        Ok(host) => {
-            note(format!("reconfigure: {}", host.reconfigure()));
-            reach_captured(device, interface_number, host, &mut note)
-        }
-        Err(e) => Err(e),
-    };
-    match reached {
-        Ok(link) => Ok(link),
-        Err(e) => {
-            trace.note(e);
-            trace.note(format!("drivers after reset: {}", driver_tree(id)));
-            if let Some(disk) = &disk {
-                crate::macos_capture::diskutil(&["mountDisk"], disk);
+    let location = device.info.location_id();
+    let mut info = device.info.clone();
+    for round in 1..=MACOS_CAPTURE_ROUNDS {
+        let mut note = |step: String| trace.note(format!("#{round} {step}"));
+        if round > 1 {
+            match wait_for_return(location, info.registry_entry_id(), class) {
+                Some(back) => info = back,
+                None => {
+                    note("camera did not come back".into());
+                    break;
+                }
             }
-            Err(Error::Transfer(trace.render()))
+        }
+        let last = round == MACOS_CAPTURE_ROUNDS;
+        match capture_round(&info, interface_number, class, last, &mut note) {
+            Ok(link) => return Ok(link),
+            Err(e) => note(e),
         }
     }
+    Err(Error::Transfer(trace.render()))
 }
 
-/// The ways to a captured device's interface, see [`claim_captured`]. On
-/// failure, dropping `host` resets the device.
+/// One capture attempt, see [`claim_captured`]. On failure, dropping the
+/// capture resets the device.
 #[cfg(target_os = "macos")]
-fn reach_captured(
-    device: &DiscoveredDevice,
+fn capture_round(
+    info: &nusb::DeviceInfo,
     interface_number: u8,
-    mut host: crate::macos_capture::HostInterface,
+    class: u8,
+    last: bool,
     note: &mut dyn FnMut(String),
 ) -> std::result::Result<Link, String> {
-    let id = device.info.registry_entry_id();
-    let legacy = || -> std::result::Result<NusbLink, String> {
-        let handle = device.info.open().wait().map_err(|e| format!("open: {e}"))?;
-        let interface =
-            handle.claim_interface(interface_number).wait().map_err(|e| format!("claim: {e}"))?;
-        Ok(NusbLink::new(interface))
-    };
-    let legacy_for = |wait: Duration, note: &mut dyn FnMut(String), label: &str| {
-        let deadline = std::time::Instant::now() + wait;
+    use crate::macos_capture::{HostInterface, driver_tree};
+
+    let id = info.registry_entry_id();
+    note(format!("device 0x{id:x}, drivers: {}", driver_tree(id)));
+    // Captured while still starting, the disk driver left the interface
+    // refusing every open (0xe00002c9); every capture that worked waited for it.
+    let disk = if class == crate::class::MSC { settle_disk(id, note) } else { None };
+    note(format!("quiet: {}", crate::macos_capture::wait_quiet(id, MACOS_QUIET_WAIT)));
+    std::thread::sleep(MACOS_SETTLE);
+    note(format!("settled, drivers: {}", driver_tree(id)));
+    // A mounted volume keeps the disk driver from ending.
+    if let Some(disk) = &disk {
+        note(format!(
+            "unmount {disk}: {}",
+            crate::macos_capture::diskutil(&["unmountDisk", "force"], disk)
+        ));
+    }
+    let mut host = HostInterface::capture(id, note)?;
+    // IOUSBHost first: on macOS 26 only it carried camera commands (probes of
+    // 01.11. and 04.11.2026); `nusb` reached the interface but moved no data.
+    if host.open_interface(interface_number, MACOS_INTERFACE_FIRST, note) {
+        return Ok(Link::Host(host));
+    }
+    note(format!("refused, drivers: {}", driver_tree(id)));
+    note(format!("reconfigure: {}", host.reconfigure()));
+    if host.open_interface(interface_number, MACOS_INTERFACE_WAIT, note) {
+        return Ok(Link::Host(host));
+    }
+    host.surrender();
+    note(format!("surrendered, drivers: {}", driver_tree(id)));
+    if host.open_interface(interface_number, MACOS_INTERFACE_WAIT, note) {
+        return Ok(Link::Host(host));
+    }
+    if last {
+        // Before macOS 26 `nusb` could use an interface the capture freed.
+        let legacy = || -> std::result::Result<NusbLink, String> {
+            let handle = info.open().wait().map_err(|e| format!("open: {e}"))?;
+            let interface = handle
+                .claim_interface(interface_number)
+                .wait()
+                .map_err(|e| format!("claim: {e}"))?;
+            Ok(NusbLink::new(interface))
+        };
+        let deadline = std::time::Instant::now() + MACOS_INTERFACE_WAIT;
         loop {
             match legacy() {
-                Ok(link) => return Some(link),
-                Err(e) => note(format!("{label}: {e}")),
+                Ok(link) => return Ok(Link::Borrowed { link, _capture: host }),
+                Err(e) => note(format!("nusb: {e}")),
             }
             if std::time::Instant::now() >= deadline {
-                return None;
+                break;
             }
             std::thread::sleep(MACOS_CAPTURE_POLL);
         }
-    };
-    // IOUSBHost first: on macOS 26 only it carried camera commands (probe of
-    // 01.11.2026); `nusb` reached the interface but no command got through.
-    if host.open_interface(interface_number, MACOS_INTERFACE_WAIT, note) {
-        return Ok(Link::Host(host));
     }
-    if let Some(link) = legacy_for(MACOS_INTERFACE_WAIT, note, "nusb while captured") {
-        note("nusb while captured: claimed".into());
-        return Ok(Link::Borrowed { link, _capture: host });
+    drop(host);
+    Err(format!("interface not available, drivers after reset: {}", driver_tree(id)))
+}
+
+/// Waits for the device's disk to appear, the sign that the disk driver has
+/// finished starting, and returns its BSD name.
+#[cfg(target_os = "macos")]
+fn settle_disk(id: u64, note: &mut dyn FnMut(String)) -> Option<String> {
+    let waiting = std::time::Instant::now();
+    let mut disk = crate::macos_capture::bsd_disk(id);
+    while disk.is_none() && waiting.elapsed() < MACOS_DISK_WAIT {
+        std::thread::sleep(MACOS_CAPTURE_POLL);
+        disk = crate::macos_capture::bsd_disk(id);
     }
-    host.surrender();
-    note(format!("surrendered, drivers: {}", crate::macos_capture::driver_tree(id)));
-    if let Some(link) = legacy_for(MACOS_INTERFACE_WAIT, note, "nusb after surrender") {
-        return Ok(Link::Borrowed { link, _capture: host });
+    let waited = waiting.elapsed().as_secs_f32();
+    match &disk {
+        Some(name) if waited >= 0.1 => {
+            note(format!("{name} appeared after {waited:.1}s"));
+            std::thread::sleep(MACOS_DISK_SETTLE);
+        }
+        Some(_) => {}
+        None => note("no disk".into()),
     }
-    if host.open_interface(interface_number, MACOS_INTERFACE_WAIT, note) {
-        return Ok(Link::Host(host));
+    disk
+}
+
+/// Waits for a reset device to come back at USB location `location` with an
+/// interface of `class`, as a new registry entry or, failing that, as the old.
+#[cfg(target_os = "macos")]
+fn wait_for_return(location: u32, old: u64, class: u8) -> Option<nusb::DeviceInfo> {
+    let start = std::time::Instant::now();
+    while start.elapsed() < MACOS_RETURN_WAIT {
+        std::thread::sleep(MACOS_RETURN_POLL);
+        let Ok(devices) = nusb::list_devices().wait() else {
+            continue;
+        };
+        let same_allowed = start.elapsed() >= MACOS_SAME_DEVICE_GRACE;
+        let back = devices
+            .filter(|d| d.location_id() == location && d.interfaces().any(|i| i.class() == class))
+            .find(|d| d.registry_entry_id() != old || same_allowed);
+        if back.is_some() {
+            return back;
+        }
     }
-    Err("interface not available".into())
+    None
 }
 
 /// Classifies a device-open failure.

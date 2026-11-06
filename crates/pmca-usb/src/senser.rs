@@ -347,8 +347,13 @@ impl<B: UsbBackend> SenserAuthDevice<B> {
     /// The camera usually re-enumerates while handling this request, so a
     /// transfer error is expected and ignored.
     pub fn start(&mut self) {
+        let _ = self.request_start();
+    }
+
+    /// [`start`](Self::start), reporting the transfer's outcome.
+    pub fn request_start(&mut self) -> Result<()> {
         let (request, value, index) = VENDOR_REQUEST_START_SENSER;
-        let _ = self.backend.vendor_request_out(request, value, index, &[]);
+        self.backend.vendor_request_out(request, value, index, &[])
     }
 
     /// Requests that the camera leave senser mode. Errors are ignored for the
