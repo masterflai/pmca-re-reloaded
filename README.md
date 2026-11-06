@@ -392,11 +392,15 @@ the program at your own risk.
 
 Found a bug, or used the program with a camera model? Please open an
 [issue](https://github.com/masterflai/pmca-re-reloaded/issues/new/choose) —
-there is a form for camera reports. Questions, ideas and experiences belong in
-[Discussions](https://github.com/masterflai/pmca-re-reloaded/discussions).
+there is a form for camera reports. Questions and ideas about the program belong
+in [Discussions](https://github.com/masterflai/pmca-re-reloaded/discussions),
+where they stay searchable and easy to find an answer to.
 Do not post serial numbers or key material.
 Security problems: please report them
 [privately](https://github.com/masterflai/pmca-re-reloaded/security/advisories/new).
+
+To get in touch with other users and swap experiences, there is a community
+thread on Reddit: [r/SonyAlpha](https://www.reddit.com/r/SonyAlpha/comments/1xlyq99/).
 
 Translations and code are welcome — [CONTRIBUTING.md](CONTRIBUTING.md) explains
 how, including how to improve a language from within the app.
