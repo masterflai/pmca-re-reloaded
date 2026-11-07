@@ -819,5 +819,9 @@ unsafe fn string_property(entry: io_registry_entry_t, key: &CStr) -> Option<Stri
     }
 }
 
+/// The IOUSBLib capture path, libusb's way to a mass-storage camera. Tried
+/// before the IOUSBHost capture above, which stays as a fallback.
+pub(crate) mod iokit_usb;
+
 // Declared after `send!`, which only reaches modules declared below it.
 pub mod probe;

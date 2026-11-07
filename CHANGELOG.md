@@ -6,6 +6,21 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+## [1.11.0-rc.4] - 2026-11-07
+
+**Pre-release for testing mass-storage access on macOS 26 (service mode,
+tweaks, function analysis, firmware, updater).**
+
+### Fixed
+
+- macOS: the program now takes over the camera's mass storage the way libusb
+  does — capturing the device through IOKit's IOUSBLib and claiming the
+  interface directly — instead of going through IOUSBHost, which could not open
+  the interface on macOS 26. A probe built with real libusb confirmed this path
+  reaches the camera there as root. The IOUSBHost capture stays as a fallback,
+  and the macOS diagnostic probe gained a step that exercises the new path on
+  its own.
+
 ## [1.11.0-rc.3] - 2026-11-06
 
 **Pre-release for testing service mode on macOS 26; replaces rc.2.**

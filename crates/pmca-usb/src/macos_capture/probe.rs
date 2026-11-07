@@ -19,7 +19,7 @@ use crate::nusb_backend::NusbBackend;
 use crate::sony_extcmd::SonyExtCmdCamera;
 
 /// Identifies the probe's logic in a report.
-const REVISION: &str = "probe 3";
+const REVISION: &str = "probe 4";
 
 /// The report, written to the current directory.
 const REPORT: &str = "pmca-macos-probe.txt";
@@ -476,6 +476,12 @@ fn suite(r: &mut Report, class: u8, switch: bool) {
     if class != crate::class::MSC {
         return;
     }
+    // The program's preferred path now: capture and claim through IOUSBLib, the
+    // way libusb reaches mass storage. Run first so its outcome is not coloured by
+    // the camera settling after the IOUSBHost experiments below.
+    experiment(r, "capture, IOUSBLib: INQUIRY + camera info", class, switch, eps, &mut |r, t| {
+        via_iokit_usb(r, t, &mut |t, bulk| camera_info(t, bulk, None))
+    });
     // Every way twice, the program's own first: probe 2 could not tell the
     // way apart from the camera settling after earlier failures.
     let pieces = "capture, IOUSBHost: camera info, writes in 512-byte pieces";
@@ -624,6 +630,23 @@ fn via_host(r: &mut Report, t: &Target, test: Test<'_>) -> String {
     }
 }
 
+/// Capture and claim the interface through IOUSBLib — libusb's path, the one the
+/// program now tries first — and run `test` on it.
+fn via_iokit_usb(r: &mut Report, t: &Target, test: Test<'_>) -> String {
+    let mut notes = Vec::new();
+    let captured = iokit_usb::CapturedUsbInterface::capture(t.id, t.number, &mut |s| notes.push(s));
+    for note in notes {
+        r.line(note);
+    }
+    match captured {
+        Ok(mut iface) => {
+            r.line(format!("captured; drivers: {}", driver_tree(t.id)));
+            test(t, &mut iface)
+        }
+        Err(e) => e,
+    }
+}
+
 /// Capture, reconfigure as the program does, claim the interface through
 /// `nusb` and run `test` on it.
 fn via_nusb(r: &mut Report, t: &Target, test: Test<'_>) -> String {
@@ -697,6 +720,20 @@ impl Bulk for NusbBackend {
 
     fn get(&mut self, ep: u8, length: usize) -> Result<Vec<u8>> {
         self.read(ep, length)
+    }
+
+    fn halt(&mut self, ep: u8) -> Result<()> {
+        self.clear_halt(ep)
+    }
+}
+
+impl Bulk for iokit_usb::CapturedUsbInterface {
+    fn put(&mut self, ep: u8, data: &[u8]) -> Result<()> {
+        self.write(ep, data, IO_TIMEOUT)
+    }
+
+    fn get(&mut self, ep: u8, length: usize) -> Result<Vec<u8>> {
+        self.read(ep, length, IO_TIMEOUT)
     }
 
     fn halt(&mut self, ep: u8) -> Result<()> {

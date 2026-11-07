@@ -271,6 +271,9 @@ pub(crate) fn evict_macos_ptp_daemons() {
 enum Link {
     /// An interface claimed through `nusb`.
     Nusb(NusbLink),
+    /// macOS: a camera captured and claimed through IOUSBLib, libusb's path.
+    #[cfg(target_os = "macos")]
+    UsbLib(crate::macos_capture::iokit_usb::CapturedUsbInterface),
     /// macOS: an interface of a captured device, reached through IOUSBHost.
     #[cfg(target_os = "macos")]
     Host(crate::macos_capture::HostInterface),
@@ -550,6 +553,16 @@ fn capture_round(
 
     let id = info.registry_entry_id();
     note(format!("device 0x{id:x}, drivers: {}", driver_tree(id)));
+    // libusb's path, proven to reach mass storage on macOS 26 where opening the
+    // freed interface through IOUSBHost does not: capture with USBDeviceReEnumerate
+    // and claim the interface directly. A clean refusal (no capture taken) falls
+    // through to the IOUSBHost capture below; a capture that then failed resets the
+    // device on drop, which the round loop recovers from.
+    match crate::macos_capture::iokit_usb::CapturedUsbInterface::capture(id, interface_number, note)
+    {
+        Ok(iface) => return Ok(Link::UsbLib(iface)),
+        Err(e) => note(e),
+    }
     // Captured while still starting, the disk driver left the interface
     // refusing every open (0xe00002c9); every capture that worked waited for it.
     let disk = if class == crate::class::MSC { settle_disk(id, note) } else { None };
@@ -757,6 +770,8 @@ impl UsbBackend for NusbBackend {
             Link::Borrowed { link, .. } => link,
             #[cfg(target_os = "macos")]
             Link::Host(host) => return host.read(ep, length, timeout),
+            #[cfg(target_os = "macos")]
+            Link::UsbLib(iface) => return iface.read(ep, length, timeout),
         };
         let endpoint = link.endpoint_in(ep)?;
         // `nusb` 0.2 requires the requested length to be a non-zero multiple of
@@ -791,6 +806,10 @@ impl UsbBackend for NusbBackend {
                     .chunks(MACOS_HOST_WRITE_PIECE)
                     .try_for_each(|piece| host.write(ep, piece, timeout));
             }
+            // A real bulk pipe: IOKit splits the transfer into packets itself, so
+            // the 512-byte IOUSBHost workaround above is not needed here.
+            #[cfg(target_os = "macos")]
+            Link::UsbLib(iface) => return iface.write(ep, data, timeout),
         };
         let endpoint = link.endpoint_out(ep)?;
         let completion = endpoint.transfer_blocking(Buffer::from(data.to_vec()), timeout);
@@ -804,6 +823,8 @@ impl UsbBackend for NusbBackend {
             Link::Borrowed { link, .. } => link,
             #[cfg(target_os = "macos")]
             Link::Host(host) => return host.clear_halt(ep),
+            #[cfg(target_os = "macos")]
+            Link::UsbLib(iface) => return iface.clear_halt(ep),
         };
         // In `nusb` 0.2 the halt is cleared on the endpoint, so the endpoint has
         // to be open. It always is by the time a stall is recovered from, but
@@ -829,6 +850,10 @@ impl UsbBackend for NusbBackend {
             #[cfg(target_os = "macos")]
             Link::Host(host) => {
                 return host.control_out(0x21, 0xFF, 0, index, &[], self.timeout);
+            }
+            #[cfg(target_os = "macos")]
+            Link::UsbLib(iface) => {
+                return iface.control_out(0x21, 0xFF, 0, index, &[], self.timeout);
             }
         };
         link.control_out(
@@ -863,6 +888,10 @@ impl UsbBackend for NusbBackend {
             #[cfg(target_os = "macos")]
             Link::Host(host) => {
                 return host.control_out(0x43, request, value, index, data, self.timeout);
+            }
+            #[cfg(target_os = "macos")]
+            Link::UsbLib(iface) => {
+                return iface.control_out(0x43, request, value, index, data, self.timeout);
             }
         };
         link.control_out(
