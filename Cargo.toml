@@ -19,8 +19,9 @@ members = [
     "crates/pmca-plugin-sdk",
 ]
 # Fuzz targets need nightly and libFuzzer; they live in their own workspace so
-# the normal build never touches them. See fuzz/README.md.
-exclude = ["fuzz"]
+# the normal build never touches them. See fuzz/README.md. The macOS libusb
+# probe bundles libusb (vendored C), kept out of the normal build the same way.
+exclude = ["fuzz", "macos-libusb-probe"]
 
 [workspace.package]
 version = "1.11.0"

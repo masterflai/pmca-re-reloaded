@@ -1,0 +1,28 @@
+[package]
+name = "pmca-libusb-probe"
+version = "0.0.0"
+edition = "2024"
+publish = false
+
+[dependencies]
+# The whole point of this crate: the *real* libusb, built from source and
+# statically linked ("vendored"), so a tester needs no Homebrew, Python or git.
+# This answers "can official libusb open the camera's mass storage as root on
+# this macOS?" without cloning and running the Python original.
+rusb = { version = "0.9", features = ["vendored"] }
+
+# Reuse the mass-storage Bulk-Only framing and the Sony external-command
+# protocol without pulling in the nusb hardware backend.
+pmca-usb = { path = "../crates/pmca-usb", default-features = false }
+
+[[bin]]
+name = "pmca-libusb-probe"
+path = "src/main.rs"
+
+# A workspace of its own, so the main workspace (which excludes this directory)
+# never builds libusb.
+[workspace]
+members = ["."]
+
+[profile.release]
+strip = true

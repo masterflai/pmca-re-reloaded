@@ -1,0 +1,58 @@
+name: macOS libusb probe
+
+# Builds the single-file diagnostic behind `macos-libusb-probe/` for a tester's
+# Mac, without a release. It bundles libusb (rusb "vendored") so the tester
+# needs no Homebrew, Python or git: one file, one `sudo ./pmca-libusb-probe`.
+on:
+  workflow_dispatch:
+
+env:
+  CARGO_TERM_COLOR: always
+  RUSTUP_TOOLCHAIN: stable
+
+permissions:
+  contents: read
+
+jobs:
+  probe:
+    name: Build macOS libusb probe
+    runs-on: macos-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: aarch64-apple-darwin,x86_64-apple-darwin
+
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: macos-libusb-probe
+          key: macos-libusb-probe
+
+      - name: Build
+        run: |
+          for target in aarch64-apple-darwin x86_64-apple-darwin; do
+            cargo build --release --manifest-path macos-libusb-probe/Cargo.toml --target "$target"
+          done
+
+      - name: Package
+        run: |
+          mkdir staging
+          lipo -create -output staging/pmca-libusb-probe \
+            macos-libusb-probe/target/aarch64-apple-darwin/release/pmca-libusb-probe \
+            macos-libusb-probe/target/x86_64-apple-darwin/release/pmca-libusb-probe
+          codesign --force --sign - staging/pmca-libusb-probe
+          file staging/pmca-libusb-probe
+          # Smoke test: links libusb, runs with no camera attached (exits
+          # non-zero, which is fine) and shows the report it produced.
+          (cd staging && sudo ./pmca-libusb-probe < /dev/null || true; cat pmca-libusb-probe.txt; rm -f pmca-libusb-probe.txt)
+          tar czf pmca-libusb-probe.tar.gz -C staging pmca-libusb-probe
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v5
+        with:
+          name: pmca-libusb-probe
+          path: pmca-libusb-probe.tar.gz
+          if-no-files-found: error
