@@ -46,7 +46,7 @@ largestGap: number,
  */
 gapCount: number, 
 /**
- * The largest of them, at most [`MAX_GAPS`].
+ * The largest of them, at most `MAX_GAPS`.
  */
 gaps: Array<GapView>, 
 /**
