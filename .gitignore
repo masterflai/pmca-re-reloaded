@@ -32,6 +32,19 @@
 # Local working files, not part of the project.
 /internal/
 
+# Maintainer-side helpers that live beside the project without belonging to it:
+# they point at local notes, private remotes or personal redaction lists. Listed
+# here rather than in .git/info/exclude, which is not versioned and therefore
+# protects only the machine it was written on.
+/.github/copilot-instructions.md
+/README.proposal.md
+/tools/pack-for-transfer.ps1
+/tools/redact-hwtest.ps1
+/tools/redactions.local.psd1
+/tools/rename-workspace.ps1
+/tools/sync-memory.ps1
+/tools/workshop-check.ps1
+
 # Binary blobs, key files and certificates are never committed. The FDAT files
 # under updatershell/bodyfs are the open updater body templates.
 *.dat

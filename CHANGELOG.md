@@ -4,7 +4,7 @@ All notable changes to this project are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and the project uses
 [Semantic Versioning](https://semver.org/).
 
-## [Unreleased]
+## [1.11.0] - 2026-11-09
 
 ### Fixed
 
@@ -43,6 +43,21 @@ All notable changes to this project are documented here. The format follows
   order, because the request that ends the mode is a USB transfer and needs a
   binding to travel on. Reported and confirmed on a NEX-6 in
   [#7](https://github.com/masterflai/pmca-re-reloaded/issues/7).
+- macOS: the program now takes over the camera's mass storage the way libusb
+  does — capturing the device through IOKit's IOUSBLib and claiming the
+  interface directly — instead of going through IOUSBHost, which could not open
+  the interface on macOS 26. A probe built with real libusb confirmed this path
+  reaches the camera there as root. The IOUSBHost capture stays as a fallback,
+  and the macOS diagnostic probe gained a step that exercises the new path on
+  its own.
+- macOS: when the camera cannot be taken over, the message names other
+  programs that have the camera open, such as a web browser, and asks to close
+  them. The diagnostic trace shows which program opened each connection.
+- macOS: switching to service mode right after the camera came up in mass
+  storage failed with a USB transfer error. The program now waits until macOS
+  has finished setting up the camera before taking it over, and if the camera
+  still refuses, it resets the camera and tries again up to two more times.
+  Other interfaces that macOS holds are now taken over the same way.
 
 ### Added
 
@@ -76,9 +91,14 @@ All notable changes to this project are documented here. The format follows
   page says plainly what that free space is not — the settings store is read by
   the camera's own firmware, so a byte written where no property lives is a
   byte nobody reads.
-- The serial number is left out of a dump unless it is asked for, because these
-  files are made to be exchanged. A short digest still lets two dumps of the
-  same camera recognise each other without carrying the number itself.
+- The serial number, the photographer and the copyright holder are left out of a
+  dump unless they are asked for, because these files are made to be exchanged.
+  The dump says in plain words which of them it is missing, so whoever receives
+  one can see it. A short digest still lets two dumps of the same camera
+  recognise each other without carrying the serial number itself.
+- Adding a connected camera to a comparison says so when no camera is answering,
+  instead of starting a read that takes minutes and then failing. The check only
+  looks at what the operating system lists and opens no device.
 - The navigation can be unpinned with the pin next to the version number or
   Ctrl+B. It then folds down to a strip of icons and opens over the page when
   the pointer rests on it, when the program icon at its top is clicked or when
@@ -95,36 +115,14 @@ All notable changes to this project are documented here. The format follows
   system lists and opens no device, so it never disturbs a running operation.
 - The language choice sits next to the theme switch as a globe with the
   language code.
-
-## [1.11.0-rc.4] - 2026-11-07
-
-**Pre-release for testing mass-storage access on macOS 26 (service mode,
-tweaks, function analysis, firmware, updater).**
-
-### Fixed
-
-- macOS: the program now takes over the camera's mass storage the way libusb
-  does — capturing the device through IOKit's IOUSBLib and claiming the
-  interface directly — instead of going through IOUSBHost, which could not open
-  the interface on macOS 26. A probe built with real libusb confirmed this path
-  reaches the camera there as root. The IOUSBHost capture stays as a fallback,
-  and the macOS diagnostic probe gained a step that exercises the new path on
-  its own.
-
-## [1.11.0-rc.3] - 2026-11-06
-
-**Pre-release for testing service mode on macOS 26; replaces rc.2.**
-
-### Fixed
-
-- macOS: when the camera cannot be taken over, the message names other
-  programs that have the camera open, such as a web browser, and asks to close
-  them. The diagnostic trace shows which program opened each connection.
-
-## [1.11.0-rc.2] - 2026-11-06
-
-**Pre-release for testing service mode (Tweaks, service shell, function
-analysis) on macOS 26.**
+- *Show the Application menu* on the Tweaks page (`tweaks --enable appMenu` on
+  the command line). Some region presets of NEX-6, NEX-5R and NEX-5T hide the
+  menu for installed apps, and with it the option to put an app on the AEL
+  button or soft key B. The switch is offered only on these three models and
+  only while the setting holds one of its two known values. Because the camera
+  marks the setting read-only, it is written through the full backup image.
+  Setup → Initialize on the camera turns it off again.
+  ([#7](https://github.com/masterflai/pmca-re-reloaded/issues/7))
 
 ### Changed
 
@@ -134,31 +132,7 @@ analysis) on macOS 26.**
   a virus scanner's false positive from a real problem
   ([#5](https://github.com/masterflai/pmca-re-reloaded/issues/5)).
 - The README and website pictures show the reorganised window, including the
-  function analysis.
-
-### Fixed
-
-- macOS: switching to service mode right after the camera came up in mass
-  storage failed with a USB transfer error. The program now waits until macOS
-  has finished setting up the camera before taking it over, and if the camera
-  still refuses, it resets the camera and tries again up to two more times.
-  Other interfaces that macOS holds are now taken over the same way.
-
-## [1.11.0-rc.1] - 2026-11-03
-
-**Pre-release for testing a switch that brings back the Application menu on
-NEX-6, NEX-5R and NEX-5T.**
-
-### Added
-
-- *Show the Application menu* on the Tweaks page (`tweaks --enable appMenu` on
-  the command line). Some region presets of these models hide the menu for
-  installed apps, and with it the option to put an app on the AEL button or
-  soft key B. The switch is offered only on these three models and only while
-  the setting holds one of its two known values. Because the camera marks the
-  setting read-only, it is written through the full backup image. Setup →
-  Initialize on the camera turns it off again.
-  ([#7](https://github.com/masterflai/pmca-re-reloaded/issues/7))
+  camera comparison and the function analysis.
 
 ## [1.10.0] - 2026-11-03
 
@@ -733,6 +707,6 @@ and Linux.
 - **Device list** in the app with the functions each known model supports,
   plus community reports for further models.
 
-[Unreleased]: https://github.com/masterflai/pmca-re-reloaded/compare/v1.2.0...HEAD
+[1.11.0]: https://github.com/masterflai/pmca-re-reloaded/compare/v1.10.0...v1.11.0
 [1.1.0]: https://github.com/masterflai/pmca-re-reloaded/compare/v1.0.0...v1.1.0
 [1.0.0]: https://github.com/masterflai/pmca-re-reloaded/releases/tag/v1.0.0

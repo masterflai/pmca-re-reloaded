@@ -222,7 +222,7 @@ export function viewCompare(host: HTMLElement): void {
   };
 
   countField.addEventListener("change", () => {
-    want = Math.min(MAX_SOURCES, Math.max(2, countField.valueAsNumber || 2));
+    want = Math.min(MAX_SOURCES, Math.max(2, Math.trunc(countField.valueAsNumber) || 2));
     countField.value = String(want);
     refresh();
   });
@@ -489,12 +489,14 @@ function findingsHelp(): HTMLDetailsElement {
 // Collecting dumps
 // ---------------------------------------------------------------------------
 
-function checkboxRow(box: HTMLInputElement, labelKey: string, hintKey: string | null): HTMLElement {
-  const row = make(
-    "div",
-    { className: "cmp-way" },
-    make("label", { className: "row" }, box, make("span", { i18n: labelKey })),
-  );
+function checkboxRow(
+  box: HTMLInputElement,
+  labelKey: string,
+  hintKey: string | null,
+  label?: string,
+): HTMLElement {
+  const text = label === undefined ? make("span", { i18n: labelKey }) : make("span", { textContent: label });
+  const row = make("div", { className: "cmp-way" }, make("label", { className: "row" }, box, text));
   if (hintKey !== null) row.append(make("p", { className: "hint", i18n: hintKey }));
   return row;
 }
@@ -786,7 +788,12 @@ function exportSection(report: CompareReport, visible: Set<Cls>, status: HTMLEle
     { className: "cmp-export" },
     make("h3", { i18n: "compare-export-heading" }),
     make("p", { textContent: trFill("compare-export-shown", { count: shownRows }) }),
-    checkboxRow(all, "compare-export-all", "compare-export-all-hint"),
+    checkboxRow(
+      all,
+      "compare-export-all",
+      "compare-export-all-hint",
+      trFill("compare-export-all", { count: report.total }),
+    ),
     checkboxRow(onlyWritable, "compare-only-writable", "compare-only-writable-hint"),
     checkboxRow(onlyNamed, "compare-only-named", "compare-only-named-hint"),
     checkboxRow(onlySwitches, "compare-only-switches", "compare-only-switches-hint"),

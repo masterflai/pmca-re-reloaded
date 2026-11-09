@@ -38,6 +38,13 @@
   </picture>
 </p>
 
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="docs/images/compare-dark.png">
+    <img src="docs/images/compare-light.png" width="49%" alt="Camera comparison: the settings memory of two cameras side by side, each property marked as the same, nearly the same, different, stored at a different length or missing">
+  </picture>
+</p>
+
 PMCA-RE RELOADED talks to Sony cameras and other Sony imaging devices through
 their USB interfaces — from early NEX and Alpha bodies to current models, and
 from compact cameras to action cameras. What a device offers depends on its
@@ -73,7 +80,7 @@ in Rust, and it needs neither Python nor extra driver tools.
 <p align="center">
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="docs/images/demo-dark.gif">
-    <img src="docs/images/demo-light.gif" width="720" alt="Short demo: reading the camera info, loading the app list from several sources, installing three apps and opening a finished function analysis">
+    <img src="docs/images/demo-light.gif" width="720" alt="Short demo: reading the camera info, loading the app list from several sources, installing three apps, opening a finished function analysis, comparing the settings memory of two cameras, and folding the navigation down to icons">
   </picture>
 </p>
 

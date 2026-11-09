@@ -151,7 +151,7 @@ pub struct FreeSpaceView {
     pub largest_gap: usize,
     /// How many unclaimed runs there are in total.
     pub gap_count: usize,
-    /// The largest of them, at most [`MAX_GAPS`].
+    /// The largest of them, at most `MAX_GAPS`.
     pub gaps: Vec<GapView>,
     /// Bytes past the end the header declares; outside the checksum.
     pub trailing: usize,
@@ -747,7 +747,7 @@ fn class_label(l: &Localizer, class: &str) -> String {
     if text == key { class.to_string() } else { text }
 }
 
-/// Spaced hex cut to [`TEXT_VALUE_BYTES`], so one long array cannot push every
+/// Spaced hex cut to `TEXT_VALUE_BYTES`, so one long array cannot push every
 /// other column off the line.
 fn shorten(hex: &str) -> String {
     let bytes: Vec<&str> = hex.split_whitespace().collect();
