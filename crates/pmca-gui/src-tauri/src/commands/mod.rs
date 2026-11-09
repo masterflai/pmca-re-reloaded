@@ -4,6 +4,7 @@
 mod analysis;
 mod backup;
 mod camera;
+mod compare;
 mod dialogs;
 mod install;
 mod keys;
@@ -18,6 +19,7 @@ mod tweaks;
 pub(crate) use analysis::*;
 pub(crate) use backup::*;
 pub(crate) use camera::*;
+pub(crate) use compare::*;
 pub(crate) use dialogs::*;
 pub(crate) use install::*;
 pub(crate) use keys::*;

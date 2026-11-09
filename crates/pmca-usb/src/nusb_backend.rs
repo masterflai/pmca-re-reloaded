@@ -510,6 +510,7 @@ fn claim_captured(
     let location = device.info.location_id();
     let mut info = device.info.clone();
     let mut holders = Vec::new();
+    let mut usblib = true;
     for round in 1..=MACOS_CAPTURE_ROUNDS {
         let mut note = |step: String| trace.note(format!("#{round} {step}"));
         if round > 1 {
@@ -522,7 +523,15 @@ fn claim_captured(
             }
         }
         let last = round == MACOS_CAPTURE_ROUNDS;
-        match capture_round(&info, interface_number, class, last, &mut holders, &mut note) {
+        match capture_round(
+            &info,
+            interface_number,
+            class,
+            last,
+            &mut usblib,
+            &mut holders,
+            &mut note,
+        ) {
             Ok(link) => return Ok(link),
             Err(e) => note(e),
         }
@@ -539,13 +548,15 @@ fn claim_captured(
 
 /// One capture attempt, see [`claim_captured`]. On failure, dropping the
 /// capture resets the device. Other processes found holding the device are
-/// added to `holders`.
+/// added to `holders`. `usblib` is cleared once the IOUSBLib path has reset the
+/// device, so the next round goes through IOUSBHost instead.
 #[cfg(target_os = "macos")]
 fn capture_round(
     info: &nusb::DeviceInfo,
     interface_number: u8,
     class: u8,
     last: bool,
+    usblib: &mut bool,
     holders: &mut Vec<String>,
     note: &mut dyn FnMut(String),
 ) -> std::result::Result<Link, String> {
@@ -553,19 +564,38 @@ fn capture_round(
 
     let id = info.registry_entry_id();
     note(format!("device 0x{id:x}, drivers: {}", driver_tree(id)));
+    // Captured while still starting, the disk driver left the interface
+    // refusing every open (0xe00002c9); every capture that worked waited for it.
+    let disk = if class == crate::class::MSC { settle_disk(id, note) } else { None };
+    // A mounted volume keeps the disk driver from ending.
+    if let Some(disk) = &disk {
+        note(format!(
+            "unmount {disk}: {}",
+            crate::macos_capture::diskutil(&["unmountDisk", "force"], disk)
+        ));
+    }
     // libusb's path, proven to reach mass storage on macOS 26 where opening the
     // freed interface through IOUSBHost does not: capture with USBDeviceReEnumerate
     // and claim the interface directly. A clean refusal (no capture taken) falls
     // through to the IOUSBHost capture below; a capture that then failed resets the
     // device on drop, which the round loop recovers from.
-    match crate::macos_capture::iokit_usb::CapturedUsbInterface::capture(id, interface_number, note)
-    {
-        Ok(iface) => return Ok(Link::UsbLib(iface)),
-        Err(e) => note(e),
+    if *usblib {
+        match crate::macos_capture::iokit_usb::CapturedUsbInterface::capture(
+            id,
+            interface_number,
+            note,
+        ) {
+            Ok(iface) => return Ok(Link::UsbLib(iface)),
+            Err(e) => {
+                let reset = e.device_reset;
+                note(e.message);
+                if reset {
+                    *usblib = false;
+                    return Err("device reset by the capture, retrying through IOUSBHost".into());
+                }
+            }
+        }
     }
-    // Captured while still starting, the disk driver left the interface
-    // refusing every open (0xe00002c9); every capture that worked waited for it.
-    let disk = if class == crate::class::MSC { settle_disk(id, note) } else { None };
     note(format!("quiet: {}", crate::macos_capture::wait_quiet(id, MACOS_QUIET_WAIT)));
     std::thread::sleep(MACOS_SETTLE);
     note(format!("settled, drivers: {}", driver_tree(id)));
@@ -577,13 +607,6 @@ fn capture_round(
         if !holders.contains(&name) {
             holders.push(name);
         }
-    }
-    // A mounted volume keeps the disk driver from ending.
-    if let Some(disk) = &disk {
-        note(format!(
-            "unmount {disk}: {}",
-            crate::macos_capture::diskutil(&["unmountDisk", "force"], disk)
-        ));
     }
     let mut host = HostInterface::capture(id, note)?;
     // IOUSBHost first: on macOS 26 only it carried camera commands (probes of

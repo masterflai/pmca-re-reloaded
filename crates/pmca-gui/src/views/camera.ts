@@ -28,6 +28,7 @@ import type {
   UsageLogOutcome,
 } from "../dto";
 import { currentLocale, isCommandError, modeName, tr } from "../i18n";
+import { rememberCameraModel } from "../nav";
 import { hostPlatform } from "../platform";
 import { deviceToggle, markCell } from "./network";
 import { pluginText } from "./plugins";
@@ -47,6 +48,7 @@ export function viewCameraInfo(host: HTMLElement): void {
     try {
       const info = await invoke<CameraSummary>("get_camera_info");
       connectedModel = info.modelName;
+      rememberCameraModel(info.modelName);
       showStatus(status, "");
       details.append(
         fieldList([
@@ -219,6 +221,7 @@ export async function identifyModel(
   showBusy(status, connectingText());
   try {
     const info = await invoke<CameraSummary>("get_camera_info");
+    rememberCameraModel(info.modelName);
     showStatus(status, "");
     return info.modelName;
   } catch (e) {

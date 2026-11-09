@@ -643,7 +643,7 @@ fn via_iokit_usb(r: &mut Report, t: &Target, test: Test<'_>) -> String {
             r.line(format!("captured; drivers: {}", driver_tree(t.id)));
             test(t, &mut iface)
         }
-        Err(e) => e,
+        Err(e) => e.message,
     }
 }
 

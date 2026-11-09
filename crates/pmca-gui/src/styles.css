@@ -8,6 +8,10 @@
   --accent: #0067c0;
   --radius: 8px;
   --nav-width: 220px;
+  --nav-compact: 48px;
+  /* No light/dark counterpart exists among the theme colours above for the
+     "different length" finding, so the compare page gets one of its own. */
+  --cmp-structural: #8f5fe0;
   font-family: "Segoe UI Variable", "Segoe UI", system-ui, sans-serif;
 }
 
@@ -27,6 +31,8 @@ html[data-theme="system"] {
   --success: #0f7b0f;
   --danger: #c42b1c;
   --warning: #b26b00;
+  /* A shade darker than --border: a divider has to be seen to divide. */
+  --cmp-rule: #00000026;
 }
 
 /* Dark theme */
@@ -45,6 +51,7 @@ html[data-theme="dark"] {
   --danger: #ff99a4;
   /* The light-mode amber turns muddy and unreadable on a dark surface. */
   --warning: #fce100;
+  --cmp-rule: #ffffff2e;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -62,6 +69,7 @@ html[data-theme="dark"] {
     --success: #6ccb5f;
     --danger: #ff99a4;
     --warning: #fce100;
+    --cmp-rule: #ffffff2e;
   }
 }
 
@@ -84,29 +92,119 @@ body {
 }
 
 .app {
+  position: relative;
   display: grid;
   grid-template-columns: var(--nav-width) 1fr;
   height: 100vh;
 }
+
+/* Unpinned: the rail keeps a narrow column of icons and opens over the content,
+ * so the page underneath never reflows while the pointer passes by. */
+.app.nav-unpinned { grid-template-columns: var(--nav-compact) 1fr; }
+.app.nav-unpinned .content { grid-column: 2; }
+
+.icon-sprite { position: absolute; width: 0; height: 0; overflow: hidden; }
 
 /* Left navigation rail */
 .nav-rail {
   display: flex;
   flex-direction: column;
   gap: 4px;
+  min-width: 0;
   padding: 12px 8px;
+  overflow: hidden auto;
   background: var(--surface);
   backdrop-filter: blur(30px) saturate(150%);
   border-inline-end: 1px solid var(--border);
 }
 
-.nav-title {
-  font-weight: 600;
-  padding: 8px 12px 16px;
-  font-size: 1.05rem;
+.nav-unpinned .nav-rail {
+  position: absolute;
+  inset-block: 0;
+  inset-inline-start: 0;
+  z-index: 20;
+  width: var(--nav-compact);
+  padding-inline: 6px;
+  transition: width 150ms ease, box-shadow 150ms ease;
 }
 
+.nav-unpinned.nav-open .nav-rail {
+  width: var(--nav-width);
+  box-shadow: 0 8px 32px rgb(0 0 0 / 0.28);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nav-unpinned .nav-rail { transition: none; }
+}
+
+.nav-icon {
+  width: 18px;
+  height: 18px;
+  flex: none;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.nav-brand {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
+  padding: 4px 4px 4px 4px;
+}
+
+/* The program icon; a button only while the rail is unpinned. */
+.nav-logo {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  border: none;
+  border-radius: var(--radius);
+  background: transparent;
+  cursor: pointer;
+}
+.nav-logo img { width: 28px; height: 28px; }
+.nav-logo:not(:disabled):hover { background: var(--border); }
+.nav-logo:disabled { cursor: default; }
+
+.nav-brand-text { display: flex; flex-direction: column; min-width: 0; }
+.nav-brand-name { font-weight: 700; font-size: 0.9rem; line-height: 1.2; white-space: nowrap; }
+.nav-brand-sub { font-size: 0.75rem; line-height: 1.25; color: var(--text-muted); }
+
+/* Version on the left, pin on the right. */
+.nav-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 4px;
+  padding-top: 4px;
+}
+
+.nav-tool {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: none;
+  border-radius: var(--radius);
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+}
+.nav-tool:hover { background: var(--border); color: var(--text); }
+
 .nav-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
   text-align: start;
   padding: 10px 12px;
   border: none;
@@ -132,7 +230,7 @@ body {
 .nav-section {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 12px;
   width: 100%;
   padding: 10px 12px;
   border: none;
@@ -144,16 +242,66 @@ body {
   cursor: pointer;
   color: var(--text);
 }
-.nav-section::before {
+.nav-section::after {
   content: "▾";
+  margin-inline-start: auto;
   font-size: 0.8em;
-  width: 0.8em;
   color: var(--text-muted);
 }
-.nav-section.collapsed::before { content: "▸"; }
+.nav-section.collapsed::after { content: "▸"; }
 .nav-section:hover { background: var(--border); }
 /* Entries under a heading are indented so they read as its children. */
 .nav-item[data-group] { padding-inline-start: 30px; }
+
+/* With its entries out of sight, the heading marks where the open page lives. */
+.nav-section.has-active.collapsed,
+.nav-unpinned:not(.nav-open) .nav-section.has-active {
+  background: var(--surface-solid);
+  box-shadow: inset 3px 0 0 0 var(--accent);
+}
+
+/* Camera status above the version line. */
+.nav-status {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 24px;
+  padding: 8px 12px 0;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+.nav-dot {
+  width: 9px;
+  height: 9px;
+  flex: none;
+  border-radius: 50%;
+  background: var(--text-muted);
+}
+.nav-status[data-state="connected"] .nav-dot { background: var(--success); }
+.nav-status[data-state="waiting"] .nav-dot { background: var(--warning); }
+
+/* Unpinned, the labels may not wrap while the rail grows; the program name may. */
+.nav-unpinned .nav-label:not(.nav-brand-text) {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+/* Closed: icons only. Labels stay readable to screen readers. */
+.nav-unpinned:not(.nav-open) .nav-label {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+}
+.nav-unpinned:not(.nav-open) :is(.nav-item, .nav-section) { padding: 10px 9px; }
+.nav-unpinned:not(.nav-open) .nav-item[data-group],
+.nav-unpinned:not(.nav-open) .nav-version,
+.nav-unpinned:not(.nav-open) .nav-section::after { display: none; }
+.nav-unpinned:not(.nav-open) .nav-status { justify-content: center; padding-inline: 0; }
+.nav-unpinned:not(.nav-open) .nav-brand { padding-inline: 0; }
+.nav-unpinned:not(.nav-open) .nav-foot { justify-content: center; }
 
 /* Ribbon tabs: folder-style headers whose active one merges into the content
  * line below. No content box, so the cards underneath are not double-framed. */
@@ -191,7 +339,8 @@ body {
 .tab.active .tab-sub { color: var(--accent); }
 
 .nav-version {
-  padding: 8px 12px 0;
+  min-width: 0;
+  padding: 6px 12px;
   font: inherit;
   font-size: 0.8rem;
   text-align: start;
@@ -228,10 +377,53 @@ body {
 
 .content-header h1 { font-size: 1.4rem; margin: 0; }
 
-/* Header controls: language on the left, theme switch on the right. */
-.header-controls { display: flex; align-items: center; gap: 16px; }
+/* Where the user is: the group in muted text, then the page. */
+.crumb { display: flex; align-items: baseline; flex-wrap: wrap; gap: 8px; min-width: 0; }
+.crumb-group { color: var(--text-muted); font-weight: 400; }
+.crumb-group::after { content: "›"; margin-inline-start: 8px; }
+html[dir="rtl"] .crumb-group::after { content: "‹"; }
 
-.lang-picker { display: flex; align-items: center; gap: 8px; color: var(--text-muted); }
+/* Header controls: language and theme side by side, both icon buttons. */
+.header-controls { display: flex; align-items: center; gap: 8px; }
+
+/* Globe and language code; the real select lies invisibly on top. */
+.lang-picker {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 32px;
+  padding: 0 9px;
+  border: 1px solid var(--control-border);
+  border-radius: var(--radius);
+  background: var(--control);
+  color: var(--text-muted);
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+.lang-picker:hover { background: var(--control-hover); color: var(--text); }
+.lang-picker:focus-within { outline: 2px solid var(--accent); outline-offset: 1px; }
+
+.lang-icon {
+  width: 18px;
+  height: 18px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+#lang-select {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  border: none;
+  opacity: 0;
+  cursor: pointer;
+}
 
 /*
  * Whether the window runs with administrator rights. By id for the same reason
@@ -1452,4 +1644,275 @@ label.app-entry input[type="checkbox"] {
   color: var(--text-muted);
   font-size: 0.85rem;
   padding-top: 16px;
+}
+
+/*
+ * Compare page: the property grid and its finding colours.
+ *
+ * Each finding gets a left border plus a barely-there tint rather than a
+ * solid fill, so a row with fifty near-identical neighbours still reads as a
+ * table and not a block of colour. `color-mix` keeps that tint proportional
+ * to the surface colour underneath it, light or dark.
+ */
+.cmp-grid {
+  width: 100%;
+  table-layout: fixed;
+  border-collapse: collapse;
+  font-variant-numeric: tabular-nums;
+}
+
+.cmp-grid th,
+.cmp-grid td {
+  padding: 4px 8px;
+  overflow-wrap: anywhere;
+  text-align: start;
+  border-bottom: 1px solid var(--border);
+}
+
+.cmp-grid thead th {
+  position: sticky;
+  top: 0;
+  color: var(--text-muted);
+  font-weight: 600;
+  background: var(--surface-solid);
+}
+
+.cmp-mono {
+  font-family: ui-monospace, "Cascadia Mono", Consolas, monospace;
+}
+
+.cmp-identical {
+  border-inline-start: 3px solid var(--text-muted);
+  background: color-mix(in srgb, var(--text-muted) 6%, transparent);
+}
+
+.cmp-similar {
+  border-inline-start: 3px solid var(--warning);
+  background: color-mix(in srgb, var(--warning) 10%, transparent);
+}
+
+.cmp-different {
+  border-inline-start: 3px solid var(--danger);
+  background: color-mix(in srgb, var(--danger) 10%, transparent);
+}
+
+.cmp-structural {
+  border-inline-start: 3px solid var(--cmp-structural);
+  background: color-mix(in srgb, var(--cmp-structural) 10%, transparent);
+}
+
+/* "Apparently unused" is the least certain finding, so its row is the one
+   that looks least like a normal row: a dashed edge instead of a solid one. */
+.cmp-empty {
+  border-inline-start: 2px dashed var(--border);
+  background: color-mix(in srgb, var(--text-muted) 4%, transparent);
+}
+
+.cmp-absent {
+  border-inline-start: 3px solid var(--accent);
+  background: color-mix(in srgb, var(--accent) 10%, transparent);
+}
+
+.cmp-noise {
+  color: var(--text-muted);
+  border-inline-start: 3px solid var(--text-muted);
+  background: color-mix(in srgb, var(--text-muted) 4%, transparent);
+}
+
+/* A finding toggled on or off; the dot carries the colour, the chip itself
+   only changes shade so the colour is not the only thing that tells the two
+   states apart. */
+.cmp-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  color: var(--text-muted);
+  font: inherit;
+  background: var(--control);
+  border: 1px solid var(--control-border);
+  border-radius: 999px;
+  cursor: pointer;
+}
+
+.cmp-chip:hover {
+  background: var(--control-hover);
+}
+
+.cmp-chip.on {
+  color: var(--text);
+  background: var(--control-active);
+  border-color: var(--accent);
+}
+
+.cmp-dot {
+  width: 8px;
+  height: 8px;
+  flex: none;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+.cmp-dot.cmp-identical,
+.cmp-dot.cmp-noise { color: var(--text-muted); }
+.cmp-dot.cmp-similar { color: var(--warning); }
+.cmp-dot.cmp-different { color: var(--danger); }
+.cmp-dot.cmp-structural { color: var(--cmp-structural); }
+.cmp-dot.cmp-empty { color: var(--border); }
+.cmp-dot.cmp-absent { color: var(--accent); }
+
+/* The collected dumps, and the three ways of adding one. */
+.cmp-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.cmp-progress {
+  font-variant-numeric: tabular-nums;
+  color: var(--text-muted);
+}
+
+.cmp-list {
+  margin: 0.25rem 0 1rem;
+}
+
+.cmp-entry {
+  padding: 0.6rem 0.75rem;
+  margin-bottom: 0.5rem;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+}
+
+.cmp-entry-head {
+  justify-content: space-between;
+  align-items: center;
+}
+
+.cmp-entry-title {
+  font-weight: 600;
+}
+
+/* Each way of adding a dump keeps its explanation directly under its button. */
+.cmp-way {
+  margin-bottom: 0.75rem;
+}
+
+.cmp-way .hint {
+  margin: 0.25rem 0 0;
+}
+
+/* The three ways in, as cards: the whole block answers the question. */
+.cmp-choice {
+  display: block;
+  padding: 0.5rem 0.7rem;
+  margin-bottom: 0.4rem;
+  border: 1px solid var(--control-border);
+  border-radius: 6px;
+  background: var(--control);
+  cursor: pointer;
+}
+
+.cmp-choice:hover {
+  background: var(--control-hover);
+}
+
+.cmp-choice:has(input:checked) {
+  border-color: var(--accent);
+}
+
+.cmp-choice-title {
+  font-weight: 600;
+}
+
+.cmp-choice-hint {
+  display: block;
+  margin-left: 1.6rem;
+}
+
+/* A checkbox that follows a text field needs room to stand apart from it. */
+.cmp-spaced {
+  margin-top: 0.75rem;
+}
+
+/* Number fields whose arrows get clicked often, so worth making easy to hit. */
+.cmp-number {
+  width: 6rem;
+  padding: 0.5rem 0.6rem;
+  font-size: 1.1rem;
+  text-align: center;
+}
+
+/* The native spinner is tiny and hover-only, so .cmp-step replaces it. */
+.cmp-number::-webkit-inner-spin-button,
+.cmp-number::-webkit-outer-spin-button {
+  appearance: none;
+  margin: 0;
+}
+
+.cmp-stepper {
+  display: flex;
+  align-items: stretch;
+  gap: 0.4rem;
+  margin-top: 0.5rem;
+}
+
+.cmp-step {
+  width: 2.75rem;
+  font-size: 1.3rem;
+  line-height: 1;
+  padding: 0;
+}
+
+/* Groups the page without cutting it in two, so it stays short of the edges. */
+.cmp-rule {
+  width: 85%;
+  height: 1px;
+  margin: 1.5rem auto;
+  background: var(--cmp-rule);
+}
+
+/* What the chosen way needs, kept clear of the three choices above it. */
+.cmp-panels {
+  margin-top: 1.25rem;
+}
+
+/* What the chosen way needs, set in from the radio buttons it belongs to. */
+.cmp-panel {
+  margin: 0 0 0.75rem 1.6rem;
+  padding-left: 0.75rem;
+  border-left: 2px solid var(--border);
+}
+
+.cmp-chosen {
+  overflow-wrap: anywhere;
+  color: var(--text-muted);
+}
+
+.cmp-chips {
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+/* Marks the one finding that is a judgement rather than a reading. */
+.cmp-query {
+  font-weight: 700;
+  color: var(--text-muted);
+}
+
+/* "Switch" and "Short list" beside a property's name. */
+.cmp-mark {
+  padding: 0 0.35rem;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  font-size: 0.75em;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+.cmp-export {
+  margin-top: 1.25rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--border);
 }

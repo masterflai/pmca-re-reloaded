@@ -82,25 +82,28 @@ export function setAnalysisMode(on: boolean): void {
 // Collapsible navigation groups
 // ---------------------------------------------------------------------------
 
-const NAV_GROUPS_KEY = "pmca.nav.groups";
-const NAV_GROUPS = ["camera", "apps", "maintenance"];
+// The one open group. Replaces `pmca.nav.groups`, whose list of folded groups
+// could not tell a group added later from one the user had opened.
+const NAV_OPEN_KEY = "pmca.nav.open";
+const NAV_GROUPS = ["camera", "apps", "analysis", "maintenance"];
 
 /** Groups that are folded shut; all of them until the user opens one. */
 let collapsedGroups = readCollapsedGroups();
 
 function readCollapsedGroups(): Set<string> {
   try {
-    const raw: unknown = JSON.parse(localStorage.getItem(NAV_GROUPS_KEY) ?? "null");
-    if (Array.isArray(raw)) return new Set(raw.map(String));
+    const open = localStorage.getItem(NAV_OPEN_KEY);
+    return new Set(NAV_GROUPS.filter((g) => g !== open));
   } catch {
-    /* fall through to the default */
+    return new Set(NAV_GROUPS);
   }
-  return new Set(NAV_GROUPS);
 }
 
 function saveCollapsedGroups(): void {
+  const open = NAV_GROUPS.find((g) => !collapsedGroups.has(g));
   try {
-    localStorage.setItem(NAV_GROUPS_KEY, JSON.stringify([...collapsedGroups]));
+    if (open) localStorage.setItem(NAV_OPEN_KEY, open);
+    else localStorage.removeItem(NAV_OPEN_KEY);
   } catch {
     /* the choice still applies to this session */
   }

@@ -68,6 +68,13 @@ const CAPTURE_DEVICE_MASK: UInt32 = 0x4000_0000;
 /// mass-storage layer recovers from, as opposed to a transport fault.
 const STALLED: [IOReturn; 2] = [0xe000_404f_u32 as IOReturn, 0xe000_5000_u32 as IOReturn];
 
+/// How long the interfaces may take to be republished after the capture tore
+/// the kernel's drivers off them.
+const INTERFACE_WAIT: Duration = Duration::from_secs(2);
+
+/// How often the interface is tried meanwhile.
+const INTERFACE_POLL: Duration = Duration::from_millis(100);
+
 #[repr(C, packed(2))]
 #[derive(Clone, Copy)]
 struct UnsignedWide {
@@ -561,6 +568,33 @@ fn interface_interface_id() -> CFUUIDRef {
     }
 }
 
+/// Why a capture attempt failed.
+pub(crate) struct CaptureError {
+    pub(crate) message: String,
+    /// The capture was taken before the failure, so dropping it re-enumerates
+    /// the device: it leaves the bus for a moment and nothing else can reach it
+    /// until it is back.
+    pub(crate) device_reset: bool,
+}
+
+impl CaptureError {
+    /// The capture was refused, the device untouched.
+    fn refused(message: impl Into<String>) -> Self {
+        Self { message: message.into(), device_reset: false }
+    }
+
+    /// The capture was taken and the step after it failed.
+    fn taken(message: String) -> Self {
+        Self { message, device_reset: true }
+    }
+}
+
+impl std::fmt::Display for CaptureError {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(&self.message)
+    }
+}
+
 /// A camera captured and claimed through IOUSBLib: the device held open while
 /// its interface carries bulk transfers.
 pub(crate) struct CapturedUsbInterface {
@@ -585,12 +619,12 @@ impl CapturedUsbInterface {
         registry_id: u64,
         interface_number: u8,
         note: &mut dyn FnMut(String),
-    ) -> std::result::Result<Self, String> {
+    ) -> std::result::Result<Self, CaptureError> {
         if !super::is_root() {
-            return Err("iokit-usb: root required".into());
+            return Err(CaptureError::refused("iokit-usb: root required"));
         }
         let device = device_interface(registry_id)
-            .ok_or_else(|| "iokit-usb: could not open device interface".to_string())?;
+            .ok_or_else(|| CaptureError::refused("iokit-usb: could not open device interface"))?;
         let mut me = Self {
             device,
             interface: ptr::null_mut(),
@@ -612,7 +646,10 @@ impl CapturedUsbInterface {
 
             let capture = call!(device, USBDeviceReEnumerate(CAPTURE_DEVICE_MASK));
             if capture != kIOReturnSuccess {
-                return Err(format!("iokit-usb: capture refused {}", ret_name(capture)));
+                return Err(CaptureError::refused(format!(
+                    "iokit-usb: capture refused {}",
+                    ret_name(capture)
+                )));
             }
             me.captured = true;
             note("iokit-usb: captured via USBDeviceReEnumerate".into());
@@ -626,8 +663,24 @@ impl CapturedUsbInterface {
             me.device_open = reopen == kIOReturnSuccess;
             note(format!("iokit-usb: reopen {}", ret_name(reopen)));
 
-            me.open_interface(interface_number, note)?;
-            me.map_pipes(note)?;
+            // The capture republishes the interfaces the kernel's drivers were
+            // torn off; on an idle camera that is done at once, on one whose
+            // card was still busy it takes a moment.
+            let waiting = std::time::Instant::now();
+            loop {
+                match me.open_interface(interface_number) {
+                    Ok(()) => break,
+                    Err(e) if waiting.elapsed() >= INTERFACE_WAIT => {
+                        return Err(CaptureError::taken(e));
+                    }
+                    Err(_) => std::thread::sleep(INTERFACE_POLL),
+                }
+            }
+            note(format!(
+                "iokit-usb: interface {interface_number} claimed after {:.1}s",
+                waiting.elapsed().as_secs_f32()
+            ));
+            me.map_pipes(note).map_err(CaptureError::taken)?;
         }
         Ok(me)
     }
@@ -637,26 +690,22 @@ impl CapturedUsbInterface {
     /// # Safety
     ///
     /// `self.device` must be a live, open IOUSBDeviceInterface.
-    unsafe fn open_interface(
-        &mut self,
-        number: u8,
-        note: &mut dyn FnMut(String),
-    ) -> std::result::Result<(), String> {
+    unsafe fn open_interface(&mut self, number: u8) -> std::result::Result<(), String> {
         // SAFETY: guaranteed by the caller.
         let service = unsafe { interface_service(self.device, number) }
             .ok_or_else(|| format!("iokit-usb: interface {number} not found"))?;
         let interface = unsafe { query_interface_interface(service) };
         // SAFETY: the service was retained by the iterator; release our ref.
         unsafe { IOObjectRelease(service) };
-        let interface =
-            interface.ok_or_else(|| "iokit-usb: could not open interface interface".to_string())?;
-        self.interface = interface;
+        let interface = interface.map_err(|e| format!("iokit-usb: {e}"))?;
         // SAFETY: `interface` is a live IOUSBInterfaceInterface.
         let opened = unsafe { call!(interface, USBInterfaceOpen()) };
         if opened != kIOReturnSuccess {
+            // SAFETY: never opened, so dropping our reference is the whole cleanup.
+            unsafe { call!(interface, Release()) };
             return Err(format!("iokit-usb: USBInterfaceOpen {}", ret_name(opened)));
         }
-        note(format!("iokit-usb: interface {number} claimed"));
+        self.interface = interface;
         Ok(())
     }
 
@@ -899,7 +948,7 @@ unsafe fn interface_service(
 /// `service` must be a live IOUSBInterface service.
 unsafe fn query_interface_interface(
     service: io_service_t,
-) -> Option<*mut *mut IOUSBInterfaceInterface> {
+) -> std::result::Result<*mut *mut IOUSBInterfaceInterface, String> {
     let mut plugin: *mut *mut IOCFPlugInInterface = ptr::null_mut();
     let mut score: SInt32 = 0;
     // SAFETY: guaranteed by the caller; the plugin is released after the query.
@@ -912,7 +961,7 @@ unsafe fn query_interface_interface(
             &mut score,
         );
         if rc != kIOReturnSuccess || plugin.is_null() {
-            return None;
+            return Err(format!("interface plug-in {}", ret_name(rc)));
         }
         let mut interface: *mut *mut IOUSBInterfaceInterface = ptr::null_mut();
         call!(
@@ -923,7 +972,10 @@ unsafe fn query_interface_interface(
             )
         );
         call!(plugin, Release());
-        (!interface.is_null()).then_some(interface)
+        if interface.is_null() {
+            return Err("interface vtable refused".into());
+        }
+        Ok(interface)
     }
 }
 

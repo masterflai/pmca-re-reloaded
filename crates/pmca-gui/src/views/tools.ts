@@ -19,7 +19,7 @@ import { pluginToolCards } from "./plugins";
 /**
  * The file tools.
  *
- * Five operations that need no camera at all — they only ever read and write
+ * Six operations that need no camera at all — they only ever read and write
  * files on this computer. They lived in the console alone because the console
  * used to be the only front-end, not because there was a reason for it.
  *

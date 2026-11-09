@@ -14,8 +14,9 @@ use std::sync::{Mutex, MutexGuard, PoisonError};
 
 use pmca_app::devices::{Capability, DeviceLists, Support};
 use pmca_app::dto::{
-    AppBackupOutcome, CameraSummary, CommunityList, FirmwareOutcome, InstallOutcome, PhotoSummary,
-    ProgressEvent, StreamingSettings, TweakChange, TweakReport, WifiAccessPoint,
+    AppBackupOutcome, CameraPresence, CameraSummary, CommunityList, FirmwareOutcome,
+    InstallOutcome, PhotoSummary, ProgressEvent, StreamingSettings, TweakChange, TweakReport,
+    WifiAccessPoint,
 };
 use pmca_app::{ApkSource, InstallRequest, InstallSeries};
 use pmca_i18n::Localizer;
@@ -154,6 +155,10 @@ struct AppState {
     /// navigation so an optional write test cannot be lost before its value is
     /// restored.
     reference: Mutex<Option<pmca_app::analysis::ReferenceCheck>>,
+    /// The last image comparison, kept so an export does not have to be sent
+    /// back from the webview. Holds no camera session and is dropped when the
+    /// view is left.
+    comparison: Mutex<Option<pmca_app::compare::CompareReport>>,
     /// Store apps downloaded ahead of a batch installation, by source and package.
     ///
     /// A batch fetches every selected app before it touches the camera, so a
@@ -186,6 +191,7 @@ impl AppState {
             tweaks: Mutex::new(None),
             analysis: Mutex::new(None),
             reference: Mutex::new(None),
+            comparison: Mutex::new(None),
             downloads: Mutex::new(HashMap::new()),
             plugin_downloads: Mutex::new(HashMap::new()),
             install_series: Mutex::new(None),
@@ -379,6 +385,7 @@ pub fn run() {
             host_platform,
             check_interfering_services,
             get_camera_info,
+            camera_presence,
             read_photo,
             device_lists,
             device_support,
@@ -470,6 +477,14 @@ pub fn run() {
             updater_close,
             run_tool,
             pick_save_path,
+            compare_dump,
+            compare_dump_camera,
+            compare_inspect,
+            compare_pick_folder,
+            compare_default_folder,
+            compare_run,
+            compare_export,
+            compare_close,
         ])
         .run(tauri::generate_context!())
         .expect("failed to start the PMCA-RE RELOADED application");

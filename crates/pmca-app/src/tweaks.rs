@@ -141,16 +141,17 @@ impl TweakSession {
         })
     }
 
-    /// Asks the status block before anything else. Reading an image over
-    /// 1 MB works, but writing one back is untested, so such a
-    /// camera gets the per-property path unless [`FORCE_IMAGE_ENV`] is set.
+    /// Asks the status block before anything else. A large image is moved in
+    /// one piece only when asked for: rewriting two megabytes to change one
+    /// byte is slow, and the per-property path reaches the same values. Set
+    /// [`FORCE_IMAGE_ENV`] for the whole-image path anyway.
     fn path(&mut self) -> BackupPath {
         if let Some(path) = &self.path {
             return path.clone();
         }
         let status = self.cam.get_backup_preset_data_status().ok();
         let region = status.as_deref().map(pmca_platform::direct::status_region);
-        let large = status.as_deref().is_some_and(pmca_platform::direct::full_read_too_large);
+        let large = status.as_deref().is_some_and(pmca_platform::direct::image_is_large);
         let forced = std::env::var_os(FORCE_DIRECT_ENV).is_some();
         let path = if (large && std::env::var_os(FORCE_IMAGE_ENV).is_none()) || forced {
             BackupPath::Direct(region.unwrap_or_default())

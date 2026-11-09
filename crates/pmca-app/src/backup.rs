@@ -4,25 +4,28 @@
 //! analysis paths read, written out in one piece so a user can keep a copy
 //! before changing anything and put it back if a change goes wrong.
 //!
-//! # Limits
+//! # Size
 //!
-//! On cameras whose backup image is larger than about 1 MB, `PDT_READ` stalls
-//! and takes the USB session with it (see `crate::direct`), so a whole image
-//! can be neither read nor written there. Both operations refuse such a camera
-//! with a clear message rather than risk the stall.
+//! Neither direction consults the image size. An ILCE-7CR moves 2,390,264
+//! bytes both ways: read out and verified (hardware test 5.37), written back
+//! unchanged (5.21) and written back with a change and reverted (5.22). The
+//! cameras that cannot do this fail outright whatever their image measures,
+//! and the size check that used to stand here refused working cameras without
+//! helping the failing ones.
 //!
 //! # Safety of the write path
 //!
 //! Restoring reuses the tweak layer's guard: the image is refused unless it
 //! came from the very camera that is connected (same model and serial), the
 //! current image is saved as a safety copy first, and after the write the image
-//! is read back and compared before it is persisted to flash.
+//! is read back and compared before it is persisted to flash. Until that last
+//! step nothing has left the camera's memory, so a write that fails part way
+//! leaves the stored settings as they were.
 
 use std::path::Path;
 
 use pmca_i18n::Localizer;
 use pmca_platform::BackupPatch;
-use pmca_platform::direct::full_read_too_large;
 use pmca_usb::nusb_backend::NusbBackend;
 use pmca_usb::senser_camera::SenserCamera;
 use serde::{Deserialize, Serialize};
@@ -70,28 +73,42 @@ impl Drop for Service {
 
 /// Read the camera's whole backup image and write it to `path`.
 ///
-/// Refuses a camera whose image is too large to read in one piece.
+/// No size check: a camera that hands its image over is taken at its word, and
+/// one that refuses fails outright whatever the size. That failure's message
+/// says how to revive the session.
+///
+/// Attempted twice. The cameras that refuse this transfer take the USB session
+/// down with them (upstream issues #733 and #744), so a second try inside the
+/// same session could only fail again; the retry opens a fresh one. Reading
+/// changes nothing on the camera, so the second attempt costs a wait and
+/// nothing else.
 pub fn save(l: &Localizer, sink: &mut dyn ProgressSink, path: &Path) -> Result<BackupSaveOutcome> {
-    let image = {
-        let mut cam = Service::open(l, sink)?;
-        sink.emit(ProgressEvent::step(ProgressKind::Info, l.tr("tweaks-reading")));
-        if cam.0.get_backup_preset_data_status().ok().as_deref().is_some_and(full_read_too_large) {
-            return Err(Error::Operation(l.tr("backup-too-large")));
-        }
-        cam.0.get_backup_preset_data(true).map_err(|e| {
-            Error::Operation(l.tr_arg("tweaks-full-read-failed", "detail", &e.to_string()))
-        })?
+    // The first failure is not reported: the camera is about to be reached
+    // again, and a failure the retry recovers from is not one the user has to
+    // act on. If the retry fails too, its error is the one that surfaces.
+    let image = match read_whole_image(l, sink) {
+        Ok(image) => image,
+        Err(_) => read_whole_image(l, sink)?,
     };
     std::fs::write(path, &image)?;
     sink.emit(ProgressEvent::step(ProgressKind::Done, l.tr("backup-saved")));
     Ok(BackupSaveOutcome { path: path.display().to_string(), bytes: image.len() })
 }
 
+/// One attempt at the whole image, in a session of its own.
+pub(crate) fn read_whole_image(l: &Localizer, sink: &mut dyn ProgressSink) -> Result<Vec<u8>> {
+    let mut cam = Service::open(l, sink)?;
+    sink.emit(ProgressEvent::step(ProgressKind::Info, l.tr("tweaks-reading")));
+    cam.0.get_backup_preset_data(true).map_err(|e| {
+        Error::Operation(l.tr_arg("tweaks-full-read-failed", "detail", &e.to_string()))
+    })
+}
+
 /// Write the backup image in `path` back to the connected camera.
 ///
-/// Refused unless the image came from the connected camera and the camera can
-/// take a whole image. The current image is saved first, the written image is
-/// read back and compared, and only then is it persisted to flash.
+/// Refused unless the image came from the connected camera. The current image
+/// is saved first, the written image is read back and compared, and only then
+/// is it persisted to flash.
 pub fn restore(
     l: &Localizer,
     sink: &mut dyn ProgressSink,
@@ -103,9 +120,6 @@ pub fn restore(
 
     let mut cam = Service::open(l, sink)?;
     sink.emit(ProgressEvent::step(ProgressKind::Info, l.tr("tweaks-reading")));
-    if cam.0.get_backup_preset_data_status().ok().as_deref().is_some_and(full_read_too_large) {
-        return Err(Error::Operation(l.tr("backup-restore-too-large")));
-    }
     let current = cam.0.get_backup_preset_data(true).map_err(|e| {
         Error::Operation(l.tr_arg("tweaks-full-read-failed", "detail", &e.to_string()))
     })?;

@@ -21,6 +21,7 @@ pub mod analysis;
 pub mod app_backup;
 pub mod backup;
 pub mod broker;
+pub mod compare;
 pub mod devices;
 mod direct;
 pub mod drivers;
@@ -48,9 +49,9 @@ use pmca_i18n::Localizer;
 use pmca_usb::discovery::{self, CameraMode};
 
 pub use dto::{
-    ApkSummary, AppBackupOutcome, BackedUpApp, CameraSummary, CommunityApp, DeviceProperty,
-    FirmwareOutcome, InstallOutcome, InstalledDevice, PhotoSummary, ProgressEvent, ProgressKind,
-    TweakChange, TweakChoice, TweakReport, TweakState,
+    ApkSummary, AppBackupOutcome, BackedUpApp, CameraPresence, CameraSummary, CommunityApp,
+    DeviceProperty, FirmwareOutcome, InstallOutcome, InstalledDevice, PhotoSummary, ProgressEvent,
+    ProgressKind, TweakChange, TweakChoice, TweakReport, TweakState,
 };
 
 /// The XPD content type the camera expects for the install task payload.
@@ -255,6 +256,11 @@ impl<F: FnMut(ProgressEvent)> ProgressSink for F {
 pub fn camera_info() -> Result<CameraSummary> {
     let camera = discovery::find_single_camera()?;
     Ok(discovery::read_camera_info(&camera)?.into())
+}
+
+/// Whether a camera is plugged in. Opens no device, so it is safe to poll.
+pub fn camera_presence() -> Result<CameraPresence> {
+    Ok(discovery::camera_presence()?.into())
 }
 
 /// The running Windows services known to interfere with camera access.

@@ -21,41 +21,83 @@
     <link rel="stylesheet" href="/src/styles.css" />
   </head>
   <body>
+    <!-- Icons on a 16x16 grid, drawn in currentColor; the stroke comes from the referencing <svg>. -->
+    <svg class="icon-sprite" aria-hidden="true">
+      <symbol id="i-pin" viewBox="0 0 16 16"><path fill="currentColor" d="M5.5 1.5h5l-1 1v3.5L12 9H4l2.5-3V2.5z"/><path d="M8 9v5.5"/></symbol>
+      <symbol id="i-unpin" viewBox="0 0 16 16"><g transform="rotate(45 8 8)"><path d="M5.5 1.5h5l-1 1v3.5L12 9H4l2.5-3V2.5z"/><path d="M8 9v5.5"/></g></symbol>
+      <symbol id="i-home" viewBox="0 0 16 16"><path d="M1.8 7.6 8 2.3l6.2 5.3"/><path d="M3.5 6.3v7.2h3.3V10h2.4v3.5h3.3V6.3"/></symbol>
+      <symbol id="i-camera" viewBox="0 0 16 16"><path d="M1.5 5.5a1 1 0 0 1 1-1h2.3l1.2-2h4l1.2 2h2.3a1 1 0 0 1 1 1v7a1 1 0 0 1-1 1h-11a1 1 0 0 1-1-1z"/><circle cx="8" cy="9" r="2.5"/></symbol>
+      <symbol id="i-info" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6.5"/><path d="M8 7.3v4.2"/><path d="M8 4.7v.1" stroke-width="2"/></symbol>
+      <symbol id="i-compat" viewBox="0 0 16 16"><path d="M1.8 4.2 3 5.4 5.3 3M1.8 10.7 3 11.9l2.3-2.4M8 4.5h6.2M8 11h6.2"/></symbol>
+      <symbol id="i-apps" viewBox="0 0 16 16"><rect x="2" y="2" width="5" height="5" rx="1"/><rect x="9" y="2" width="5" height="5" rx="1"/><rect x="2" y="9" width="5" height="5" rx="1"/><rect x="9" y="9" width="5" height="5" rx="1"/></symbol>
+      <symbol id="i-install" viewBox="0 0 16 16"><path d="M8 1.8v8M4.8 6.6 8 9.8l3.2-3.2M2 11v2.5h12V11"/></symbol>
+      <symbol id="i-gps" viewBox="0 0 16 16"><path d="M8 14.6S3.4 10.3 3.4 6.4a4.6 4.6 0 0 1 9.2 0c0 3.9-4.6 8.2-4.6 8.2z"/><circle cx="8" cy="6.4" r="1.7"/></symbol>
+      <symbol id="i-network" viewBox="0 0 16 16"><path d="M1.5 6.2a9.2 9.2 0 0 1 13 0M3.8 8.6a5.9 5.9 0 0 1 8.4 0M6 11a2.8 2.8 0 0 1 4 0"/><path d="M8 13.6v.1" stroke-width="2.2"/></symbol>
+      <symbol id="i-wrench" viewBox="0 0 16 16"><path d="M10.6 1.6a3.8 3.8 0 0 0-3.4 5.2l-5.1 5.1a1.4 1.4 0 0 0 2 2l5.1-5.1a3.8 3.8 0 0 0 5.2-3.4l-2.2 1.3-1.8-1 .1-2z"/></symbol>
+      <symbol id="i-tweaks" viewBox="0 0 16 16"><path d="M2 4h2.5M7.5 4H14M2 8h7M12 8h2M2 12h2.5M7.5 12H14"/><circle cx="6" cy="4" r="1.5"/><circle cx="10.5" cy="8" r="1.5"/><circle cx="6" cy="12" r="1.5"/></symbol>
+      <symbol id="i-backup" viewBox="0 0 16 16"><rect x="1.5" y="2.5" width="13" height="3.5" rx="1"/><path d="M2.6 6v6.6a1 1 0 0 0 1 1h8.8a1 1 0 0 0 1-1V6M6.4 9h3.2"/></symbol>
+      <!-- Two cameras, one behind the other: the page compares cameras, not pictures. -->
+      <symbol id="i-compare" viewBox="0 0 16 16"><path d="M5 5.2V4a1 1 0 0 1 1-1h1.3l.9-1.5h3l.9 1.5h1.4a1 1 0 0 1 1 1v4.5a1 1 0 0 1-1 1h-1.7"/><path d="M1.5 8.5a1 1 0 0 1 1-1h1.3l.9-1.5h3l.9 1.5H10a1 1 0 0 1 1 1V13a1 1 0 0 1-1 1H2.5a1 1 0 0 1-1-1z"/><circle cx="6.25" cy="10.6" r="1.9"/></symbol>
+      <symbol id="i-analysis" viewBox="0 0 16 16"><path d="M1.5 8.5h2.8l1.9-5 3.3 9 1.9-4h3.1"/></symbol>
+      <symbol id="i-search" viewBox="0 0 16 16"><circle cx="6.8" cy="6.8" r="4.8"/><path d="M10.4 10.4 14.5 14.5"/></symbol>
+      <symbol id="i-firmware" viewBox="0 0 16 16"><rect x="3.5" y="3.5" width="9" height="9" rx="1"/><path d="M6 1.5v2M10 1.5v2M6 12.5v2M10 12.5v2M1.5 6h2M1.5 10h2M12.5 6h2M12.5 10h2"/><path d="M8 10.3V5.9M6.2 7.6 8 5.8l1.8 1.8"/></symbol>
+      <symbol id="i-shell" viewBox="0 0 16 16"><rect x="1.5" y="2.5" width="13" height="11" rx="1.2"/><path d="M4.5 6.3l2 2-2 2M8.5 10.5h3"/></symbol>
+      <symbol id="i-tools" viewBox="0 0 16 16"><path d="M1.5 4a1 1 0 0 1 1-1h3.3L7.3 4.6h6.2a1 1 0 0 1 1 1V12a1 1 0 0 1-1 1h-11a1 1 0 0 1-1-1z"/></symbol>
+      <symbol id="i-settings" viewBox="0 0 16 16"><circle cx="8" cy="8" r="2.1"/><circle cx="8" cy="8" r="4.7"/><path stroke-width="2.3" stroke-linecap="butt" d="M8 1.2v2.1M8 12.7v2.1M1.2 8h2.1M12.7 8h2.1M3.2 3.2l1.5 1.5M11.3 11.3l1.5 1.5M3.2 12.8l1.5-1.5M11.3 4.7l1.5-1.5"/></symbol>
+      <symbol id="i-license" viewBox="0 0 16 16"><path d="M3.5 1.5h6l3 3v10h-9z"/><path d="M9.5 1.5v3h3M5.6 8h4.8M5.6 10.7h4.8"/></symbol>
+      <symbol id="i-globe" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6.5"/><ellipse cx="8" cy="8" rx="2.7" ry="6.5"/><path d="M1.5 8h13"/></symbol>
+    </svg>
+
     <div class="app">
+      <!-- Pinned, unpinned and the overlay are driven by classes on .app; see nav.ts. -->
       <nav class="nav-rail" aria-label="main">
-        <div class="nav-title" data-i18n="app-title">PMCA-RE RELOADED</div>
-        <button class="nav-item active" data-view="welcome" data-i18n="nav-welcome">Welcome</button>
-        <button class="nav-section collapsed" data-group="camera" data-i18n="nav-group-camera">Camera</button>
-        <button class="nav-item" data-view="info" data-group="camera" data-i18n="nav-camera-info">Camera info</button>
-        <button class="nav-item" data-view="compat" data-group="camera" data-i18n="docs-compatibility">Camera compatibility</button>
-        <button class="nav-section collapsed" data-group="apps" data-i18n="nav-group-apps">Applications</button>
-        <button class="nav-item" data-view="install" data-group="apps" data-i18n="nav-install-app">Apps</button>
-        <button class="nav-item" data-view="gps" data-group="apps" data-i18n="nav-gps">GPS</button>
-        <button class="nav-item" data-view="network" data-group="apps" data-i18n="nav-network">Network</button>
-        <button class="nav-section collapsed" data-group="maintenance" data-i18n="nav-group-maintenance">Maintenance</button>
-        <button class="nav-item" data-view="tweaks" data-group="maintenance" data-i18n="nav-tweaks">Tweaks</button>
-        <button class="nav-item" data-view="backup" data-group="maintenance" data-i18n="nav-backup">Backup</button>
+        <div class="nav-brand">
+          <!-- The program icon doubles as the expand button while the rail is unpinned; see nav.ts. -->
+          <button type="button" id="nav-expand" class="nav-logo"><img src="/src-tauri/icons/128x128.png" alt="" /></button>
+          <div class="nav-brand-text nav-label"><span class="nav-brand-name">PMCA-RE RELOADED</span><span id="nav-brand-sub" class="nav-brand-sub"></span></div>
+        </div>
+        <button class="nav-item active" data-view="welcome"><svg class="nav-icon" aria-hidden="true"><use href="#i-home"/></svg><span class="nav-label" data-i18n="nav-welcome">Welcome</span></button>
+        <button class="nav-section collapsed" data-group="camera"><svg class="nav-icon" aria-hidden="true"><use href="#i-camera"/></svg><span class="nav-label" data-i18n="nav-group-camera">Camera</span></button>
+        <button class="nav-item" data-view="info" data-group="camera"><svg class="nav-icon" aria-hidden="true"><use href="#i-info"/></svg><span class="nav-label" data-i18n="nav-camera-info">Camera info</span></button>
+        <button class="nav-item" data-view="compat" data-group="camera"><svg class="nav-icon" aria-hidden="true"><use href="#i-compat"/></svg><span class="nav-label" data-i18n="docs-compatibility">Camera compatibility</span></button>
+        <button class="nav-section collapsed" data-group="apps"><svg class="nav-icon" aria-hidden="true"><use href="#i-apps"/></svg><span class="nav-label" data-i18n="nav-group-apps">Applications</span></button>
+        <button class="nav-item" data-view="install" data-group="apps"><svg class="nav-icon" aria-hidden="true"><use href="#i-install"/></svg><span class="nav-label" data-i18n="nav-install-app">Apps</span></button>
+        <button class="nav-item" data-view="gps" data-group="apps"><svg class="nav-icon" aria-hidden="true"><use href="#i-gps"/></svg><span class="nav-label" data-i18n="nav-gps">GPS</span></button>
+        <button class="nav-item" data-view="network" data-group="apps"><svg class="nav-icon" aria-hidden="true"><use href="#i-network"/></svg><span class="nav-label" data-i18n="nav-network">Network</span></button>
+        <button class="nav-section collapsed" data-group="analysis"><svg class="nav-icon" aria-hidden="true"><use href="#i-search"/></svg><span class="nav-label" data-i18n="nav-group-analysis">Analysis</span></button>
+        <button class="nav-item" data-view="compare" data-group="analysis"><svg class="nav-icon" aria-hidden="true"><use href="#i-compare"/></svg><span class="nav-label" data-i18n="nav-compare">Camera comparison</span></button>
         <!-- Shown only once unlocked in the settings; see applyNav. -->
-        <button class="nav-item" data-view="analysis" data-group="maintenance" data-i18n="nav-analysis" hidden>Analysis</button>
-        <button class="nav-item" data-view="firmware" data-group="maintenance" data-i18n="nav-firmware">Update firmware</button>
-        <button class="nav-item" data-view="shell" data-group="maintenance" data-i18n="nav-shell">Shell</button>
-        <button class="nav-item" data-view="tools" data-group="maintenance" data-i18n="nav-tools">File tools</button>
+        <button class="nav-item" data-view="analysis" data-group="analysis" hidden><svg class="nav-icon" aria-hidden="true"><use href="#i-analysis"/></svg><span class="nav-label" data-i18n="nav-analysis">Function analysis</span></button>
+        <button class="nav-section collapsed" data-group="maintenance"><svg class="nav-icon" aria-hidden="true"><use href="#i-wrench"/></svg><span class="nav-label" data-i18n="nav-group-maintenance">Maintenance</span></button>
+        <button class="nav-item" data-view="tweaks" data-group="maintenance"><svg class="nav-icon" aria-hidden="true"><use href="#i-tweaks"/></svg><span class="nav-label" data-i18n="nav-tweaks">Tweaks</span></button>
+        <button class="nav-item" data-view="backup" data-group="maintenance"><svg class="nav-icon" aria-hidden="true"><use href="#i-backup"/></svg><span class="nav-label" data-i18n="nav-backup">Backup</span></button>
+        <button class="nav-item" data-view="firmware" data-group="maintenance"><svg class="nav-icon" aria-hidden="true"><use href="#i-firmware"/></svg><span class="nav-label" data-i18n="nav-firmware">Update firmware</span></button>
+        <button class="nav-item" data-view="shell" data-group="maintenance"><svg class="nav-icon" aria-hidden="true"><use href="#i-shell"/></svg><span class="nav-label" data-i18n="nav-shell">Shell</span></button>
+        <button class="nav-item" data-view="tools" data-group="maintenance"><svg class="nav-icon" aria-hidden="true"><use href="#i-tools"/></svg><span class="nav-label" data-i18n="nav-tools">File tools</span></button>
         <div class="nav-spacer"></div>
-        <button class="nav-item" data-view="settings" data-i18n="nav-settings">Settings</button>
-        <button class="nav-item" data-view="license" data-i18n="nav-license">License</button>
-        <!-- Filled in by main.ts from the running build, never typed in here. A click checks for updates. -->
-        <button type="button" id="version-check" class="nav-version" data-i18n-title="update-check-hint"><span data-i18n="about-version">Version</span> <span id="app-version"></span></button>
+        <button class="nav-item" data-view="settings"><svg class="nav-icon" aria-hidden="true"><use href="#i-settings"/></svg><span class="nav-label" data-i18n="nav-settings">Settings</span></button>
+        <button class="nav-item" data-view="license"><svg class="nav-icon" aria-hidden="true"><use href="#i-license"/></svg><span class="nav-label" data-i18n="nav-license">License</span></button>
+        <!-- Polled from the bus by nav.ts; the model is the one last read in this session. -->
+        <div id="camera-status" class="nav-status" role="status" data-state="none"><span class="nav-dot" aria-hidden="true"></span><span id="camera-status-text" class="nav-label"></span></div>
+        <div class="nav-foot">
+          <!-- Filled in by main.ts from the running build, never typed in here. A click checks for updates. -->
+          <button type="button" id="version-check" class="nav-version" data-i18n-title="update-check-hint"><span data-i18n="about-version">Version</span> <span id="app-version"></span></button>
+          <button type="button" id="nav-pin" class="nav-tool"><svg class="nav-icon" aria-hidden="true"><use href="#i-pin"/></svg></button>
+        </div>
       </nav>
 
       <main class="content">
         <header class="content-header">
-          <h1 data-i18n="app-title">PMCA-RE RELOADED – Camera Toolkit</h1>
+          <!-- Where the user is: group and page, filled in by nav.ts on every view change. -->
+          <h1 class="crumb"><span id="crumb-group" class="crumb-group" hidden></span><span id="crumb-page" data-i18n="nav-welcome">Welcome</span></h1>
           <div class="header-controls">
             <!-- Windows only; filled in by setupElevationBadge in main.ts. -->
             <button type="button" id="elevation-badge" class="elevation-badge" hidden></button>
+            <!-- The native list stays on top, invisible, so keyboard and screen readers keep a real select. -->
             <div class="lang-picker">
-              <label data-i18n="settings-language" for="lang-select">Language</label>
-              <select id="lang-select"></select>
+              <svg class="lang-icon" aria-hidden="true"><use href="#i-globe"/></svg>
+              <span id="lang-code" aria-hidden="true"></span>
+              <select id="lang-select" data-i18n-title="settings-language"></select>
             </div>
             <!-- Cycles system / light / dark; icon and label come from preferences.ts. -->
             <button type="button" id="theme-switch" class="theme-switch"></button>

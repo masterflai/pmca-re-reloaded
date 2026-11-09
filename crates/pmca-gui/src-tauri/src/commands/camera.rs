@@ -21,6 +21,15 @@ pub(crate) async fn get_camera_info(app: AppHandle) -> Result<Reply<CameraSummar
     .await
 }
 
+/// Whether a camera is plugged in, for the status line under the navigation.
+///
+/// Deliberately outside the camera lock: it opens nothing, and the status must
+/// not freeze behind a long operation.
+#[tauri::command]
+pub(crate) async fn camera_presence() -> Result<CameraPresence, CommandError> {
+    in_background(|| Ok(pmca_app::camera_presence()?)).await
+}
+
 /// Read the shutter count and capture details from a photo on disk.
 ///
 /// Needs no camera: the count is taken from the file the camera wrote.

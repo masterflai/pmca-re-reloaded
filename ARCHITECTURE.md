@@ -57,12 +57,12 @@ The arrows point from user to dependency. Three rules keep this shape:
 | Crate | Responsibility |
 |---|---|
 | `pmca-core` | Bounds-checked parsers for `Backup.bin`, firmware `.dat`, SPK, usage log, photos; checksums and crypto helpers. No I/O. |
-| `pmca-platform` | Named camera settings on top of a backup image (`BackupPatch`) or single properties (`DirectPatch`), the tweak catalogue, the read-only identity values, and the pure part of the function analysis. |
+| `pmca-platform` | Named camera settings on top of a backup image (`BackupPatch`) or single properties (`DirectPatch`), the tweak catalogue, the read-only identity values, and the pure part of the function analysis and of the image comparison. |
 | `pmca-usb` | Finding the camera and talking to it: mass storage, MTP/WPD, Sony's vendor commands, service (senser) mode, updater mode, and assigning WinUSB on Windows. |
 | `pmca-market` | The local HTTPS server the camera installs apps from, including the TLS 1.0 stack old cameras need, and the community app-store client. |
 | `pmca-apk` | Reads an APK's manifest so an install can be checked before it starts. |
-| `pmca-app` | The use cases: install, tweaks, analysis, service and updater sessions, network settings, firmware, file tools. Owns progress reporting and the error type both front-ends translate. |
-| `pmca-i18n` | Loads the 21 Fluent catalogues compiled into the binary, plus per-user corrections. |
+| `pmca-app` | The use cases: install, tweaks, analysis, backup dump and comparison, service and updater sessions, network settings, firmware, file tools. Owns progress reporting and the error type both front-ends translate. |
+| `pmca-i18n` | Loads the 27 Fluent catalogues compiled into the binary, plus per-user corrections. |
 | `pmca-cli` | `pmca-console`: argument parsing (`main.rs`) and one module per group of subcommands (`commands/`). |
 | `pmca-gui` | Tauri application: `src/` is the window (TypeScript, no framework; shared helpers beside `main.ts`, one module per page in `views/`), `src-tauri/` the backend that exposes `pmca-app` as commands (`commands/`, one module per page). |
 

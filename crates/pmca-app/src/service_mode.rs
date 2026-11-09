@@ -243,17 +243,29 @@ fn wait_for_normal_mode() -> Option<discovery::DetectedCamera> {
 /// camera that is normally MTP is MTP again after every single tweak
 /// operation — reading the tweaks would work and applying them would not.
 ///
-/// A failure part-way through releases whatever was bound so far. Without
-/// that, a camera that does not reach service mode is left on WinUSB with no
-/// session to close it — mass storage gone, updater mode gone, and no visible
-/// cause. The sweep at the next program start would find it eventually, but
-/// "eventually" is the wrong answer when the user is holding the camera.
+/// A failure part-way through undoes both halves of the way in, in that
+/// order. The camera comes first: the last step of the way in is the
+/// authentication, which runs on a camera that has already switched, so every
+/// failure there — missing service-mode keys above all — leaves it sitting in
+/// service mode with no session to end it. The next run then finds it
+/// stranded, and a camera whose senser subsystem is already started answers
+/// the fresh handshake with a stalled endpoint, so that run fails too and the
+/// user is left power-cycling. Hardware-confirmed on a NEX-6 (issue #7).
+///
+/// The bindings go second, and not the other way round: the request that ends
+/// service mode is a USB transfer and needs a binding to travel on. Without
+/// releasing them, a camera that does not reach service mode is left on WinUSB
+/// with no session to close it — mass storage gone, updater mode gone, and no
+/// visible cause. The sweep at the next program start would find both states
+/// eventually, but "eventually" is the wrong answer when the user is holding
+/// the camera.
 pub(crate) fn open_service_camera(
     l: &Localizer,
     sink: &mut dyn ProgressSink,
 ) -> Result<SenserCamera<NusbBackend>> {
     let result = enter_service_mode(l, sink);
     if result.is_err() {
+        restore_camera_mode();
         release_drivers(l, sink);
     }
     result

@@ -4,6 +4,7 @@
 mod analyze;
 mod backup;
 mod camera;
+mod compare;
 mod network;
 mod plugins;
 mod service;
@@ -14,6 +15,7 @@ mod updater;
 pub(crate) use analyze::*;
 pub(crate) use backup::*;
 pub(crate) use camera::*;
+pub(crate) use compare::*;
 pub(crate) use network::*;
 pub(crate) use plugins::*;
 pub(crate) use service::*;

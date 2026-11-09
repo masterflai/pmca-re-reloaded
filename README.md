@@ -107,6 +107,14 @@ PAL/NTSC video system. Each change is backed up, verified and reversible.
 settings memory one of the camera's own menu settings is stored, and compare
 the finding with other cameras. Reading only, unless you ask for a write test.
 
+**Camera comparison** — write a camera's whole settings memory out as a readable
+JSON file, and lay two or more of those side by side. Every value is sorted
+into one of seven findings — the same everywhere, nearly the same, different,
+stored at a different length, apparently unused, missing on one camera, or
+known to change by itself — and the result can be exported with any
+combination of them. Works on saved files alone, so no camera need be
+connected.
+
 **Network settings** — GPS assist data, and the access points and settings of
 the live-streaming feature.
 

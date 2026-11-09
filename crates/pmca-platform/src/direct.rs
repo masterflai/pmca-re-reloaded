@@ -1,10 +1,13 @@
 //! Settings read and written one backup property at a time.
 //!
-//! On cameras whose backup image is larger than about 1 MB, `PDT_READ` stalls
-//! at 0xF8000 bytes and takes the USB session with it, so the image-based
-//! [`crate::BackupPatch`] cannot be used. Single-property reads and writes
-//! still work there (upstream issues #733 and #744). This is the same staged
-//! editor on top of them; the transport stays with the caller.
+//! Some cameras refuse `PDT_READ`, the transfer of the whole backup image, and
+//! the failure takes the USB session with it; single-property reads and writes
+//! still work there (upstream issues #733 and #744: ILCE-6400/6600, A7 IV,
+//! ZV-E10). Those reports describe a stalled multi-chunk transfer on one
+//! camera generation rather than a size limit — an ILCE-7CR hands over a
+//! 2,390,264-byte image intact (hardware test 5.36). This is the same staged
+//! editor on top of the per-property commands; the transport stays with the
+//! caller.
 
 use std::collections::BTreeMap;
 
@@ -19,19 +22,27 @@ const STATUS_REGION_OFFSET: usize = 0x14;
 /// status read `40 00 00 00 a7 02 0d 00` for an 852,647-byte image.
 const STATUS_SIZE_OFFSET: usize = 4;
 
-/// Largest image a camera has been seen to deliver through `PDT_READ`.
-pub const FULL_READ_LIMIT: u32 = 0xF_8000;
+/// The size above which a whole image is moved only when explicitly asked for.
+///
+/// Not a limit. An ILCE-7CR reads *and* writes 2,390,264 bytes in one piece
+/// (hardware tests 5.21 unchanged write-back, 5.22 change and revert through
+/// the image, 5.37 save). It is a preference: changing one byte by moving two
+/// megabytes is slow, and the per-property path reaches the same values, so
+/// the tweak and reference views default to per-property above this and keep
+/// the whole-image route as a deliberate choice.
+pub const LARGE_IMAGE_SIZE: u32 = 0xF_8000;
 
 /// The region string from the backup status block, as the reference reads it.
 pub fn status_region(status: &[u8]) -> String {
     status.get(STATUS_REGION_OFFSET..).map(latin1_trim_nul).unwrap_or_default()
 }
 
-/// Whether the status block announces an image too large for `PDT_READ`.
-pub fn full_read_too_large(status: &[u8]) -> bool {
+/// Whether the status block announces an image big enough to prefer the
+/// per-property path for small changes.
+pub fn image_is_large(status: &[u8]) -> bool {
     status
         .get(STATUS_SIZE_OFFSET..STATUS_SIZE_OFFSET + 4)
-        .is_some_and(|w| u32::from_le_bytes([w[0], w[1], w[2], w[3]]) > FULL_READ_LIMIT)
+        .is_some_and(|w| u32::from_le_bytes([w[0], w[1], w[2], w[3]]) > LARGE_IMAGE_SIZE)
 }
 
 /// One property whose value a [`DirectPatch`] would change.
@@ -157,14 +168,16 @@ mod tests {
     }
 
     #[test]
-    fn a_size_in_the_stall_range_selects_the_direct_path() {
-        // A real status block, read in full without trouble.
-        assert!(!full_read_too_large(&status([0x40, 852_647, 0, 0, 0], "CX12345_CEC")));
+    fn a_large_image_is_recognised() {
+        // A real status block from an ILCE-6000.
+        assert!(!image_is_large(&status([0x40, 852_647, 0, 0, 0], "CX12345_CEC")));
         // 2,554,856 bytes: the CX8960_J1 camera from the cteamEpic notes.
-        assert!(full_read_too_large(&status([0x40, 2_554_856, 0, 0, 0], "CX8960_J1")));
+        assert!(image_is_large(&status([0x40, 2_554_856, 0, 0, 0], "CX8960_J1")));
+        // An ILCE-7CR, which moves this in one piece in both directions.
+        assert!(image_is_large(&status([0x40, 2_390_264, 0, 0, 0], "CX89801_CEC")));
         // Only the size word counts.
-        assert!(!full_read_too_large(&status([0x0020_0000, 0, 0, 0, 0x0020_0000], "EU")));
-        assert!(!full_read_too_large(&[0; 6]));
+        assert!(!image_is_large(&status([0x0020_0000, 0, 0, 0, 0x0020_0000], "EU")));
+        assert!(!image_is_large(&[0; 6]));
     }
 
     #[test]

@@ -62,7 +62,6 @@ function createCard(): HTMLElement {
   return card(
     make("h3", { i18n: "backup-create-heading" }),
     make("p", { i18n: "backup-create-intro" }),
-    make("p", { className: "hint", i18n: "backup-large-hint" }),
     make("div", { className: "row" }, accessBadge("read"), button),
     status,
   );

@@ -6,6 +6,96 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+### Fixed
+
+- macOS: opening a camera in mass-storage mode no longer fails with "The USB
+  transfer failed" while the card is still mounted. The program takes the
+  camera from the kernel's disk driver the way libusb does, and that step was
+  run before the card had been unmounted and before the disk driver had
+  finished starting — the interface then could not be opened, and the failed
+  attempt reset the camera, which cost the fallback path its turn as well. The
+  card is now unmounted first, as the measurement script always did, the
+  interface is given a moment to reappear after the camera is taken, and a
+  reset only ends the round that caused it instead of the whole attempt.
+- Saving and restoring a backup no longer refuse cameras whose settings image
+  is larger than about 1 MB. The check that stood in the way was a precaution
+  from a time when nothing that size had been moved in one piece; since then an
+  ILCE-7CR has had its 2,390,264-byte image read out and verified, written back
+  unchanged, and written back with a change and reverted. A camera that cannot
+  move its image in one piece fails outright whatever the image measures, so
+  the size told nothing about it and the check only refused working cameras.
+- Saving a backup now tries a second time on a fresh session if the first
+  attempt fails. The cameras that refuse this transfer take the USB session
+  down with them, so a retry within the same session could not have worked.
+  Reading changes nothing on the camera, so the second attempt costs a wait and
+  nothing else. Writing is deliberately not retried: nothing is persisted
+  before the written image has been read back and compared, so a failed write
+  leaves the stored settings as they were, and after one a person should decide
+  what happens next rather than the program trying again by itself.
+- A run that fails on the way into service mode no longer leaves the camera
+  there. The last step of that way in is the authentication, and it runs on a
+  camera that has already switched — so a failure at that point, a missing
+  service-mode key above all, stranded it. The next run then met a camera whose
+  senser subsystem was already started, which answers a fresh handshake with a
+  stalled endpoint, and reported it as stuck in service mode from an earlier
+  run; only switching the camera off and on again cleared it. The camera is now
+  asked to leave service mode before the driver bindings are released, in that
+  order, because the request that ends the mode is a USB transfer and needs a
+  binding to travel on. Reported and confirmed on a NEX-6 in
+  [#7](https://github.com/masterflai/pmca-re-reloaded/issues/7).
+
+### Added
+
+- A camera's whole settings store can be written out as a JSON dump and two or
+  more of those can be compared. The new "Camera comparison" page collects dumps
+  three ways — read one from a connected camera, turn a backup image you
+  already have into one, or open a dump somebody shared — and says how many are
+  still needed before a comparison can run. The console offers the same through
+  `dump-backup` and `compare-backups`.
+- Every property is sorted into one of seven findings: the same everywhere,
+  nearly the same, different, stored at a different length, apparently unused,
+  missing on one camera, or known to change by itself. Each finding explains
+  itself on hover and in full in a panel of its own, because two of them are
+  easy to misread: "apparently unused" is a judgement the program forms, while
+  "missing" is a fact about the camera.
+- Properties whose shape suggests a setting are marked: a single byte the
+  cameras disagree about, holding either 0 or 1 ("switch") or any small number
+  ("short list"), and writable. This is the shape of the flag that turns a whole
+  menu category on, and it can be filtered for on screen and in the export.
+- Reading a camera from this page writes the dump and, unless asked otherwise,
+  keeps the backup image beside it. Both are named after the camera and the day,
+  so a folder of them reads correctly without anybody naming anything.
+- The result can be exported with any selection of findings. The export follows
+  what the table is showing rather than asking the same question twice.
+- Where two of the compared files come from the same camera, whatever differs
+  between them changed by itself and is reported as noise rather than as a
+  difference between bodies. On a pair of readings from one camera this found
+  exactly the one property already known from the hardware notes to drift.
+- The dump also reports how the image is laid out: header, tables, the reserve
+  in front of the data region, and which data bytes no property claims. The
+  page says plainly what that free space is not — the settings store is read by
+  the camera's own firmware, so a byte written where no property lives is a
+  byte nobody reads.
+- The serial number is left out of a dump unless it is asked for, because these
+  files are made to be exchanged. A short digest still lets two dumps of the
+  same camera recognise each other without carrying the number itself.
+- The navigation can be unpinned with the pin next to the version number or
+  Ctrl+B. It then folds down to a strip of icons and opens over the page when
+  the pointer rests on it, when the program icon at its top is clicked or when
+  it receives keyboard focus. In a window narrower than 1000 pixels it unpins
+  itself without changing the saved choice. Every entry now carries an icon,
+  and the rail's head shows the program icon and name.
+- The page header names the open page and its group instead of repeating the
+  program's name.
+- A new navigation group "Analysis" holds the camera comparison and the
+  function analysis, which the menu now calls by that full name; the
+  maintenance group had grown too long.
+- A status line under the navigation shows whether a camera is plugged in, and
+  names its model once it has been read. It only looks at what the operating
+  system lists and opens no device, so it never disturbs a running operation.
+- The language choice sits next to the theme switch as a globe with the
+  language code.
+
 ## [1.11.0-rc.4] - 2026-11-07
 
 **Pre-release for testing mass-storage access on macOS 26 (service mode,

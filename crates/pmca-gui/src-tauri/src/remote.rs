@@ -31,42 +31,92 @@ use crate::*;
 pub(crate) enum Request {
     CameraInfo,
     TweaksRead,
-    TweaksApply { changes: Vec<TweakChange> },
-    TweaksApplyWholeImage { changes: Vec<TweakChange> },
+    TweaksApply {
+        changes: Vec<TweakChange>,
+    },
+    TweaksApplyWholeImage {
+        changes: Vec<TweakChange>,
+    },
     TweaksUndo,
     TweaksClose,
     ServiceOpen,
-    ServiceRun { line: String },
+    ServiceRun {
+        line: String,
+    },
     ServiceClose,
-    ServiceSetTerminal { enable: bool },
+    ServiceSetTerminal {
+        enable: bool,
+    },
     ServiceReadTerminal,
-    ServiceWriteTerminal { data: Vec<u8> },
+    ServiceWriteTerminal {
+        data: Vec<u8>,
+    },
     AnalysisState,
-    AnalysisStart { setting: String, values: Vec<String>, write_test: bool },
+    AnalysisStart {
+        setting: String,
+        values: Vec<String>,
+        write_test: bool,
+    },
     AnalysisSnapshot,
     AnalysisWrite,
-    AnalysisMenu { observed: String },
+    AnalysisMenu {
+        observed: String,
+    },
     AnalysisRestore,
     AnalysisCrossCheck,
     AnalysisReportJson,
     AnalysisDiscard,
     AnalysisRestorePending,
     ReferenceState,
-    ReferenceStart { entries: Vec<pmca_app::analysis::ReferenceEntry> },
+    ReferenceStart {
+        entries: Vec<pmca_app::analysis::ReferenceEntry>,
+    },
     ReferenceCheck,
-    ReferenceWrite { index: usize, variant: usize },
-    ReferenceMenu { observed: String },
+    ReferenceWrite {
+        index: usize,
+        variant: usize,
+    },
+    ReferenceMenu {
+        observed: String,
+    },
     ReferenceRestore,
     ReferenceDiscard,
-    BackupSave { path: PathBuf },
-    BackupRestore { path: PathBuf },
-    FirmwareFlash { file: PathBuf, flash: bool, confirm: bool, reflash: bool },
+    BackupSave {
+        path: PathBuf,
+    },
+    BackupRestore {
+        path: PathBuf,
+    },
+    CompareDumpCamera {
+        folder: PathBuf,
+        with_serial: bool,
+        with_photographer: bool,
+        with_copyright: bool,
+        keep_image: bool,
+    },
+    FirmwareFlash {
+        file: PathBuf,
+        flash: bool,
+        confirm: bool,
+        reflash: bool,
+    },
     FirmwareRestoreVersion,
-    FirmwareSetVersion { version: String },
-    UpdaterOpen { fdat_file: Option<PathBuf>, fdat_dir: PathBuf, flash: bool },
-    UpdaterRun { line: String },
+    FirmwareSetVersion {
+        version: String,
+    },
+    UpdaterOpen {
+        fdat_file: Option<PathBuf>,
+        fdat_dir: PathBuf,
+        flash: bool,
+    },
+    UpdaterRun {
+        line: String,
+    },
     UpdaterClose,
-    AppsBackup { fdat_dir: PathBuf, confirm: bool },
+    AppsBackup {
+        fdat_dir: PathBuf,
+        confirm: bool,
+    },
 }
 
 /// A request with the window's current language.
@@ -275,6 +325,20 @@ fn run(
         }
         Request::BackupSave { path } => json(pmca_app::backup::save(l, sink, &path)?),
         Request::BackupRestore { path } => json(pmca_app::backup::restore(l, sink, &path)?),
+        Request::CompareDumpCamera {
+            folder,
+            with_serial,
+            with_photographer,
+            with_copyright,
+            keep_image,
+        } => {
+            let privacy = pmca_app::compare::Privacy {
+                serial: with_serial,
+                photographer: with_photographer,
+                copyright: with_copyright,
+            };
+            json(pmca_app::compare::dump_camera(l, sink, &folder, privacy, keep_image)?)
+        }
         Request::FirmwareFlash { file, flash, confirm, reflash } => {
             let request = pmca_app::firmware::FlashRequest { file: &file, flash, confirm, reflash };
             json(pmca_app::firmware::flash_firmware(l, &request, sink)?)

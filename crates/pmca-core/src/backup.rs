@@ -61,6 +61,32 @@ pub struct Property {
     pub reset_data: Option<Vec<u8>>,
 }
 
+/// Where a property's bytes sit in the image.
+///
+/// Reported so a caller can work out which parts of the data region are
+/// claimed by a property and which are not; [`Property`] alone cannot answer
+/// that, because it carries the value but not its address.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub struct Layout {
+    /// Attribute bitfield.
+    pub attr: u16,
+    /// First byte the property claims, including the size header an oversize
+    /// or variable-size property carries in front of its value.
+    pub slot_offset: usize,
+    /// First byte of the value itself.
+    pub offset: usize,
+    /// Length of the current value.
+    pub size: usize,
+    /// Bytes reserved for the value; larger than `size` only for a
+    /// variable-size property that currently holds less than it may.
+    pub max_size: usize,
+    /// Total bytes the property claims: size header, reserved value and, where
+    /// one exists, the factory value behind it.
+    pub slot_size: usize,
+    /// Whether a factory value follows the data.
+    pub has_reset: bool,
+}
+
 /// Parsed, validated view over a `Backup.bin` buffer.
 ///
 /// `D` is the backing storage. Any `AsRef<[u8]>` (e.g. `&[u8]`, `Vec<u8>`)
@@ -287,6 +313,63 @@ impl<D: AsRef<[u8]>> BackupFile<D> {
                     && ptr != 0xffff_ffff
                 {
                     out.push((id, self.get_property(id)?));
+                }
+            }
+        }
+        Ok(out)
+    }
+
+    /// Number of subsystems the header declares.
+    pub fn num_subsystems(&self) -> u32 {
+        self.num_subsystems
+    }
+
+    /// Number of property table entries the header declares.
+    pub fn num_properties(&self) -> u32 {
+        self.num_properties
+    }
+
+    /// First byte of the data region.
+    pub fn data_offset(&self) -> usize {
+        self.data_offset as usize
+    }
+
+    /// Length of the data region.
+    pub fn data_size(&self) -> usize {
+        self.size - self.data_offset as usize
+    }
+
+    /// First byte after the property table.
+    ///
+    /// Everything between here and [`Self::data_offset`] is reserve: room the
+    /// image sets aside for table entries that do not exist.
+    pub fn table_end(&self) -> usize {
+        self.property_table_offset + self.num_properties as usize * self.property_entry_size
+    }
+
+    /// Where a property's bytes sit, and how many it claims.
+    pub fn layout(&self, id: u32) -> Result<Layout> {
+        let (_, ptr) = self.property_table_entry(id)?;
+        let slot_offset = (ptr & 0xff_ffff) as usize;
+        let (attr, size, max_size, offset) = self.resolve_property(id)?;
+        let has_reset = attr & attr::ARRAY_DATA == 0
+            && attr & attr::HAS_RESET != 0
+            && self.data.as_ref().get(offset + max_size..offset + max_size + size).is_some();
+        let slot_size = (offset - slot_offset) + max_size + if has_reset { size } else { 0 };
+        Ok(Layout { attr, slot_offset, offset, size, max_size, slot_size, has_reset })
+    }
+
+    /// Iterate over all present `(id, Layout)` pairs.
+    pub fn list_layouts(&self) -> Result<Vec<(u32, Layout)>> {
+        let mut out = Vec::new();
+        for i in 0..self.num_subsystems {
+            let (num_props, _) = self.read_subsystem(i)?;
+            for j in 0..num_props as u32 {
+                let id = (i << 16) | j;
+                if let Ok((_, ptr)) = self.property_table_entry(id)
+                    && ptr != 0xffff_ffff
+                {
+                    out.push((id, self.layout(id)?));
                 }
             }
         }

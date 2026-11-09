@@ -100,6 +100,8 @@ function welcomeMap(): HTMLElement {
     [["docs-compatibility"], "welcome-where-compat"],
     [["nav-install-app"], "welcome-where-install"],
     [["nav-tweaks"], "welcome-where-tweaks"],
+    [["nav-backup"], "welcome-where-backup"],
+    [["nav-compare"], "welcome-where-compare"],
     [["nav-network"], "welcome-where-network"],
     [["nav-firmware"], "welcome-where-firmware"],
     [["nav-tools"], "welcome-where-tools"],

@@ -41,6 +41,29 @@ impl From<pmca_usb::discovery::CameraInfoReport> for CameraSummary {
     }
 }
 
+/// Whether a camera is plugged in, as far as the bus shows without opening it.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "kebab-case")]
+#[cfg_attr(test, derive(ts_rs::TS), ts(export))]
+pub enum CameraPresence {
+    /// No camera on the bus.
+    None,
+    /// A camera that is switched off or showing its USB mode choice.
+    Waiting,
+    /// A camera in a data mode.
+    Connected,
+}
+
+impl From<pmca_usb::discovery::Presence> for CameraPresence {
+    fn from(p: pmca_usb::discovery::Presence) -> Self {
+        match p {
+            pmca_usb::discovery::Presence::None => Self::None,
+            pmca_usb::discovery::Presence::Waiting => Self::Waiting,
+            pmca_usb::discovery::Presence::Connected => Self::Connected,
+        }
+    }
+}
+
 /// What a photo says about the camera that took it.
 #[derive(Debug, Clone, Default, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]

@@ -184,7 +184,7 @@ impl ReferenceCheck {
 
         let status = cam.0.get_backup_preset_data_status().ok();
         let backup_size = status.as_deref().and_then(status_size);
-        let large = status.as_deref().is_some_and(pmca_platform::direct::full_read_too_large);
+        let large = status.as_deref().is_some_and(pmca_platform::direct::image_is_large);
 
         let results = if large {
             self.read_direct(&mut cam.0)?

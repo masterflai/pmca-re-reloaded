@@ -4,8 +4,9 @@
 //! `pmca-console.py`. Their logic lives in `pmca-app`, which is shared with the
 //! GUI; this crate parses arguments and renders results. That holds for the
 //! file-only tools (`apk2spk`, `spk2apk`, `print-backup`, `print-usagelog`,
-//! `guess-firmware`, `xpd-checksum`, via `pmca_app::tools`), the community
-//! store listing (`apps`) and every camera command.
+//! `guess-firmware`, `xpd-checksum`, via `pmca_app::tools`; `dump-backup` and
+//! `compare-backups` via `pmca_app::compare`), the community store listing
+//! (`apps`) and every camera command.
 //!
 //! Two parts reach into `pmca-usb` directly, because they exist only in a
 //! terminal: `driver`, which must run as a separate elevated process, and the
@@ -64,6 +65,66 @@ enum Command {
     Spk2apk { input: PathBuf, output: PathBuf },
     /// Print the contents of a `Backup.bin` file.
     PrintBackup { file: PathBuf },
+    /// Write the whole contents of a `Backup.bin` file out as JSON.
+    ///
+    /// The same properties `print-backup` lists, in a form that can be
+    /// compared with `compare-backups` or kept as a record. Values that name a
+    /// person or a body are withheld unless asked for, because these files are
+    /// meant to be shared.
+    DumpBackup {
+        /// The `Backup.bin` image to read.
+        file: PathBuf,
+        /// Where to write the JSON dump.
+        #[arg(long)]
+        out: PathBuf,
+        /// Include the camera's serial number in the dump.
+        #[arg(long)]
+        with_serial: bool,
+        /// Include the photographer fields in the dump.
+        #[arg(long)]
+        with_photographer: bool,
+        /// Include the copyright fields in the dump.
+        #[arg(long)]
+        with_copyright: bool,
+    },
+    /// Compare the settings stores of two or more cameras.
+    ///
+    /// Takes JSON dumps written by `dump-backup`, raw `Backup.bin` images, or
+    /// a mixture of both. Every property is sorted into a class: the same
+    /// everywhere, near, different, structurally different, apparently unused,
+    /// or missing on at least one camera.
+    ///
+    /// Where two files come from the same camera, whatever differs between
+    /// them changed by itself — shutter counts, the clock — and is reported as
+    /// noise rather than as a difference between bodies.
+    CompareBackups {
+        /// Two or more dumps or `Backup.bin` images.
+        #[arg(required = true, num_args = 2..)]
+        files: Vec<PathBuf>,
+        /// Also write the result here as JSON.
+        #[arg(long)]
+        out: Option<PathBuf>,
+        /// Keep only these classes: identical, similar, different, structural,
+        /// empty, absent, noise.
+        #[arg(long, value_delimiter = ',')]
+        include: Option<Vec<String>>,
+        /// Keep only properties that could be written.
+        #[arg(long)]
+        only_writable: bool,
+        /// Keep only properties the toolkit has a name for.
+        #[arg(long)]
+        only_named: bool,
+        /// Keep only properties whose form suggests a setting: one byte that
+        /// the cameras disagree about and that holds a small number.
+        #[arg(long)]
+        only_switches: bool,
+        /// Most differing bytes that still count as near.
+        #[arg(long)]
+        similar_distance: Option<usize>,
+        /// Do not treat the drift between two dumps of one camera as noise.
+        #[arg(long)]
+        no_auto_noise: bool,
+    },
     /// Print the contents of a `Usagelog.bin` downloaded with `usage-log`.
     ///
     /// Sony does not document what the event numbers mean, so they are shown
@@ -256,8 +317,7 @@ enum Command {
     /// `Backup.bin` is the camera's raw settings memory, not a firmware `.dat`.
     /// Saving only reads; restoring overwrites the settings memory and needs
     /// `--confirm` and the confirmation word. A backup can only be written back
-    /// to the camera it came from, and only on cameras whose image is small
-    /// enough to transfer in one piece (about 1 MB).
+    /// to the camera it came from.
     #[command(group(clap::ArgGroup::new("backup_action").required(true).args(["save", "restore"])))]
     Backup {
         /// Save the camera's backup image to this file.
@@ -643,6 +703,8 @@ fn uses_camera(cmd: &Command) -> bool {
         | Command::Apk2spk { .. }
         | Command::Spk2apk { .. }
         | Command::PrintBackup { .. }
+        | Command::DumpBackup { .. }
+        | Command::CompareBackups { .. }
         | Command::PrintUsageLog { .. }
         | Command::GuessFirmware { .. }
         | Command::XpdChecksum { .. }
@@ -684,6 +746,40 @@ fn run(cmd: &Command, l: &Localizer) -> Result<(), Box<dyn std::error::Error>> {
         }
         Command::PrintBackup { file } => {
             tool_command(l, ToolRequest::PrintBackup { input: file.clone() })?;
+        }
+        Command::DumpBackup { file, out, with_serial, with_photographer, with_copyright } => {
+            dump_backup_command(
+                l,
+                file,
+                out,
+                pmca_app::compare::Privacy {
+                    serial: *with_serial,
+                    photographer: *with_photographer,
+                    copyright: *with_copyright,
+                },
+            )?;
+        }
+        Command::CompareBackups {
+            files,
+            out,
+            include,
+            only_writable,
+            only_named,
+            only_switches,
+            similar_distance,
+            no_auto_noise,
+        } => {
+            compare_backups_command(
+                l,
+                files,
+                out.as_deref(),
+                include.as_deref(),
+                *only_writable,
+                *only_named,
+                *only_switches,
+                *similar_distance,
+                !*no_auto_noise,
+            )?;
         }
         Command::PrintUsageLog { file } => {
             tool_command(l, ToolRequest::PrintUsageLog { input: file.clone() })?;

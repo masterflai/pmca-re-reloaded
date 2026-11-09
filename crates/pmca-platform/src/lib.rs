@@ -22,6 +22,7 @@ use std::collections::BTreeMap;
 use pmca_core::backup::BackupFile;
 
 pub mod analysis;
+pub mod compare;
 pub mod direct;
 pub mod identity;
 pub mod languages;

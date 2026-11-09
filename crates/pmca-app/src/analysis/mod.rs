@@ -409,7 +409,7 @@ pub struct AnalysisRun {
 
 mod cross_check;
 mod reference;
-mod report;
+pub(crate) mod report;
 mod run;
 
 use cross_check::*;

@@ -2,6 +2,7 @@
 
 import { invoke } from "@tauri-apps/api/core";
 import { translateElevation } from "./elevation";
+import { translateNav } from "./nav";
 import { translateThemeSwitch } from "./preferences";
 
 // Locales shipped with the app. Extend by adding a folder under /locales and
@@ -209,6 +210,7 @@ export async function applyLocale(locale: Locale): Promise<void> {
   retranslateErrors(document);
   translateThemeSwitch();
   translateElevation();
+  translateNav();
   document.documentElement.lang = locale;
   // Arabic and friends need the whole shell mirrored, not just the text runs.
   document.documentElement.dir = RTL_LANGUAGES.includes(locale.split("-")[0])

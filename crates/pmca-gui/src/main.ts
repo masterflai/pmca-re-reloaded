@@ -11,7 +11,7 @@
  * The translation catalog is intentionally the single source of truth living
  * in /locales, so adding a language never requires touching this file.
  *
- * Layout: shared helpers sit next to this file (`i18n`, `dom`, `dto`,
+ * Layout: shared helpers sit next to this file (`i18n`, `dom`, `dto`, `nav`,
  * `preferences`, `elevation`, `platform`, `drop`); every page has a module of
  * its own under `views/`. This file only maps navigation entries to views and
  * starts the window.
@@ -38,12 +38,14 @@ import {
   translateTree,
   type Locale,
 } from "./i18n";
+import { setupNav, showLocation } from "./nav";
 import { detectHostPlatform } from "./platform";
 import { applyAnalysisNav, applyTheme, expandNavGroup, setupThemeSwitch, storedTheme, toggleNavGroup } from "./preferences";
 import { announceUpdate, checkForUpdateNow } from "./update";
 import { viewAnalysis } from "./views/analysis";
 import { viewBackup } from "./views/backup";
 import { viewCameraInfo, viewCompatibility } from "./views/camera";
+import { viewCompare } from "./views/compare";
 import { viewFirmware } from "./views/firmware";
 import { viewInstall } from "./views/install";
 import { viewLicense } from "./views/license";
@@ -62,6 +64,7 @@ const VIEWS: Record<string, (host: HTMLElement) => void> = {
   gps: viewGps,
   tweaks: viewTweaks,
   backup: viewBackup,
+  compare: viewCompare,
   analysis: viewAnalysis,
   network: viewNetwork,
   firmware: viewFirmware,
@@ -90,10 +93,12 @@ function renderView(name: string, host: HTMLElement): void {
   // only worth having while the view is on screen; once it is not, the camera
   // has no business staying in service mode.
   if (name !== "tweaks") void invoke("tweaks_close").catch(() => undefined);
+  if (name !== "compare") void invoke("compare_close").catch(() => undefined);
   // Keep the page's group open so its entry stays visible when a view is
   // reached without a click (resume after an elevated restart, say).
   const navItem = document.querySelector<HTMLElement>(`.nav-item[data-view="${name}"]`);
   if (navItem?.dataset.group) expandNavGroup(navItem.dataset.group);
+  showLocation(name);
   (VIEWS[name] ?? viewWelcome)(host);
   translateTree(host);
   // The scrolling container is the content pane around the view, and it keeps
@@ -103,6 +108,13 @@ function renderView(name: string, host: HTMLElement): void {
 
 function setupLanguagePicker(current: Locale): void {
   const select = document.querySelector<HTMLSelectElement>("#lang-select")!;
+  const code = document.querySelector<HTMLElement>("#lang-code")!;
+  // The language part alone, unless several shipped languages share it (zh-CN, zh-TW, zh-HK).
+  const showCode = (l: Locale): void => {
+    const primary = l.split("-")[0];
+    const shared = availableLocales.filter((x) => x.split("-")[0] === primary).length > 1;
+    code.textContent = (shared ? l : primary).toUpperCase();
+  };
   for (const l of availableLocales) {
     const opt = document.createElement("option");
     opt.value = l;
@@ -110,7 +122,9 @@ function setupLanguagePicker(current: Locale): void {
     if (l === current) opt.selected = true;
     select.append(opt);
   }
+  showCode(current);
   select.addEventListener("change", () => {
+    showCode(select.value);
     void applyLocale(select.value as Locale);
     try {
       localStorage.setItem(LOCALE_STORAGE_KEY, select.value);
@@ -190,6 +204,7 @@ async function main(): Promise<void> {
   await detectHostPlatform();
   await setupElevationBadge();
   applyAnalysisNav();
+  setupNav();
   setupNavigation();
   showAppVersion();
   const versionCheck = document.querySelector<HTMLButtonElement>("#version-check");

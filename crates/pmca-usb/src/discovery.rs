@@ -208,6 +208,45 @@ pub fn list_cameras() -> Result<Vec<DetectedCamera>> {
     Ok(out)
 }
 
+/// Whether a camera is plugged in, ordered so the most useful answer wins.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
+pub enum Presence {
+    /// No camera on the bus.
+    None,
+    /// A camera that is switched off or showing its USB mode choice.
+    Waiting,
+    /// A camera in a data mode.
+    Connected,
+}
+
+fn device_presence(name: Option<&str>, classes: &[u8], driver: Option<&str>) -> Presence {
+    if is_waiting_camera_name(name) {
+        Presence::Waiting
+    } else if is_camera_candidate_from(classes, driver) {
+        Presence::Connected
+    } else {
+        Presence::None
+    }
+}
+
+/// Report whether a camera is plugged in, without opening any device.
+///
+/// Only what the OS has cached is read, so polling this neither disturbs a
+/// running session nor leaves a user client behind on macOS.
+pub fn camera_presence() -> Result<Presence> {
+    Ok(list_sony_devices()?
+        .iter()
+        .map(|d| {
+            device_presence(
+                d.info.product_string(),
+                &d.cached_interface_classes(),
+                d.os_driver().as_deref(),
+            )
+        })
+        .max()
+        .unwrap_or(Presence::None))
+}
+
 /// Locate exactly one connected Sony camera.
 ///
 /// Devices classified as [`CameraMode::Unknown`] are skipped: they are Sony
@@ -799,5 +838,18 @@ mod tests {
         // Non-Windows platforms report no driver but always list interfaces,
         // so an empty list there must not exclude the device.
         assert!(is_camera_candidate_from(&[], None));
+    }
+
+    #[test]
+    fn presence_tells_cameras_from_other_sony_devices() {
+        assert_eq!(device_presence(Some("ILCE-6000"), &[class::PTP], None), Presence::Connected);
+        assert_eq!(device_presence(None, &[], Some("usbstor")), Presence::Connected);
+        assert_eq!(device_presence(Some("USB Charger"), &[], None), Presence::Waiting);
+        assert_eq!(
+            device_presence(Some("Wireless Controller"), &[3], Some("hidusb")),
+            Presence::None
+        );
+        // With a camera and a headset plugged in, the camera is what counts.
+        assert!(Presence::Connected > Presence::Waiting && Presence::Waiting > Presence::None);
     }
 }
