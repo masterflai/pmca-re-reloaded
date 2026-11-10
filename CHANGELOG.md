@@ -63,6 +63,11 @@ All notable changes to this project are documented here. The format follows
   settings. Repetitions were removed, the German texts address the reader
   formally throughout, and the warranty notice on the License page is worded
   more precisely.
+- A camera that refuses to hand out its usage log, such as the ILCE-7CR, now
+  gets a message saying so instead of "This camera model does not support this
+  function".
+- The navigation is more compact, so a maximised window on a Full HD screen
+  shows it without a scrollbar; entries and font size are unchanged.
 
 ### Removed
 

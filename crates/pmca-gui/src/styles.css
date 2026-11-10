@@ -113,9 +113,9 @@ body {
 .nav-rail {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 2px;
   min-width: 0;
-  padding: 12px 8px;
+  padding: 10px 8px;
   overflow: hidden auto;
   background: var(--surface);
   backdrop-filter: blur(30px) saturate(150%);
@@ -156,7 +156,7 @@ body {
   display: flex;
   align-items: center;
   gap: 8px;
-  margin-bottom: 10px;
+  margin-bottom: 6px;
   padding: 4px 4px 4px 4px;
 }
 
@@ -219,7 +219,7 @@ html[data-theme="dark"] .nav-logo .logo-on-dark { display: inline; }
   align-items: center;
   gap: 12px;
   text-align: start;
-  padding: 10px 12px;
+  padding: 7px 12px;
   border: none;
   border-radius: var(--radius);
   background: transparent;
@@ -245,7 +245,7 @@ html[data-theme="dark"] .nav-logo .logo-on-dark { display: inline; }
   align-items: center;
   gap: 12px;
   width: 100%;
-  padding: 10px 12px;
+  padding: 7px 12px;
   border: none;
   border-radius: var(--radius);
   background: transparent;
@@ -308,7 +308,7 @@ html[data-theme="dark"] .nav-logo .logo-on-dark { display: inline; }
   overflow: hidden;
   clip-path: inset(50%);
 }
-.nav-unpinned:not(.nav-open) :is(.nav-item, .nav-section) { padding: 10px 9px; }
+.nav-unpinned:not(.nav-open) :is(.nav-item, .nav-section) { padding: 7px 9px; }
 .nav-unpinned:not(.nav-open) .nav-item[data-group],
 .nav-unpinned:not(.nav-open) .nav-version,
 .nav-unpinned:not(.nav-open) .nav-section::after { display: none; }
