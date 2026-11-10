@@ -10,6 +10,7 @@
 //! * [`firmware`] – Firmware `.dat` container parsing (locating the `FDAT` chunk).
 //! * [`fdat`] – FDAT firmware-image (de)cryption, parsing and re-assembly.
 //! * [`backup`] – Read-only parser for the camera `Backup.bin` settings file.
+//! * [`camset`] – Read-only reader for the menu's Save/Load Settings file.
 //! * [`usagelog`] – Read-only reader for the camera's usage log ("KikiLog").
 //! * [`photo`] – Read-only reader for the shutter count and capture details
 //!   Sony cameras record in their images.
@@ -33,6 +34,7 @@
 #![warn(missing_docs)]
 
 pub mod backup;
+pub mod camset;
 pub mod fdat;
 pub mod firmware;
 pub mod keystore;

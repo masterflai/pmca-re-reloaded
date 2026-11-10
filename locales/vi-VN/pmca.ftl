@@ -840,6 +840,13 @@ usagelog-spare = Vùng thứ hai
 usagelog-count = Số mục
 usagelog-events = Sự kiện theo số hiệu
 usagelog-entries = Các mục theo thứ tự
+tools-camset-invalid = Tệp này không phải là tệp cài đặt máy ảnh hợp lệ
+tools-camset-older = Tệp cài đặt này có định dạng cũ của các máy ảnh dùng menu trước năm 2021 (ví dụ A7R IV hoặc A9 II). Chỉ có thể đọc định dạng mới hơn.
+camset-saved = Đã lưu
+camset-video-system = Hệ thống video
+camset-sections = Số mục mỗi phần
+camset-changes = Các mục đã thay đổi
+camset-no-changes = Hai tệp chứa cùng các giá trị.
 msg-link-copied = Đã sao chép liên kết vào bảng tạm.
 
 # Thông báo lỗi của phần phụ trợ, theo mã ổn định mà phần phụ trợ báo cáo.

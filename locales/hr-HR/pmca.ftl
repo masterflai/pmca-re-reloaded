@@ -828,6 +828,13 @@ usagelog-spare = Drugo područje
 usagelog-count = Unosi
 usagelog-events = Događaji po broju
 usagelog-entries = Unosi redom
+tools-camset-invalid = Datoteka nije valjana datoteka postavki fotoaparata
+tools-camset-older = Ova datoteka postavki ima stariji format fotoaparata s izbornikom od prije 2021. (npr. A7R IV ili A9 II). Može se čitati samo noviji format.
+camset-saved = Spremljeno
+camset-video-system = Video sustav
+camset-sections = Zapisi po odjeljku
+camset-changes = Promijenjeni zapisi
+camset-no-changes = Obje datoteke sadrže iste vrijednosti.
 msg-link-copied = Poveznica je kopirana u međuspremnik.
 
 # Poruke o pogreškama pozadinskog sloja, prema stabilnoj šifri koju on prijavljuje.

@@ -829,6 +829,13 @@ usagelog-spare = Area kedua
 usagelog-count = Entri
 usagelog-events = Peristiwa menurut nomor
 usagelog-entries = Entri berurutan
+tools-camset-invalid = Berkas ini bukan berkas pengaturan kamera yang valid
+tools-camset-older = Berkas pengaturan ini memakai format lama kamera dengan menu sebelum 2021 (misalnya A7R IV atau A9 II). Hanya format yang lebih baru yang dapat dibaca.
+camset-saved = Disimpan
+camset-video-system = Sistem video
+camset-sections = Entri per bagian
+camset-changes = Entri yang berubah
+camset-no-changes = Kedua berkas berisi nilai yang sama.
 msg-link-copied = Tautan disalin ke papan klip.
 
 # Pesan kegagalan backend, dikunci oleh kode stabil yang dilaporkan backend.

@@ -829,6 +829,13 @@ usagelog-spare = Andre område
 usagelog-count = Oppføringer
 usagelog-events = Hendelser etter nummer
 usagelog-entries = Oppføringer i rekkefølge
+tools-camset-invalid = Filen er ikke en gyldig innstillingsfil fra kameraet
+tools-camset-older = Denne innstillingsfilen har det eldre formatet fra kameraer med menyen fra før 2021 (for eksempel A7R IV eller A9 II). Bare det nyere formatet kan leses.
+camset-saved = Lagret
+camset-video-system = Videosystem
+camset-sections = Poster per seksjon
+camset-changes = Endrede poster
+camset-no-changes = Begge filene inneholder de samme verdiene.
 msg-link-copied = Lenken er kopiert til utklippstavlen.
 
 # Feilmeldinger fra bakstykket, slått opp med den stabile koden det melder fra om.

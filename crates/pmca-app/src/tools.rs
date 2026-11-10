@@ -19,7 +19,7 @@ use std::collections::BTreeMap;
 use std::fmt::Write as _;
 use std::path::{Path, PathBuf};
 
-use pmca_core::{backup, firmware, photo, spk, usagelog, xpd};
+use pmca_core::{backup, camset, firmware, photo, spk, usagelog, xpd};
 use pmca_i18n::Localizer;
 
 use crate::dto::{PhotoSummary, UsageLogView};
@@ -52,6 +52,13 @@ pub enum ToolRequest {
     PrintUsageLog {
         /// The usage log to read.
         input: PathBuf,
+    },
+    /// Dump a Save/Load Settings file, or what changed against a second one.
+    PrintCamset {
+        /// The settings file to read.
+        input: PathBuf,
+        /// A later file of the same camera; only differing records are shown.
+        against: Option<PathBuf>,
     },
     /// Report where the `FDAT` payload sits inside a firmware `.dat`.
     GuessFirmware {
@@ -117,6 +124,21 @@ pub fn run(l: &Localizer, request: &ToolRequest) -> Result<ToolOutcome> {
             let log =
                 usagelog::parse(&data).map_err(|e| invalid(l, "tools-usagelog-invalid", &e))?;
             Ok(ToolOutcome { message: l.tr("msg-done"), report: Some(usage_log_report(l, &log)) })
+        }
+        ToolRequest::PrintCamset { input, against } => {
+            let read = |path: &Path| -> Result<camset::Camset> {
+                let data = std::fs::read(path)?;
+                if camset::is_older_format(&data) {
+                    return Err(Error::Operation(l.tr("tools-camset-older")));
+                }
+                camset::parse(&data).map_err(|e| invalid(l, "tools-camset-invalid", &e))
+            };
+            let first = read(input)?;
+            let second = against.as_deref().map(read).transpose()?;
+            Ok(ToolOutcome {
+                message: l.tr("msg-done"),
+                report: Some(camset_report(l, &first, second.as_ref())),
+            })
         }
         ToolRequest::GuessFirmware { input } => {
             let data = std::fs::read(input)?;
@@ -207,6 +229,94 @@ fn usage_log_report(l: &Localizer, log: &usagelog::UsageLog) -> String {
         );
     }
     out
+}
+
+/// Render a settings file as text: its header, then every record, or with a
+/// second file only the records that differ.
+///
+/// One record per line with its value as hex, so that a script can set the
+/// lines against a `compare-backups` export of the same moment.
+fn camset_report(l: &Localizer, file: &camset::Camset, against: Option<&camset::Camset>) -> String {
+    let mut out = String::new();
+    for (n, file) in std::iter::once(file).chain(against).enumerate() {
+        if against.is_some() {
+            let _ = writeln!(out, "#{}", n + 1);
+        }
+        let video = match file.video_system {
+            0 => "NTSC".to_string(),
+            1 => "PAL".to_string(),
+            other => other.to_string(),
+        };
+        let counts: Vec<String> = file.sections.iter().map(|s| s.len().to_string()).collect();
+        let _ = writeln!(out, "{}: {}", l.tr("info-model"), file.model);
+        let _ = writeln!(out, "{}: {}", l.tr("camset-saved"), file.saved);
+        let _ = writeln!(
+            out,
+            "{}: {}.{:02}",
+            l.tr("info-firmware"),
+            file.firmware[0],
+            file.firmware[1]
+        );
+        let _ = writeln!(out, "{}: {video}", l.tr("camset-video-system"));
+        let _ = writeln!(out, "{}: {}\n", l.tr("camset-sections"), counts.join(", "));
+    }
+
+    let Some(later) = against else {
+        for (section, records) in file.sections.iter().enumerate() {
+            for r in records {
+                let _ = writeln!(
+                    out,
+                    "s{section:<2} id=0x{:04x} {}x{} @0x{:05x}: {}",
+                    r.id,
+                    r.elem_size,
+                    r.count,
+                    r.offset,
+                    camset_value(Some(r))
+                );
+            }
+        }
+        return out;
+    };
+
+    let changes = camset::changes(file, later);
+    if changes.is_empty() {
+        let _ = writeln!(out, "{}", l.tr("camset-no-changes"));
+        return out;
+    }
+    let _ = writeln!(out, "{}: {}", l.tr("camset-changes"), changes.len());
+    for c in &changes {
+        let shape = c
+            .after
+            .or(c.before)
+            .map_or_else(String::new, |r| format!(" {}x{}", r.elem_size, r.count));
+        let _ = writeln!(
+            out,
+            "s{:<2} id=0x{:04x}{shape}: {} -> {}",
+            c.section,
+            c.id,
+            camset_value(c.before),
+            camset_value(c.after)
+        );
+    }
+    out
+}
+
+/// Bytes worth showing of one record value, with the integer reading of a
+/// single element, or `-` where the file has no such record.
+fn camset_value(record: Option<&camset::Record>) -> String {
+    /// Enough for every scalar and short array; a lens name is not.
+    const SHOWN: usize = 16;
+    let Some(record) = record else { return "-".to_string() };
+    let mut text: Vec<String> =
+        record.data.iter().take(SHOWN).map(|b| format!("{b:02x}")).collect();
+    if record.data.len() > SHOWN {
+        text.push("…".to_string());
+    }
+    let mut text = text.join(" ");
+    if let Some([single]) = record.values().as_deref() {
+        let _ = write!(text, " ({single})");
+    }
+    text
 }
 
 /// Render every property of a `Backup.bin` image as text.
@@ -326,6 +436,7 @@ mod tests {
         );
         assert!(ToolRequest::PrintBackup { input: path.clone() }.output().is_none());
         assert!(ToolRequest::PrintUsageLog { input: path.clone() }.output().is_none());
+        assert!(ToolRequest::PrintCamset { input: path.clone(), against: None }.output().is_none());
         assert!(ToolRequest::GuessFirmware { input: path.clone() }.output().is_none());
         assert!(ToolRequest::XpdChecksum { input: path }.output().is_none());
     }

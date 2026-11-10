@@ -828,6 +828,13 @@ usagelog-spare = Drugi obszar
 usagelog-count = Wpisy
 usagelog-events = Zdarzenia według numeru
 usagelog-entries = Wpisy w kolejności
+tools-camset-invalid = Plik nie jest prawidłowym plikiem ustawień aparatu
+tools-camset-older = Ten plik ustawień ma starszy format aparatów z menu sprzed 2021 roku (np. A7R IV lub A9 II). Odczytać można tylko nowszy format.
+camset-saved = Zapisano
+camset-video-system = System wideo
+camset-sections = Rekordy w sekcji
+camset-changes = Zmienione rekordy
+camset-no-changes = Oba pliki zawierają te same wartości.
 msg-link-copied = Odnośnik skopiowano do schowka.
 
 # Komunikaty o błędach zaplecza, przypisane do stałego kodu zgłaszanego przez zaplecze.

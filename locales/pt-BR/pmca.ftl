@@ -829,6 +829,13 @@ usagelog-spare = Segunda área
 usagelog-count = Entradas
 usagelog-events = Eventos por número
 usagelog-entries = Entradas em ordem
+tools-camset-invalid = O arquivo não é um arquivo de configurações de câmera válido
+tools-camset-older = Este arquivo de configurações está no formato antigo das câmeras com o menu anterior a 2021 (como a A7R IV ou a A9 II). Só é possível ler o formato mais recente.
+camset-saved = Salvo em
+camset-video-system = Sistema de vídeo
+camset-sections = Registros por seção
+camset-changes = Registros alterados
+camset-no-changes = Os dois arquivos contêm os mesmos valores.
 msg-link-copied = Link copiado para a área de transferência.
 
 # Mensagens de falha do backend, indexadas pelo código estável informado.

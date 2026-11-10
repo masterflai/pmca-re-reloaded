@@ -827,6 +827,13 @@ usagelog-spare = ਦੂਜਾ ਖੇਤਰ
 usagelog-count = ਇੰਦਰਾਜ਼
 usagelog-events = ਨੰਬਰ ਅਨੁਸਾਰ ਘਟਨਾਵਾਂ
 usagelog-entries = ਕ੍ਰਮ ਵਿੱਚ ਇੰਦਰਾਜ਼
+tools-camset-invalid = ਇਹ ਫਾਈਲ ਕੈਮਰੇ ਦੀ ਵੈਧ ਸੈਟਿੰਗ ਫਾਈਲ ਨਹੀਂ ਹੈ
+tools-camset-older = ਇਹ ਸੈਟਿੰਗ ਫਾਈਲ 2021 ਤੋਂ ਪਹਿਲਾਂ ਵਾਲੇ ਮੀਨੂ ਵਾਲੇ ਕੈਮਰਿਆਂ (ਜਿਵੇਂ A7R IV ਜਾਂ A9 II) ਦੇ ਪੁਰਾਣੇ ਫਾਰਮੈਟ ਵਿੱਚ ਹੈ। ਕੇਵਲ ਨਵਾਂ ਫਾਰਮੈਟ ਪੜ੍ਹਿਆ ਜਾ ਸਕਦਾ ਹੈ।
+camset-saved = ਸੰਭਾਲਿਆ ਗਿਆ
+camset-video-system = ਵੀਡੀਓ ਸਿਸਟਮ
+camset-sections = ਹਰ ਭਾਗ ਵਿੱਚ ਰਿਕਾਰਡ
+camset-changes = ਬਦਲੇ ਗਏ ਰਿਕਾਰਡ
+camset-no-changes = ਦੋਵਾਂ ਫਾਈਲਾਂ ਵਿੱਚ ਇੱਕੋ ਜਿਹੇ ਮੁੱਲ ਹਨ।
 msg-link-copied = ਲਿੰਕ ਕਲਿੱਪਬੋਰਡ ਵਿੱਚ ਕਾਪੀ ਹੋ ਗਿਆ।
 
 # ਬੈਕਐਂਡ ਦੀਆਂ ਗਲਤੀ ਸੂਚਨਾਵਾਂ, ਬੈਕਐਂਡ ਵੱਲੋਂ ਦੱਸੇ ਸਥਿਰ ਕੋਡ ਅਨੁਸਾਰ।

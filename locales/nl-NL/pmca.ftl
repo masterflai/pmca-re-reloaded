@@ -831,6 +831,13 @@ usagelog-spare = Tweede gebied
 usagelog-count = Items
 usagelog-events = Gebeurtenissen per nummer
 usagelog-entries = Items op volgorde
+tools-camset-invalid = Het bestand is geen geldig instellingenbestand van de camera
+tools-camset-older = Dit instellingenbestand heeft het oudere formaat van camera's met het menu van vóór 2021 (zoals de A7R IV of A9 II). Alleen het nieuwere formaat kan worden gelezen.
+camset-saved = Opgeslagen
+camset-video-system = Videosysteem
+camset-sections = Records per sectie
+camset-changes = Gewijzigde records
+camset-no-changes = Beide bestanden bevatten dezelfde waarden.
 msg-link-copied = Koppeling naar het klembord gekopieerd.
 
 # Foutmeldingen van de backend, gerangschikt op de stabiele code die de backend meldt.

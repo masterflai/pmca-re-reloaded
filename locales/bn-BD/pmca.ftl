@@ -823,6 +823,13 @@ usagelog-spare = দ্বিতীয় এলাকা
 usagelog-count = এন্ট্রি
 usagelog-events = নম্বর অনুযায়ী ঘটনা
 usagelog-entries = ক্রমানুসারে এন্ট্রি
+tools-camset-invalid = ফাইলটি ক্যামেরার বৈধ সেটিংস ফাইল নয়
+tools-camset-older = এই সেটিংস ফাইলটি 2021-এর আগের মেনুযুক্ত ক্যামেরার (যেমন A7R IV বা A9 II) পুরোনো ফরম্যাটে আছে। কেবল নতুন ফরম্যাটই পড়া যায়।
+camset-saved = সংরক্ষণের সময়
+camset-video-system = ভিডিও সিস্টেম
+camset-sections = প্রতিটি অংশে রেকর্ড
+camset-changes = পরিবর্তিত রেকর্ড
+camset-no-changes = দুটি ফাইলেই একই মান রয়েছে।
 msg-link-copied = লিঙ্কটি ক্লিপবোর্ডে কপি হয়েছে।
 
 # ব্যাকএন্ডের ত্রুটি বার্তা, ব্যাকএন্ড যে স্থিতিশীল কোড জানায় সেই অনুযায়ী।

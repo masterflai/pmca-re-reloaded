@@ -828,6 +828,13 @@ usagelog-spare = Deuxième zone
 usagelog-count = Entrées
 usagelog-events = Événements par numéro
 usagelog-entries = Entrées dans l'ordre
+tools-camset-invalid = Le fichier n'est pas un fichier de réglages valide de l'appareil
+tools-camset-older = Ce fichier de réglages est dans l'ancien format des appareils dotés du menu d'avant 2021 (comme l'A7R IV ou l'A9 II). Seul le format plus récent peut être lu.
+camset-saved = Enregistré le
+camset-video-system = Système vidéo
+camset-sections = Entrées par section
+camset-changes = Entrées modifiées
+camset-no-changes = Les deux fichiers contiennent les mêmes valeurs.
 btn-copy-link = Copier le lien
 msg-link-copied = Lien copié dans le presse-papiers.
 

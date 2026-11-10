@@ -826,6 +826,13 @@ usagelog-spare = 第二領域
 usagelog-count = エントリ数
 usagelog-events = 番号別のイベント
 usagelog-entries = 順番に並んだエントリ
+tools-camset-invalid = このファイルは有効なカメラ設定ファイルではありません
+tools-camset-older = この設定ファイルは、2021年より前のメニューを持つカメラ（A7R IV や A9 II など）の旧形式です。読み込めるのは新しい形式だけです。
+camset-saved = 保存日時
+camset-video-system = ビデオ方式
+camset-sections = セクションごとのレコード数
+camset-changes = 変更されたレコード
+camset-no-changes = 両方のファイルの値は同じです。
 btn-copy-link = リンクをコピー
 msg-link-copied = リンクをクリップボードにコピーしました。
 

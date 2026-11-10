@@ -835,6 +835,13 @@ usagelog-spare = Zweiter Bereich
 usagelog-count = Einträge
 usagelog-events = Ereignisse nach Nummer
 usagelog-entries = Einträge der Reihe nach
+tools-camset-invalid = Die Datei ist keine gültige Einstellungsdatei der Kamera
+tools-camset-older = Diese Einstellungsdatei hat das ältere Format von Kameras mit dem Menü von vor 2021 (etwa A7R IV oder A9 II). Lesen lässt sich nur das neuere Format.
+camset-saved = Gespeichert
+camset-video-system = Videosystem
+camset-sections = Einträge je Abschnitt
+camset-changes = Geänderte Einträge
+camset-no-changes = Beide Dateien enthalten dieselben Werte.
 msg-link-copied = Link in die Zwischenablage kopiert.
 
 # Fehlermeldungen des Backends, adressiert über den stabilen Fehlercode.

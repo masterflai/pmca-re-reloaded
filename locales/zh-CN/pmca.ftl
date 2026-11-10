@@ -822,6 +822,13 @@ usagelog-spare = 第二区域
 usagelog-count = 条目数
 usagelog-events = 按编号统计的事件
 usagelog-entries = 按顺序的条目
+tools-camset-invalid = 该文件不是有效的相机设置文件
+tools-camset-older = 此设置文件采用 2021 年之前菜单的相机（如 A7R IV 或 A9 II）所用的旧格式。只能读取较新的格式。
+camset-saved = 保存时间
+camset-video-system = 视频制式
+camset-sections = 各部分的记录数
+camset-changes = 已更改的记录
+camset-no-changes = 两个文件的值相同。
 msg-link-copied = 链接已复制到剪贴板。
 
 # 后端故障消息，按后端报告的稳定代码索引。

@@ -827,6 +827,13 @@ usagelog-spare = المنطقة الثانية
 usagelog-count = المدخلات
 usagelog-events = الأحداث حسب الرقم
 usagelog-entries = المدخلات بالترتيب
+tools-camset-invalid = الملف ليس ملف إعدادات كاميرا صالحًا
+tools-camset-older = ملف الإعدادات هذا بالتنسيق القديم للكاميرات ذات القائمة السابقة لعام 2021 (مثل A7R IV أو A9 II). لا يمكن قراءة سوى التنسيق الأحدث.
+camset-saved = تاريخ الحفظ
+camset-video-system = نظام الفيديو
+camset-sections = عدد السجلات في كل قسم
+camset-changes = السجلات المتغيرة
+camset-no-changes = يحتوي الملفان على القيم نفسها.
 msg-link-copied = نُسخ الرابط إلى الحافظة.
 
 # رسائل أعطال الواجهة الخلفية، مفهرسة بالرمز الثابت الذي تُبلغ عنه.

@@ -29,6 +29,16 @@ All notable changes to this project are documented here. The format follows
   optional and always writes the complete log.
 - *Camera info* opens with a heading and a short explanation of what reading
   the camera shows.
+- `pmca-console print-camset` reads the settings file a camera saves to the
+  card with Save/Load Settings (`CAMSET*.DAT`): model, save time, firmware,
+  video system and every record with its value. With `--against` a second
+  file, only the records that differ are listed, so one menu change shows up
+  as the records it moved. Both checksums are checked; records are shown by
+  number, not named. The container layout follows the
+  [camset](https://github.com/camset-dev/camset) project's description.
+  Files in the older, much smaller format of cameras with the menu from
+  before 2021 (such as the A7R IV or A9 II) are recognised and named as such
+  instead of being reported as damaged.
 
 ### Changed
 

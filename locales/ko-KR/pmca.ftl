@@ -840,6 +840,13 @@ usagelog-spare = 두 번째 영역
 usagelog-count = 항목
 usagelog-events = 번호별 이벤트
 usagelog-entries = 순서별 항목
+tools-camset-invalid = 이 파일은 올바른 카메라 설정 파일이 아닙니다
+tools-camset-older = 이 설정 파일은 2021년 이전 메뉴를 쓰는 카메라(예: A7R IV, A9 II)의 이전 형식입니다. 새 형식만 읽을 수 있습니다.
+camset-saved = 저장 시각
+camset-video-system = 비디오 방식
+camset-sections = 섹션별 레코드 수
+camset-changes = 변경된 레코드
+camset-no-changes = 두 파일의 값이 같습니다.
 msg-link-copied = 링크를 클립보드에 복사했습니다.
 
 # 백엔드 오류 메시지이며, 백엔드가 보고하는 고정 코드를 키로 사용합니다.

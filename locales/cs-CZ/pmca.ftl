@@ -828,6 +828,13 @@ usagelog-spare = Druhá oblast
 usagelog-count = Záznamy
 usagelog-events = Události podle čísla
 usagelog-entries = Záznamy v pořadí
+tools-camset-invalid = Soubor není platný soubor nastavení fotoaparátu
+tools-camset-older = Tento soubor nastavení má starší formát fotoaparátů s nabídkou z doby před rokem 2021 (např. A7R IV nebo A9 II). Číst lze jen novější formát.
+camset-saved = Uloženo
+camset-video-system = Videosystém
+camset-sections = Záznamy v oddílu
+camset-changes = Změněné záznamy
+camset-no-changes = Oba soubory obsahují stejné hodnoty.
 msg-link-copied = Odkaz byl zkopírován do schránky.
 
 # Chybové zprávy z backendu, adresované stabilním kódem, který backend hlásí.

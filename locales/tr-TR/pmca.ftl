@@ -829,6 +829,13 @@ usagelog-spare = İkinci alan
 usagelog-count = Kayıtlar
 usagelog-events = Numaraya göre olaylar
 usagelog-entries = Sırayla kayıtlar
+tools-camset-invalid = Dosya geçerli bir kamera ayar dosyası değil
+tools-camset-older = Bu ayar dosyası, 2021 öncesi menüye sahip kameraların eski biçiminde (örneğin A7R IV veya A9 II). Yalnızca yeni biçim okunabilir.
+camset-saved = Kaydedilme
+camset-video-system = Video sistemi
+camset-sections = Bölüm başına kayıt
+camset-changes = Değişen kayıtlar
+camset-no-changes = İki dosya da aynı değerleri içeriyor.
 msg-link-copied = Bağlantı panoya kopyalandı.
 
 # Arka uç hata iletileri, arka ucun bildirdiği kararlı koda göre.

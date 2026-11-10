@@ -840,6 +840,13 @@ usagelog-spare = 第二區域
 usagelog-count = 項目
 usagelog-events = 依編號分類的事件
 usagelog-entries = 依順序排列的項目
+tools-camset-invalid = 此檔案不是有效的相機設定檔
+tools-camset-older = 此設定檔採用 2021 年以前選單之相機（例如 A7R IV 或 A9 II）的舊格式。只能讀取較新的格式。
+camset-saved = 儲存時間
+camset-video-system = 視訊制式
+camset-sections = 各區段的記錄數
+camset-changes = 已變更的記錄
+camset-no-changes = 兩個檔案的值相同。
 msg-link-copied = 連結已複製到剪貼簿。
 
 # 後端失敗訊息，以後端回報的穩定代碼作為鍵。
