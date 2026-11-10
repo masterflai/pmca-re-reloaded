@@ -54,7 +54,7 @@
       <nav class="nav-rail" aria-label="main">
         <div class="nav-brand">
           <!-- The program icon doubles as the expand button while the rail is unpinned; see nav.ts. -->
-          <button type="button" id="nav-expand" class="nav-logo"><img src="/src-tauri/icons/128x128.png" alt="" /></button>
+          <button type="button" id="nav-expand" class="nav-logo"><img class="logo-on-light" src="/src-tauri/icons/128x128.png" alt="" /><img class="logo-on-dark" src="/src-tauri/icons/icon-on-dark.png" alt="" /></button>
           <div class="nav-brand-text nav-label"><span class="nav-brand-name">PMCA-RE RELOADED</span><span id="nav-brand-sub" class="nav-brand-sub"></span></div>
         </div>
         <button class="nav-item active" data-view="welcome"><svg class="nav-icon" aria-hidden="true"><use href="#i-home"/></svg><span class="nav-label" data-i18n="nav-welcome">Welcome</span></button>
@@ -63,9 +63,9 @@
         <button class="nav-item" data-view="compat" data-group="camera"><svg class="nav-icon" aria-hidden="true"><use href="#i-compat"/></svg><span class="nav-label" data-i18n="docs-compatibility">Camera compatibility</span></button>
         <button class="nav-section collapsed" data-group="apps"><svg class="nav-icon" aria-hidden="true"><use href="#i-apps"/></svg><span class="nav-label" data-i18n="nav-group-apps">Applications</span></button>
         <button class="nav-item" data-view="install" data-group="apps"><svg class="nav-icon" aria-hidden="true"><use href="#i-install"/></svg><span class="nav-label" data-i18n="nav-install-app">Apps</span></button>
+        <button class="nav-item" data-view="projects" data-group="apps"><svg class="nav-icon" aria-hidden="true"><use href="#i-projects"/></svg><span class="nav-label" data-i18n="nav-projects">Projects</span></button>
         <button class="nav-item" data-view="gps" data-group="apps"><svg class="nav-icon" aria-hidden="true"><use href="#i-gps"/></svg><span class="nav-label" data-i18n="nav-gps">GPS</span></button>
         <button class="nav-item" data-view="network" data-group="apps"><svg class="nav-icon" aria-hidden="true"><use href="#i-network"/></svg><span class="nav-label" data-i18n="nav-network">Network</span></button>
-        <button class="nav-item" data-view="projects" data-group="apps"><svg class="nav-icon" aria-hidden="true"><use href="#i-projects"/></svg><span class="nav-label" data-i18n="nav-projects">Projects</span></button>
         <button class="nav-section collapsed" data-group="analysis"><svg class="nav-icon" aria-hidden="true"><use href="#i-search"/></svg><span class="nav-label" data-i18n="nav-group-analysis">Analysis</span></button>
         <button class="nav-item" data-view="compare" data-group="analysis"><svg class="nav-icon" aria-hidden="true"><use href="#i-compare"/></svg><span class="nav-label" data-i18n="nav-compare">Camera comparison</span></button>
         <!-- Shown only once unlocked in the settings; see applyNav. -->

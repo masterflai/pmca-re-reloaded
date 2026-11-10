@@ -31,6 +31,8 @@ html[data-theme="system"] {
   --success: #0f7b0f;
   --danger: #c42b1c;
   --warning: #b26b00;
+  /* Accent for text: the fill accent is too dark to read on a dark surface. */
+  --accent-text: #0067c0;
   /* A shade darker than --border: a divider has to be seen to divide. */
   --cmp-rule: #00000026;
 }
@@ -51,6 +53,7 @@ html[data-theme="dark"] {
   --danger: #ff99a4;
   /* The light-mode amber turns muddy and unreadable on a dark surface. */
   --warning: #fce100;
+  --accent-text: #60cdff;
   --cmp-rule: #ffffff2e;
 }
 
@@ -69,6 +72,7 @@ html[data-theme="dark"] {
     --success: #6ccb5f;
     --danger: #ff99a4;
     --warning: #fce100;
+    --accent-text: #60cdff;
     --cmp-rule: #ffffff2e;
   }
 }
@@ -170,8 +174,17 @@ body {
   cursor: pointer;
 }
 .nav-logo img { width: 28px; height: 28px; }
+/* The dark camera vanishes on a dark surface, so the dark themes swap in a light one. */
+.nav-logo .logo-on-dark { display: none; }
+html[data-theme="dark"] .nav-logo .logo-on-light { display: none; }
+html[data-theme="dark"] .nav-logo .logo-on-dark { display: inline; }
+@media (prefers-color-scheme: dark) {
+  html[data-theme="system"] .nav-logo .logo-on-light { display: none; }
+  html[data-theme="system"] .nav-logo .logo-on-dark { display: inline; }
+}
 .nav-logo:not(:disabled):hover { background: var(--border); }
-.nav-logo:disabled { cursor: default; }
+/* Disabled only means "not a button right now"; the logo must not fade like a dead control. */
+.nav-logo:disabled { cursor: default; opacity: 1; }
 
 .nav-brand-text { display: flex; flex-direction: column; min-width: 0; }
 .nav-brand-name { font-weight: 700; font-size: 0.9rem; line-height: 1.2; white-space: nowrap; }
@@ -1364,6 +1377,27 @@ summary {
 .welcome-map dt {
   color: var(--text);
   font-weight: 600;
+}
+
+/* One list per group of the rail; a fixed first column lines them all up. */
+.welcome-map {
+  grid-template-columns: 13rem 1fr;
+}
+
+.welcome-map + .welcome-map {
+  margin-top: 16px;
+}
+
+/* Settings and License belong to no group; a rule keeps them from reading as part of the last one. */
+.welcome-map-rest {
+  padding-top: 12px;
+  border-top: 1px solid var(--border);
+}
+
+.welcome-map-group {
+  margin: 16px 0 0;
+  font-size: 0.95rem;
+  color: var(--accent-text);
 }
 
 /* The read-only camera values sit directly above the tweak list. Without a gap

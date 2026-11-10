@@ -13,13 +13,24 @@ $here = Split-Path -Parent $MyInvocation.MyCommand.Path
 # Fluent-style accent used by the GUI stylesheet.
 $accent = [System.Drawing.Color]::FromArgb(255, 0, 120, 212)
 $body = [System.Drawing.Color]::FromArgb(255, 32, 32, 32)
+# The same camera for dark surfaces, where the dark body would vanish.
+$bodyOnDark = [System.Drawing.Color]::FromArgb(255, 232, 232, 232)
+# Rim around the dark body of the app icon, which a dark taskbar would swallow.
+$rim = [System.Drawing.Color]::FromArgb(255, 225, 225, 225)
 $glass = [System.Drawing.Color]::FromArgb(255, 240, 240, 240)
 
-function Draw-Camera($g, [single]$x, [single]$y, [single]$size) {
+function Draw-Camera($g, [single]$x, [single]$y, [single]$size, $bodyColor = $body, $rimColor = $null) {
     $u = $size / 32.0
+    if ($rimColor) {
+        $w = [single][Math]::Max($u, 1.0)
+        $rimBrush = New-Object System.Drawing.SolidBrush($rimColor)
+        $g.FillRectangle($rimBrush, (New-Object System.Drawing.RectangleF(($x + $u * 2 - $w), ($y + $u * 7 - $w), ($u * 28 + 2 * $w), ($u * 19 + 2 * $w))))
+        $g.FillRectangle($rimBrush, (New-Object System.Drawing.RectangleF(($x + $u * 11 - $w), ($y + $u * 4 - $w), ($u * 10 + 2 * $w), ($u * 4 + $w))))
+        $rimBrush.Dispose()
+    }
     # Camera body.
     $bodyRect = New-Object System.Drawing.RectangleF(($x + $u * 2), ($y + $u * 7), ($u * 28), ($u * 19))
-    $bodyBrush = New-Object System.Drawing.SolidBrush($body)
+    $bodyBrush = New-Object System.Drawing.SolidBrush($bodyColor)
     $g.FillRectangle($bodyBrush, $bodyRect)
     # Viewfinder hump.
     $humpRect = New-Object System.Drawing.RectangleF(($x + $u * 11), ($y + $u * 4), ($u * 10), ($u * 4))
@@ -35,12 +46,12 @@ function Draw-Camera($g, [single]$x, [single]$y, [single]$size) {
     $bodyBrush.Dispose(); $accentBrush.Dispose(); $glassBrush.Dispose()
 }
 
-function New-IconBitmap([int]$size) {
+function New-IconBitmap([int]$size, $bodyColor = $body, $rimColor = $rim) {
     $bmp = New-Object System.Drawing.Bitmap($size, $size, [System.Drawing.Imaging.PixelFormat]::Format32bppArgb)
     $g = [System.Drawing.Graphics]::FromImage($bmp)
     $g.SmoothingMode = [System.Drawing.Drawing2D.SmoothingMode]::AntiAlias
     $g.Clear([System.Drawing.Color]::Transparent)
-    Draw-Camera $g 0 0 $size
+    Draw-Camera $g 0 0 $size $bodyColor $rimColor
     $g.Dispose()
     return $bmp
 }
@@ -52,6 +63,11 @@ foreach ($size in 32, 128, 256, 512) {
     $bmp.Save((Join-Path $here $name), [System.Drawing.Imaging.ImageFormat]::Png)
     $bmp.Dispose()
 }
+
+# Navigation logo while the window is dark: the light camera, no rim needed.
+$bmp = New-IconBitmap 256 $bodyOnDark $null
+$bmp.Save((Join-Path $here "icon-on-dark.png"), [System.Drawing.Imaging.ImageFormat]::Png)
+$bmp.Dispose()
 
 # Multi-resolution .ico (required by tauri-build on Windows). Each entry is a
 # PNG blob, which the Windows resource compiler accepts for Vista and newer.

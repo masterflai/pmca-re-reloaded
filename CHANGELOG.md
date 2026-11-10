@@ -22,6 +22,23 @@ All notable changes to this project are documented here. The format follows
 
 ### Changed
 
+- The welcome page no longer carries its own section on tweaks and languages;
+  the Tweaks page already explains them. What it said about the camera's menu
+  languages, and that the language picker only changes this program, now sits
+  next to the language tweak itself.
+- *Where to find what* on the welcome page now follows the navigation, group
+  by group and in the same order, and includes GPS, Projects and, once switched
+  on, the function analysis. Several descriptions were out of date.
+- Under *Applications*, the pages are now Apps, Projects, GPS and Network.
+- On the Apps page, the community apps come first, followed by installing an
+  app from a file, now with a heading of its own, and the app backup.
+- The program icon has a light rim, so it stays visible on a dark taskbar,
+  in Explorer and in Alt+Tab. In the dark theme, the logo at the top left of
+  the window shows a light camera.
+
+### Removed
+
+- The link to zv-e10-re on the License page.
 - When GitHub refuses a request because too many were made within the hour,
   the program now says so instead of reporting a failed network request.
 

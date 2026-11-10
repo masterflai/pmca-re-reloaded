@@ -499,9 +499,7 @@ Thanks to ma1co and the contributors to
 [app list](https://github.com/ma1co/OpenMemories-AppList) and the
 [device documentation](https://openmemories.readthedocs.io/devices.html); to the
 people at [nex-hack](https://web.archive.org/web/20201027234246/http://www.personal-view.com/faqs/sony-hack/hack-development)
-(archived);
-and to [zv-e10-re](https://github.com/qn06142/zv-e10-re), whose research
-confirmed several findings on newer camera generations.
+(archived).
 
 The code was written with the help of AI (GitHub Copilot) and reviewed and
 tested by the author. If you recognise code here that you hold rights to,
