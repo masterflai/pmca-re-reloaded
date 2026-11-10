@@ -395,6 +395,11 @@ impl HostInterface {
         if code == kIOReturnSuccess {
             return Ok(());
         }
+        // STALL is a response from the device. Sony can start switching modes
+        // even when it stalls the request. A second request can interrupt it.
+        if STALLED.contains(&code) {
+            return Err(io_error("control transfer", code));
+        }
         // The interface object carries device requests too.
         if !self.device.is_null()
             && !self.interface.is_null()

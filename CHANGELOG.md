@@ -4,6 +4,14 @@ All notable changes to this project are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and the project uses
 [Semantic Versioning](https://semver.org/).
 
+## [Unreleased]
+
+### Fixed
+
+- macOS: IOUSBHost no longer resends a control request after the camera
+  responds with a USB stall. A Sony camera can stall the request and still
+  begin entering service mode.
+
 ## [1.11.0] - 2026-11-09
 
 ### Fixed
