@@ -31,6 +31,7 @@ import {
   setUpdateCheck,
   updateCheckOn,
 } from "../preferences";
+import { syncUpdateToggles } from "../update";
 import { cardPlugins } from "./plugins";
 import { cardSources } from "./sources";
 
@@ -57,7 +58,7 @@ export function viewSettings(host: HTMLElement): void {
 /** Opt in to hearing about new releases at start. */
 function cardUpdateCheck(): HTMLElement {
   const status = statusLine();
-  const toggle = make("input", { type: "checkbox" });
+  const toggle = make("input", { type: "checkbox", name: "update-check" });
   toggle.checked = updateCheckOn;
 
   const report = (): void => {
@@ -68,6 +69,7 @@ function cardUpdateCheck(): HTMLElement {
 
   toggle.addEventListener("change", () => {
     setUpdateCheck(toggle.checked);
+    syncUpdateToggles();
     report();
   });
   report();

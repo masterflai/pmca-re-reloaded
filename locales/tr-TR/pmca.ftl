@@ -513,6 +513,8 @@ update-available = Yeni bir sürüm mevcut
 update-current = Yüklü sürüm
 update-latest = Yeni sürüm
 btn-update-dismiss = Gizle
+update-optin-note = GitHub bu sırada IP adresinizi öğrenir. Bunu istediğiniz zaman ayarlardan yeniden kapatabilirsiniz.
+btn-open-settings = Ayarları aç
 
 # Çevirinin düzenlenmesi. Dil dosyaları indirilebilir, herhangi bir metin
 # düzenleyicide değiştirilebilir ve yeniden yüklenebilir; yüklenen bir dosya

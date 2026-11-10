@@ -723,6 +723,49 @@ summary {
   user-select: all;
 }
 
+.update-optin {
+  margin: 12px 0;
+  padding-top: 12px;
+  border-top: 1px solid var(--border);
+}
+
+.update-optin .row {
+  margin-bottom: 4px;
+}
+
+/* Aligned with the label text: checkbox with its default margins plus the row gap. */
+.update-optin .hint,
+.update-optin .status {
+  padding-inline-start: 28px;
+}
+
+/* Until the toggle is used there is nothing to report; an empty line would only leave a gap. */
+.update-optin .status:empty {
+  display: none;
+}
+
+.update-optin .hint {
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+/* A button that reads as a link inside running text; must outrank the generic `.content button` states. */
+.content button.link-button,
+.content button.link-button:not(.primary):not(:disabled):hover,
+.content button.link-button:not(.primary):not(:disabled):active {
+  min-width: 0;
+  padding: 0;
+  color: var(--accent);
+  background: none;
+  border: none;
+}
+
+.content button.link-button:hover,
+.content button.link-button:focus-visible {
+  text-decoration: underline;
+}
+
 /*
  * The service shell's transcript.
  *

@@ -513,6 +513,8 @@ update-available = En ny versjon er tilgjengelig
 update-current = Installert versjon
 update-latest = Ny versjon
 btn-update-dismiss = Skjul
+update-optin-note = GitHub får da vite IP-adressen din. Du kan når som helst slå det av igjen i innstillingene.
+btn-open-settings = Åpne innstillinger
 
 # Redigering av en oversettelse. Språkfiler kan lastes ned, endres i et
 # hvilket som helst tekstredigeringsprogram og lastes opp igjen; en opplastet

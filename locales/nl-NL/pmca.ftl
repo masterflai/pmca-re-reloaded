@@ -515,6 +515,8 @@ update-available = Er is een nieuwe versie beschikbaar
 update-current = Geïnstalleerde versie
 update-latest = Nieuwe versie
 btn-update-dismiss = Verbergen
+update-optin-note = GitHub komt daarbij uw IP-adres te weten. U kunt dit op elk moment weer uitzetten in de instellingen.
+btn-open-settings = Instellingen openen
 
 # Een vertaling bewerken. Taalbestanden kunnen worden gedownload, in elke
 # teksteditor worden gewijzigd en weer worden geüpload; een geüpload bestand

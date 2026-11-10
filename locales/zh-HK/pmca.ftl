@@ -525,6 +525,8 @@ update-available = 有新版本可用
 update-current = 已安裝版本
 update-latest = 新版本
 btn-update-dismiss = 隱藏
+update-optin-note = 在此過程中，GitHub 會得知您的 IP 位址。您可隨時在設定中再次關閉此選項。
+btn-open-settings = 開啟設定
 
 # 編輯翻譯。語言檔案可以下載，在任何文字編輯器中修改，
 # 然後再次上載；上載的檔案在使用前會先經過檢查。

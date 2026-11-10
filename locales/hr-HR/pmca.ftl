@@ -513,6 +513,8 @@ update-available = Dostupna je nova verzija
 update-current = Instalirana verzija
 update-latest = Nova verzija
 btn-update-dismiss = Sakrij
+update-optin-note = GitHub pritom saznaje vašu IP adresu. To možete u bilo kojem trenutku ponovno isključiti u postavkama.
+btn-open-settings = Otvori postavke
 
 # Uređivanje prijevoda. Jezične datoteke mogu se preuzeti, urediti u bilo kojem
 # uređivaču teksta i ponovno prenijeti; prenesena datoteka provjerava se prije uporabe.

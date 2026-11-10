@@ -512,6 +512,8 @@ update-available = 新しいバージョンがあります
 update-current = インストール済みのバージョン
 update-latest = 新しいバージョン
 btn-update-dismiss = 閉じる
+update-optin-note = その際 GitHub に IP アドレスが伝わります。設定からいつでもオフに戻せます。
+btn-open-settings = 設定を開く
 
 # 翻訳の編集。言語ファイルはダウンロードして任意のテキストエディタで編集し、
 # 再度アップロードできます。アップロードされたファイルは使用前に検査されます。

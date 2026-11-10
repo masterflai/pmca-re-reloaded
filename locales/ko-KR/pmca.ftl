@@ -525,6 +525,8 @@ update-available = 새 버전을 사용할 수 있습니다
 update-current = 설치된 버전
 update-latest = 새 버전
 btn-update-dismiss = 숨기기
+update-optin-note = 이 과정에서 GitHub는 사용자의 IP 주소를 알게 됩니다. 설정에서 언제든지 다시 끌 수 있습니다.
+btn-open-settings = 설정 열기
 
 # 번역 편집. 언어 파일을 다운로드하여 아무 텍스트 편집기에서 변경한 뒤
 # 다시 업로드할 수 있습니다. 업로드한 파일은 사용하기 전에 검사합니다.

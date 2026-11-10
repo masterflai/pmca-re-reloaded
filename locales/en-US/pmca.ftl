@@ -525,6 +525,8 @@ update-available = A new version is available
 update-current = Installed version
 update-latest = New version
 btn-update-dismiss = Hide
+update-optin-note = GitHub learns your IP address in the process. You can switch this off again in the settings at any time.
+btn-open-settings = Open settings
 
 # Editing a translation. Language files can be downloaded, changed in any text
 # editor and uploaded again; an uploaded file is checked before it is used.

@@ -513,6 +513,8 @@ update-available = Versi baru tersedia
 update-current = Versi terpasang
 update-latest = Versi baru
 btn-update-dismiss = Sembunyikan
+update-optin-note = GitHub mengetahui alamat IP Anda dalam proses ini. Anda dapat menonaktifkannya kembali kapan saja di pengaturan.
+btn-open-settings = Buka pengaturan
 
 # Menyunting terjemahan. Berkas bahasa dapat diunduh, diubah di editor teks
 # mana pun, lalu diunggah kembali; berkas yang diunggah diperiksa sebelum

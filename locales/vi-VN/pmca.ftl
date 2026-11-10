@@ -525,6 +525,8 @@ update-available = Đã có phiên bản mới
 update-current = Phiên bản đã cài đặt
 update-latest = Phiên bản mới
 btn-update-dismiss = Ẩn
+update-optin-note = Trong quá trình này GitHub biết được địa chỉ IP của bạn. Bạn có thể tắt lại tính năng này bất cứ lúc nào trong phần cài đặt.
+btn-open-settings = Mở cài đặt
 
 # Chỉnh sửa bản dịch. Tệp ngôn ngữ có thể được tải xuống, sửa trong bất kỳ trình soạn
 # thảo văn bản nào và tải lên lại; tệp được tải lên sẽ được kiểm tra trước khi sử dụng.

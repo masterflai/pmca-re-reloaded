@@ -519,6 +519,8 @@ update-available = Eine neue Version ist verfügbar
 update-current = Installierte Version
 update-latest = Neue Version
 btn-update-dismiss = Ausblenden
+update-optin-note = Dabei erfährt GitHub Ihre IP-Adresse. Sie können das jederzeit in den Einstellungen wieder ausschalten.
+btn-open-settings = Zu den Einstellungen
 
 # Bearbeiten einer Übersetzung. Sprachdateien lassen sich herunterladen, in
 # einem beliebigen Texteditor ändern und wieder hochladen; eine hochgeladene

@@ -513,6 +513,8 @@ update-available = Je k dispozici nová verze
 update-current = Nainstalovaná verze
 update-latest = Nová verze
 btn-update-dismiss = Skrýt
+update-optin-note = GitHub se přitom dozví vaši IP adresu. V nastavení to můžete kdykoli znovu vypnout.
+btn-open-settings = Otevřít nastavení
 
 # Úprava překladu. Jazykové soubory lze stáhnout, změnit v libovolném textovém
 # editoru a znovu nahrát; nahraný soubor je před použitím zkontrolován.
