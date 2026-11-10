@@ -93,6 +93,12 @@ All notable changes to this project are documented here. The format follows
 
 - The link to zv-e10-re on the License page.
 
+### Fixed
+
+- macOS: IOUSBHost no longer resends a control request after the camera
+  responds with a USB stall. A Sony camera can stall the request and still
+  begin entering service mode.
+
 ## [1.11.0] - 2026-11-09
 
 ### Fixed
