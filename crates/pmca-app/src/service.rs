@@ -519,7 +519,11 @@ impl ServiceSession {
                 self.cam.write_file(remote, &data)?;
                 Ok(ServiceOutcome::message(l.tr_args(
                     "service-pushed",
-                    &[("local", &local.display().to_string()), ("remote", remote)],
+                    &[
+                        ("local", &local.display().to_string()),
+                        ("remote", remote),
+                        ("count", &data.len().to_string()),
+                    ],
                 )))
             }
             ServiceRequest::Remove { remote } => {

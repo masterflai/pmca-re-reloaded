@@ -188,7 +188,7 @@ shell-primer-commands-heading = Commands on this shell
 shell-primer-writes = Commands marked (WRITES) change the camera. Everything else only reads.
 shell-cmd-hasp = Read the HASP block, the camera's protected identity area.
 shell-cmd-pull = Copy a file off the camera. Without a local name the remote file name is kept.
-shell-cmd-push = Copy a local file onto the camera, replacing whatever is there. (WRITES)
+shell-cmd-push = Copy a local file onto the camera, replacing whatever is there. Always writes the whole file. (WRITES)
 shell-cmd-rm = Delete a file on the camera. (WRITES)
 shell-cmd-rmem = Write a region of device memory to a local file. Offset and length are hexadecimal.
 shell-cmd-bk-r = Read one entry of the backup region and show it as a hex dump.
@@ -457,7 +457,7 @@ service-unterminated-quote = The line ends inside a quoted argument.
 service-help = Command reference:
 service-read-bytes = Read { $count } bytes.
 service-pulled = Copied { $remote } from the camera to { $local }.
-service-pushed = Copied { $local } to { $remote } on the camera.
+service-pushed = Copied { $local } to { $remote } on the camera ({ $count } bytes).
 service-removed = Deleted { $remote } from the camera.
 service-dumped = Dumped { $size } bytes from { $offset } to { $local }.
 service-backup-saved = Saved the backup image ({ $count } bytes) to { $local }.
@@ -473,6 +473,7 @@ btn-service-terminal-open = Open serial console
 btn-service-terminal-close = Close serial console
 service-terminal-heading = Serial console
 service-terminal-hint = On Linux cameras the debug terminal is a root shell over USB. Open it, then type commands as you would in a terminal.
+service-terminal-caution = In this console you work directly in the camera's filesystem, and this program checks none of it. Do not edit files in place: the BusyBox on some cameras does not know conv=notrunc for dd and then truncates the target file at the end of the write — a 12 MB library becomes a stub, and the camera no longer starts. Fetch the file with pull instead, change it on this computer, check its size and checksum, and write it back with push.
 service-terminal-label = Console
 service-terminal-interactive = Serial console open. Type commands; type 'exit' to return to the service shell.
 

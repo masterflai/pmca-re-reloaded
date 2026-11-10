@@ -179,7 +179,7 @@ shell-primer-commands-heading = Příkazy tohoto shellu
 shell-primer-writes = Příkazy označené (WRITES) mění fotoaparát. Všechny ostatní jen čtou.
 shell-cmd-hasp = Přečte blok HASP, chráněnou identitní oblast fotoaparátu.
 shell-cmd-pull = Stáhne soubor z fotoaparátu. Bez místního názvu se zachová název na fotoaparátu.
-shell-cmd-push = Zkopíruje místní soubor do fotoaparátu a nahradí, co tam je. (WRITES)
+shell-cmd-push = Zkopíruje místní soubor do fotoaparátu a nahradí, co tam je. Vždy zapíše celý soubor. (WRITES)
 shell-cmd-rm = Smaže soubor ve fotoaparátu. (WRITES)
 shell-cmd-rmem = Zapíše oblast paměti zařízení do místního souboru. Posun i délka jsou šestnáctkové.
 shell-cmd-bk-r = Přečte jednu položku zálohovací oblasti a zobrazí ji jako šestnáctkový výpis.
@@ -445,7 +445,7 @@ service-unterminated-quote = Řádek končí uvnitř argumentu v uvozovkách.
 service-help = Přehled příkazů:
 service-read-bytes = Přečteno { $count } bajtů.
 service-pulled = { $remote } zkopírováno z fotoaparátu do { $local }.
-service-pushed = { $local } zkopírováno do { $remote } ve fotoaparátu.
+service-pushed = { $local } zkopírováno do { $remote } ve fotoaparátu ({ $count } bajtů).
 service-removed = { $remote } smazáno z fotoaparátu.
 service-dumped = { $size } bajtů od { $offset } uloženo do { $local }.
 service-backup-saved = Obraz zálohy ({ $count } bajtů) uložen do { $local }.
@@ -461,6 +461,7 @@ btn-service-terminal-open = Otevřít sériovou konzoli
 btn-service-terminal-close = Zavřít sériovou konzoli
 service-terminal-heading = Sériová konzole
 service-terminal-hint = U fotoaparátů s Linuxem je ladicí terminál rootovský shell přes USB. Otevřete jej a zadávejte příkazy jako v terminálu.
+service-terminal-caution = V této konzoli pracujete přímo v souborovém systému fotoaparátu a tento program přitom nic nekontroluje. Neupravujte soubory na místě: BusyBox některých fotoaparátů nezná u dd volbu conv=notrunc a cílový soubor pak zkrátí na konec zápisu — z knihovny o velikosti 12 MB zbude torzo a fotoaparát se už nespustí. Stáhněte soubor raději pomocí pull, upravte jej na tomto počítači, zkontrolujte velikost a kontrolní součet a zapište jej zpět pomocí push.
 service-terminal-label = Konzole
 service-terminal-interactive = Sériová konzole otevřena. Zadávejte příkazy; příkazem „exit“ se vrátíte do servisního shellu.
 

@@ -178,7 +178,7 @@ shell-primer-commands-heading = 本 Shell 的命令
 shell-primer-writes = 标有 (WRITES) 的命令会改动相机。其余命令只做读取。
 shell-cmd-hasp = 读取 HASP 块，即相机受保护的身份区域。
 shell-cmd-pull = 从相机取出一个文件。不给本地文件名时沿用相机上的名称。
-shell-cmd-push = 把本地文件复制到相机，覆盖原有内容。(WRITES)
+shell-cmd-push = 把本地文件复制到相机，覆盖原有内容。始终写入整个文件。(WRITES)
 shell-cmd-rm = 删除相机上的一个文件。(WRITES)
 shell-cmd-rmem = 把设备内存的一段写入本地文件。偏移量和长度均为十六进制。
 shell-cmd-bk-r = 读取备份区的一条条目并以十六进制转储显示。
@@ -441,7 +441,7 @@ service-unterminated-quote = 该行在引号包围的参数中间结束。
 service-help = 命令列表：
 service-read-bytes = 已读取 { $count } 字节。
 service-pulled = 已将 { $remote } 从相机复制到 { $local }。
-service-pushed = 已将 { $local } 复制到相机上的 { $remote }。
+service-pushed = 已将 { $local } 复制到相机上的 { $remote }（{ $count } 字节）。
 service-removed = 已从相机删除 { $remote }。
 service-dumped = 已将从 { $offset } 开始的 { $size } 字节保存到 { $local }。
 service-backup-saved = 已将备份镜像（{ $count } 字节）保存到 { $local }。
@@ -457,6 +457,7 @@ btn-service-terminal-open = 打开串行控制台
 btn-service-terminal-close = 关闭串行控制台
 service-terminal-heading = 串行控制台
 service-terminal-hint = 在 Linux 相机上，调试终端是通过 USB 的 root shell。打开它，然后像在终端中一样输入命令。
+service-terminal-caution = 在这个控制台里，您直接操作相机的文件系统，而本程序对此不作任何检查。不要就地修改文件：部分相机的 BusyBox 不认识 dd 的 conv=notrunc，会在写入结束处把目标文件截断——12 MB 的库就此只剩残片，相机再也无法启动。请改用 pull 取出文件，在这台电脑上修改，核对大小和校验和，再用 push 写回去。
 service-terminal-label = 控制台
 service-terminal-interactive = 串行控制台已打开。请输入命令；输入“exit”返回服务 shell。
 

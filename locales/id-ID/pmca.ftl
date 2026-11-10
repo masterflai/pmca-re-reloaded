@@ -179,7 +179,7 @@ shell-primer-commands-heading = Perintah pada shell ini
 shell-primer-writes = Perintah bertanda (WRITES) mengubah kamera. Selebihnya hanya membaca.
 shell-cmd-hasp = Membaca blok HASP, area identitas kamera yang terlindungi.
 shell-cmd-pull = Mengambil berkas dari kamera. Tanpa nama lokal, nama di kamera dipertahankan.
-shell-cmd-push = Menyalin berkas lokal ke kamera, menggantikan apa yang ada di sana. (WRITES)
+shell-cmd-push = Menyalin berkas lokal ke kamera, menggantikan apa yang ada di sana. Selalu menulis seluruh berkas. (WRITES)
 shell-cmd-rm = Menghapus berkas di kamera. (WRITES)
 shell-cmd-rmem = Menulis satu wilayah memori perangkat ke berkas lokal. Ofset dan panjang dalam heksadesimal.
 shell-cmd-bk-r = Membaca satu entri area cadangan dan menampilkannya sebagai dump heksadesimal.
@@ -445,7 +445,7 @@ service-unterminated-quote = Baris berakhir di tengah argumen dalam tanda kutip.
 service-help = Daftar perintah:
 service-read-bytes = { $count } bita dibaca.
 service-pulled = { $remote } disalin dari kamera ke { $local }.
-service-pushed = { $local } disalin ke { $remote } di kamera.
+service-pushed = { $local } disalin ke { $remote } di kamera ({ $count } bita).
 service-removed = { $remote } dihapus dari kamera.
 service-dumped = { $size } bita mulai dari { $offset } disimpan ke { $local }.
 service-backup-saved = Berkas cadangan ({ $count } bita) disimpan ke { $local }.
@@ -461,6 +461,7 @@ btn-service-terminal-open = Buka konsol serial
 btn-service-terminal-close = Tutup konsol serial
 service-terminal-heading = Konsol serial
 service-terminal-hint = Pada kamera Linux, terminal debug adalah shell root melalui USB. Buka, lalu ketik perintah seperti di terminal.
+service-terminal-caution = Di konsol ini Anda bekerja langsung di sistem berkas kamera, dan program ini tidak memeriksa apa pun. Jangan ubah berkas di tempatnya: BusyBox pada sebagian kamera tidak mengenal conv=notrunc untuk dd dan kemudian memotong berkas tujuan di akhir penulisan — pustaka berukuran 12 MB menjadi sisa potongan, dan kamera tidak menyala lagi. Ambil berkas itu dengan pull, ubah di komputer ini, periksa ukuran dan checksum-nya, lalu tulis kembali dengan push.
 service-terminal-label = Konsol
 service-terminal-interactive = Konsol serial terbuka. Ketik perintah; ketik 'exit' untuk kembali ke shell servis.
 

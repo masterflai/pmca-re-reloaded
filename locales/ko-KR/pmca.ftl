@@ -188,7 +188,7 @@ shell-primer-commands-heading = 이 셸의 명령
 shell-primer-writes = (WRITES)로 표시된 명령은 카메라를 변경합니다. 그 밖의 명령은 읽기만 합니다.
 shell-cmd-hasp = 카메라의 보호된 식별 영역인 HASP 블록을 읽습니다.
 shell-cmd-pull = 카메라에서 파일을 복사해 옵니다. 로컬 이름을 지정하지 않으면 원격 파일 이름이 유지됩니다.
-shell-cmd-push = 로컬 파일을 카메라로 복사하며, 그 위치에 있던 파일을 대체합니다. (WRITES)
+shell-cmd-push = 로컬 파일을 카메라로 복사하며, 그 위치에 있던 파일을 대체합니다. 항상 파일 전체를 기록합니다. (WRITES)
 shell-cmd-rm = 카메라의 파일을 삭제합니다. (WRITES)
 shell-cmd-rmem = 장치 메모리의 한 영역을 로컬 파일에 기록합니다. 오프셋과 길이는 16진수입니다.
 shell-cmd-bk-r = 백업 영역의 항목 하나를 읽어 16진수 덤프로 표시합니다.
@@ -457,7 +457,7 @@ service-unterminated-quote = 따옴표로 묶인 인수 안에서 줄이 끝났�
 service-help = 명령 참조:
 service-read-bytes = { $count }바이트를 읽었습니다.
 service-pulled = 카메라의 { $remote }을(를) { $local }(으)로 복사했습니다.
-service-pushed = { $local }을(를) 카메라의 { $remote }(으)로 복사했습니다.
+service-pushed = { $local }을(를) 카메라의 { $remote }(으)로 복사했습니다({ $count }바이트).
 service-removed = 카메라에서 { $remote }을(를) 삭제했습니다.
 service-dumped = { $offset }부터 { $size }바이트를 { $local }에 덤프했습니다.
 service-backup-saved = 백업 이미지({ $count }바이트)를 { $local }에 저장했습니다.
@@ -473,6 +473,7 @@ btn-service-terminal-open = 직렬 콘솔 열기
 btn-service-terminal-close = 직렬 콘솔 닫기
 service-terminal-heading = 직렬 콘솔
 service-terminal-hint = Linux 기반 카메라에서 디버그 터미널은 USB를 통한 루트 셸입니다. 콘솔을 연 다음 터미널에서처럼 명령을 입력하십시오.
+service-terminal-caution = 이 콘솔에서는 카메라의 파일 시스템을 직접 다루게 되며, 이 프로그램은 아무것도 검사하지 않습니다. 파일을 제자리에서 고치지 마십시오. 일부 카메라의 BusyBox는 dd의 conv=notrunc를 알지 못해 쓰기가 끝난 지점에서 대상 파일을 잘라냅니다. 12 MB짜리 라이브러리가 토막만 남고, 카메라는 더 이상 켜지지 않습니다. 대신 pull로 파일을 가져와 이 컴퓨터에서 고치고, 크기와 체크섬을 확인한 다음 push로 다시 써 넣으십시오.
 service-terminal-label = 콘솔
 service-terminal-interactive = 직렬 콘솔이 열렸습니다. 명령을 입력하십시오. 서비스 셸로 돌아가려면 'exit'를 입력하십시오.
 

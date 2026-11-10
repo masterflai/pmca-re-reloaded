@@ -179,7 +179,7 @@ shell-primer-commands-heading = Naredbe ove ljuske
 shell-primer-writes = Naredbe označene s (WRITES) mijenjaju fotoaparat. Sve ostale samo čitaju.
 shell-cmd-hasp = Čita HASP blok, zaštićeno identitetsko područje fotoaparata.
 shell-cmd-pull = Dohvaća datoteku s fotoaparata. Bez lokalnog imena zadržava se ime s fotoaparata.
-shell-cmd-push = Kopira lokalnu datoteku na fotoaparat i zamjenjuje ono što je ondje. (WRITES)
+shell-cmd-push = Kopira lokalnu datoteku na fotoaparat i zamjenjuje ono što je ondje. Uvijek zapisuje cijelu datoteku. (WRITES)
 shell-cmd-rm = Briše datoteku na fotoaparatu. (WRITES)
 shell-cmd-rmem = Zapisuje područje memorije uređaja u lokalnu datoteku. Pomak i duljina su heksadecimalni.
 shell-cmd-bk-r = Čita jedan unos sigurnosnog područja i prikazuje ga kao heksadecimalni ispis.
@@ -445,7 +445,7 @@ service-unterminated-quote = Redak završava unutar argumenta u navodnicima.
 service-help = Popis naredbi:
 service-read-bytes = Pročitano { $count } bajtova.
 service-pulled = { $remote } kopirano s fotoaparata u { $local }.
-service-pushed = { $local } kopirano u { $remote } na fotoaparatu.
+service-pushed = { $local } kopirano u { $remote } na fotoaparatu ({ $count } bajtova).
 service-removed = { $remote } izbrisano s fotoaparata.
 service-dumped = { $size } bajtova od { $offset } spremljeno u { $local }.
 service-backup-saved = Slika sigurnosne kopije ({ $count } bajtova) spremljena u { $local }.
@@ -461,6 +461,7 @@ btn-service-terminal-open = Otvori serijsku konzolu
 btn-service-terminal-close = Zatvori serijsku konzolu
 service-terminal-heading = Serijska konzola
 service-terminal-hint = Na fotoaparatima s Linuxom terminal za otklanjanje pogrešaka root je ljuska preko USB-a. Otvorite ga i upisujte naredbe kao u terminalu.
+service-terminal-caution = U ovoj konzoli radite izravno u datotečnom sustavu fotoaparata, a ovaj program pritom ništa ne provjerava. Nemojte mijenjati datoteke na mjestu: BusyBox na nekim fotoaparatima ne poznaje conv=notrunc uz dd pa odredišnu datoteku tada odreže na kraju zapisivanja — od knjižnice veličine 12 MB ostane krnji ostatak i fotoaparat se više ne pokreće. Umjesto toga dohvatite datoteku naredbom pull, izmijenite je na ovom računalu, provjerite veličinu i kontrolni zbroj te je naredbom push zapišite natrag.
 service-terminal-label = Konzola
 service-terminal-interactive = Serijska konzola otvorena. Upisujte naredbe; upišite „exit” za povratak u servisnu ljusku.
 

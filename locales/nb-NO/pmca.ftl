@@ -179,7 +179,7 @@ shell-primer-commands-heading = Kommandoer i dette skallet
 shell-primer-writes = Kommandoer merket (WRITES) endrer kameraet. Alt annet bare leser.
 shell-cmd-hasp = Leser HASP-blokken, kameraets beskyttede identitetsområde.
 shell-cmd-pull = Henter en fil fra kameraet. Uten et lokalt navn beholdes navnet på kameraet.
-shell-cmd-push = Kopierer en lokal fil til kameraet og erstatter det som ligger der. (WRITES)
+shell-cmd-push = Kopierer en lokal fil til kameraet og erstatter det som ligger der. Skriver alltid hele filen. (WRITES)
 shell-cmd-rm = Sletter en fil på kameraet. (WRITES)
 shell-cmd-rmem = Skriver et område av enhetsminnet til en lokal fil. Forskyvning og lengde er heksadesimale.
 shell-cmd-bk-r = Leser én oppføring i sikkerhetsområdet og viser den som heksdump.
@@ -445,7 +445,7 @@ service-unterminated-quote = Linjen slutter inne i et argument i anførselstegn.
 service-help = Kommandooversikt:
 service-read-bytes = { $count } byte lest.
 service-pulled = { $remote } kopiert fra kameraet til { $local }.
-service-pushed = { $local } kopiert til { $remote } på kameraet.
+service-pushed = { $local } kopiert til { $remote } på kameraet ({ $count } byte).
 service-removed = { $remote } slettet fra kameraet.
 service-dumped = { $size } byte fra { $offset } lagret i { $local }.
 service-backup-saved = Sikkerhetskopien ({ $count } byte) er lagret i { $local }.
@@ -461,6 +461,7 @@ btn-service-terminal-open = Åpne seriell konsoll
 btn-service-terminal-close = Lukk seriell konsoll
 service-terminal-heading = Seriell konsoll
 service-terminal-hint = På Linux-kameraer er feilsøkingsterminalen et root-skall over USB. Åpne det, og skriv kommandoer som i en terminal.
+service-terminal-caution = I denne konsollen arbeider du direkte i kameraets filsystem, og dette programmet kontrollerer ingenting av det. Ikke endre filer på stedet: BusyBox på noen kameraer kjenner ikke conv=notrunc for dd og forkorter da målfilen ved slutten av skrivingen — et bibliotek på 12 MB blir til en stump, og kameraet starter ikke lenger. Hent heller filen med pull, endre den på denne datamaskinen, kontroller størrelse og sjekksum, og skriv den tilbake med push.
 service-terminal-label = Konsoll
 service-terminal-interactive = Seriell konsoll åpen. Skriv kommandoer; skriv «exit» for å gå tilbake til service-skallet.
 

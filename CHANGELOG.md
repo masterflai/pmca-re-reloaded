@@ -70,6 +70,14 @@ All notable changes to this project are documented here. The format follows
   shows it without a scrollbar; entries and font size are unchanged.
 - The GPS page explains in a few sentences what the assist data is for, where
   it comes from and that it goes out of date after a few weeks.
+- The serial console warns against editing files in place on the camera: the
+  BusyBox on some cameras does not know `conv=notrunc` for `dd` and truncates
+  the file, which has already cost someone a working camera. `push` now also
+  reports how many bytes it wrote, and says that it always writes the whole
+  file.
+- The Spanish texts now address the reader politely throughout; they used to
+  mix the two forms. The Polish texts keep their imperative style but no
+  longer address the reader familiarly.
 
 ### Removed
 

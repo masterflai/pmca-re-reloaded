@@ -179,7 +179,7 @@ shell-primer-commands-heading = Comandos deste shell
 shell-primer-writes = Comandos marcados com (WRITES) alteram a câmera. Todos os outros apenas leem.
 shell-cmd-hasp = Lê o bloco HASP, a área de identidade protegida da câmera.
 shell-cmd-pull = Traz um arquivo da câmera. Sem nome local, o nome remoto é mantido.
-shell-cmd-push = Copia um arquivo local para a câmera, substituindo o que estiver lá. (WRITES)
+shell-cmd-push = Copia um arquivo local para a câmera, substituindo o que estiver lá. Sempre grava o arquivo inteiro. (WRITES)
 shell-cmd-rm = Apaga um arquivo na câmera. (WRITES)
 shell-cmd-rmem = Grava uma região da memória do dispositivo em um arquivo local. Deslocamento e comprimento são hexadecimais.
 shell-cmd-bk-r = Lê uma entrada da área de backup e a mostra como despejo hexadecimal.
@@ -445,7 +445,7 @@ service-unterminated-quote = A linha termina dentro de um argumento entre aspas.
 service-help = Lista de comandos:
 service-read-bytes = { $count } bytes lidos.
 service-pulled = { $remote } copiado da câmera para { $local }.
-service-pushed = { $local } copiado para { $remote } na câmera.
+service-pushed = { $local } copiado para { $remote } na câmera ({ $count } bytes).
 service-removed = { $remote } excluído da câmera.
 service-dumped = { $size } bytes extraídos de { $offset } para { $local }.
 service-backup-saved = Imagem de backup ({ $count } bytes) salva em { $local }.
@@ -461,6 +461,7 @@ btn-service-terminal-open = Abrir console serial
 btn-service-terminal-close = Fechar console serial
 service-terminal-heading = Console serial
 service-terminal-hint = Em câmeras Linux, o terminal de depuração é um shell root por USB. Abra-o e digite comandos como em um terminal.
+service-terminal-caution = Neste console você trabalha diretamente no sistema de arquivos da câmera, e este programa não verifica nada disso. Não altere arquivos no lugar: a BusyBox de algumas câmeras não conhece conv=notrunc em dd e então trunca o arquivo de destino no fim da gravação — uma biblioteca de 12 MB vira um toco, e a câmera não liga mais. Em vez disso, traga o arquivo com pull, altere-o neste computador, confira o tamanho e a soma de verificação e grave-o de volta com push.
 service-terminal-label = Console
 service-terminal-interactive = Console serial aberto. Digite comandos; digite "exit" para voltar ao shell de serviço.
 

@@ -179,7 +179,7 @@ shell-primer-commands-heading = Bu kabuğun komutları
 shell-primer-writes = (WRITES) işaretli komutlar kamerayı değiştirir. Diğerlerinin hepsi yalnızca okur.
 shell-cmd-hasp = Kameranın korumalı kimlik alanı olan HASP bloğunu okur.
 shell-cmd-pull = Kameradan bir dosya alır. Yerel bir ad verilmezse kameradaki ad korunur.
-shell-cmd-push = Yerel bir dosyayı kameraya kopyalar ve oradakinin yerine koyar. (WRITES)
+shell-cmd-push = Yerel bir dosyayı kameraya kopyalar ve oradakinin yerine koyar. Her zaman dosyanın tamamını yazar. (WRITES)
 shell-cmd-rm = Kameradaki bir dosyayı siler. (WRITES)
 shell-cmd-rmem = Aygıt belleğinin bir bölgesini yerel bir dosyaya yazar. Konum ve uzunluk on altılıktır.
 shell-cmd-bk-r = Yedek bölgesinin bir girdisini okur ve on altılık döküm olarak gösterir.
@@ -445,7 +445,7 @@ service-unterminated-quote = Satır, tırnak içindeki bir argümanın ortasınd
 service-help = Komut listesi:
 service-read-bytes = { $count } bayt okundu.
 service-pulled = { $remote } kameradan { $local } konumuna kopyalandı.
-service-pushed = { $local } kameradaki { $remote } konumuna kopyalandı.
+service-pushed = { $local } kameradaki { $remote } konumuna kopyalandı ({ $count } bayt).
 service-removed = { $remote } kameradan silindi.
 service-dumped = { $offset } adresinden başlayan { $size } bayt { $local } dosyasına yazıldı.
 service-backup-saved = Yedek imajı ({ $count } bayt) { $local } dosyasına kaydedildi.
@@ -461,6 +461,7 @@ btn-service-terminal-open = Seri konsolu aç
 btn-service-terminal-close = Seri konsolu kapat
 service-terminal-heading = Seri konsol
 service-terminal-hint = Linux kameralarında hata ayıklama terminali, USB üzerinden bir root kabuğudur. Açın ve bir terminaldeki gibi komutlar yazın.
+service-terminal-caution = Bu konsolda doğrudan kameranın dosya sisteminde çalışırsınız ve bu program bunların hiçbirini denetlemez. Dosyaları yerinde değiştirmeyin: bazı kameralardaki BusyBox dd için conv=notrunc seçeneğini bilmez ve hedef dosyayı yazmanın bittiği yerden keser — 12 MB boyutundaki bir kitaplık güdük bir dosyaya dönüşür ve kamera artık açılmaz. Dosyayı bunun yerine pull ile alın, bu bilgisayarda değiştirin, boyutunu ve sağlama toplamını denetleyin ve push ile geri yazın.
 service-terminal-label = Konsol
 service-terminal-interactive = Seri konsol açık. Komut yazın; servis kabuğuna dönmek için 'exit' yazın.
 

@@ -178,7 +178,7 @@ shell-primer-commands-heading = このシェルのコマンド
 shell-primer-writes = (WRITES) の付いたコマンドはカメラを変更します。それ以外は読み出すだけです。
 shell-cmd-hasp = カメラの保護された識別領域である HASP ブロックを読み出します。
 shell-cmd-pull = カメラからファイルを取り出します。ローカル名を省くとカメラ側の名前が使われます。
-shell-cmd-push = ローカルファイルをカメラへコピーし、そこにあるものを置き換えます。(WRITES)
+shell-cmd-push = ローカルファイルをカメラへコピーし、そこにあるものを置き換えます。常にファイル全体を書き込みます。(WRITES)
 shell-cmd-rm = カメラ上のファイルを削除します。(WRITES)
 shell-cmd-rmem = デバイスメモリーの一部をローカルファイルへ書き出します。オフセットと長さは十六進数です。
 shell-cmd-bk-r = バックアップ領域のエントリーを一つ読み出し、十六進ダンプで表示します。
@@ -444,7 +444,7 @@ service-unterminated-quote = 行が引用符で囲まれた引数の途中で終
 service-help = コマンド一覧:
 service-read-bytes = { $count } バイトを読み取りました。
 service-pulled = { $remote } をカメラから { $local } にコピーしました。
-service-pushed = { $local } をカメラの { $remote } にコピーしました。
+service-pushed = { $local } をカメラの { $remote } にコピーしました（{ $count } バイト）。
 service-removed = { $remote } をカメラから削除しました。
 service-dumped = { $offset } から { $size } バイトを { $local } に保存しました。
 service-backup-saved = バックアップイメージ ({ $count } バイト) を { $local } に保存しました。
@@ -460,6 +460,7 @@ btn-service-terminal-open = シリアルコンソールを開く
 btn-service-terminal-close = シリアルコンソールを閉じる
 service-terminal-heading = シリアルコンソール
 service-terminal-hint = Linux カメラでは、デバッグ端末は USB 経由の root シェルです。開いてから、端末と同じようにコマンドを入力してください。
+service-terminal-caution = このコンソールではカメラのファイルシステムを直接操作することになり、このプログラムは何も確認しません。ファイルをその場で書き換えないでください。一部のカメラの BusyBox は dd の conv=notrunc を解さず、書き込みの終わりで対象ファイルを切り詰めます。12 MB のライブラリーが断片になり、カメラは起動しなくなります。ファイルは pull で取り出し、このパソコン上で変更し、サイズとチェックサムを確認してから push で書き戻してください。
 service-terminal-label = コンソール
 service-terminal-interactive = シリアルコンソールを開きました。コマンドを入力してください。「exit」でサービスシェルに戻ります。
 

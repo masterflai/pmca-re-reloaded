@@ -185,7 +185,7 @@ shell-primer-commands-heading = Befehle dieser Shell
 shell-primer-writes = Mit (WRITES) markierte Befehle verändern die Kamera. Alles andere liest nur.
 shell-cmd-hasp = Liest den HASP-Block, den geschützten Identitätsbereich der Kamera.
 shell-cmd-pull = Holt eine Datei von der Kamera. Ohne lokalen Namen wird der Name auf der Kamera übernommen.
-shell-cmd-push = Kopiert eine lokale Datei auf die Kamera und ersetzt dabei, was dort liegt. (WRITES)
+shell-cmd-push = Kopiert eine lokale Datei auf die Kamera und ersetzt dabei, was dort liegt. Schreibt immer die ganze Datei. (WRITES)
 shell-cmd-rm = Löscht eine Datei auf der Kamera. (WRITES)
 shell-cmd-rmem = Schreibt einen Bereich des Gerätespeichers in eine lokale Datei. Offset und Länge sind hexadezimal.
 shell-cmd-bk-r = Liest einen Eintrag des Backup-Bereichs und zeigt ihn als Hex-Dump.
@@ -451,7 +451,7 @@ service-unterminated-quote = Die Zeile endet innerhalb eines Arguments in Anfüh
 service-help = Befehlsübersicht:
 service-read-bytes = { $count } Bytes gelesen.
 service-pulled = { $remote } von der Kamera nach { $local } kopiert.
-service-pushed = { $local } nach { $remote } auf die Kamera kopiert.
+service-pushed = { $local } nach { $remote } auf die Kamera kopiert ({ $count } Bytes).
 service-removed = { $remote } auf der Kamera gelöscht.
 service-dumped = { $size } Bytes ab { $offset } nach { $local } ausgelesen.
 service-backup-saved = Backup-Abbild ({ $count } Bytes) nach { $local } gesichert.
@@ -467,6 +467,7 @@ btn-service-terminal-open = Serielle Konsole öffnen
 btn-service-terminal-close = Serielle Konsole schließen
 service-terminal-heading = Serielle Konsole
 service-terminal-hint = Bei Linux-Kameras ist das Debug-Terminal eine Root-Shell über USB. Öffnen Sie es und geben Sie Befehle ein wie in einem Terminal.
+service-terminal-caution = In dieser Konsole arbeiten Sie unmittelbar im Dateisystem der Kamera, und dieses Programm prüft dabei nichts. Ändern Sie Dateien nicht an Ort und Stelle: Die BusyBox mancher Kameras kennt bei dd kein conv=notrunc und kürzt die Zieldatei dann auf das Ende des Schreibvorgangs — aus einer 12 MB großen Bibliothek wird so ein Rumpf, und die Kamera startet nicht mehr. Holen Sie die Datei stattdessen mit pull, ändern Sie sie auf diesem Rechner, prüfen Sie Größe und Prüfsumme, und schreiben Sie sie mit push zurück.
 service-terminal-label = Konsole
 service-terminal-interactive = Serielle Konsole geöffnet. Geben Sie Befehle ein; „exit“ kehrt zur Service-Shell zurück.
 

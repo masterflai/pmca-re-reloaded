@@ -181,7 +181,7 @@ shell-primer-commands-heading = Opdrachten van deze shell
 shell-primer-writes = Met (WRITES) gemarkeerde opdrachten wijzigen de camera. Alle andere lezen alleen.
 shell-cmd-hasp = Leest het HASP-blok, het beschermde identiteitsgebied van de camera.
 shell-cmd-pull = Haalt een bestand van de camera. Zonder lokale naam blijft de naam op de camera behouden.
-shell-cmd-push = Kopieert een lokaal bestand naar de camera en vervangt wat daar staat. (WRITES)
+shell-cmd-push = Kopieert een lokaal bestand naar de camera en vervangt wat daar staat. Schrijft altijd het hele bestand. (WRITES)
 shell-cmd-rm = Verwijdert een bestand op de camera. (WRITES)
 shell-cmd-rmem = Schrijft een gebied van het apparaatgeheugen naar een lokaal bestand. Offset en lengte zijn hexadecimaal.
 shell-cmd-bk-r = Leest één vermelding van het backupgebied en toont die als hexdump.
@@ -447,7 +447,7 @@ service-unterminated-quote = De regel eindigt binnen een argument tussen aanhali
 service-help = Overzicht van opdrachten:
 service-read-bytes = { $count } bytes gelezen.
 service-pulled = { $remote } van de camera naar { $local } gekopieerd.
-service-pushed = { $local } naar { $remote } op de camera gekopieerd.
+service-pushed = { $local } naar { $remote } op de camera gekopieerd ({ $count } bytes).
 service-removed = { $remote } van de camera verwijderd.
 service-dumped = { $size } bytes vanaf { $offset } naar { $local } weggeschreven.
 service-backup-saved = Back-upbestand ({ $count } bytes) opgeslagen in { $local }.
@@ -463,6 +463,7 @@ btn-service-terminal-open = Seriële console openen
 btn-service-terminal-close = Seriële console sluiten
 service-terminal-heading = Seriële console
 service-terminal-hint = Op Linux-camera's is de debugterminal een root-shell via USB. Open hem en typ opdrachten zoals in een terminal.
+service-terminal-caution = In deze console werkt u rechtstreeks in het bestandssysteem van de camera, en dit programma controleert daarbij niets. Wijzig bestanden niet ter plaatse: de BusyBox van sommige camera's kent bij dd geen conv=notrunc en kort het doelbestand dan af tot het einde van de schrijfactie — van een bibliotheek van 12 MB blijft zo een romp over, en de camera start niet meer. Haal het bestand in plaats daarvan op met pull, wijzig het op deze computer, controleer de grootte en de controlesom, en schrijf het met push terug.
 service-terminal-label = Console
 service-terminal-interactive = Seriële console geopend. Typ opdrachten; typ 'exit' om terug te keren naar de service-shell.
 

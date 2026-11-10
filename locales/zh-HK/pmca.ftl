@@ -188,7 +188,7 @@ shell-primer-commands-heading = 此 Shell 的指令
 shell-primer-writes = 標示為（寫入）的指令會變更相機。其餘指令只會讀取。
 shell-cmd-hasp = 讀取 HASP 區塊，即相機受保護的身分區域。
 shell-cmd-pull = 從相機複製檔案。如未指定本機檔案名稱，則沿用遠端檔案名稱。
-shell-cmd-push = 將本機檔案複製至相機，並取代該處的現有內容。（寫入）
+shell-cmd-push = 將本機檔案複製至相機，並取代該處的現有內容。每次都會寫入整個檔案。（寫入）
 shell-cmd-rm = 刪除相機上的檔案。（寫入）
 shell-cmd-rmem = 將裝置記憶體的一個區域寫入本機檔案。位移及長度均為十六進制。
 shell-cmd-bk-r = 讀取備份區域的一個項目，並以十六進制傾印顯示。
@@ -457,7 +457,7 @@ service-unterminated-quote = 此行在帶引號的參數中途結束。
 service-help = 指令參考：
 service-read-bytes = 已讀取 { $count } 位元組。
 service-pulled = 已將 { $remote } 從相機複製至 { $local }。
-service-pushed = 已將 { $local } 複製至相機上的 { $remote }。
+service-pushed = 已將 { $local } 複製至相機上的 { $remote }（{ $count } 位元組）。
 service-removed = 已從相機刪除 { $remote }。
 service-dumped = 已將從 { $offset } 開始的 { $size } 位元組傾印至 { $local }。
 service-backup-saved = 已將備份映像（{ $count } 位元組）儲存至 { $local }。
@@ -473,6 +473,7 @@ btn-service-terminal-open = 開啟序列主控台
 btn-service-terminal-close = 關閉序列主控台
 service-terminal-heading = 序列主控台
 service-terminal-hint = 在 Linux 相機上，偵錯終端機是一個經由 USB 連接的 root Shell。開啟後，即可像在終端機中一樣輸入指令。
+service-terminal-caution = 在這個主控台裡，您直接操作相機的檔案系統，而本程式對此不作任何檢查。請勿就地修改檔案：部分相機的 BusyBox 不認得 dd 的 conv=notrunc，會在寫入結束處把目標檔案截短——12 MB 的程式庫就此只剩殘片，相機亦無法再啟動。請改用 pull 取出檔案，在這部電腦上修改，核對大小與總和檢查碼，再用 push 寫回去。
 service-terminal-label = 主控台
 service-terminal-interactive = 序列主控台已開啟。請輸入指令；輸入「exit」可返回服務模式 Shell。
 

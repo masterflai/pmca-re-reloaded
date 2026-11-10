@@ -188,7 +188,7 @@ shell-primer-commands-heading = Các lệnh trên trình bao này
 shell-primer-writes = Các lệnh được đánh dấu (GHI) sẽ thay đổi máy ảnh. Mọi lệnh khác chỉ đọc.
 shell-cmd-hasp = Đọc khối HASP, vùng nhận dạng được bảo vệ của máy ảnh.
 shell-cmd-pull = Sao chép một tệp ra khỏi máy ảnh. Nếu không có tên cục bộ, tên tệp trên máy ảnh được giữ nguyên.
-shell-cmd-push = Sao chép một tệp cục bộ vào máy ảnh, thay thế mọi thứ đang có ở đó. (GHI)
+shell-cmd-push = Sao chép một tệp cục bộ vào máy ảnh, thay thế mọi thứ đang có ở đó. Luôn ghi toàn bộ tệp. (GHI)
 shell-cmd-rm = Xóa một tệp trên máy ảnh. (GHI)
 shell-cmd-rmem = Ghi một vùng bộ nhớ thiết bị ra tệp cục bộ. Độ lệch và độ dài ở dạng thập lục phân.
 shell-cmd-bk-r = Đọc một mục của vùng sao lưu và hiển thị dưới dạng bản kết xuất hex.
@@ -457,7 +457,7 @@ service-unterminated-quote = Dòng kết thúc bên trong một đối số có 
 service-help = Tham chiếu lệnh:
 service-read-bytes = Đã đọc { $count } byte.
 service-pulled = Đã sao chép { $remote } từ máy ảnh sang { $local }.
-service-pushed = Đã sao chép { $local } vào { $remote } trên máy ảnh.
+service-pushed = Đã sao chép { $local } vào { $remote } trên máy ảnh ({ $count } byte).
 service-removed = Đã xóa { $remote } khỏi máy ảnh.
 service-dumped = Đã kết xuất { $size } byte từ { $offset } vào { $local }.
 service-backup-saved = Đã lưu ảnh sao lưu ({ $count } byte) vào { $local }.
@@ -473,6 +473,7 @@ btn-service-terminal-open = Mở bảng điều khiển nối tiếp
 btn-service-terminal-close = Đóng bảng điều khiển nối tiếp
 service-terminal-heading = Bảng điều khiển nối tiếp
 service-terminal-hint = Trên các máy ảnh chạy Linux, thiết bị đầu cuối gỡ lỗi là một trình bao root qua USB. Hãy mở nó, rồi gõ lệnh như trong cửa sổ dòng lệnh.
+service-terminal-caution = Trong bảng điều khiển này bạn làm việc trực tiếp trong hệ thống tệp của máy ảnh, và chương trình này không kiểm tra điều gì cả. Đừng sửa tệp ngay tại chỗ: BusyBox trên một số máy ảnh không biết conv=notrunc cho dd và khi đó cắt cụt tệp đích tại điểm kết thúc của lần ghi — một thư viện 12 MB trở thành một mẩu cụt, và máy ảnh không khởi động được nữa. Thay vào đó hãy lấy tệp về bằng pull, sửa nó trên máy tính này, kiểm tra kích thước và tổng kiểm tra, rồi ghi ngược lại bằng push.
 service-terminal-label = Bảng điều khiển
 service-terminal-interactive = Bảng điều khiển nối tiếp đã mở. Hãy gõ lệnh; gõ 'exit' để quay lại trình bao dịch vụ.
 

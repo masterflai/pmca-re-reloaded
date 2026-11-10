@@ -431,6 +431,7 @@ function cardServiceShell(): HTMLElement {
     ),
     make("h3", { i18n: "service-terminal-heading" }),
     make("p", { className: "muted", i18n: "service-terminal-hint" }),
+    make("p", { className: "warning", i18n: "service-terminal-caution" }),
     make("div", { className: "row" }, termToggle),
     termOutput,
     make(

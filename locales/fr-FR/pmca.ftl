@@ -179,7 +179,7 @@ shell-primer-commands-heading = Commandes de ce shell
 shell-primer-writes = Les commandes marquées (WRITES) modifient l'appareil. Toutes les autres se contentent de lire.
 shell-cmd-hasp = Lit le bloc HASP, la zone d'identité protégée de l'appareil.
 shell-cmd-pull = Récupère un fichier de l'appareil. Sans nom local, le nom distant est conservé.
-shell-cmd-push = Copie un fichier local sur l'appareil en remplaçant ce qui s'y trouve. (WRITES)
+shell-cmd-push = Copie un fichier local sur l'appareil en remplaçant ce qui s'y trouve. Écrit toujours le fichier entier. (WRITES)
 shell-cmd-rm = Supprime un fichier sur l'appareil. (WRITES)
 shell-cmd-rmem = Écrit une région de la mémoire de l'appareil dans un fichier local. Décalage et longueur sont hexadécimaux.
 shell-cmd-bk-r = Lit une entrée de la zone de sauvegarde et l'affiche sous forme hexadécimale.
@@ -445,7 +445,7 @@ service-unterminated-quote = La ligne se termine à l'intérieur d'un argument e
 service-help = Liste des commandes :
 service-read-bytes = { $count } octets lus.
 service-pulled = { $remote } copié depuis l'appareil vers { $local }.
-service-pushed = { $local } copié vers { $remote } sur l'appareil.
+service-pushed = { $local } copié vers { $remote } sur l'appareil ({ $count } octets).
 service-removed = { $remote } supprimé de l'appareil.
 service-dumped = { $size } octets extraits depuis { $offset } vers { $local }.
 service-backup-saved = Image de sauvegarde ({ $count } octets) enregistrée dans { $local }.
@@ -461,6 +461,7 @@ btn-service-terminal-open = Ouvrir la console série
 btn-service-terminal-close = Fermer la console série
 service-terminal-heading = Console série
 service-terminal-hint = Sur les appareils Linux, le terminal de débogage est un shell root par USB. Ouvrez-le, puis tapez des commandes comme dans un terminal.
+service-terminal-caution = Dans cette console, vous travaillez directement dans le système de fichiers de l'appareil, et ce programme ne vérifie rien. Ne modifiez pas les fichiers sur place : la BusyBox de certains appareils ne connaît pas conv=notrunc pour dd et tronque alors le fichier cible à la fin de l'écriture — une bibliothèque de 12 MB se réduit à un moignon, et l'appareil ne démarre plus. Récupérez plutôt le fichier avec pull, modifiez-le sur cet ordinateur, vérifiez sa taille et sa somme de contrôle, puis réécrivez-le avec push.
 service-terminal-label = Console
 service-terminal-interactive = Console série ouverte. Tapez des commandes ; tapez « exit » pour revenir au shell de service.
 
