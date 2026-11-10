@@ -6,7 +6,7 @@
 //! the newest release included. It ships no project, recommends none and checks
 //! none; the user finds them through a search and pins the ones to follow.
 //!
-//! The one exception is [`BLOCKED`]: a project reported for an obvious
+//! The one exception is the blocklist: a project reported for an obvious
 //! infringement of the law is left out of the search and cannot be pinned. That
 //! is the answer to a notice, not a selection, and the list only changes with a
 //! release of this program.
