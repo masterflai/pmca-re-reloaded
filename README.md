@@ -359,6 +359,21 @@ download and refuses an update signed by someone else.
 **The complete guide — file format, release types, signing and limits:
 [Publishing apps and plugins](docs/app-sources.md).**
 
+## Independent projects
+
+The *Projects* page under *Applications* (`pmca-console projects`) lists
+projects by others that are not installed through this program — tools,
+scripts, guides — so you can follow them in one place. Search GitHub for
+repositories with the topic `pmca-project`, pin the ones you are interested in,
+and *Refresh* shows their details and newest release, marking a release that is
+new since the last time. GitHub is only asked when you click.
+
+The projects are independent: this program does not select, check, moderate
+or curate them, and their authors alone are responsible for them. Nothing of
+them is downloaded; the page shows their addresses to open in a browser. To
+list your own project, add a `pmca-project.yaml` to its repository and give it
+the topic: [Listing independent projects](docs/projects.md).
+
 ## Plugins
 
 A plugin is a `.pmcaplugin` file — from your own disk, or from one of your

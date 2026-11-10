@@ -32,6 +32,7 @@ pub mod keys;
 pub mod network;
 pub mod ownership;
 pub mod plugins;
+pub mod projects;
 pub mod proxy;
 pub mod service;
 pub mod service_mode;
@@ -703,6 +704,7 @@ mod tests {
             pmca_market::Error::MissingField("x"),
             pmca_market::Error::NoApk,
             pmca_market::Error::Http("x".into()),
+            pmca_market::Error::RateLimited,
             pmca_market::Error::Io("x".into()),
             pmca_market::Error::Tls("x".into()),
         ];

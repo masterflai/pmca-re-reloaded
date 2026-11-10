@@ -739,11 +739,6 @@ summary {
   padding-inline-start: 28px;
 }
 
-/* Until the toggle is used there is nothing to report; an empty line would only leave a gap. */
-.update-optin .status:empty {
-  display: none;
-}
-
 .update-optin .hint {
   margin: 0;
   font-size: 0.85rem;
@@ -874,6 +869,11 @@ summary {
   min-height: 1.2em;
   margin: 8px 0;
   color: var(--text-muted);
+}
+
+/* Nothing to report yet: no gap. The line takes its room once a message arrives. */
+.status:empty {
+  display: none;
 }
 
 .status[data-state="ok"] {
@@ -1100,6 +1100,21 @@ summary {
 /* Below a list, the next field keeps its distance whether or not a row's rule ends the list. */
 .field-label.after-list {
   margin-top: 16px;
+}
+
+/* A project's newest release, and the mark that it is new since the last refresh. */
+.project-release {
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.project-new {
+  padding: 0 6px;
+  border-radius: 4px;
+  color: #fff;
+  background: var(--accent);
+  font-size: 0.8em;
+  white-space: nowrap;
 }
 
 /* "Details": folds an entry's description and addresses away. */

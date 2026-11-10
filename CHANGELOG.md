@@ -4,6 +4,27 @@ All notable changes to this project are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and the project uses
 [Semantic Versioning](https://semver.org/).
 
+## [Unreleased]
+
+### Added
+
+- A *Projects* page under *Applications*, and `pmca-console projects`, to
+  follow independent projects by others on GitHub. Search for repositories with
+  the topic `pmca-project`, pin the interesting ones, and *Refresh* shows what
+  their `pmca-project.yaml` and GitHub say, with the newest release and a mark
+  when it is new since the last refresh. Nothing is downloaded or installed,
+  and the page says plainly that the projects are independent and neither
+  checked nor curated by this program. GitHub is only asked when you click.
+  How to list a project: [docs/projects.md](docs/projects.md).
+- After clicking the version number, the box that reports the result offers
+  to check for a new version at every start, and says that this can be
+  switched off again in the settings.
+
+### Changed
+
+- When GitHub refuses a request because too many were made within the hour,
+  the program now says so instead of reporting a failed network request.
+
 ## [1.11.0] - 2026-11-09
 
 ### Fixed

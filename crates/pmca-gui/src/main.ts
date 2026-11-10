@@ -50,6 +50,7 @@ import { viewFirmware } from "./views/firmware";
 import { viewInstall } from "./views/install";
 import { viewLicense } from "./views/license";
 import { viewGps, viewNetwork } from "./views/network";
+import { viewProjects } from "./views/projects";
 import { viewSettings } from "./views/settings";
 import { viewService, viewShells, viewUpdater } from "./views/shells";
 import { viewTools } from "./views/tools";
@@ -67,6 +68,7 @@ const VIEWS: Record<string, (host: HTMLElement) => void> = {
   compare: viewCompare,
   analysis: viewAnalysis,
   network: viewNetwork,
+  projects: viewProjects,
   firmware: viewFirmware,
   shell: viewShells,
   service: viewService,

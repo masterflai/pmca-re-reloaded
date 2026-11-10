@@ -177,7 +177,7 @@ fn save(l: &Localizer, file: &SourceFile) -> Result<()> {
 
 /// `owner/repo` out of what a user types: `owner/repo`, `github:owner/repo`
 /// or the repository's address on GitHub.
-fn parse_spec(spec: &str) -> Option<(String, String)> {
+pub(crate) fn parse_spec(spec: &str) -> Option<(String, String)> {
     let mut rest = spec.trim();
     let mut address = false;
     for prefix in ["https://", "http://"] {

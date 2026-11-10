@@ -103,6 +103,7 @@ function welcomeMap(): HTMLElement {
     [["nav-backup"], "welcome-where-backup"],
     [["nav-compare"], "welcome-where-compare"],
     [["nav-network"], "welcome-where-network"],
+    [["nav-projects"], "welcome-where-projects"],
     [["nav-firmware"], "welcome-where-firmware"],
     [["nav-tools"], "welcome-where-tools"],
     [["nav-service", "nav-updater"], "welcome-where-shells"],

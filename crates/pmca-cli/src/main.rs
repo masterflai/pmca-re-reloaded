@@ -199,6 +199,17 @@ enum Command {
         #[command(subcommand)]
         action: SourcesAction,
     },
+    /// Follow independent projects on GitHub: search, pin, and show their
+    /// newest release.
+    ///
+    /// A project is a repository whose author publishes `pmca-project.yaml`
+    /// and gives it the topic `pmca-project`. Projects are independent: this
+    /// program does not select, check, moderate or curate them, nothing of
+    /// them is downloaded, and their authors alone are responsible for them.
+    Projects {
+        #[command(subcommand)]
+        action: ProjectsAction,
+    },
     /// Launch the firmware-updater debug shell.
     ///
     /// Switching to updater mode and writing the payload modifies the camera
@@ -509,6 +520,23 @@ enum SourcesAction {
     Search,
 }
 
+/// What [`Command::Projects`] should do.
+#[derive(Subcommand)]
+enum ProjectsAction {
+    /// List the projects you have pinned, without asking GitHub.
+    List,
+    /// Pin a project: `owner/repo` or the repository's address on GitHub.
+    Pin { repo: String },
+    /// Unpin a project.
+    Unpin { id: String },
+    /// Search GitHub for repositories with the topic `pmca-project`.
+    ///
+    /// The results are not checked by this program and are no recommendation.
+    Search,
+    /// Ask GitHub about every pinned project and show its newest release.
+    Refresh,
+}
+
 /// What [`Command::Keys`] should do.
 #[derive(Subcommand)]
 enum KeysAction {
@@ -710,6 +738,7 @@ fn uses_camera(cmd: &Command) -> bool {
         | Command::XpdChecksum { .. }
         | Command::Photo { .. }
         | Command::Sources { .. }
+        | Command::Projects { .. }
         | Command::Driver { .. }
         | Command::Keys { .. } => false,
         // Spelled out, so a new plugin action has to decide as well.
@@ -824,6 +853,9 @@ fn run(cmd: &Command, l: &Localizer) -> Result<(), Box<dyn std::error::Error>> {
         }
         Command::Sources { action } => {
             sources_command(l, action)?;
+        }
+        Command::Projects { action } => {
+            projects_command(l, action)?;
         }
         Command::Serviceshell => {
             serviceshell_command(l)?;
