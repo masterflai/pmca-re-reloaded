@@ -31,17 +31,24 @@ export function viewWelcome(host: HTMLElement): void {
       make("p", { className: "hint", i18n: "usb-mode-advice" }),
       make("p", { className: "hint", i18n: welcomeDriverKey() }),
     ),
-    card(
-      make("h2", { i18n: "welcome-privacy-heading" }),
-      make("p", { i18n: "about-privacy-body-1" }),
-      make("p", { i18n: "about-privacy-body-2" }),
-      make("p", { i18n: "about-privacy-body-3" }),
-      make("p", { className: "hint", i18n: "welcome-privacy-where" }),
-    ),
+    cardCompatibility(),
     card(
       make("h2", { i18n: "welcome-where-heading" }),
       welcomeMap(),
       make("p", { className: "hint", i18n: "welcome-where-hint" }),
+    ),
+    card(
+      make("h2", { i18n: "welcome-privacy-heading" }),
+      make("p", { i18n: "about-privacy-body-1" }),
+      make("p", { i18n: "welcome-net-intro" }),
+      make(
+        "ul",
+        {},
+        ...["welcome-net-github", "welcome-net-downloads", "welcome-net-gps", "welcome-net-keys", "welcome-net-update"].map(
+          (key) => make("li", { i18n: key }),
+        ),
+      ),
+      make("p", { className: "hint", i18n: "welcome-privacy-where" }),
     ),
   );
 
@@ -57,6 +64,25 @@ export function viewWelcome(host: HTMLElement): void {
       intro.after(section);
     })
     .catch(() => undefined);
+}
+
+/** What to expect of a given camera, before anyone searches the full list. */
+function cardCompatibility(): HTMLElement {
+  const open = make("button", { i18n: "btn-open-compat" });
+  open.addEventListener("click", () => {
+    document.querySelector<HTMLElement>('.nav-item[data-view="compat"]')?.click();
+  });
+  return card(
+    make("h2", { i18n: "welcome-compat-heading" }),
+    make(
+      "ul",
+      {},
+      ...["welcome-compat-info", "welcome-compat-apps", "welcome-compat-service"].map((key) =>
+        make("li", { i18n: key }),
+      ),
+    ),
+    make("div", { className: "row" }, open),
+  );
 }
 
 /**

@@ -60,6 +60,18 @@ export function viewCameraInfo(host: HTMLElement): void {
           ["info-lens", info.lens],
         ]),
       );
+      const support = make("div");
+      details.append(support);
+      if (info.modelName) {
+        void supportLine(info.modelName)
+          .then((line) =>
+            support.append(
+              fieldList([["info-support", line]]),
+              make("p", { className: "hint", i18n: "info-support-hint" }),
+            ),
+          )
+          .catch(() => undefined);
+      }
     } catch (e) {
       showError(status, e);
     } finally {
@@ -244,6 +256,21 @@ export async function identifyModel(
 /** What the lists say about the camera, worked out by the backend. */
 function supportCheck(model: string | null, capability: Capability): Promise<SupportCheck> {
   return invoke<SupportCheck>("device_support", { model, capability });
+}
+
+const SUPPORT_MARK: Record<Support, string> = { yes: "✓", no: "✖", untested: "?", unknown: "?" };
+
+/** One line on what the lists say about a model, e.g. "Apps ✓ · Updater shell ✖ · GPS ?". */
+async function supportLine(model: string): Promise<string> {
+  const capabilities: [Capability, string][] = [
+    ["apps", "gps-col-apps"],
+    ["updater", "nav-updater"],
+    ["gps", "nav-gps"],
+  ];
+  const checks = await Promise.all(capabilities.map(([capability]) => supportCheck(model, capability)));
+  return capabilities
+    .map(([, label], i) => `${tr(label)} ${SUPPORT_MARK[checks[i].support ?? "unknown"]}`)
+    .join(" · ");
 }
 
 /** The sentence that tells the user what the lists say about their camera. */

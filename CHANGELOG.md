@@ -35,12 +35,20 @@ All notable changes to this project are documented here. The format follows
 - The program icon has a light rim, so it stays visible on a dark taskbar,
   in Explorer and in Alt+Tab. In the dark theme, the logo at the top left of
   the window shows a light camera.
+- The welcome page is reworked: a new *Is my camera supported?* section, the
+  first steps recommend the camera's “Auto” USB setting and no longer promise
+  every feature after the connection test, the Windows driver note names the
+  features that actually need the driver, and the privacy section lists every
+  network connection briefly. The privacy notice on the License page now also
+  names the key import and the Projects page.
+- After reading the camera, *Camera info* shows what the compatibility list
+  says about the model: apps, updater shell and GPS.
+- When GitHub refuses a request because too many were made within the hour,
+  the program now says so instead of reporting a failed network request.
 
 ### Removed
 
 - The link to zv-e10-re on the License page.
-- When GitHub refuses a request because too many were made within the hour,
-  the program now says so instead of reporting a failed network request.
 
 ## [1.11.0] - 2026-11-09
 
