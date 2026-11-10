@@ -213,7 +213,7 @@ checksum = "f6b464fbc74e149a392436b17d523f769e057cb6877f6a5c4618bc6f11800548"
 
 [[package]]
 name = "pmca-core"
-version = "1.11.0"
+version = "1.12.0"
 dependencies = [
  "aes",
  "cipher",
@@ -234,7 +234,7 @@ dependencies = [
 
 [[package]]
 name = "pmca-usb"
-version = "1.11.0"
+version = "1.12.0"
 dependencies = [
  "pmca-core",
  "sha2",
