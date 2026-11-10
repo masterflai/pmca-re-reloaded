@@ -33,12 +33,14 @@
       <symbol id="i-install" viewBox="0 0 16 16"><path d="M8 1.8v8M4.8 6.6 8 9.8l3.2-3.2M2 11v2.5h12V11"/></symbol>
       <symbol id="i-gps" viewBox="0 0 16 16"><path d="M8 14.6S3.4 10.3 3.4 6.4a4.6 4.6 0 0 1 9.2 0c0 3.9-4.6 8.2-4.6 8.2z"/><circle cx="8" cy="6.4" r="1.7"/></symbol>
       <symbol id="i-network" viewBox="0 0 16 16"><path d="M1.5 6.2a9.2 9.2 0 0 1 13 0M3.8 8.6a5.9 5.9 0 0 1 8.4 0M6 11a2.8 2.8 0 0 1 4 0"/><path d="M8 13.6v.1" stroke-width="2.2"/></symbol>
+      <symbol id="i-projects" viewBox="0 0 16 16"><path d="M4 1.8h8v12.4L8 11.2l-4 3z"/></symbol>
       <symbol id="i-wrench" viewBox="0 0 16 16"><path d="M10.6 1.6a3.8 3.8 0 0 0-3.4 5.2l-5.1 5.1a1.4 1.4 0 0 0 2 2l5.1-5.1a3.8 3.8 0 0 0 5.2-3.4l-2.2 1.3-1.8-1 .1-2z"/></symbol>
       <symbol id="i-tweaks" viewBox="0 0 16 16"><path d="M2 4h2.5M7.5 4H14M2 8h7M12 8h2M2 12h2.5M7.5 12H14"/><circle cx="6" cy="4" r="1.5"/><circle cx="10.5" cy="8" r="1.5"/><circle cx="6" cy="12" r="1.5"/></symbol>
       <symbol id="i-backup" viewBox="0 0 16 16"><rect x="1.5" y="2.5" width="13" height="3.5" rx="1"/><path d="M2.6 6v6.6a1 1 0 0 0 1 1h8.8a1 1 0 0 0 1-1V6M6.4 9h3.2"/></symbol>
       <!-- Two cameras, one behind the other: the page compares cameras, not pictures. -->
       <symbol id="i-compare" viewBox="0 0 16 16"><path d="M5 5.2V4a1 1 0 0 1 1-1h1.3l.9-1.5h3l.9 1.5h1.4a1 1 0 0 1 1 1v4.5a1 1 0 0 1-1 1h-1.7"/><path d="M1.5 8.5a1 1 0 0 1 1-1h1.3l.9-1.5h3l.9 1.5H10a1 1 0 0 1 1 1V13a1 1 0 0 1-1 1H2.5a1 1 0 0 1-1-1z"/><circle cx="6.25" cy="10.6" r="1.9"/></symbol>
       <symbol id="i-analysis" viewBox="0 0 16 16"><path d="M1.5 8.5h2.8l1.9-5 3.3 9 1.9-4h3.1"/></symbol>
+      <symbol id="i-diagnose" viewBox="0 0 16 16"><path d="M2 1.5h1.6M6.8 1.5h1.6M2.8 1.5v3.6a2.4 2.4 0 0 0 4.8 0V1.5M5.2 7.5v2.8a3.4 3.4 0 0 0 6.8 0"/><circle cx="12" cy="8.6" r="1.7"/></symbol>
       <symbol id="i-search" viewBox="0 0 16 16"><circle cx="6.8" cy="6.8" r="4.8"/><path d="M10.4 10.4 14.5 14.5"/></symbol>
       <symbol id="i-firmware" viewBox="0 0 16 16"><rect x="3.5" y="3.5" width="9" height="9" rx="1"/><path d="M6 1.5v2M10 1.5v2M6 12.5v2M10 12.5v2M1.5 6h2M1.5 10h2M12.5 6h2M12.5 10h2"/><path d="M8 10.3V5.9M6.2 7.6 8 5.8l1.8 1.8"/></symbol>
       <symbol id="i-shell" viewBox="0 0 16 16"><rect x="1.5" y="2.5" width="13" height="11" rx="1.2"/><path d="M4.5 6.3l2 2-2 2M8.5 10.5h3"/></symbol>
@@ -53,7 +55,7 @@
       <nav class="nav-rail" aria-label="main">
         <div class="nav-brand">
           <!-- The program icon doubles as the expand button while the rail is unpinned; see nav.ts. -->
-          <button type="button" id="nav-expand" class="nav-logo"><img src="/src-tauri/icons/128x128.png" alt="" /></button>
+          <button type="button" id="nav-expand" class="nav-logo"><img class="logo-on-light" src="/src-tauri/icons/128x128.png" alt="" /><img class="logo-on-dark" src="/src-tauri/icons/icon-on-dark.png" alt="" /></button>
           <div class="nav-brand-text nav-label"><span class="nav-brand-name">PMCA-RE RELOADED</span><span id="nav-brand-sub" class="nav-brand-sub"></span></div>
         </div>
         <button class="nav-item active" data-view="welcome"><svg class="nav-icon" aria-hidden="true"><use href="#i-home"/></svg><span class="nav-label" data-i18n="nav-welcome">Welcome</span></button>
@@ -62,6 +64,7 @@
         <button class="nav-item" data-view="compat" data-group="camera"><svg class="nav-icon" aria-hidden="true"><use href="#i-compat"/></svg><span class="nav-label" data-i18n="docs-compatibility">Camera compatibility</span></button>
         <button class="nav-section collapsed" data-group="apps"><svg class="nav-icon" aria-hidden="true"><use href="#i-apps"/></svg><span class="nav-label" data-i18n="nav-group-apps">Applications</span></button>
         <button class="nav-item" data-view="install" data-group="apps"><svg class="nav-icon" aria-hidden="true"><use href="#i-install"/></svg><span class="nav-label" data-i18n="nav-install-app">Apps</span></button>
+        <button class="nav-item" data-view="projects" data-group="apps"><svg class="nav-icon" aria-hidden="true"><use href="#i-projects"/></svg><span class="nav-label" data-i18n="nav-projects">Projects</span></button>
         <button class="nav-item" data-view="gps" data-group="apps"><svg class="nav-icon" aria-hidden="true"><use href="#i-gps"/></svg><span class="nav-label" data-i18n="nav-gps">GPS</span></button>
         <button class="nav-item" data-view="network" data-group="apps"><svg class="nav-icon" aria-hidden="true"><use href="#i-network"/></svg><span class="nav-label" data-i18n="nav-network">Network</span></button>
         <button class="nav-section collapsed" data-group="analysis"><svg class="nav-icon" aria-hidden="true"><use href="#i-search"/></svg><span class="nav-label" data-i18n="nav-group-analysis">Analysis</span></button>
@@ -73,6 +76,7 @@
         <button class="nav-item" data-view="backup" data-group="maintenance"><svg class="nav-icon" aria-hidden="true"><use href="#i-backup"/></svg><span class="nav-label" data-i18n="nav-backup">Backup</span></button>
         <button class="nav-item" data-view="firmware" data-group="maintenance"><svg class="nav-icon" aria-hidden="true"><use href="#i-firmware"/></svg><span class="nav-label" data-i18n="nav-firmware">Update firmware</span></button>
         <button class="nav-item" data-view="shell" data-group="maintenance"><svg class="nav-icon" aria-hidden="true"><use href="#i-shell"/></svg><span class="nav-label" data-i18n="nav-shell">Shell</span></button>
+        <button class="nav-item" data-view="diagnose" data-group="maintenance"><svg class="nav-icon" aria-hidden="true"><use href="#i-diagnose"/></svg><span class="nav-label" data-i18n="nav-diagnose">Diagnosis</span></button>
         <button class="nav-item" data-view="tools" data-group="maintenance"><svg class="nav-icon" aria-hidden="true"><use href="#i-tools"/></svg><span class="nav-label" data-i18n="nav-tools">File tools</span></button>
         <div class="nav-spacer"></div>
         <button class="nav-item" data-view="settings"><svg class="nav-icon" aria-hidden="true"><use href="#i-settings"/></svg><span class="nav-label" data-i18n="nav-settings">Settings</span></button>

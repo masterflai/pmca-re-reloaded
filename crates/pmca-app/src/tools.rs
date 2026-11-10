@@ -19,10 +19,10 @@ use std::collections::BTreeMap;
 use std::fmt::Write as _;
 use std::path::{Path, PathBuf};
 
-use pmca_core::{backup, firmware, photo, spk, usagelog, xpd};
+use pmca_core::{backup, camset, firmware, photo, spk, usagelog, xpd};
 use pmca_i18n::Localizer;
 
-use crate::dto::PhotoSummary;
+use crate::dto::{PhotoSummary, UsageLogView};
 use crate::service::hexdump;
 use crate::{Error, Result};
 
@@ -52,6 +52,13 @@ pub enum ToolRequest {
     PrintUsageLog {
         /// The usage log to read.
         input: PathBuf,
+    },
+    /// Dump a Save/Load Settings file, or what changed against a second one.
+    PrintCamset {
+        /// The settings file to read.
+        input: PathBuf,
+        /// A later file of the same camera; only differing records are shown.
+        against: Option<PathBuf>,
     },
     /// Report where the `FDAT` payload sits inside a firmware `.dat`.
     GuessFirmware {
@@ -118,6 +125,21 @@ pub fn run(l: &Localizer, request: &ToolRequest) -> Result<ToolOutcome> {
                 usagelog::parse(&data).map_err(|e| invalid(l, "tools-usagelog-invalid", &e))?;
             Ok(ToolOutcome { message: l.tr("msg-done"), report: Some(usage_log_report(l, &log)) })
         }
+        ToolRequest::PrintCamset { input, against } => {
+            let read = |path: &Path| -> Result<camset::Camset> {
+                let data = std::fs::read(path)?;
+                if camset::is_older_format(&data) {
+                    return Err(Error::Operation(l.tr("tools-camset-older")));
+                }
+                camset::parse(&data).map_err(|e| invalid(l, "tools-camset-invalid", &e))
+            };
+            let first = read(input)?;
+            let second = against.as_deref().map(read).transpose()?;
+            Ok(ToolOutcome {
+                message: l.tr("msg-done"),
+                report: Some(camset_report(l, &first, second.as_ref())),
+            })
+        }
         ToolRequest::GuessFirmware { input } => {
             let data = std::fs::read(input)?;
             let located =
@@ -155,6 +177,14 @@ pub fn photo_summary(l: &Localizer, path: &Path) -> Result<PhotoSummary> {
     let info = photo::read(&data).map_err(|e| invalid(l, "shutter-invalid", &e))?;
     let name = path.file_name().map_or_else(String::new, |n| n.to_string_lossy().into_owned());
     Ok(PhotoSummary::new(name, info))
+}
+
+/// Parse a usage log for display, straight from the bytes the camera sent.
+pub fn usage_log_view(l: &Localizer, data: &[u8]) -> Result<UsageLogView> {
+    let log = usagelog::parse(data).map_err(|e| invalid(l, "tools-usagelog-invalid", &e))?;
+    let mut view = UsageLogView::from(&log);
+    view.bytes = data.len() as u32;
+    Ok(view)
 }
 
 /// Render a parsed usage log as text.
@@ -199,6 +229,94 @@ fn usage_log_report(l: &Localizer, log: &usagelog::UsageLog) -> String {
         );
     }
     out
+}
+
+/// Render a settings file as text: its header, then every record, or with a
+/// second file only the records that differ.
+///
+/// One record per line with its value as hex, so that a script can set the
+/// lines against a `compare-backups` export of the same moment.
+fn camset_report(l: &Localizer, file: &camset::Camset, against: Option<&camset::Camset>) -> String {
+    let mut out = String::new();
+    for (n, file) in std::iter::once(file).chain(against).enumerate() {
+        if against.is_some() {
+            let _ = writeln!(out, "#{}", n + 1);
+        }
+        let video = match file.video_system {
+            0 => "NTSC".to_string(),
+            1 => "PAL".to_string(),
+            other => other.to_string(),
+        };
+        let counts: Vec<String> = file.sections.iter().map(|s| s.len().to_string()).collect();
+        let _ = writeln!(out, "{}: {}", l.tr("info-model"), file.model);
+        let _ = writeln!(out, "{}: {}", l.tr("camset-saved"), file.saved);
+        let _ = writeln!(
+            out,
+            "{}: {}.{:02}",
+            l.tr("info-firmware"),
+            file.firmware[0],
+            file.firmware[1]
+        );
+        let _ = writeln!(out, "{}: {video}", l.tr("camset-video-system"));
+        let _ = writeln!(out, "{}: {}\n", l.tr("camset-sections"), counts.join(", "));
+    }
+
+    let Some(later) = against else {
+        for (section, records) in file.sections.iter().enumerate() {
+            for r in records {
+                let _ = writeln!(
+                    out,
+                    "s{section:<2} id=0x{:04x} {}x{} @0x{:05x}: {}",
+                    r.id,
+                    r.elem_size,
+                    r.count,
+                    r.offset,
+                    camset_value(Some(r))
+                );
+            }
+        }
+        return out;
+    };
+
+    let changes = camset::changes(file, later);
+    if changes.is_empty() {
+        let _ = writeln!(out, "{}", l.tr("camset-no-changes"));
+        return out;
+    }
+    let _ = writeln!(out, "{}: {}", l.tr("camset-changes"), changes.len());
+    for c in &changes {
+        let shape = c
+            .after
+            .or(c.before)
+            .map_or_else(String::new, |r| format!(" {}x{}", r.elem_size, r.count));
+        let _ = writeln!(
+            out,
+            "s{:<2} id=0x{:04x}{shape}: {} -> {}",
+            c.section,
+            c.id,
+            camset_value(c.before),
+            camset_value(c.after)
+        );
+    }
+    out
+}
+
+/// Bytes worth showing of one record value, with the integer reading of a
+/// single element, or `-` where the file has no such record.
+fn camset_value(record: Option<&camset::Record>) -> String {
+    /// Enough for every scalar and short array; a lens name is not.
+    const SHOWN: usize = 16;
+    let Some(record) = record else { return "-".to_string() };
+    let mut text: Vec<String> =
+        record.data.iter().take(SHOWN).map(|b| format!("{b:02x}")).collect();
+    if record.data.len() > SHOWN {
+        text.push("…".to_string());
+    }
+    let mut text = text.join(" ");
+    if let Some([single]) = record.values().as_deref() {
+        let _ = write!(text, " ({single})");
+    }
+    text
 }
 
 /// Render every property of a `Backup.bin` image as text.
@@ -318,6 +436,7 @@ mod tests {
         );
         assert!(ToolRequest::PrintBackup { input: path.clone() }.output().is_none());
         assert!(ToolRequest::PrintUsageLog { input: path.clone() }.output().is_none());
+        assert!(ToolRequest::PrintCamset { input: path.clone(), against: None }.output().is_none());
         assert!(ToolRequest::GuessFirmware { input: path.clone() }.output().is_none());
         assert!(ToolRequest::XpdChecksum { input: path }.output().is_none());
     }
@@ -378,6 +497,35 @@ mod tests {
         assert!(report.contains("src=0x5048  0x00275048\n"), "payload slot wrong:\n{report}");
 
         std::fs::remove_dir_all(&dir).unwrap();
+    }
+
+    /// The window shows the same numbers the dump prints, read from memory.
+    #[test]
+    fn a_usage_log_view_carries_the_tally_and_every_entry() {
+        let mut data = Vec::new();
+        for word in [0x0002_0000u32, 0x0003_0001, 64, 24 + 3 * 8, 0, 0] {
+            data.extend_from_slice(&word.to_le_bytes());
+        }
+        for (event, source, value) in [
+            (0x005du16, 0x0830u16, 1_527_364_591u32),
+            (0x005d, 0x0830, 1_527_364_594),
+            (0x4453, 0x5048, 0x0027_5048),
+        ] {
+            data.extend_from_slice(&event.to_le_bytes());
+            data.extend_from_slice(&source.to_le_bytes());
+            data.extend_from_slice(&value.to_le_bytes());
+        }
+        data.resize(24 + 64, 0);
+
+        let view = usage_log_view(&l(), &data).unwrap();
+
+        assert_eq!((view.bytes, view.log_size, view.cursor), (88, 64, 48));
+        assert_eq!(view.events.len(), 2);
+        assert_eq!((view.events[0].event, view.events[0].count), (0x005d, 2));
+        assert_eq!(view.entries.len(), 3);
+        assert_eq!(view.entries[0].time.as_deref(), Some("2018-05-26 19:56:31 UTC"));
+        assert_eq!((view.entries[2].offset, view.entries[2].time.as_deref()), (40, None));
+        assert!(usage_log_view(&l(), b"not a log").is_err());
     }
 
     /// Every key this module can produce has to exist in the catalogue.

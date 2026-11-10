@@ -154,6 +154,7 @@ function cardGps(): HTMLElement {
 
   return card(
     make("h2", { i18n: "gps-heading" }),
+    make("p", { i18n: "gps-intro" }),
     zone,
     make("div", { className: "row" }, writing(run), deviceToggle(devices)),
     status,

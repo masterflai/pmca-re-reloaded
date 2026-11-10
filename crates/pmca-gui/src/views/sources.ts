@@ -29,7 +29,7 @@ export function sourceRepo(id: string): Promise<SourceRepo | null> {
   return answer;
 }
 
-function starsText(stars: number): string {
+export function starsText(stars: number): string {
   return `★ ${stars.toLocaleString(currentLocale)}`;
 }
 

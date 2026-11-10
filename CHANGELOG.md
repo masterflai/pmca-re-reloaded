@@ -6,6 +6,93 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+### Added
+
+- A *Projects* page under *Applications*, and `pmca-console projects`, to
+  follow independent projects by others on GitHub. Search for repositories with
+  the topic `pmca-project`, pin the interesting ones, and *Refresh* shows what
+  their `pmca-project.yaml` and GitHub say, with the newest release and a mark
+  when it is new since the last refresh. Nothing is downloaded or installed,
+  and the page says plainly that the projects are independent and neither
+  checked nor curated by this program. GitHub is only asked when you click.
+  How to list a project: [docs/projects.md](docs/projects.md).
+- After clicking the version number, the box that reports the result offers
+  to check for a new version at every start, and says that this can be
+  switched off again in the settings.
+- A *Diagnosis* page under *Maintenance*, between *Shell* and *File tools*.
+  It gathers what only reads and helps when something does not work: the
+  check for Windows services that keep the camera busy, moved there from
+  *Camera info*, and the camera's usage log. The log is now read and shown in
+  the window: its header figures, how often each event number occurs (a click
+  filters the entries) and the entries themselves, newest first, 200 at a
+  time; after a second read the page says how many entries are new. Saving is
+  optional and always writes the complete log.
+- *Camera info* opens with a heading and a short explanation of what reading
+  the camera shows.
+- `pmca-console print-camset` reads the settings file a camera saves to the
+  card with Save/Load Settings (`CAMSET*.DAT`): model, save time, firmware,
+  video system and every record with its value. With `--against` a second
+  file, only the records that differ are listed, so one menu change shows up
+  as the records it moved. Both checksums are checked; records are shown by
+  number, not named. The container layout follows the
+  [camset](https://github.com/camset-dev/camset) project's description.
+  Files in the older, much smaller format of cameras with the menu from
+  before 2021 (such as the A7R IV or A9 II) are recognised and named as such
+  instead of being reported as damaged.
+
+### Changed
+
+- The welcome page no longer carries its own section on tweaks and languages;
+  the Tweaks page already explains them. What it said about the camera's menu
+  languages, and that the language picker only changes this program, now sits
+  next to the language tweak itself.
+- *Where to find what* on the welcome page now follows the navigation, group
+  by group and in the same order, and includes GPS, Projects and, once switched
+  on, the function analysis. Several descriptions were out of date.
+- Under *Applications*, the pages are now Apps, Projects, GPS and Network.
+- On the Apps page, the community apps come first, followed by installing an
+  app from a file, now with a heading of its own, and the app backup.
+- The program icon has a light rim, so it stays visible on a dark taskbar,
+  in Explorer and in Alt+Tab. In the dark theme, the logo at the top left of
+  the window shows a light camera.
+- The welcome page is reworked: a new *Is my camera supported?* section, the
+  first steps recommend the camera's “Auto” USB setting and no longer promise
+  every feature after the connection test, the Windows driver note names the
+  features that actually need the driver, and the privacy section lists every
+  network connection briefly. The privacy notice on the License page now also
+  names the key import and the Projects page.
+- After reading the camera, *Camera info* shows what the compatibility list
+  says about the model: apps, updater shell and GPS.
+- When GitHub refuses a request because too many were made within the hour,
+  the program now says so instead of reporting a failed network request.
+- The texts of all pages were reviewed. Outdated statements are corrected: the
+  settings name the single *Shell* page, the camera comparison is no longer
+  said to need no camera, the key material and tweak lists are complete, and
+  the macOS notes say that macOS 26 for now only allows the functions that run
+  over MTP. The app backup now says that updater mode can reset the camera's
+  settings. Repetitions were removed, the German texts address the reader
+  formally throughout, and the warranty notice on the License page is worded
+  more precisely.
+- A camera that refuses to hand out its usage log, such as the ILCE-7CR, now
+  gets a message saying so instead of "This camera model does not support this
+  function".
+- The navigation is more compact, so a maximised window on a Full HD screen
+  shows it without a scrollbar; entries and font size are unchanged.
+- The GPS page explains in a few sentences what the assist data is for, where
+  it comes from and that it goes out of date after a few weeks.
+- The serial console warns against editing files in place on the camera: the
+  BusyBox on some cameras does not know `conv=notrunc` for `dd` and truncates
+  the file, which has already cost someone a working camera. `push` now also
+  reports how many bytes it wrote, and says that it always writes the whole
+  file.
+- The Spanish texts now address the reader politely throughout; they used to
+  mix the two forms. The Polish texts keep their imperative style but no
+  longer address the reader familiarly.
+
+### Removed
+
+- The link to zv-e10-re on the License page.
+
 ### Fixed
 
 - macOS: IOUSBHost no longer resends a control request after the camera

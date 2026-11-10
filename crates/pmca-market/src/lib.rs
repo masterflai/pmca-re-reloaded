@@ -65,6 +65,9 @@ pub enum Error {
     /// with the `client` feature).
     #[error("http error: {0}")]
     Http(String),
+    /// GitHub refused the request because too many were made from this address.
+    #[error("rate limited")]
+    RateLimited,
     /// An I/O error occurred in the local server (only reachable with the
     /// `server` feature).
     #[error("io error: {0}")]
@@ -87,6 +90,7 @@ impl Error {
             Error::MissingField(_) => "market-missing-field",
             Error::NoApk => "market-no-apk",
             Error::Http(_) => "market-http",
+            Error::RateLimited => "market-rate-limited",
             Error::Io(_) => "market-io",
             Error::Tls(_) => "market-tls",
         }
@@ -98,7 +102,7 @@ impl Error {
             Error::Core(e) => Some(e.to_string()),
             Error::Json(s) | Error::Http(s) | Error::Io(s) | Error::Tls(s) => Some(s.clone()),
             Error::MissingField(f) => Some((*f).to_string()),
-            Error::NoApk => None,
+            Error::NoApk | Error::RateLimited => None,
         }
     }
 }

@@ -4,10 +4,12 @@
  */
 
 import { invoke } from "@tauri-apps/api/core";
-import { fieldList, make, showBusy, showDone, showError, statusLine } from "./dom";
+import { fieldList, make, showBusy, showDone, showError, showStatus, statusLine } from "./dom";
 import type { AvailableUpdate } from "./dto";
 import { tr, trFill } from "./i18n";
-import { updateCheckOn } from "./preferences";
+import { setUpdateCheck, updateCheckOn } from "./preferences";
+
+const TOGGLE_NAME = "update-check";
 
 export async function announceUpdate(): Promise<void> {
   if (!updateCheckOn) return;
@@ -37,6 +39,7 @@ export async function checkForUpdateNow(trigger: HTMLButtonElement): Promise<voi
     } else {
       const version = document.querySelector("#app-version")?.textContent ?? "";
       showDone(status, trFill("update-none", { version }));
+      status.after(startupChoice());
     }
   } catch (e) {
     showError(status, e);
@@ -65,6 +68,47 @@ function showUpdate(update: AvailableUpdate): void {
       ["update-latest", update.latest],
     ]),
     make("div", { className: "row" }, make("code", { textContent: url }), copy),
+    status,
+    startupChoice(),
+  );
+}
+
+/** Every toggle for the start-up check on screen shows the stored choice. */
+export function syncUpdateToggles(): void {
+  for (const box of document.querySelectorAll<HTMLInputElement>(`input[name="${TOGGLE_NAME}"]`)) {
+    box.checked = updateCheckOn;
+  }
+}
+
+/** Offer the start-up check right where the user has just seen what it does. */
+function startupChoice(): HTMLElement {
+  const status = statusLine();
+  const toggle = make("input", { type: "checkbox", name: TOGGLE_NAME, checked: updateCheckOn });
+  toggle.setAttribute("aria-describedby", "update-optin-note");
+  toggle.addEventListener("change", () => {
+    setUpdateCheck(toggle.checked);
+    syncUpdateToggles();
+    const key = updateCheckOn ? "settings-update-on" : "settings-update-off";
+    showStatus(status, tr(key));
+    status.dataset.i18n = key;
+  });
+
+  const settings = make("button", { type: "button", className: "link-button", i18n: "btn-open-settings" });
+  settings.addEventListener("click", () => {
+    document.querySelector<HTMLElement>('.nav-item[data-view="settings"]')?.click();
+  });
+
+  return make(
+    "div",
+    { className: "update-optin" },
+    make("label", { className: "row" }, toggle, make("span", { i18n: "settings-update-toggle" })),
+    make(
+      "p",
+      { className: "hint", id: "update-optin-note" },
+      make("span", { i18n: "update-optin-note" }),
+      " ",
+      settings,
+    ),
     status,
   );
 }

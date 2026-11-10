@@ -583,15 +583,6 @@ export function viewInstall(host: HTMLElement): void {
 
   host.append(
     card(
-      officialNotice,
-      make("label", { className: "field-label", i18n: "install-apk-path" }),
-      apkFile.element,
-      make("div", { className: "row" }, install, deviceToggle(appDevices)),
-      status,
-      details,
-      appDevices,
-    ),
-    card(
       make("h2", { i18n: "store-heading" }),
       make("p", { className: "hint", i18n: "store-sources-hint" }),
       make("div", { className: "row" }, loadCommunity, sync, search.button),
@@ -602,6 +593,16 @@ export function viewInstall(host: HTMLElement): void {
       filterBlock,
       make("div", { className: "store-list" }, table),
       make("div", { className: "row" }, installSelected, stop, retry),
+    ),
+    card(
+      make("h2", { i18n: "install-file-heading" }),
+      officialNotice,
+      make("label", { className: "field-label", i18n: "install-apk-path" }),
+      apkFile.element,
+      make("div", { className: "row" }, install, deviceToggle(appDevices)),
+      status,
+      details,
+      appDevices,
     ),
     cardAppBackup(),
   );

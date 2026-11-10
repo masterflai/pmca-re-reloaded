@@ -1,10 +1,9 @@
 /** Welcome page. */
 
-import { invoke } from "@tauri-apps/api/core";
-import { card, make, showBusy, showDone, showError, showStatus, statusLine } from "../dom";
+import { card, make } from "../dom";
 import { keyCard, keyStatus } from "../keys";
-import { tr } from "../i18n";
 import { hostPlatform } from "../platform";
+import { analysisOn } from "../preferences";
 
 // ---------------------------------------------------------------------------
 // Views
@@ -16,10 +15,6 @@ import { hostPlatform } from "../platform";
  * Deliberately makes no backend call. This is the first thing a new user sees,
  * and it has to render before a camera is plugged in; probing for one here
  * would greet them with a failure that means nothing is wrong.
- *
- * The two meanings of "language" get a heading each rather than a clause each.
- * One of them changes this window, the other rewrites the camera's backup
- * memory, and they are the likeliest thing on this page to be confused.
  */
 export function viewWelcome(host: HTMLElement): void {
   const intro = card(
@@ -34,26 +29,24 @@ export function viewWelcome(host: HTMLElement): void {
       make("p", { className: "hint", i18n: "usb-mode-advice" }),
       make("p", { className: "hint", i18n: welcomeDriverKey() }),
     ),
-    card(
-      make("h2", { i18n: "welcome-tweaks-heading" }),
-      make("p", { i18n: "welcome-tweaks-body" }),
-      make("h3", { i18n: "welcome-tweaks-languages-heading" }),
-      make("p", { i18n: "welcome-tweaks-languages-body" }),
-      make("h3", { i18n: "welcome-tweaks-ui-heading" }),
-      make("p", { i18n: "welcome-tweaks-ui-body" }),
-      make("div", { className: "notice-block" }, make("p", { i18n: "welcome-tweaks-safety" })),
-    ),
-    card(
-      make("h2", { i18n: "welcome-privacy-heading" }),
-      make("p", { i18n: "about-privacy-body-1" }),
-      make("p", { i18n: "about-privacy-body-2" }),
-      make("p", { i18n: "about-privacy-body-3" }),
-      make("p", { className: "hint", i18n: "welcome-privacy-where" }),
-    ),
+    cardCompatibility(),
     card(
       make("h2", { i18n: "welcome-where-heading" }),
       welcomeMap(),
       make("p", { className: "hint", i18n: "welcome-where-hint" }),
+    ),
+    card(
+      make("h2", { i18n: "welcome-privacy-heading" }),
+      make("p", { i18n: "about-privacy-body-1" }),
+      make("p", { i18n: "welcome-net-intro" }),
+      make(
+        "ul",
+        {},
+        ...["welcome-net-github", "welcome-net-downloads", "welcome-net-gps", "welcome-net-keys", "welcome-net-update"].map(
+          (key) => make("li", { i18n: key }),
+        ),
+      ),
+      make("p", { className: "hint", i18n: "welcome-privacy-where" }),
     ),
   );
 
@@ -69,6 +62,25 @@ export function viewWelcome(host: HTMLElement): void {
       intro.after(section);
     })
     .catch(() => undefined);
+}
+
+/** What to expect of a given camera, before anyone searches the full list. */
+function cardCompatibility(): HTMLElement {
+  const open = make("button", { i18n: "btn-open-compat" });
+  open.addEventListener("click", () => {
+    document.querySelector<HTMLElement>('.nav-item[data-view="compat"]')?.click();
+  });
+  return card(
+    make("h2", { i18n: "welcome-compat-heading" }),
+    make(
+      "ul",
+      {},
+      ...["welcome-compat-info", "welcome-compat-apps", "welcome-compat-service"].map((key) =>
+        make("li", { i18n: key }),
+      ),
+    ),
+    make("div", { className: "row" }, open),
+  );
 }
 
 /**
@@ -89,94 +101,37 @@ function welcomeDriverKey(): string {
 }
 
 /**
- * The navigation rail restated as a list, each page with what it is for.
+ * The navigation rail restated, group by group, each page with what it is for.
  *
- * The page names are the rail's own keys rather than copies, so renaming a
- * page renames it here too and the two can never drift apart.
+ * Read from the rail itself, so order, groups and the pages on offer (the
+ * function analysis only once switched on) always match it. Each page needs
+ * a `welcome-where-<view>` message; a test in pmca-i18n checks that.
  */
 function welcomeMap(): HTMLElement {
-  const rows: [string[], string][] = [
-    [["nav-camera-info"], "welcome-where-info"],
-    [["docs-compatibility"], "welcome-where-compat"],
-    [["nav-install-app"], "welcome-where-install"],
-    [["nav-tweaks"], "welcome-where-tweaks"],
-    [["nav-backup"], "welcome-where-backup"],
-    [["nav-compare"], "welcome-where-compare"],
-    [["nav-network"], "welcome-where-network"],
-    [["nav-firmware"], "welcome-where-firmware"],
-    [["nav-tools"], "welcome-where-tools"],
-    [["nav-service", "nav-updater"], "welcome-where-shells"],
-    [["nav-settings"], "welcome-where-settings"],
-    [["nav-license"], "welcome-where-license"],
-  ];
-  const dl = make("dl", { className: "fields welcome-map" });
-  for (const [labels, body] of rows) {
-    // The two shells share one line, so that term holds two keys. It therefore
-    // carries none itself: `translateTree` replaces the text content of any
-    // element with a key, which would leave one of the two names standing.
-    const dt = make("dt");
-    labels.forEach((key, index) => {
-      if (index > 0) dt.append(" / ");
-      dt.append(make("span", { i18n: key }));
-    });
-    dl.append(dt, make("dd", { i18n: body }));
+  const map = make("div");
+  let list: HTMLElement | null = null;
+  let group: string | undefined;
+  for (const entry of document.querySelectorAll<HTMLElement>(".nav-rail .nav-section, .nav-rail .nav-item")) {
+    const label = entry.querySelector<HTMLElement>(".nav-label")?.dataset.i18n;
+    if (!label) continue;
+    if (entry.classList.contains("nav-section")) {
+      map.append(make("h3", { className: "welcome-map-group", i18n: label }));
+      list = null;
+      group = entry.dataset.group;
+      continue;
+    }
+    const view = entry.dataset.view;
+    // `hidden` also marks pages of a folded group, so the lock is asked directly.
+    if (!view || view === "welcome" || (view === "analysis" && !analysisOn)) continue;
+    if (!list || entry.dataset.group !== group) {
+      group = entry.dataset.group;
+      list = make("dl", { className: group ? "fields welcome-map" : "fields welcome-map welcome-map-rest" });
+      map.append(list);
+    }
+    list.append(make("dt", { i18n: label }), make("dd", { i18n: `welcome-where-${view}` }));
   }
-  return dl;
+  return map;
 }
 
 /** Where the project documents which cameras are supported. */
 export const DOCS_DEVICES_URL = "https://openmemories.readthedocs.io/devices.html";
-
-/** A running Windows service that can keep the camera from being reached. */
-interface InterferingService {
-  name: string;
-  displayName: string;
-}
-
-/**
- * Checks for Windows services known to hold on to a camera.
- *
- * Only reads the service manager. Stopping a system service is left to the
- * user, so the card names the service and says how, nothing more.
- */
-export function cardServiceDiagnosis(): HTMLElement {
-  const status = statusLine();
-  const result = make("div");
-  const button = make("button", { i18n: "btn-diagnose-services" });
-  button.addEventListener("click", async () => {
-    button.disabled = true;
-    result.replaceChildren();
-    showBusy(status, tr("msg-working"));
-    try {
-      const found = await invoke<InterferingService[]>("check_interfering_services");
-      if (found.length === 0) {
-        showDone(status, tr("diagnose-services-none"));
-        return;
-      }
-      showStatus(status, "");
-      result.append(
-        make("p", { className: "warning", i18n: "diagnose-services-found" }),
-        make(
-          "ul",
-          {},
-          ...found.map((s) => make("li", { textContent: `${s.displayName} (${s.name})` })),
-        ),
-        make("p", { i18n: "diagnose-services-advice" }),
-        ...found.map((s) =>
-          make("p", {}, make("code", { textContent: `net stop ${s.name}` })),
-        ),
-      );
-    } catch (e) {
-      showError(status, e);
-    } finally {
-      button.disabled = false;
-    }
-  });
-  return card(
-    make("h2", { i18n: "diagnose-services-heading" }),
-    make("p", { i18n: "diagnose-services-hint" }),
-    button,
-    status,
-    result,
-  );
-}

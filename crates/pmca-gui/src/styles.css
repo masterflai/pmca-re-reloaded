@@ -31,6 +31,8 @@ html[data-theme="system"] {
   --success: #0f7b0f;
   --danger: #c42b1c;
   --warning: #b26b00;
+  /* Accent for text: the fill accent is too dark to read on a dark surface. */
+  --accent-text: #0067c0;
   /* A shade darker than --border: a divider has to be seen to divide. */
   --cmp-rule: #00000026;
 }
@@ -51,6 +53,7 @@ html[data-theme="dark"] {
   --danger: #ff99a4;
   /* The light-mode amber turns muddy and unreadable on a dark surface. */
   --warning: #fce100;
+  --accent-text: #60cdff;
   --cmp-rule: #ffffff2e;
 }
 
@@ -69,6 +72,7 @@ html[data-theme="dark"] {
     --success: #6ccb5f;
     --danger: #ff99a4;
     --warning: #fce100;
+    --accent-text: #60cdff;
     --cmp-rule: #ffffff2e;
   }
 }
@@ -109,9 +113,9 @@ body {
 .nav-rail {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 2px;
   min-width: 0;
-  padding: 12px 8px;
+  padding: 10px 8px;
   overflow: hidden auto;
   background: var(--surface);
   backdrop-filter: blur(30px) saturate(150%);
@@ -152,7 +156,7 @@ body {
   display: flex;
   align-items: center;
   gap: 8px;
-  margin-bottom: 10px;
+  margin-bottom: 6px;
   padding: 4px 4px 4px 4px;
 }
 
@@ -170,8 +174,17 @@ body {
   cursor: pointer;
 }
 .nav-logo img { width: 28px; height: 28px; }
+/* The dark camera vanishes on a dark surface, so the dark themes swap in a light one. */
+.nav-logo .logo-on-dark { display: none; }
+html[data-theme="dark"] .nav-logo .logo-on-light { display: none; }
+html[data-theme="dark"] .nav-logo .logo-on-dark { display: inline; }
+@media (prefers-color-scheme: dark) {
+  html[data-theme="system"] .nav-logo .logo-on-light { display: none; }
+  html[data-theme="system"] .nav-logo .logo-on-dark { display: inline; }
+}
 .nav-logo:not(:disabled):hover { background: var(--border); }
-.nav-logo:disabled { cursor: default; }
+/* Disabled only means "not a button right now"; the logo must not fade like a dead control. */
+.nav-logo:disabled { cursor: default; opacity: 1; }
 
 .nav-brand-text { display: flex; flex-direction: column; min-width: 0; }
 .nav-brand-name { font-weight: 700; font-size: 0.9rem; line-height: 1.2; white-space: nowrap; }
@@ -206,7 +219,7 @@ body {
   align-items: center;
   gap: 12px;
   text-align: start;
-  padding: 10px 12px;
+  padding: 7px 12px;
   border: none;
   border-radius: var(--radius);
   background: transparent;
@@ -232,7 +245,7 @@ body {
   align-items: center;
   gap: 12px;
   width: 100%;
-  padding: 10px 12px;
+  padding: 7px 12px;
   border: none;
   border-radius: var(--radius);
   background: transparent;
@@ -295,7 +308,7 @@ body {
   overflow: hidden;
   clip-path: inset(50%);
 }
-.nav-unpinned:not(.nav-open) :is(.nav-item, .nav-section) { padding: 10px 9px; }
+.nav-unpinned:not(.nav-open) :is(.nav-item, .nav-section) { padding: 7px 9px; }
 .nav-unpinned:not(.nav-open) .nav-item[data-group],
 .nav-unpinned:not(.nav-open) .nav-version,
 .nav-unpinned:not(.nav-open) .nav-section::after { display: none; }
@@ -723,6 +736,44 @@ summary {
   user-select: all;
 }
 
+.update-optin {
+  margin: 12px 0;
+  padding-top: 12px;
+  border-top: 1px solid var(--border);
+}
+
+.update-optin .row {
+  margin-bottom: 4px;
+}
+
+/* Aligned with the label text: checkbox with its default margins plus the row gap. */
+.update-optin .hint,
+.update-optin .status {
+  padding-inline-start: 28px;
+}
+
+.update-optin .hint {
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+/* A button that reads as a link inside running text; must outrank the generic `.content button` states. */
+.content button.link-button,
+.content button.link-button:not(.primary):not(:disabled):hover,
+.content button.link-button:not(.primary):not(:disabled):active {
+  min-width: 0;
+  padding: 0;
+  color: var(--accent);
+  background: none;
+  border: none;
+}
+
+.content button.link-button:hover,
+.content button.link-button:focus-visible {
+  text-decoration: underline;
+}
+
 /*
  * The service shell's transcript.
  *
@@ -831,6 +882,11 @@ summary {
   min-height: 1.2em;
   margin: 8px 0;
   color: var(--text-muted);
+}
+
+/* Nothing to report yet: no gap. The line takes its room once a message arrives. */
+.status:empty {
+  display: none;
 }
 
 .status[data-state="ok"] {
@@ -1057,6 +1113,21 @@ summary {
 /* Below a list, the next field keeps its distance whether or not a row's rule ends the list. */
 .field-label.after-list {
   margin-top: 16px;
+}
+
+/* A project's newest release, and the mark that it is new since the last refresh. */
+.project-release {
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.project-new {
+  padding: 0 6px;
+  border-radius: 4px;
+  color: #fff;
+  background: var(--accent);
+  font-size: 0.8em;
+  white-space: nowrap;
 }
 
 /* "Details": folds an entry's description and addresses away. */
@@ -1306,6 +1377,27 @@ summary {
 .welcome-map dt {
   color: var(--text);
   font-weight: 600;
+}
+
+/* One list per group of the rail; a fixed first column lines them all up. */
+.welcome-map {
+  grid-template-columns: 13rem 1fr;
+}
+
+.welcome-map + .welcome-map {
+  margin-top: 16px;
+}
+
+/* Settings and License belong to no group; a rule keeps them from reading as part of the last one. */
+.welcome-map-rest {
+  padding-top: 12px;
+  border-top: 1px solid var(--border);
+}
+
+.welcome-map-group {
+  margin: 16px 0 0;
+  font-size: 0.95rem;
+  color: var(--accent-text);
 }
 
 /* The read-only camera values sit directly above the tweak list. Without a gap

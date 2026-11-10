@@ -31,6 +31,9 @@ or rights gained through the helpers that install the Windows driver or ask for
 the macOS password.
 
 Out of scope are the cameras and Sony's firmware, the apps that sources list
-(please report those to their authors; this project hosts none), and flaws in
-dependencies that do not affect this program. For those, the dependency's own
-project is the right place.
+(please report those to their authors; this project hosts none), the projects
+shown on the *Projects* page, and flaws in dependencies that do not affect this
+program. For those, the dependency's own project is the right place.
+
+A listed project that obviously infringes the law can be reported through the
+same private form; see [Reporting a project](docs/projects.md#reporting-a-project).

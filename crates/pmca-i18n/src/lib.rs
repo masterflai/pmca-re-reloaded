@@ -327,6 +327,24 @@ mod tests {
         assert!(locale_source("xx-XX").is_none());
     }
 
+    #[test]
+    fn every_page_in_the_navigation_is_described_on_the_welcome_page() {
+        // The welcome page builds its map from the rail and shows `welcome-where-<view>` per page.
+        let html = include_str!("../../pmca-gui/index.html");
+        let ids = message_ids(&locale_source(DEFAULT_LOCALE).expect("default catalogue"));
+        let views: Vec<&str> = html
+            .split("data-view=\"")
+            .skip(1)
+            .filter_map(|rest| rest.split('"').next())
+            .filter(|view| *view != "welcome")
+            .collect();
+        assert!(views.len() > 10, "the rail was not found in index.html");
+        for view in views {
+            let key = format!("welcome-where-{view}");
+            assert!(ids.contains(&key), "{key} is missing");
+        }
+    }
+
     /// Collect the message ids of a catalogue, ignoring comments, blank lines
     /// and the indented continuation lines of multi-line messages.
     fn message_ids(source: &str) -> Vec<String> {

@@ -35,6 +35,10 @@ pub const SOURCE_FILE: &str = "pmca-source.yaml";
 pub const SOURCE_TOPIC: &str = "pmca-source";
 /// The branch raw.githubusercontent.com resolves to the default branch.
 pub const DEFAULT_BRANCH: &str = "HEAD";
+/// File an independent project publishes at its root (see `docs/projects.md`).
+pub const PROJECT_FILE: &str = "pmca-project.yaml";
+/// GitHub topic that makes a project findable.
+pub const PROJECT_TOPIC: &str = "pmca-project";
 
 /// Asset content type GitHub reports for an APK.
 const APK_CONTENT_TYPE: &str = "application/vnd.android.package-archive";
@@ -338,6 +342,14 @@ pub struct RepoInfo {
     pub pushed_at: Option<String>,
     /// Whether the owner has archived it.
     pub archived: bool,
+    /// SPDX identifier of the licence GitHub detected, if it recognised one.
+    pub license: Option<String>,
+    /// The main programming language GitHub detected.
+    pub language: Option<String>,
+    /// The website the owner gave, if it is `https://`.
+    pub homepage: Option<String>,
+    /// How many forks it has.
+    pub forks: u32,
 }
 
 /// Whether `name` can be a GitHub account or repository name.
@@ -358,20 +370,31 @@ fn repo_from_json(value: &serde_json::Value) -> Option<RepoInfo> {
     if !valid_repo_name(owner) || !valid_repo_name(name) {
         return None;
     }
+    let text = |key: &str| {
+        value.get(key).and_then(|d| d.as_str()).filter(|d| !d.is_empty()).map(str::to_string)
+    };
+    let count = |key: &str| {
+        value
+            .get(key)
+            .and_then(serde_json::Value::as_u64)
+            .map_or(0, |n| u32::try_from(n).unwrap_or(u32::MAX))
+    };
     Some(RepoInfo {
         owner: owner.to_string(),
         name: name.to_string(),
-        description: value
-            .get("description")
-            .and_then(|d| d.as_str())
-            .filter(|d| !d.is_empty())
-            .map(str::to_string),
-        stars: value
-            .get("stargazers_count")
-            .and_then(serde_json::Value::as_u64)
-            .map_or(0, |n| u32::try_from(n).unwrap_or(u32::MAX)),
-        pushed_at: value.get("pushed_at").and_then(|d| d.as_str()).map(str::to_string),
+        description: text("description"),
+        stars: count("stargazers_count"),
+        pushed_at: text("pushed_at"),
         archived: value.get("archived").and_then(serde_json::Value::as_bool).unwrap_or(false),
+        license: value
+            .get("license")
+            .and_then(|l| l.get("spdx_id"))
+            .and_then(|s| s.as_str())
+            .filter(|s| !s.is_empty() && *s != "NOASSERTION")
+            .map(str::to_string),
+        language: text("language"),
+        homepage: text("homepage").filter(|h| is_https(h)),
+        forks: count("forks_count"),
     })
 }
 
@@ -387,6 +410,160 @@ pub fn parse_repo_search(data: &[u8]) -> Result<Vec<RepoInfo>> {
     let items =
         value.get("items").and_then(|i| i.as_array()).ok_or(Error::MissingField("items"))?;
     Ok(items.iter().filter_map(repo_from_json).collect())
+}
+
+/// What kind of work a project is, as its `pmca-project.yaml` states.
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq)]
+pub enum ProjectCategory {
+    /// A program for a computer.
+    Tool,
+    /// A camera app.
+    App,
+    /// A plugin for this program.
+    Plugin,
+    /// A script or a small collection of them.
+    Script,
+    /// Documentation, a guide or research notes.
+    Guide,
+    /// Anything else, and every value this program does not know.
+    #[default]
+    Other,
+}
+
+impl ProjectCategory {
+    /// The value as written in the file.
+    #[must_use]
+    pub fn id(self) -> &'static str {
+        match self {
+            ProjectCategory::Tool => "tool",
+            ProjectCategory::App => "app",
+            ProjectCategory::Plugin => "plugin",
+            ProjectCategory::Script => "script",
+            ProjectCategory::Guide => "guide",
+            ProjectCategory::Other => "other",
+        }
+    }
+
+    fn parse(value: &str) -> Self {
+        match value.trim().to_ascii_lowercase().as_str() {
+            "tool" => ProjectCategory::Tool,
+            "app" => ProjectCategory::App,
+            "plugin" => ProjectCategory::Plugin,
+            "script" => ProjectCategory::Script,
+            "guide" => ProjectCategory::Guide,
+            _ => ProjectCategory::Other,
+        }
+    }
+}
+
+/// Platforms a project may name; anything else is dropped.
+pub const PROJECT_PLATFORMS: &[&str] = &["windows", "macos", "linux", "camera", "android", "web"];
+
+/// What a project says about itself in `pmca-project.yaml`.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct ProjectFile {
+    /// Display name.
+    pub name: String,
+    /// One-line summary.
+    pub summary: Option<String>,
+    /// Kind of work.
+    pub category: ProjectCategory,
+    /// Camera models the author names, as written.
+    pub cameras: Vec<String>,
+    /// Platforms out of [`PROJECT_PLATFORMS`], in file order.
+    pub platforms: Vec<String>,
+    /// Author, as published.
+    pub author: Option<String>,
+    /// Project website, if it is `https://`.
+    pub homepage: Option<String>,
+}
+
+/// Longest name and author kept from a project file, in characters.
+const PROJECT_NAME_MAX: usize = 100;
+/// Longest summary kept from a project file, in characters.
+const PROJECT_SUMMARY_MAX: usize = 200;
+/// Most camera models kept from a project file, and the longest one.
+const PROJECT_CAMERAS_MAX: usize = 20;
+const PROJECT_CAMERA_LEN: usize = 40;
+
+/// Text from a project file without control characters, cut to `max` characters.
+///
+/// The text is shown in a terminal too, where control characters could rewrite
+/// what the user sees.
+fn clean(value: &str, max: usize) -> Option<String> {
+    let text: String = value.chars().filter(|c| !c.is_control()).take(max).collect();
+    let text = text.trim();
+    (!text.is_empty()).then(|| text.to_string())
+}
+
+/// Parse a `pmca-project.yaml`. Only the first document counts; a file without
+/// `name` is no project file.
+pub fn parse_project_file(data: &[u8]) -> Result<ProjectFile> {
+    let text = String::from_utf8_lossy(data);
+    let docs = yaml::documents(&text);
+    let doc = docs.first().ok_or(Error::MissingField("name"))?;
+    let name = doc
+        .scalar("name")
+        .and_then(|n| clean(n, PROJECT_NAME_MAX))
+        .ok_or(Error::MissingField("name"))?;
+    let list = |key: &str| -> Vec<String> {
+        doc.scalar(key)
+            .unwrap_or_default()
+            .split(',')
+            .filter_map(|item| clean(item, PROJECT_CAMERA_LEN))
+            .collect()
+    };
+    let mut platforms: Vec<String> = Vec::new();
+    for platform in list("platforms") {
+        let platform = platform.to_ascii_lowercase();
+        if PROJECT_PLATFORMS.contains(&platform.as_str()) && !platforms.contains(&platform) {
+            platforms.push(platform);
+        }
+    }
+    Ok(ProjectFile {
+        name,
+        summary: doc.scalar("summary").and_then(|s| clean(s, PROJECT_SUMMARY_MAX)),
+        category: doc.scalar("category").map(ProjectCategory::parse).unwrap_or_default(),
+        cameras: list("cameras").into_iter().take(PROJECT_CAMERAS_MAX).collect(),
+        platforms,
+        author: doc.scalar("author").and_then(|a| clean(a, PROJECT_NAME_MAX)),
+        homepage: doc.scalar("homepage").filter(|h| is_https(h)).map(str::to_string),
+    })
+}
+
+/// The newest stable release of a project, whatever it carries.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct ProjectRelease {
+    /// Version, from the tag without its `v`.
+    pub version: String,
+    /// Publication date, ISO-8601.
+    pub published_at: Option<String>,
+    /// The release page on GitHub.
+    pub url: Option<String>,
+}
+
+/// Read the JSON body of `/repos/{owner}/{repo}/releases/latest`.
+///
+/// Unlike [`parse_github_latest`] no asset is needed: a project is only shown,
+/// never downloaded.
+pub fn parse_project_release(data: &[u8]) -> Result<Option<ProjectRelease>> {
+    let release: serde_json::Value = serde_json::from_slice(data)?;
+    let Some(tag) = release.get("tag_name").and_then(|v| v.as_str()) else {
+        return Err(Error::MissingField("tag_name"));
+    };
+    let flagged = |key: &str| release.get(key).and_then(serde_json::Value::as_bool) == Some(true);
+    if flagged("draft") || flagged("prerelease") {
+        return Ok(None);
+    }
+    let Some(version) = clean(plain_version(tag), PROJECT_CAMERA_LEN) else {
+        return Ok(None);
+    };
+    let text = |key: &str| release.get(key).and_then(|v| v.as_str()).map(str::to_string);
+    Ok(Some(ProjectRelease {
+        version,
+        published_at: text("published_at").or_else(|| text("created_at")),
+        url: text("html_url").filter(|u| is_https(u)),
+    }))
 }
 
 /// Minimal reader for the flat YAML subset the app lists use.
@@ -563,10 +740,42 @@ mod net {
 
     /// The repositories tagged with [`SOURCE_TOPIC`], most-starred first.
     pub fn search_sources() -> Result<Vec<RepoInfo>> {
+        search_topic(SOURCE_TOPIC)
+    }
+
+    /// The repositories tagged with [`PROJECT_TOPIC`], most-starred first.
+    pub fn search_projects() -> Result<Vec<RepoInfo>> {
+        search_topic(PROJECT_TOPIC)
+    }
+
+    fn search_topic(topic: &str) -> Result<Vec<RepoInfo>> {
         let url = format!(
-            "{API_BASE}/search/repositories?q=topic:{SOURCE_TOPIC}&sort=stars&order=desc&per_page={SEARCH_PAGE}"
+            "{API_BASE}/search/repositories?q=topic:{topic}&sort=stars&order=desc&per_page={SEARCH_PAGE}"
         );
         parse_repo_search(&fetch(&url, MAX_METADATA_SIZE)?)
+    }
+
+    /// A project's `pmca-project.yaml`, or `None` if it has none.
+    pub fn project_file(owner: &str, repo: &str) -> Result<Option<ProjectFile>> {
+        if !valid_repo_name(owner) || !valid_repo_name(repo) {
+            return Ok(None);
+        }
+        let url = format!("{RAW_BASE}/{owner}/{repo}/{DEFAULT_BRANCH}/{PROJECT_FILE}");
+        fetch_unless_missing(&url, MAX_METADATA_SIZE)?
+            .map(|data| parse_project_file(&data))
+            .transpose()
+    }
+
+    /// A project's newest stable release, or `None` if it has none.
+    pub fn project_release(owner: &str, repo: &str) -> Result<Option<ProjectRelease>> {
+        if !valid_repo_name(owner) || !valid_repo_name(repo) {
+            return Ok(None);
+        }
+        let url = format!("{API_BASE}/repos/{owner}/{repo}/releases/latest");
+        match fetch_unless_missing(&url, MAX_METADATA_SIZE)? {
+            Some(data) => parse_project_release(&data),
+            None => Ok(None),
+        }
     }
 
     /// Resolve an entry's [`ReleaseSource`] to a concrete [`Release`].
@@ -628,6 +837,8 @@ mod net {
         {
             Ok(response) => response,
             Err(ureq::Error::StatusCode(404)) => return Ok(None),
+            // GitHub answers 403 or 429 once the hourly allowance is used up.
+            Err(ureq::Error::StatusCode(403 | 429)) => return Err(Error::RateLimited),
             Err(e) => return Err(Error::Http(e.to_string())),
         };
         let mut buf = Vec::new();
@@ -643,7 +854,8 @@ mod net {
 
 #[cfg(feature = "client")]
 pub use net::{
-    download, download_asset, get_store_apps, repo_info, resolve_release, search_sources,
+    download, download_asset, get_store_apps, project_file, project_release, repo_info,
+    resolve_release, search_projects, search_sources,
 };
 
 #[cfg(test)]
@@ -759,6 +971,71 @@ mod tests {
         assert_eq!(hits.len(), 1);
         assert_eq!(hits[0].stars, 5);
         assert!(parse_repo_search(br#"{"message":"rate limited"}"#).is_err());
+    }
+
+    #[test]
+    fn reads_what_github_says_about_licence_language_and_homepage() {
+        let repo = br#"{"name":"p","owner":{"login":"dev"},"license":{"spdx_id":"GPL-3.0"},"language":"Rust","homepage":"https://dev.example","forks_count":3}"#;
+        let info = parse_repo(repo).unwrap();
+        assert_eq!(info.license.as_deref(), Some("GPL-3.0"));
+        assert_eq!(info.language.as_deref(), Some("Rust"));
+        assert_eq!(info.homepage.as_deref(), Some("https://dev.example"));
+        assert_eq!(info.forks, 3);
+
+        let repo = br#"{"name":"p","owner":{"login":"dev"},"license":{"spdx_id":"NOASSERTION"},"homepage":"http://dev.example"}"#;
+        let info = parse_repo(repo).unwrap();
+        assert!(info.license.is_none());
+        assert!(info.homepage.is_none());
+    }
+
+    #[test]
+    fn reads_a_project_file() {
+        let file = "---\nformat: 1\nname: Lens Profiles\nsummary: Lens corrections\ncategory: Tool\ncameras: ILCE-6000, DSC-RX100M4 ,\nplatforms: windows, Linux, amiga, windows\nauthor: Jane\nhomepage: https://jane.example\n---\nname: ignored\n";
+        let project = parse_project_file(file.as_bytes()).unwrap();
+        assert_eq!(project.name, "Lens Profiles");
+        assert_eq!(project.summary.as_deref(), Some("Lens corrections"));
+        assert_eq!(project.category, ProjectCategory::Tool);
+        assert_eq!(project.cameras, ["ILCE-6000", "DSC-RX100M4"]);
+        assert_eq!(project.platforms, ["windows", "linux"]);
+        assert_eq!(project.author.as_deref(), Some("Jane"));
+        assert_eq!(project.homepage.as_deref(), Some("https://jane.example"));
+    }
+
+    #[test]
+    fn a_project_file_is_cleaned_and_limited() {
+        let long = "x".repeat(300);
+        let file = format!(
+            "name: A\u{1b}[2JB\nsummary: {long}\ncategory: rocket\nhomepage: http://insecure.example\n"
+        );
+        let project = parse_project_file(file.as_bytes()).unwrap();
+        assert_eq!(project.name, "A[2JB");
+        assert_eq!(project.summary.unwrap().chars().count(), PROJECT_SUMMARY_MAX);
+        assert_eq!(project.category, ProjectCategory::Other);
+        assert!(project.homepage.is_none());
+
+        let many: Vec<String> = (0..30).map(|i| format!("M{i}")).collect();
+        let file = format!("name: A\ncameras: {}\n", many.join(","));
+        assert_eq!(parse_project_file(file.as_bytes()).unwrap().cameras.len(), PROJECT_CAMERAS_MAX);
+    }
+
+    #[test]
+    fn a_project_file_needs_a_name() {
+        assert!(parse_project_file(b"summary: s\n").is_err());
+        assert!(parse_project_file(b"name:   \n").is_err());
+        assert!(parse_project_file(b"").is_err());
+    }
+
+    #[test]
+    fn reads_a_project_release_without_assets() {
+        let json = br#"{"tag_name":"v2.3.0","html_url":"https://github.com/dev/p/releases/tag/v2.3.0","published_at":"2026-10-14T08:00:00Z","assets":[]}"#;
+        let release = parse_project_release(json).unwrap().unwrap();
+        assert_eq!(release.version, "2.3.0");
+        assert_eq!(release.published_at.as_deref(), Some("2026-10-14T08:00:00Z"));
+        assert!(release.url.unwrap().starts_with("https://github.com/"));
+
+        let pre = br#"{"tag_name":"v3","prerelease":true}"#;
+        assert!(parse_project_release(pre).unwrap().is_none());
+        assert!(parse_project_release(br#"{"message":"Not Found"}"#).is_err());
     }
 
     #[test]

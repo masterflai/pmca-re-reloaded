@@ -16,7 +16,7 @@ use pmca_app::devices::{Capability, DeviceLists, Support};
 use pmca_app::dto::{
     AppBackupOutcome, CameraPresence, CameraSummary, CommunityList, FirmwareOutcome,
     InstallOutcome, PhotoSummary, ProgressEvent, StreamingSettings, TweakChange, TweakReport,
-    WifiAccessPoint,
+    UsageLogView, WifiAccessPoint,
 };
 use pmca_app::{ApkSource, InstallRequest, InstallSeries};
 use pmca_i18n::Localizer;
@@ -159,6 +159,8 @@ struct AppState {
     /// back from the webview. Holds no camera session and is dropped when the
     /// view is left.
     comparison: Mutex<Option<pmca_app::compare::CompareReport>>,
+    /// The usage log last read, so saving writes exactly what was shown.
+    usage_log: Mutex<Option<Vec<u8>>>,
     /// Store apps downloaded ahead of a batch installation, by source and package.
     ///
     /// A batch fetches every selected app before it touches the camera, so a
@@ -192,6 +194,7 @@ impl AppState {
             analysis: Mutex::new(None),
             reference: Mutex::new(None),
             comparison: Mutex::new(None),
+            usage_log: Mutex::new(None),
             downloads: Mutex::new(HashMap::new()),
             plugin_downloads: Mutex::new(HashMap::new()),
             install_series: Mutex::new(None),
@@ -390,6 +393,7 @@ pub fn run() {
             device_lists,
             device_support,
             save_usage_log,
+            read_usage_log,
             pick_file,
             ask_choice,
             show_message,
@@ -464,6 +468,12 @@ pub fn run() {
             download_community_plugin,
             install_downloaded_plugin,
             discard_plugin_download,
+            projects_list,
+            projects_pin,
+            projects_unpin,
+            projects_search,
+            projects_refresh,
+            project_info,
             service_help,
             service_open,
             service_run,

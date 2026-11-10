@@ -4,7 +4,7 @@
 //! `pmca-console.py`. Their logic lives in `pmca-app`, which is shared with the
 //! GUI; this crate parses arguments and renders results. That holds for the
 //! file-only tools (`apk2spk`, `spk2apk`, `print-backup`, `print-usagelog`,
-//! `guess-firmware`, `xpd-checksum`, via `pmca_app::tools`; `dump-backup` and
+//! `print-camset`, `guess-firmware`, `xpd-checksum`, via `pmca_app::tools`; `dump-backup` and
 //! `compare-backups` via `pmca_app::compare`), the community store listing
 //! (`apps`) and every camera command.
 //!
@@ -135,6 +135,21 @@ enum Command {
     /// `Backup.bin`; clap's default would have spelled it `print-usage-log`.
     #[command(name = "print-usagelog")]
     PrintUsageLog { file: PathBuf },
+    /// Print a settings file saved with the camera's Save/Load Settings
+    /// (`CAMSET*.DAT`).
+    ///
+    /// Records are shown by number and value; their meaning differs between
+    /// models and is not guessed. With `--against`, only the records that
+    /// differ from a second file are listed, which is how one menu change
+    /// shows up. The file can hold a title name, lens serial numbers and
+    /// network settings, so treat it like other personal data.
+    PrintCamset {
+        /// The settings file to read.
+        file: PathBuf,
+        /// A later file of the same camera to compare against.
+        #[arg(long)]
+        against: Option<PathBuf>,
+    },
     /// Locate the firmware payload (FDAT) inside a `.dat` file.
     GuessFirmware { file: PathBuf },
     /// Compute the CIC (HMAC-SHA256) checksum of a file.
@@ -198,6 +213,17 @@ enum Command {
     Sources {
         #[command(subcommand)]
         action: SourcesAction,
+    },
+    /// Follow independent projects on GitHub: search, pin, and show their
+    /// newest release.
+    ///
+    /// A project is a repository whose author publishes `pmca-project.yaml`
+    /// and gives it the topic `pmca-project`. Projects are independent: this
+    /// program does not select, check, moderate or curate them, nothing of
+    /// them is downloaded, and their authors alone are responsible for them.
+    Projects {
+        #[command(subcommand)]
+        action: ProjectsAction,
     },
     /// Launch the firmware-updater debug shell.
     ///
@@ -509,6 +535,23 @@ enum SourcesAction {
     Search,
 }
 
+/// What [`Command::Projects`] should do.
+#[derive(Subcommand)]
+enum ProjectsAction {
+    /// List the projects you have pinned, without asking GitHub.
+    List,
+    /// Pin a project: `owner/repo` or the repository's address on GitHub.
+    Pin { repo: String },
+    /// Unpin a project.
+    Unpin { id: String },
+    /// Search GitHub for repositories with the topic `pmca-project`.
+    ///
+    /// The results are not checked by this program and are no recommendation.
+    Search,
+    /// Ask GitHub about every pinned project and show its newest release.
+    Refresh,
+}
+
 /// What [`Command::Keys`] should do.
 #[derive(Subcommand)]
 enum KeysAction {
@@ -706,10 +749,12 @@ fn uses_camera(cmd: &Command) -> bool {
         | Command::DumpBackup { .. }
         | Command::CompareBackups { .. }
         | Command::PrintUsageLog { .. }
+        | Command::PrintCamset { .. }
         | Command::GuessFirmware { .. }
         | Command::XpdChecksum { .. }
         | Command::Photo { .. }
         | Command::Sources { .. }
+        | Command::Projects { .. }
         | Command::Driver { .. }
         | Command::Keys { .. } => false,
         // Spelled out, so a new plugin action has to decide as well.
@@ -784,6 +829,12 @@ fn run(cmd: &Command, l: &Localizer) -> Result<(), Box<dyn std::error::Error>> {
         Command::PrintUsageLog { file } => {
             tool_command(l, ToolRequest::PrintUsageLog { input: file.clone() })?;
         }
+        Command::PrintCamset { file, against } => {
+            tool_command(
+                l,
+                ToolRequest::PrintCamset { input: file.clone(), against: against.clone() },
+            )?;
+        }
         Command::GuessFirmware { file } => {
             tool_command(l, ToolRequest::GuessFirmware { input: file.clone() })?;
         }
@@ -824,6 +875,9 @@ fn run(cmd: &Command, l: &Localizer) -> Result<(), Box<dyn std::error::Error>> {
         }
         Command::Sources { action } => {
             sources_command(l, action)?;
+        }
+        Command::Projects { action } => {
+            projects_command(l, action)?;
         }
         Command::Serviceshell => {
             serviceshell_command(l)?;

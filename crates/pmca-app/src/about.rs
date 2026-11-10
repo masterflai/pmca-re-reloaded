@@ -147,7 +147,6 @@ pub const LINKS: &[AboutLink] = &[
         // The wiki is offline; this is its last complete archived copy.
         url: "https://web.archive.org/web/20201027234246/http://www.personal-view.com/faqs/sony-hack/hack-development",
     },
-    AboutLink { label: "about-link-zve10", url: "https://github.com/qn06142/zv-e10-re" },
 ];
 
 /// Everything a front-end needs that is not a catalogue key.
