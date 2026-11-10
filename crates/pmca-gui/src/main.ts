@@ -46,6 +46,7 @@ import { viewAnalysis } from "./views/analysis";
 import { viewBackup } from "./views/backup";
 import { viewCameraInfo, viewCompatibility } from "./views/camera";
 import { viewCompare } from "./views/compare";
+import { viewDiagnose } from "./views/diagnose";
 import { viewFirmware } from "./views/firmware";
 import { viewInstall } from "./views/install";
 import { viewLicense } from "./views/license";
@@ -66,6 +67,7 @@ const VIEWS: Record<string, (host: HTMLElement) => void> = {
   tweaks: viewTweaks,
   backup: viewBackup,
   compare: viewCompare,
+  diagnose: viewDiagnose,
   analysis: viewAnalysis,
   network: viewNetwork,
   projects: viewProjects,

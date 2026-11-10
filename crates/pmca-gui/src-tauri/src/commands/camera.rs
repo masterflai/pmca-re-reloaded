@@ -72,12 +72,26 @@ pub(crate) struct SupportCheck {
     text: String,
 }
 
-/// Ask where the camera's usage log should go, then download and write it.
+/// Read the camera's usage log and return it as numbers for display.
 ///
-/// The log's structure is undocumented, so it is stored verbatim; the byte
-/// count is all this layer can honestly report about it. The save dialog is
-/// opened here so the window never supplies a path to write to; `None` when it
-/// was dismissed, in which case the camera is not touched.
+/// The raw bytes are kept, so a later save writes the complete log that was shown.
+#[tauri::command]
+pub(crate) async fn read_usage_log(app: AppHandle) -> Result<UsageLogView, CommandError> {
+    with_camera(app, |_, state| {
+        let log = pmca_app::usage_log()?;
+        let view = pmca_app::tools::usage_log_view(&state.localizer()?, &log)?;
+        *state.usage_log.lock().map_err(CommandError::internal)? = Some(log);
+        Ok(view)
+    })
+    .await
+}
+
+/// Ask where the camera's usage log should go, then write it.
+///
+/// Writes the complete log last read by [`read_usage_log`]; without one, the
+/// camera is read now. The save dialog is opened here so the window never
+/// supplies a path to write to; `None` when it was dismissed, in which case
+/// the camera is not touched.
 #[tauri::command]
 pub(crate) async fn save_usage_log(
     app: AppHandle,
@@ -90,8 +104,12 @@ pub(crate) async fn save_usage_log(
     })
     .await?;
     let Some(path) = chosen else { return Ok(None) };
-    with_camera(app, move |_, _| {
-        let log = pmca_app::usage_log()?;
+    let read = app.state::<AppState>().usage_log.lock().map_err(CommandError::internal)?.clone();
+    let log = match read {
+        Some(log) => log,
+        None => with_camera(app, |_, _| Ok(pmca_app::usage_log()?)).await?,
+    };
+    in_background(move || {
         std::fs::write(&path, &log)?;
         Ok(Some(UsageLogOutcome { path: absolute_display(&path), bytes: log.len() }))
     })

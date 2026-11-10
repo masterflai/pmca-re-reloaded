@@ -116,6 +116,83 @@ impl PhotoSummary {
     }
 }
 
+/// A camera's usage log as numbers, for display; nothing is named or interpreted.
+#[derive(Debug, Clone, Default, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+#[cfg_attr(test, derive(ts_rs::TS), ts(export))]
+pub struct UsageLogView {
+    /// Size of the whole file in bytes.
+    pub bytes: u32,
+    /// Size of the region the entries are written into.
+    pub log_size: u32,
+    /// Offset just past the last entry written.
+    pub cursor: u32,
+    /// Size of the second region after the entries.
+    pub spare_size: u32,
+    /// How often each event number occurs, ordered by number.
+    pub events: Vec<UsageLogEvent>,
+    /// Every entry in file order.
+    pub entries: Vec<UsageLogEntry>,
+}
+
+/// How often one event number occurs in a usage log.
+#[derive(Debug, Clone, Default, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+#[cfg_attr(test, derive(ts_rs::TS), ts(export))]
+pub struct UsageLogEvent {
+    /// The event number.
+    pub event: u16,
+    /// Number of entries carrying it.
+    pub count: u32,
+}
+
+/// One 8-byte slot of a usage log.
+#[derive(Debug, Clone, Default, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+#[cfg_attr(test, derive(ts_rs::TS), ts(export))]
+pub struct UsageLogEntry {
+    /// Where the slot begins in the file.
+    pub offset: u32,
+    /// First field, the event number for most slots.
+    pub event: u16,
+    /// Second field.
+    pub source: u16,
+    /// Third field, usually a Unix timestamp.
+    pub value: u32,
+    /// The value as UTC time, where it can plausibly be one.
+    pub time: Option<String>,
+}
+
+impl From<&pmca_core::usagelog::UsageLog> for UsageLogView {
+    fn from(log: &pmca_core::usagelog::UsageLog) -> Self {
+        let mut tally: std::collections::BTreeMap<u16, u32> = std::collections::BTreeMap::new();
+        for entry in &log.entries {
+            *tally.entry(entry.event).or_default() += 1;
+        }
+        Self {
+            bytes: 0,
+            log_size: log.log_size(),
+            cursor: log.cursor(),
+            spare_size: log.spare_size(),
+            events: tally
+                .into_iter()
+                .map(|(event, count)| UsageLogEvent { event, count })
+                .collect(),
+            entries: log
+                .entries
+                .iter()
+                .map(|e| UsageLogEntry {
+                    offset: e.offset as u32,
+                    event: e.event,
+                    source: e.source,
+                    value: e.value,
+                    time: e.time().map(|t| t.to_string()),
+                })
+                .collect(),
+        }
+    }
+}
+
 /// The device identity a camera posts to the local market server during an
 /// application installation.
 #[derive(Debug, Clone, Default, PartialEq, Eq, Serialize, Deserialize)]

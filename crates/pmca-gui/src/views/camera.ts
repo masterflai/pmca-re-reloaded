@@ -1,10 +1,9 @@
-/** Camera information page (identity, shutter count, usage log) and the compatibility page. */
+/** Camera information page (identity, model support, shutter count) and the compatibility page. */
 
 import { invoke } from "@tauri-apps/api/core";
 import {
   card,
   chosen,
-  clearStatusState,
   connectingText,
   fieldList,
   make,
@@ -25,14 +24,12 @@ import type {
   PhotoSummary,
   PluginCompat,
   Support,
-  UsageLogOutcome,
 } from "../dto";
 import { currentLocale, isCommandError, modeName, tr } from "../i18n";
 import { rememberCameraModel } from "../nav";
-import { hostPlatform } from "../platform";
 import { deviceToggle, markCell } from "./network";
 import { pluginText } from "./plugins";
-import { DOCS_DEVICES_URL, cardServiceDiagnosis } from "./welcome";
+import { DOCS_DEVICES_URL } from "./welcome";
 
 export function viewCameraInfo(host: HTMLElement): void {
   const status = statusLine();
@@ -80,10 +77,14 @@ export function viewCameraInfo(host: HTMLElement): void {
   });
 
   host.append(
-    card(button, status, details),
-    ...(hostPlatform === "windows" ? [cardServiceDiagnosis()] : []),
+    card(
+      make("h2", { i18n: "info-heading" }),
+      make("p", { i18n: "info-intro" }),
+      make("div", { className: "row" }, button),
+      status,
+      details,
+    ),
     cardShutterCount(() => connectedModel),
-    cardUsageLog(),
   );
 }
 
@@ -429,71 +430,5 @@ function cardShutterCount(connectedModel: () => string | null): HTMLElement {
     make("div", { className: "row" }, read),
     status,
     details,
-  );
-}
-
-/**
- * Download the camera's usage log to a file.
- *
- * The log's structure is undocumented, so there is nothing to render: the file
- * is written as-is and only its size is reported. Showing a decoded view would
- * be inventing a meaning the format does not guarantee.
- */
-function cardUsageLog(): HTMLElement {
-  const status = statusLine();
-  const save = make("button", { i18n: "btn-usage-log" });
-
-  save.addEventListener("click", async () => {
-    save.disabled = true;
-    showBusy(status, connectingText());
-    try {
-      // The backend asks for the destination before it touches the camera.
-      const written = await invoke<UsageLogOutcome | null>("save_usage_log");
-      if (written === null) {
-        clearStatusState(status);
-        status.textContent = "";
-        return;
-      }
-      showDone(status, `${tr("usage-log-written")} ${written.path} (${written.bytes})`);
-    } catch (e) {
-      showError(status, e);
-    } finally {
-      save.disabled = false;
-    }
-  });
-
-  const info = make(
-    "div",
-    { className: "primer" },
-    make("h3", { i18n: "usage-log-info-what-heading" }),
-    make("p", { i18n: "usage-log-info-what" }),
-    make("p", { i18n: "usage-log-info-read" }),
-    make("h3", { i18n: "usage-log-info-flush-heading" }),
-    make("p", { i18n: "usage-log-info-flush" }),
-    make("h3", { i18n: "usage-log-info-content-heading" }),
-    make("p", { i18n: "usage-log-info-shutter" }),
-    make("p", { i18n: "usage-log-info-clock" }),
-    make("p", { i18n: "usage-log-info-unknown" }),
-    make("h3", { i18n: "usage-log-info-privacy-heading" }),
-    make("p", { i18n: "usage-log-info-privacy" }),
-  );
-  info.hidden = true;
-
-  const toggle = make("button", { i18n: "btn-usage-log-info" });
-  toggle.setAttribute("aria-expanded", "false");
-  toggle.addEventListener("click", () => {
-    info.hidden = !info.hidden;
-    toggle.setAttribute("aria-expanded", String(!info.hidden));
-    toggle.dataset.i18n = info.hidden ? "btn-usage-log-info" : "btn-usage-log-info-hide";
-    toggle.textContent = tr(toggle.dataset.i18n);
-  });
-
-  return card(
-    make("h2", { i18n: "usage-log-heading" }),
-    make("p", { i18n: "usage-log-hint" }),
-    make("div", { className: "row" }, save),
-    status,
-    make("div", { className: "row" }, toggle),
-    info,
   );
 }

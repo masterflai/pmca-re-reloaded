@@ -19,6 +19,16 @@ All notable changes to this project are documented here. The format follows
 - After clicking the version number, the box that reports the result offers
   to check for a new version at every start, and says that this can be
   switched off again in the settings.
+- A *Diagnosis* page under *Maintenance*, between *Shell* and *File tools*.
+  It gathers what only reads and helps when something does not work: the
+  check for Windows services that keep the camera busy, moved there from
+  *Camera info*, and the camera's usage log. The log is now read and shown in
+  the window: its header figures, how often each event number occurs (a click
+  filters the entries) and the entries themselves, newest first, 200 at a
+  time; after a second read the page says how many entries are new. Saving is
+  optional and always writes the complete log.
+- *Camera info* opens with a heading and a short explanation of what reading
+  the camera shows.
 
 ### Changed
 
@@ -45,6 +55,14 @@ All notable changes to this project are documented here. The format follows
   says about the model: apps, updater shell and GPS.
 - When GitHub refuses a request because too many were made within the hour,
   the program now says so instead of reporting a failed network request.
+- The texts of all pages were reviewed. Outdated statements are corrected: the
+  settings name the single *Shell* page, the camera comparison is no longer
+  said to need no camera, the key material and tweak lists are complete, and
+  the macOS notes say that macOS 26 for now only allows the functions that run
+  over MTP. The app backup now says that updater mode can reset the camera's
+  settings. Repetitions were removed, the German texts address the reader
+  formally throughout, and the warranty notice on the License page is worded
+  more precisely.
 
 ### Removed
 

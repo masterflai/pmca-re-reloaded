@@ -85,8 +85,13 @@ in Rust, and it needs neither Python nor extra driver tools.
 </p>
 
 **Camera information** — model, firmware version, serial number and USB mode at
-a glance; the shutter count, read from any ARW, JPEG or HEIF photo the camera
-took; and the camera's usage log, decoded. No keys and no driver change needed.
+a glance, and what the compatibility list says about the model; plus the
+shutter count, read from any ARW, JPEG or HEIF photo the camera took. No keys
+and no driver change needed.
+
+**Diagnosis** — read-only help when something does not work: which Windows
+services keep the camera busy, and the camera's internal usage log, read and
+shown as numbers, and saved as a file if you like.
 
 **Apps** — Sony's PlayMemories store has been shut down; installing apps still
 works. Install an `.apk` file you have, or pick one from the
@@ -136,7 +141,7 @@ app, so reaching them stays a deliberate step.
 1. **Download** the [latest release](https://github.com/masterflai/pmca-re-reloaded/releases/latest)
    for your system (see [Downloads](#downloads)) and start it.
 2. **Connect the camera** by USB. In the camera's menu, set *USB Connection* to
-   *Mass Storage* or *MTP*. The *Welcome* page explains what to expect.
+   *Auto* (on macOS: *MTP*). The *Welcome* page explains what to expect.
 3. **Optional: import key material.** App installation, the settings memory and
    function analysis need keys that do not ship with the program. While any are
    missing, the *Welcome* page shows an import panel — see [Key material](#key-material).

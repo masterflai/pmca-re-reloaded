@@ -22,7 +22,7 @@ use std::path::{Path, PathBuf};
 use pmca_core::{backup, firmware, photo, spk, usagelog, xpd};
 use pmca_i18n::Localizer;
 
-use crate::dto::PhotoSummary;
+use crate::dto::{PhotoSummary, UsageLogView};
 use crate::service::hexdump;
 use crate::{Error, Result};
 
@@ -155,6 +155,14 @@ pub fn photo_summary(l: &Localizer, path: &Path) -> Result<PhotoSummary> {
     let info = photo::read(&data).map_err(|e| invalid(l, "shutter-invalid", &e))?;
     let name = path.file_name().map_or_else(String::new, |n| n.to_string_lossy().into_owned());
     Ok(PhotoSummary::new(name, info))
+}
+
+/// Parse a usage log for display, straight from the bytes the camera sent.
+pub fn usage_log_view(l: &Localizer, data: &[u8]) -> Result<UsageLogView> {
+    let log = usagelog::parse(data).map_err(|e| invalid(l, "tools-usagelog-invalid", &e))?;
+    let mut view = UsageLogView::from(&log);
+    view.bytes = data.len() as u32;
+    Ok(view)
 }
 
 /// Render a parsed usage log as text.
@@ -378,6 +386,35 @@ mod tests {
         assert!(report.contains("src=0x5048  0x00275048\n"), "payload slot wrong:\n{report}");
 
         std::fs::remove_dir_all(&dir).unwrap();
+    }
+
+    /// The window shows the same numbers the dump prints, read from memory.
+    #[test]
+    fn a_usage_log_view_carries_the_tally_and_every_entry() {
+        let mut data = Vec::new();
+        for word in [0x0002_0000u32, 0x0003_0001, 64, 24 + 3 * 8, 0, 0] {
+            data.extend_from_slice(&word.to_le_bytes());
+        }
+        for (event, source, value) in [
+            (0x005du16, 0x0830u16, 1_527_364_591u32),
+            (0x005d, 0x0830, 1_527_364_594),
+            (0x4453, 0x5048, 0x0027_5048),
+        ] {
+            data.extend_from_slice(&event.to_le_bytes());
+            data.extend_from_slice(&source.to_le_bytes());
+            data.extend_from_slice(&value.to_le_bytes());
+        }
+        data.resize(24 + 64, 0);
+
+        let view = usage_log_view(&l(), &data).unwrap();
+
+        assert_eq!((view.bytes, view.log_size, view.cursor), (88, 64, 48));
+        assert_eq!(view.events.len(), 2);
+        assert_eq!((view.events[0].event, view.events[0].count), (0x005d, 2));
+        assert_eq!(view.entries.len(), 3);
+        assert_eq!(view.entries[0].time.as_deref(), Some("2018-05-26 19:56:31 UTC"));
+        assert_eq!((view.entries[2].offset, view.entries[2].time.as_deref()), (40, None));
+        assert!(usage_log_view(&l(), b"not a log").is_err());
     }
 
     /// Every key this module can produce has to exist in the catalogue.

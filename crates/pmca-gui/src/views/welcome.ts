@@ -1,9 +1,7 @@
 /** Welcome page. */
 
-import { invoke } from "@tauri-apps/api/core";
-import { card, make, showBusy, showDone, showError, showStatus, statusLine } from "../dom";
+import { card, make } from "../dom";
 import { keyCard, keyStatus } from "../keys";
-import { tr } from "../i18n";
 import { hostPlatform } from "../platform";
 import { analysisOn } from "../preferences";
 
@@ -137,57 +135,3 @@ function welcomeMap(): HTMLElement {
 
 /** Where the project documents which cameras are supported. */
 export const DOCS_DEVICES_URL = "https://openmemories.readthedocs.io/devices.html";
-
-/** A running Windows service that can keep the camera from being reached. */
-interface InterferingService {
-  name: string;
-  displayName: string;
-}
-
-/**
- * Checks for Windows services known to hold on to a camera.
- *
- * Only reads the service manager. Stopping a system service is left to the
- * user, so the card names the service and says how, nothing more.
- */
-export function cardServiceDiagnosis(): HTMLElement {
-  const status = statusLine();
-  const result = make("div");
-  const button = make("button", { i18n: "btn-diagnose-services" });
-  button.addEventListener("click", async () => {
-    button.disabled = true;
-    result.replaceChildren();
-    showBusy(status, tr("msg-working"));
-    try {
-      const found = await invoke<InterferingService[]>("check_interfering_services");
-      if (found.length === 0) {
-        showDone(status, tr("diagnose-services-none"));
-        return;
-      }
-      showStatus(status, "");
-      result.append(
-        make("p", { className: "warning", i18n: "diagnose-services-found" }),
-        make(
-          "ul",
-          {},
-          ...found.map((s) => make("li", { textContent: `${s.displayName} (${s.name})` })),
-        ),
-        make("p", { i18n: "diagnose-services-advice" }),
-        ...found.map((s) =>
-          make("p", {}, make("code", { textContent: `net stop ${s.name}` })),
-        ),
-      );
-    } catch (e) {
-      showError(status, e);
-    } finally {
-      button.disabled = false;
-    }
-  });
-  return card(
-    make("h2", { i18n: "diagnose-services-heading" }),
-    make("p", { i18n: "diagnose-services-hint" }),
-    button,
-    status,
-    result,
-  );
-}
