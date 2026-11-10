@@ -68,6 +68,8 @@ All notable changes to this project are documented here. The format follows
   function".
 - The navigation is more compact, so a maximised window on a Full HD screen
   shows it without a scrollbar; entries and font size are unchanged.
+- The GPS page explains in a few sentences what the assist data is for, where
+  it comes from and that it goes out of date after a few weeks.
 
 ### Removed
 

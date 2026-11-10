@@ -662,6 +662,7 @@ stream-written = Zapisano ustawienia transmisji na żywo.
 net-secret-warning = Ostrzeżenie: ten plik zawiera hasła Wi-Fi oraz tokeny dostępu zapisane jawnym tekstem.
 wifi-secret-warning = Aparat przechowuje te hasła bez szyfrowania i są tu pokazywane dokładnie tak, jak zostały zapisane. Pozostają na tym komputerze; jeśli zapiszesz je do pliku, zwróć uwagę, komu go przekazujesz.
 gps-heading = Dane wspomagające GPS
+gps-intro = Dzięki danym wspomagającym GPS aparat wie z góry, gdzie znajdują się satelity, i po włączeniu znacznie szybciej ustala swoją pozycję. Dawniej dane te przesyłało oprogramowanie Sony na komputer; tutaj program na życzenie pobiera je bezpośrednio od Sony i zapisuje w aparacie przez USB. Dane dezaktualizują się po kilku tygodniach; wtedy wystarczy przesłać je ponownie. Korzystają z nich tylko modele z wbudowanym odbiornikiem GPS.
 gps-hint = Przeciągnij tu plik, wpisz ścieżkę lub pozostaw pole puste, aby pobrać aktualne dane od Sony.
 btn-gps-devices = Zgodne urządzenia
 btn-gps-devices-hide = Ukryj zgodne urządzenia

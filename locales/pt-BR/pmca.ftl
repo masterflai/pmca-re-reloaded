@@ -663,6 +663,7 @@ stream-written = Configurações de transmissão ao vivo gravadas.
 net-secret-warning = Aviso: este arquivo contém senhas de Wi-Fi e tokens de acesso em texto puro.
 wifi-secret-warning = A câmera guarda essas senhas sem criptografia e elas são exibidas aqui exatamente como estão guardadas. Elas ficam neste computador; se você as salvar em um arquivo, preste atenção a quem o repassa.
 gps-heading = Dados de assistência de GPS
+gps-intro = Com os dados de assistência de GPS, a câmera sabe de antemão onde estão os satélites e encontra sua posição muito mais rápido depois de ligada. Antes, o software para PC da Sony transferia esses dados; aqui o programa os baixa diretamente da Sony quando você pede e os grava na câmera por USB. Os dados ficam desatualizados depois de algumas semanas; basta então transferi-los novamente. Somente modelos com receptor GPS integrado os utilizam.
 gps-hint = Arraste um arquivo para cá, informe um caminho ou deixe o campo vazio para obter os dados atuais da Sony.
 btn-gps-devices = Dispositivos compatíveis
 btn-gps-devices-hide = Ocultar dispositivos compatíveis

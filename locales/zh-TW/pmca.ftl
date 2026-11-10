@@ -674,6 +674,7 @@ stream-written = 直播設定已寫入。
 net-secret-warning = 警告：此檔案包含明文的 Wi-Fi 密碼與存取權杖。
 wifi-secret-warning = 相機以未加密的方式儲存這些密碼，此處會依儲存的原樣顯示。它們會留在這部電腦上；如果您將其儲存到檔案，請留意要將該檔案交給誰。
 gps-heading = GPS 輔助資料
+gps-intro = 有了 GPS 輔助資料，相機可以預先知道衛星的位置，開機後能更快確定自身位置。以前由 Sony 的電腦軟體傳輸這些資料；在這裡，程式會依您的要求直接從 Sony 下載，並透過 USB 寫入相機。資料幾週後就會過時，屆時重新傳輸即可。只有內建 GPS 接收器的機型才會使用這些資料。
 gps-hint = 將檔案拖曳到這裡、輸入路徑，或將欄位留空以從 Sony 取得目前的資料。
 btn-gps-devices = 相容裝置
 btn-gps-devices-hide = 隱藏相容裝置

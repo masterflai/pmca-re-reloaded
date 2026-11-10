@@ -663,6 +663,7 @@ stream-written = Canlı yayın ayarları yazıldı.
 net-secret-warning = Uyarı: bu dosya Wi-Fi parolalarını ve erişim belirteçlerini düz metin olarak içerir.
 wifi-secret-warning = Kamera bu parolaları şifresiz saklar ve burada tam olarak saklandıkları biçimde gösterilir. Bu bilgisayardan çıkmazlar; bir dosyaya kaydederseniz, dosyayı kime verdiğinize dikkat edin.
 gps-heading = GPS yardım verileri
+gps-intro = GPS yardım verileri sayesinde kamera uyduların nerede olduğunu önceden bilir ve açıldıktan sonra konumunu çok daha hızlı bulur. Eskiden bu verileri Sony'nin bilgisayar yazılımı aktarırdı; burada program istediğinizde verileri doğrudan Sony'den indirir ve USB üzerinden kameraya yazar. Veriler birkaç hafta sonra eskir; o zaman yeniden aktarmanız yeterlidir. Yalnızca yerleşik GPS alıcısı olan modeller bunları kullanır.
 gps-hint = Bir dosyayı buraya sürükleyin, bir yol girin veya güncel verileri Sony'den almak için alanı boş bırakın.
 btn-gps-devices = Uyumlu cihazlar
 btn-gps-devices-hide = Uyumlu cihazları gizle

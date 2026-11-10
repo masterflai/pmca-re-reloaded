@@ -662,6 +662,7 @@ stream-written = Nastavení živého vysílání bylo zapsáno.
 net-secret-warning = Varování: tento soubor obsahuje hesla Wi-Fi a přístupové tokeny v čitelné podobě.
 wifi-secret-warning = Fotoaparát tato hesla ukládá nezašifrovaná a zde se zobrazují přesně tak, jak jsou uložena. Zůstávají na tomto počítači; uložíte-li je do souboru, dejte pozor, komu jej předáte.
 gps-heading = Asistenční data GPS
+gps-intro = Díky asistenčním datům GPS fotoaparát předem ví, kde se nacházejí satelity, a po zapnutí určí svou polohu mnohem rychleji. Dříve tato data přenášel počítačový software společnosti Sony; zde je program na požádání stáhne přímo od Sony a zapíše je do fotoaparátu přes USB. Data po několika týdnech zastarají, pak je stačí přenést znovu. Využívají je jen modely s vestavěným přijímačem GPS.
 gps-hint = Přetáhněte sem soubor, zadejte cestu, nebo pole ponechte prázdné a aktuální data se stáhnou od Sony.
 btn-gps-devices = Kompatibilní zařízení
 btn-gps-devices-hide = Skrýt kompatibilní zařízení

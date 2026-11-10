@@ -663,6 +663,7 @@ stream-written = Paramètres de diffusion en direct écrits.
 net-secret-warning = Attention : ce fichier contient des mots de passe Wi-Fi et des jetons d'accès en clair.
 wifi-secret-warning = L'appareil photo enregistre ces mots de passe sans chiffrement et ils sont affichés ici tels qu'ils sont enregistrés. Ils restent sur cet ordinateur ; si vous les enregistrez dans un fichier, faites attention à qui vous le transmettez.
 gps-heading = Données d'assistance GPS
+gps-intro = Grâce aux données d’assistance GPS, l’appareil sait à l’avance où se trouvent les satellites et détermine sa position bien plus vite après la mise sous tension. Autrefois, le logiciel PC de Sony transférait ces données ; ici, le programme les télécharge directement auprès de Sony à votre demande et les écrit dans l’appareil par USB. Les données deviennent obsolètes au bout de quelques semaines ; il suffit alors de les transférer à nouveau. Seuls les modèles dotés d’un récepteur GPS intégré les utilisent.
 gps-hint = Faites glisser un fichier ici, saisissez un chemin ou laissez le champ vide pour obtenir les données actuelles auprès de Sony.
 btn-gps-devices = Appareils compatibles
 btn-gps-devices-hide = Masquer les appareils compatibles

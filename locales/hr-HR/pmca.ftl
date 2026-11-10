@@ -662,6 +662,7 @@ stream-written = Postavke prijenosa uživo su zapisane.
 net-secret-warning = Upozorenje: ova datoteka sadrži Wi-Fi lozinke i pristupne tokene u čitljivom obliku.
 wifi-secret-warning = Fotoaparat te lozinke pohranjuje nešifrirane i ovdje se prikazuju točno onako kako su pohranjene. Ostaju na ovom računalu; spremite li ih u datoteku, pripazite komu je prosljeđujete.
 gps-heading = GPS pomoćni podaci
+gps-intro = Zahvaljujući GPS pomoćnim podacima fotoaparat unaprijed zna gdje se nalaze sateliti i nakon uključivanja znatno brže određuje svoj položaj. Nekad je te podatke prenosio Sonyjev računalni softver; ovdje ih program na zahtjev preuzima izravno od Sonyja i zapisuje u fotoaparat preko USB-a. Podaci zastarijevaju nakon nekoliko tjedana; tada ih jednostavno ponovno prenesite. Koriste ih samo modeli s ugrađenim GPS prijamnikom.
 gps-hint = Povucite datoteku ovamo, unesite putanju ili ostavite polje prazno da biste preuzeli trenutačne podatke od Sonyja.
 btn-gps-devices = Kompatibilni uređaji
 btn-gps-devices-hide = Sakrij kompatibilne uređaje

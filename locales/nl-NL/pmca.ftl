@@ -665,6 +665,7 @@ stream-written = Instellingen voor livestreaming weggeschreven.
 net-secret-warning = Waarschuwing: dit bestand bevat Wi-Fi-wachtwoorden en toegangstokens in leesbare tekst.
 wifi-secret-warning = De camera bewaart deze wachtwoorden onversleuteld en ze worden hier precies zo getoond als ze zijn opgeslagen. Ze blijven op deze computer; slaat u ze op in een bestand, let dan op aan wie u dat doorgeeft.
 gps-heading = GPS-assistentiegegevens
+gps-intro = Met GPS-assistentiegegevens weet de camera vooraf waar de satellieten staan en bepaalt hij na het inschakelen veel sneller zijn positie. Vroeger bracht de pc-software van Sony deze gegevens over; hier downloadt het programma ze op verzoek rechtstreeks bij Sony en schrijft ze via USB naar de camera. De gegevens verouderen na enkele weken; zet ze dan gewoon opnieuw over. Alleen modellen met een ingebouwde GPS-ontvanger gebruiken ze.
 gps-hint = Sleep een bestand hierheen, voer een pad in of laat het veld leeg om de actuele gegevens bij Sony op te halen.
 btn-gps-devices = Compatibele apparaten
 btn-gps-devices-hide = Compatibele apparaten verbergen

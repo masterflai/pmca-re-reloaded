@@ -662,6 +662,7 @@ stream-written = Indstillingerne for livestreaming er skrevet.
 net-secret-warning = Advarsel: denne fil indeholder Wi-Fi-adgangskoder og adgangstokens i klartekst.
 wifi-secret-warning = Kameraet gemmer disse adgangskoder ukrypteret, og de vises her nøjagtig som de er gemt. De bliver på denne computer; gemmer du dem i en fil, så vær opmærksom på, hvem du giver den videre til.
 gps-heading = GPS-assistancedata
+gps-intro = Med GPS-assistancedata ved kameraet på forhånd, hvor satellitterne står, og finder sin position langt hurtigere efter at være tændt. Tidligere overførte Sonys pc-software disse data; her henter programmet dem efter ønske direkte fra Sony og skriver dem til kameraet via USB. Dataene bliver forældede efter nogle uger; så skal de blot overføres igen. Kun modeller med indbygget GPS-modtager bruger dem.
 gps-hint = Træk en fil hertil, angiv en sti, eller lad feltet stå tomt for at hente de aktuelle data fra Sony.
 btn-gps-devices = Kompatible enheder
 btn-gps-devices-hide = Skjul kompatible enheder

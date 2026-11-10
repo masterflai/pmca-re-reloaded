@@ -674,6 +674,7 @@ stream-written = Đã ghi cài đặt phát trực tiếp.
 net-secret-warning = Cảnh báo: tệp này chứa mật khẩu Wi-Fi và mã truy cập ở dạng văn bản thuần.
 wifi-secret-warning = Máy ảnh lưu các mật khẩu này mà không mã hóa, và chúng được hiển thị ở đây đúng như khi được lưu. Chúng chỉ nằm trên máy tính này; nếu bạn lưu chúng vào tệp, hãy cẩn thận khi chuyển tệp đó cho người khác.
 gps-heading = Dữ liệu hỗ trợ GPS
+gps-intro = Nhờ dữ liệu hỗ trợ GPS, máy ảnh biết trước vị trí của các vệ tinh và xác định vị trí của mình nhanh hơn nhiều sau khi bật. Trước đây phần mềm PC của Sony truyền dữ liệu này; ở đây chương trình tải dữ liệu trực tiếp từ Sony khi bạn yêu cầu và ghi vào máy ảnh qua USB. Dữ liệu sẽ lỗi thời sau vài tuần; khi đó chỉ cần truyền lại. Chỉ các kiểu máy có bộ thu GPS tích hợp mới sử dụng dữ liệu này.
 gps-hint = Kéo tệp vào đây, nhập đường dẫn hoặc để trống trường này để lấy dữ liệu hiện tại từ Sony.
 btn-gps-devices = Thiết bị tương thích
 btn-gps-devices-hide = Ẩn thiết bị tương thích

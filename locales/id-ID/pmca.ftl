@@ -663,6 +663,7 @@ stream-written = Pengaturan siaran langsung ditulis.
 net-secret-warning = Peringatan: berkas ini memuat kata sandi Wi-Fi dan token akses dalam teks biasa.
 wifi-secret-warning = Kamera menyimpan kata sandi ini tanpa enkripsi, dan di sini semuanya ditampilkan persis seperti tersimpan. Semuanya tetap berada di komputer ini; jika Anda menyimpannya ke sebuah berkas, perhatikan kepada siapa berkas itu Anda berikan.
 gps-heading = Data bantuan GPS
+gps-intro = Dengan data bantuan GPS, kamera sudah tahu lebih dulu posisi satelit sehingga menemukan lokasinya jauh lebih cepat setelah dinyalakan. Dulu perangkat lunak PC dari Sony yang mentransfer data ini; di sini program mengunduhnya langsung dari Sony atas permintaan Anda dan menuliskannya ke kamera melalui USB. Data menjadi usang setelah beberapa minggu; cukup transfer ulang. Hanya model dengan penerima GPS bawaan yang menggunakannya.
 gps-hint = Seret berkas ke sini, masukkan jalur, atau kosongkan kolom untuk mengambil data terkini dari Sony.
 btn-gps-devices = Perangkat yang kompatibel
 btn-gps-devices-hide = Sembunyikan perangkat yang kompatibel
