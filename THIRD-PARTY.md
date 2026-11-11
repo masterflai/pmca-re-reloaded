@@ -2076,7 +2076,7 @@ in executable form must tell the recipients where its source is available
 * Licence: `Apache-2.0 OR MIT`
 * Source: https://github.com/rust-lang/rustc-hash
 
-### rustix 1.1.4
+### rustix 1.1.6
 
 * Licence: `Apache-2.0 WITH LLVM-exception OR Apache-2.0 OR MIT`
 * Source: https://github.com/bytecodealliance/rustix
