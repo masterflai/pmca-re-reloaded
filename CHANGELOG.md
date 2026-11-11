@@ -4,6 +4,15 @@ All notable changes to this project are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and the project uses
 [Semantic Versioning](https://semver.org/).
 
+## [Unreleased]
+
+### Fixed
+
+- The light rim of the program icon was too faint on a dark taskbar: Windows
+  shrank a larger image to the taskbar size and blurred the thin rim into the
+  dark camera. The icon now carries every size the taskbar uses, its edges sit
+  on whole pixels, and the rim is brighter and wider.
+
 ## [1.12.0] - 2026-11-10
 
 ### Added

@@ -16,25 +16,30 @@ $body = [System.Drawing.Color]::FromArgb(255, 32, 32, 32)
 # The same camera for dark surfaces, where the dark body would vanish.
 $bodyOnDark = [System.Drawing.Color]::FromArgb(255, 232, 232, 232)
 # Rim around the dark body of the app icon, which a dark taskbar would swallow.
-$rim = [System.Drawing.Color]::FromArgb(255, 225, 225, 225)
+$rim = [System.Drawing.Color]::FromArgb(255, 245, 245, 245)
 $glass = [System.Drawing.Color]::FromArgb(255, 240, 240, 240)
 
 function Draw-Camera($g, [single]$x, [single]$y, [single]$size, $bodyColor = $body, $rimColor = $null) {
     $u = $size / 32.0
+    # Body and hump sit on whole pixels: at taskbar sizes a half-covered edge
+    # pixel blurs the rim into the dark body until nothing light is left.
+    $snap = { param([double]$v) [int][Math]::Round($v, [MidpointRounding]::AwayFromZero) }
+    $left = & $snap ($x + $u * 2); $right = & $snap ($x + $u * 30)
+    $top = & $snap ($y + $u * 7); $bottom = & $snap ($y + $u * 26)
+    $humpLeft = & $snap ($x + $u * 11); $humpRight = & $snap ($x + $u * 21); $humpTop = & $snap ($y + $u * 4)
+    $smoothing = $g.SmoothingMode
+    $g.SmoothingMode = [System.Drawing.Drawing2D.SmoothingMode]::None
     if ($rimColor) {
-        $w = [single][Math]::Max($u, 1.0)
+        $w = [Math]::Max(1, [Math]::Min((& $snap ($u * 2)), $left))
         $rimBrush = New-Object System.Drawing.SolidBrush($rimColor)
-        $g.FillRectangle($rimBrush, (New-Object System.Drawing.RectangleF(($x + $u * 2 - $w), ($y + $u * 7 - $w), ($u * 28 + 2 * $w), ($u * 19 + 2 * $w))))
-        $g.FillRectangle($rimBrush, (New-Object System.Drawing.RectangleF(($x + $u * 11 - $w), ($y + $u * 4 - $w), ($u * 10 + 2 * $w), ($u * 4 + $w))))
+        $g.FillRectangle($rimBrush, ($left - $w), ($top - $w), ($right - $left + 2 * $w), ($bottom - $top + 2 * $w))
+        $g.FillRectangle($rimBrush, ($humpLeft - $w), ($humpTop - $w), ($humpRight - $humpLeft + 2 * $w), ($top - $humpTop + $w))
         $rimBrush.Dispose()
     }
-    # Camera body.
-    $bodyRect = New-Object System.Drawing.RectangleF(($x + $u * 2), ($y + $u * 7), ($u * 28), ($u * 19))
     $bodyBrush = New-Object System.Drawing.SolidBrush($bodyColor)
-    $g.FillRectangle($bodyBrush, $bodyRect)
-    # Viewfinder hump.
-    $humpRect = New-Object System.Drawing.RectangleF(($x + $u * 11), ($y + $u * 4), ($u * 10), ($u * 4))
-    $g.FillRectangle($bodyBrush, $humpRect)
+    $g.FillRectangle($bodyBrush, $left, $top, ($right - $left), ($bottom - $top))
+    $g.FillRectangle($bodyBrush, $humpLeft, $humpTop, ($humpRight - $humpLeft), ($top - $humpTop))
+    $g.SmoothingMode = $smoothing
     # Lens barrel.
     $lensRect = New-Object System.Drawing.RectangleF(($x + $u * 10), ($y + $u * 11), ($u * 12), ($u * 12))
     $accentBrush = New-Object System.Drawing.SolidBrush($accent)
@@ -72,7 +77,9 @@ $bmp.Dispose()
 # Multi-resolution .ico (required by tauri-build on Windows). Each entry is a
 # PNG blob, which the Windows resource compiler accepts for Vista and newer.
 function Write-Ico([string]$path, [scriptblock]$render) {
-    $sizes = 16, 32, 48, 64, 256
+    # Every size the taskbar picks at 100-250 % scaling, so Windows never has to
+    # shrink a larger image and smear the one-pixel rim.
+    $sizes = 16, 20, 24, 30, 32, 36, 40, 48, 64, 256
     $blobs = @()
     foreach ($size in $sizes) {
         $bmp = & $render $size
