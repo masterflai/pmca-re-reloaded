@@ -25,6 +25,10 @@
 # Editor settings are per person, not per project.
 /.vscode/
 
+# Claude Code's per-person permission list. It can record approved commands
+# together with the passwords or tokens they contain.
+/.claude/settings.local.json
+
 # GUI front-end (produced by `npm install` / `npm run build`)
 /crates/pmca-gui/dist
 /crates/pmca-gui/node_modules
