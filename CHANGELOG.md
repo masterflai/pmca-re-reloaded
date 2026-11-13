@@ -6,7 +6,7 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
-## [1.12.1-rc.1] - 2026-11-13
+## [1.12.1-rc.2] - 2026-11-13
 
 Pre-release for testing on macOS 26. It changes how the service and tweaks
 modes capture the camera's mass-storage interface; please report back.
