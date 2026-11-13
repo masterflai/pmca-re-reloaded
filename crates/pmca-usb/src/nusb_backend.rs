@@ -510,7 +510,6 @@ fn claim_captured(
     let location = device.info.location_id();
     let mut info = device.info.clone();
     let mut holders = Vec::new();
-    let mut usblib = true;
     for round in 1..=MACOS_CAPTURE_ROUNDS {
         let mut note = |step: String| trace.note(format!("#{round} {step}"));
         if round > 1 {
@@ -523,15 +522,7 @@ fn claim_captured(
             }
         }
         let last = round == MACOS_CAPTURE_ROUNDS;
-        match capture_round(
-            &info,
-            interface_number,
-            class,
-            last,
-            &mut usblib,
-            &mut holders,
-            &mut note,
-        ) {
+        match capture_round(&info, interface_number, class, last, &mut holders, &mut note) {
             Ok(link) => return Ok(link),
             Err(e) => note(e),
         }
@@ -548,15 +539,13 @@ fn claim_captured(
 
 /// One capture attempt, see [`claim_captured`]. On failure, dropping the
 /// capture resets the device. Other processes found holding the device are
-/// added to `holders`. `usblib` is cleared once the IOUSBLib path has reset the
-/// device, so the next round goes through IOUSBHost instead.
+/// added to `holders`.
 #[cfg(target_os = "macos")]
 fn capture_round(
     info: &nusb::DeviceInfo,
     interface_number: u8,
     class: u8,
     last: bool,
-    usblib: &mut bool,
     holders: &mut Vec<String>,
     note: &mut dyn FnMut(String),
 ) -> std::result::Result<Link, String> {
@@ -564,8 +553,8 @@ fn capture_round(
 
     let id = info.registry_entry_id();
     note(format!("device 0x{id:x}, drivers: {}", driver_tree(id)));
-    // Captured while still starting, the disk driver left the interface
-    // refusing every open (0xe00002c9); every capture that worked waited for it.
+    // Captured while still starting, the disk driver left the freed interface
+    // refusing every open; every capture that worked waited for it.
     let disk = if class == crate::class::MSC { settle_disk(id, note) } else { None };
     // A mounted volume keeps the disk driver from ending.
     if let Some(disk) = &disk {
@@ -574,31 +563,34 @@ fn capture_round(
             crate::macos_capture::diskutil(&["unmountDisk", "force"], disk)
         ));
     }
-    // libusb's path, proven to reach mass storage on macOS 26 where opening the
-    // freed interface through IOUSBHost does not: capture with USBDeviceReEnumerate
-    // and claim the interface directly. A clean refusal (no capture taken) falls
-    // through to the IOUSBHost capture below; a capture that then failed resets the
-    // device on drop, which the round loop recovers from.
-    if *usblib {
-        match crate::macos_capture::iokit_usb::CapturedUsbInterface::capture(
-            id,
-            interface_number,
-            note,
-        ) {
-            Ok(iface) => return Ok(Link::UsbLib(iface)),
-            Err(e) => {
-                let reset = e.device_reset;
-                note(e.message);
-                if reset {
-                    *usblib = false;
-                    return Err("device reset by the capture, retrying through IOUSBHost".into());
-                }
-            }
-        }
+    // Let the stack go quiet before capturing. The IOUSBLib path refuses the
+    // interface plug-in (0xe00002be) when the disk driver is still settling,
+    // even when its disk was already mounted and `settle_disk` returned at once
+    // (macOS 26.7.2, probe 8); the isolated probe that reached mass storage
+    // always waited for the mass-storage driver here first.
+    if class == crate::class::MSC {
+        wait_for_mass_storage(id, note);
     }
     note(format!("quiet: {}", crate::macos_capture::wait_quiet(id, MACOS_QUIET_WAIT)));
     std::thread::sleep(MACOS_SETTLE);
     note(format!("settled, drivers: {}", driver_tree(id)));
+    // libusb's path, proven to reach mass storage on macOS 26 where opening the
+    // freed interface through IOUSBHost does not: capture with USBDeviceReEnumerate
+    // and claim the interface directly. A clean refusal (no capture taken) falls
+    // through to the IOUSBHost capture below; a capture that then failed resets
+    // the device on drop, and the next round retries this same path on the
+    // settled, re-enumerated device -- it is the only path that has moved data.
+    match crate::macos_capture::iokit_usb::CapturedUsbInterface::capture(id, interface_number, note)
+    {
+        Ok(iface) => return Ok(Link::UsbLib(iface)),
+        Err(e) => {
+            let reset = e.device_reset;
+            note(e.message);
+            if reset {
+                return Err("device reset by the capture, retrying on the settled device".into());
+            }
+        }
+    }
     let foreign = crate::macos_capture::foreign_holders(id);
     if !foreign.is_empty() {
         note(format!("held by other programs: {}", foreign.join(", ")));
@@ -670,6 +662,23 @@ fn settle_disk(id: u64, note: &mut dyn FnMut(String)) -> Option<String> {
         None => note("no disk".into()),
     }
     disk
+}
+
+/// Waits for the mass-storage driver to appear in the device's driver tree, the
+/// sign it has finished matching, so a capture tears off a settled stack rather
+/// than one still starting (which leaves the freed interface refusing opens).
+#[cfg(target_os = "macos")]
+fn wait_for_mass_storage(id: u64, note: &mut dyn FnMut(String)) {
+    let start = std::time::Instant::now();
+    while start.elapsed() < MACOS_DISK_WAIT
+        && !crate::macos_capture::driver_tree(id).contains("MassStorage")
+    {
+        std::thread::sleep(MACOS_CAPTURE_POLL);
+    }
+    let waited = start.elapsed().as_secs_f32();
+    if waited >= 0.1 {
+        note(format!("mass-storage driver settled after {waited:.1}s"));
+    }
 }
 
 /// Waits for a reset device to come back at USB location `location` with an

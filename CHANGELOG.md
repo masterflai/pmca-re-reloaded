@@ -6,8 +6,20 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+## [1.12.1-rc.1] - 2026-11-13
+
+Pre-release for testing on macOS 26. It changes how the service and tweaks
+modes capture the camera's mass-storage interface; please report back.
+
 ### Fixed
 
+- On macOS 26, reaching the service and tweaks modes (which need the camera's
+  mass-storage interface) could fail even when the interface was free: it was
+  captured while its disk driver was still settling, which left it refusing
+  every open. The capture now waits for the mass-storage driver and for the
+  registry to go quiet first, and keeps retrying the path that is known to
+  carry data on macOS 26 instead of giving up after the first attempt. Reading
+  the camera, installing apps and the usage log over MTP are unaffected.
 - The light rim of the program icon was too faint on a dark taskbar: Windows
   shrank a larger image to the taskbar size and blurred the thin rim into the
   dark camera. The icon now carries every size the taskbar uses, its edges sit

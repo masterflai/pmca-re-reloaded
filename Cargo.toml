@@ -24,7 +24,7 @@ members = [
 exclude = ["fuzz", "macos-libusb-probe"]
 
 [workspace.package]
-version = "1.12.0"
+version = "1.12.1-rc.1"
 edition = "2024"
 # Dictated by the dependency tree rather than by this code: Tauri 2.12 in the
 # GUI requires 1.90, and both workspaces are kept on the same toolchain. Here
