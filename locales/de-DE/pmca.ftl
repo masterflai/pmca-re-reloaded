@@ -512,7 +512,7 @@ tweaks-set-not-a-choice = { $id } ist ein Schalter, keine Auswahl. Bitte --enabl
 tweaks-needs-set = { $id } ist eine Auswahl, kein Schalter. Bitte --set { $id }=WERT mit einem von: { $options }
 tweak-usb-installer = USB-App-Installer aktivieren
 tweak-app-menu = Menü „Applikation“ anzeigen
-tweak-app-menu-note = Bestimmt auch, ob sich eine App auf die AEL-Taste oder den Softkey B legen lässt. Setup → Initialisieren setzt den Wert auf den Werkszustand der Kameraregion zurück; das Menü kann dann wieder fehlen. Um eine einzelne App auf die Taste zu legen, stellen Sie die Taste zuerst auf „Appli.-Download“ und wählen dann die App unter „Select Application“.
+tweak-app-menu-note = Bestimmt auch, ob sich eine App auf die AEL-Taste oder den Softkey B legen lässt. Setup → Initialisieren setzt den Wert auf den Werkszustand der Kameraregion zurück; das Menü kann dann wieder fehlen. Um eine einzelne App auf die Taste zu legen, stellen Sie die Taste zuerst auf „Appli.-Download“ und wählen dann die App unter „Applikation auswählen“.
 
 # Tweak-Ablauf
 tweaks-warning = Warnung: Das Anwenden von Tweaks überschreibt den Backup-Speicher der Kamera. Ein unterbrochener Schreibvorgang kann die Kamera dauerhaft beschädigen.
