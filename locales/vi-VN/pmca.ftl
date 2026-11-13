@@ -878,6 +878,7 @@ err-usb-ptp-response = Máy ảnh đã từ chối lệnh.
 err-usb-unsupported = Kiểu máy ảnh này không hỗ trợ chức năng đó.
 err-usb-updater-status = Trình cập nhật phần sụn trên máy ảnh đã từ chối thao tác.
 err-usb-senser = Một lệnh của chế độ dịch vụ đã thất bại.
+err-senser-rsa-unsupported = Máy ảnh này dùng chế độ dịch vụ mới hơn của Sony, được ký bằng RSA (như trên ILCE-7M5 và các mẫu tương tự). Nó cần khóa riêng của nhà sản xuất, vốn không có sẵn, nên không thể vào các chức năng dịch vụ và tinh chỉnh. Việc đọc thông tin máy ảnh và cài đặt ứng dụng vẫn hoạt động.
 err-market-core = Không thể đọc tệp dữ liệu máy ảnh.
 err-market-json = Dữ liệu nhận được bị sai định dạng.
 err-market-missing-field = Thiếu một trường cần có trong phản hồi.

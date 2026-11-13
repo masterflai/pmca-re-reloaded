@@ -865,6 +865,7 @@ err-usb-ptp-response = カメラがコマンドを拒否しました。
 err-usb-unsupported = このカメラはこの機能に対応していません。
 err-usb-updater-status = カメラのファームウェア更新プログラムが操作を拒否しました。
 err-usb-senser = サービスモードのコマンドが失敗しました。
+err-senser-rsa-unsupported = このカメラはソニーの新しいRSA署名付きサービスモード（ILCE-7M5などの機種）を使用します。メーカーの秘密鍵が必要ですが入手できないため、サービスおよび微調整の機能は利用できません。カメラ情報の読み取りとアプリのインストールは引き続き使用できます。
 err-market-core = カメラのデータファイルを読み取れませんでした。
 err-market-json = 受信したデータの形式が正しくありません。
 err-market-missing-field = 応答に必要なフィールドがありません。

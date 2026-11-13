@@ -406,6 +406,14 @@ impl<B: UsbBackend> SenserAuthDevice<B> {
             let use_sha1 = match ret {
                 2 => true,
                 8 => false,
+                // The newer bodies answer the shared first packet with the
+                // Senser v2 HOP reply (ret 9, payload starting 0x02) instead of
+                // nominating a hash. That handshake is RSA-signed and cannot be
+                // entered without Sony's private key, so report it as such
+                // rather than as an opaque bad response.
+                9 if challenge.first() == Some(&2) => {
+                    return Err(Error::SenserV2Unsupported);
+                }
                 other => {
                     return Err(Error::Senser(format!("invalid authentication response {other}")));
                 }
@@ -756,6 +764,16 @@ mod tests {
         backend.queue_read(EP_IN, auth_reply(3, &[0; 8]));
         let mut dev = SenserAuthDevice::new(backend, EP_IN, EP_OUT, 0x02a9);
         assert!(matches!(dev.authenticate(), Err(Error::Senser(_))));
+    }
+
+    #[test]
+    fn authenticate_detects_senser_v2() {
+        // A BIONZ XR body answers the shared first packet with the Senser v2
+        // HOP reply: ret 9 with a payload that starts 0x02.
+        let mut backend = MockBackend::new();
+        backend.queue_read(EP_IN, auth_reply(9, &[2, 0, 0, 0]));
+        let mut dev = SenserAuthDevice::new(backend, EP_IN, EP_OUT, 0x02a9);
+        assert!(matches!(dev.authenticate(), Err(Error::SenserV2Unsupported)));
     }
 
     #[test]

@@ -235,6 +235,12 @@ pub enum Error {
     /// The service-mode key material the user supplies is not loaded.
     #[error("the service-mode key material is not available")]
     MissingKeys,
+    /// The camera uses the newer, RSA-signed service handshake ("Senser v2",
+    /// found on the BIONZ XR / CXD90057 bodies such as the ILCE-7M5). Entering
+    /// it needs Sony's private signing key, which is not available, so the
+    /// service shell cannot reach these cameras.
+    #[error("this camera uses the newer, RSA-signed service mode that cannot be entered")]
+    SenserV2Unsupported,
 }
 
 impl Error {
@@ -264,6 +270,7 @@ impl Error {
             Error::CameraNotReady => "usb-camera-not-ready",
             Error::TooManyDevices => "usb-too-many-devices",
             Error::MissingKeys => "missing-keys",
+            Error::SenserV2Unsupported => "senser-rsa-unsupported",
         }
     }
 
@@ -293,7 +300,8 @@ impl Error {
             | Error::NoMassStorageVolume
             | Error::AppInstallMode
             | Error::TooManyDevices
-            | Error::MissingKeys => None,
+            | Error::MissingKeys
+            | Error::SenserV2Unsupported => None,
         }
     }
 }

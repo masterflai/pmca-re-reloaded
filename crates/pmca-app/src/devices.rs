@@ -260,6 +260,18 @@ pub fn support_text(l: &Localizer, model: Option<&str>, capability: Capability) 
     }
 }
 
+// Processor families named in the `arch` column, newest first. The updater
+// shell can only flash up to CXD90014; the later families carry signed and
+// encrypted firmware, so their `updater` flag is false.
+//   CXD90057  BIONZ XR, paired with the companion I/O chip CXD90058. The newest
+//             bodies on it (ILCE-7M5, ILCE-7RM6, ...) gate service mode behind
+//             an RSA challenge ("Senser v2") that needs Sony's private signing
+//             key, which is not available; the service shell cannot reach them,
+//             so their community report is Disputed. Its firmware key is derived
+//             on the device (SHA-256 of a salt read from memory), not static.
+//   CXD90045  BIONZ X, later revision; signed firmware, not updater-flashable.
+//   CXD90014  BIONZ X, 3rd generation; the last family the updater shell flashes.
+//   CXD4132 / CXD4120 / CXD4115 / CXD4105  earlier BIONZ generations.
 const COMPAT: &[(&str, &[Compat])] = &[
     (
         "devices-group-ilc",

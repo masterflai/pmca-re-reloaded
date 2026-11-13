@@ -859,6 +859,7 @@ err-usb-ptp-response = 相机拒绝了该命令。
 err-usb-unsupported = 此相机型号不支持该功能。
 err-usb-updater-status = 相机上的固件更新器拒绝了该操作。
 err-usb-senser = 服务模式命令失败。
+err-senser-rsa-unsupported = 这台相机使用索尼较新的、经 RSA 签名的服务模式（如 ILCE-7M5 及类似机型）。它需要厂商的私钥，而该私钥不可用，因此无法进入服务和微调功能。读取相机信息和安装应用仍然可用。
 err-market-core = 无法读取相机数据文件。
 err-market-json = 接收到的数据格式有误。
 err-market-missing-field = 响应中缺少预期的字段。

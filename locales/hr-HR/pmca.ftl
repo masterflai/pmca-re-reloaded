@@ -866,6 +866,7 @@ err-usb-ptp-response = Fotoaparat je odbio naredbu.
 err-usb-unsupported = Ovaj model fotoaparata ne podržava tu funkciju.
 err-usb-updater-status = Program za ažuriranje firmvera na fotoaparatu odbio je radnju.
 err-usb-senser = Naredba servisnog načina rada nije uspjela.
+err-senser-rsa-unsupported = Ovaj fotoaparat koristi Sonyjev noviji servisni način rada potpisan RSA-om (kao na ILCE-7M5 i sličnim modelima). Zahtijeva privatni ključ proizvođača, koji nije dostupan, pa se servisne funkcije i funkcije podešavanja ne mogu doseći. Čitanje informacija o fotoaparatu i instaliranje aplikacija i dalje rade.
 err-market-core = Podatkovnu datoteku fotoaparata nije bilo moguće pročitati.
 err-market-json = Primljeni podaci su neispravno oblikovani.
 err-market-missing-field = U odgovoru nedostaje očekivano polje.

@@ -6,6 +6,14 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+### Added
+
+- When a newer, BIONZ XR body (such as the ILCE-7M5) is asked for service mode,
+  the camera is now recognised by its RSA-signed sign-in ("Senser v2") and the
+  tool explains that this mode needs the manufacturer's private key and cannot
+  be entered, instead of showing an opaque "invalid authentication response 9".
+  Reading camera information and installing apps over MTP are unaffected.
+
 ## [1.12.1-rc.3] - 2026-11-13
 
 Pre-release for testing on macOS 26. It changes how the service and tweaks

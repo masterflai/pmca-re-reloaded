@@ -873,6 +873,7 @@ err-usb-ptp-response = Die Kamera hat den Befehl abgelehnt.
 err-usb-unsupported = Dieses Kameramodell unterstützt diese Funktion nicht.
 err-usb-updater-status = Der Firmware-Updater der Kamera hat den Vorgang abgelehnt.
 err-usb-senser = Ein Befehl im Servicemodus ist fehlgeschlagen.
+err-senser-rsa-unsupported = Diese Kamera nutzt Sonys neueren, RSA-signierten Servicemodus (wie bei der ILCE-7M5 und ähnlichen Modellen). Er benötigt den privaten Schlüssel des Herstellers, der nicht verfügbar ist; Service- und Tweak-Funktionen sind daher nicht erreichbar. Kamerainfos lesen und Apps installieren funktionieren weiterhin.
 err-market-core = Eine Kamera-Datendatei konnte nicht gelesen werden.
 err-market-json = Die empfangenen Daten sind fehlerhaft.
 err-market-missing-field = In der Antwort fehlt ein erwartetes Feld.

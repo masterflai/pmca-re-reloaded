@@ -878,6 +878,7 @@ err-usb-ptp-response = 相機拒絕了指令。
 err-usb-unsupported = 此相機型號不支援該功能。
 err-usb-updater-status = 相機上的固件更新程式拒絕了該操作。
 err-usb-senser = 服務模式指令失敗。
+err-senser-rsa-unsupported = 呢部相機使用 Sony 較新、經 RSA 簽署嘅服務模式（例如 ILCE-7M5 同類似型號）。佢需要廠商嘅私密金鑰，但而家攞唔到，所以服務同微調功能都用唔到。讀取相機資訊同安裝應用程式仍然用得。
 err-market-core = 無法讀取相機數據檔案。
 err-market-json = 收到的數據格式不正確。
 err-market-missing-field = 回應中缺少預期的欄位。

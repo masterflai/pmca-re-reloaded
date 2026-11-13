@@ -867,6 +867,7 @@ err-usb-ptp-response = L'appareil a rejeté la commande.
 err-usb-unsupported = Ce modèle d'appareil ne prend pas en charge cette fonction.
 err-usb-updater-status = Le programme de mise à jour du micrologiciel a rejeté l'opération.
 err-usb-senser = Une commande en mode service a échoué.
+err-senser-rsa-unsupported = Cet appareil utilise le mode service plus récent de Sony, signé par RSA (comme sur l'ILCE-7M5 et les modèles similaires). Il nécessite la clé privée du fabricant, qui n'est pas disponible ; les fonctions de service et de réglage sont donc inaccessibles. La lecture des informations de l'appareil et l'installation d'applications fonctionnent toujours.
 err-market-core = Un fichier de données de l'appareil n'a pas pu être lu.
 err-market-json = Les données reçues sont mal formées.
 err-market-missing-field = Un champ attendu est absent de la réponse.

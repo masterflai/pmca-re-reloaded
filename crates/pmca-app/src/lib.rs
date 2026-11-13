@@ -697,6 +697,7 @@ mod tests {
             pmca_usb::Error::NoDevice,
             pmca_usb::Error::CameraNotReady,
             pmca_usb::Error::TooManyDevices,
+            pmca_usb::Error::SenserV2Unsupported,
         ];
         let market = [
             pmca_market::Error::Core(pmca_core::Error::Invalid("x")),

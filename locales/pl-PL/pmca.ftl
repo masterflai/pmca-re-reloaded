@@ -866,6 +866,7 @@ err-usb-ptp-response = Aparat odrzucił polecenie.
 err-usb-unsupported = Ten model aparatu nie obsługuje tej funkcji.
 err-usb-updater-status = Aktualizator oprogramowania układowego w aparacie odrzucił tę operację.
 err-usb-senser = Polecenie trybu serwisowego nie powiodło się.
+err-senser-rsa-unsupported = Ten aparat używa nowszego trybu serwisowego Sony podpisanego RSA (jak w ILCE-7M5 i podobnych modelach). Wymaga klucza prywatnego producenta, który jest niedostępny, więc funkcje serwisowe i modyfikacji są nieosiągalne. Odczyt informacji o aparacie i instalacja aplikacji nadal działają.
 err-market-core = Nie udało się odczytać pliku danych aparatu.
 err-market-json = Odebrane dane są uszkodzone.
 err-market-missing-field = W odpowiedzi zabrakło oczekiwanego pola.

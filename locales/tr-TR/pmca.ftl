@@ -867,6 +867,7 @@ err-usb-ptp-response = Kamera komutu reddetti.
 err-usb-unsupported = Bu kamera modeli bu işlevi desteklemiyor.
 err-usb-updater-status = Kameradaki bellenim güncelleyicisi işlemi reddetti.
 err-usb-senser = Bir servis kipi komutu başarısız oldu.
+err-senser-rsa-unsupported = Bu kamera Sony'nin daha yeni, RSA ile imzalanmış servis modunu kullanır (ILCE-7M5 ve benzeri modellerde olduğu gibi). Üreticinin özel anahtarını gerektirir; bu anahtar mevcut olmadığından servis ve ince ayar işlevlerine erişilemez. Kamera bilgilerini okuma ve uygulama yükleme hâlâ çalışır.
 err-market-core = Bir kamera veri dosyası okunamadı.
 err-market-json = Alınan veriler hatalı biçimliydi.
 err-market-missing-field = Yanıtta beklenen bir alan eksikti.

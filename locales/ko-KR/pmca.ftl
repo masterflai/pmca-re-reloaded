@@ -878,6 +878,7 @@ err-usb-ptp-response = 카메라가 명령을 거부했습니다.
 err-usb-unsupported = 이 카메라 모델은 해당 기능을 지원하지 않습니다.
 err-usb-updater-status = 카메라의 펌웨어 업데이터가 작업을 거부했습니다.
 err-usb-senser = 서비스 모드 명령이 실패했습니다.
+err-senser-rsa-unsupported = 이 카메라는 소니의 최신 RSA 서명 서비스 모드를 사용합니다(ILCE-7M5 및 유사 모델). 제조사의 비공개 키가 필요하지만 사용할 수 없으므로 서비스 및 조정 기능에 접근할 수 없습니다. 카메라 정보 읽기와 앱 설치는 계속 작동합니다.
 err-market-core = 카메라 데이터 파일을 읽을 수 없습니다.
 err-market-json = 받은 데이터의 형식이 잘못되었습니다.
 err-market-missing-field = 응답에 예상한 필드가 없습니다.
