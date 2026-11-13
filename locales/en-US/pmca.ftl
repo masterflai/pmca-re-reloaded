@@ -518,7 +518,7 @@ tweaks-set-not-a-choice = { $id } is a switch, not a choice. Use --enable or --d
 tweaks-needs-set = { $id } is a choice, not a switch. Use --set { $id }=VALUE with one of: { $options }
 tweak-usb-installer = Enable USB app installer
 tweak-app-menu = Show the Application menu
-tweak-app-menu-note = Also decides whether an app can be assigned to the AEL button or soft key B. Setup → Initialize sets it back to the factory value of the camera's region, which can hide the menu again.
+tweak-app-menu-note = Also decides whether an app can be assigned to the AEL button or soft key B. Setup → Initialize sets it back to the factory value of the camera's region, which can hide the menu again. To put a single app on the key, set the key to “Download Appli.” first, then choose the app under “Select Application”.
 
 # Tweak workflow
 tweaks-warning = Warning: applying tweaks rewrites the camera's backup memory. An interrupted write can permanently damage your camera.

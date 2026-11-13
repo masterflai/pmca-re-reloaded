@@ -508,7 +508,7 @@ tweaks-set-not-a-choice = { $id } is een schakelaar, geen keuze. Gebruik --enabl
 tweaks-needs-set = { $id } is een keuze, geen schakelaar. Gebruik --set { $id }=WAARDE met een van: { $options }
 tweak-usb-installer = USB-app-installatieprogramma inschakelen
 tweak-app-menu = Menu „Applicatie” tonen
-tweak-app-menu-note = Bepaalt ook of een app aan de AEL-knop of softtoets B kan worden toegewezen. Instellingen → Initialiseren zet deze terug op de fabriekswaarde van de regio van de camera, waardoor het menu weer kan verdwijnen.
+tweak-app-menu-note = Bepaalt ook of een app aan de AEL-knop of softtoets B kan worden toegewezen. Instellingen → Initialiseren zet deze terug op de fabriekswaarde van de regio van de camera, waardoor het menu weer kan verdwijnen. Om één app aan de toets te koppelen, zet u de toets eerst op „Download Appli.“ en kiest u daarna de app onder „Select Application“.
 
 # Verloop van de aanpassingen
 tweaks-warning = Waarschuwing: het toepassen van aanpassingen herschrijft het back-upgeheugen van de camera. Een onderbroken schrijfactie kan uw camera blijvend beschadigen.

@@ -506,7 +506,7 @@ tweaks-set-not-a-choice = { $id } es un interruptor, no una elección. Use --ena
 tweaks-needs-set = { $id } es una elección, no un interruptor. Use --set { $id }=VALOR con uno de: { $options }
 tweak-usb-installer = Activar el instalador de aplicaciones por USB
 tweak-app-menu = Mostrar el menú «Aplicación»
-tweak-app-menu-note = También determina si se puede asignar una aplicación al botón AEL o a la tecla programable B. Configuración → Inicializar restablece el valor de fábrica de la región de la cámara, lo que puede volver a ocultar el menú.
+tweak-app-menu-note = También determina si se puede asignar una aplicación al botón AEL o a la tecla programable B. Configuración → Inicializar restablece el valor de fábrica de la región de la cámara, lo que puede volver a ocultar el menú. Para asignar una sola aplicación a la tecla, ajuste primero la tecla en «Download Appli.» y después elija la aplicación en «Select Application».
 
 # Proceso de ajustes
 tweaks-warning = Aviso: aplicar ajustes reescribe la memoria de copia de seguridad de la cámara. Una escritura interrumpida puede dañarla de forma permanente.

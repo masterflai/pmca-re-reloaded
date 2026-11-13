@@ -506,7 +506,7 @@ tweaks-set-not-a-choice = { $id } adalah sakelar, bukan pilihan. Gunakan --enabl
 tweaks-needs-set = { $id } adalah pilihan, bukan sakelar. Gunakan --set { $id }=NILAI dengan salah satu dari: { $options }
 tweak-usb-installer = Aktifkan pemasang aplikasi USB
 tweak-app-menu = Tampilkan menu “Aplikasi”
-tweak-app-menu-note = Juga menentukan apakah aplikasi dapat ditetapkan ke tombol AEL atau tombol lunak B. Pengaturan → Inisialisasi mengembalikannya ke nilai pabrik wilayah kamera, yang dapat menyembunyikan menu ini lagi.
+tweak-app-menu-note = Juga menentukan apakah aplikasi dapat ditetapkan ke tombol AEL atau tombol lunak B. Pengaturan → Inisialisasi mengembalikannya ke nilai pabrik wilayah kamera, yang dapat menyembunyikan menu ini lagi. Untuk menetapkan satu aplikasi ke tombol, atur tombol ke “Download Appli.” terlebih dahulu, lalu pilih aplikasinya di “Select Application”.
 
 # Alur penyesuaian
 tweaks-warning = Peringatan: menerapkan penyesuaian menulis ulang memori cadangan kamera. Penulisan yang terputus dapat merusak kamera secara permanen.

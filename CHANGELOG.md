@@ -6,6 +6,13 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+### Changed
+
+- The note under *Show the Application menu* explains how to put a single app
+  on the AEL button or soft key B: set the key to *Download Appli.* first, then
+  choose the app under *Select Application*, which stays greyed out until then.
+  ([#10](https://github.com/masterflai/pmca-re-reloaded/issues/10))
+
 ## [1.12.1-rc.2] - 2026-11-13
 
 Pre-release for testing on macOS 26. It changes how the service and tweaks

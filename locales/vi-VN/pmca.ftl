@@ -518,7 +518,7 @@ tweaks-set-not-a-choice = { $id } là công tắc, không phải lựa chọn. H
 tweaks-needs-set = { $id } là lựa chọn, không phải công tắc. Hãy dùng --set { $id }=VALUE với một trong các giá trị: { $options }
 tweak-usb-installer = Bật trình cài đặt ứng dụng qua USB
 tweak-app-menu = Hiển thị menu “Ứng dụng”
-tweak-app-menu-note = Cũng quyết định việc có thể gán một ứng dụng cho nút AEL hoặc phím mềm B hay không. Thiết lập → Khởi tạo lại đưa giá trị này về giá trị gốc từ nhà máy theo khu vực của máy ảnh, điều này có thể khiến menu bị ẩn trở lại.
+tweak-app-menu-note = Cũng quyết định việc có thể gán một ứng dụng cho nút AEL hoặc phím mềm B hay không. Thiết lập → Khởi tạo lại đưa giá trị này về giá trị gốc từ nhà máy theo khu vực của máy ảnh, điều này có thể khiến menu bị ẩn trở lại. Để gán một ứng dụng cho nút, trước tiên hãy đặt nút thành “Download Appli.”, sau đó chọn ứng dụng trong “Select Application”.
 
 # Quy trình tinh chỉnh
 tweaks-warning = Cảnh báo: áp dụng tinh chỉnh sẽ ghi lại bộ nhớ sao lưu của máy ảnh. Việc ghi bị gián đoạn có thể làm hỏng máy ảnh vĩnh viễn.

@@ -506,7 +506,7 @@ tweaks-set-not-a-choice = { $id } to przełącznik, a nie wybór. Użyj --enable
 tweaks-needs-set = { $id } to wybór, a nie przełącznik. Użyj --set { $id }=WARTOŚĆ z jedną z: { $options }
 tweak-usb-installer = Włącz instalator aplikacji USB
 tweak-app-menu = Pokaż menu „Aplikacja”
-tweak-app-menu-note = Decyduje też, czy aplikację można przypisać do przycisku AEL lub przycisku programowalnego B. Ustawienia → Inicjalizacja przywraca wartość fabryczną regionu aparatu, co może ponownie ukryć to menu.
+tweak-app-menu-note = Decyduje też, czy aplikację można przypisać do przycisku AEL lub przycisku programowalnego B. Ustawienia → Inicjalizacja przywraca wartość fabryczną regionu aparatu, co może ponownie ukryć to menu. Aby przypisać do przycisku jedną aplikację, ustaw najpierw przycisk na „Download Appli.“, a następnie wybierz aplikację w pozycji „Select Application“.
 
 # Przebieg stosowania modyfikacji
 tweaks-warning = Ostrzeżenie: stosowanie modyfikacji nadpisuje pamięć kopii zapasowej aparatu. Przerwany zapis może trwale uszkodzić aparat.
