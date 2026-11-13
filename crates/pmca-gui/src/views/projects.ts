@@ -162,7 +162,15 @@ function cardPinned(): { card: HTMLElement; reload: () => Promise<void> } {
     }
   });
 
-  void reload().catch((e) => showError(status, e));
+  // Seed from the on-disk cache first, so pinned projects show their content at
+  // once on open, without asking GitHub; a refresh is only for updates.
+  void invoke<ProjectInfo[]>("projects_cached")
+    .then((cached) => {
+      for (const info of cached) known.set(info.repo.id.toLowerCase(), info);
+    })
+    .catch(() => undefined)
+    .then(() => reload())
+    .catch((e) => showError(status, e));
   return {
     card: card(
       make("h2", { i18n: "projects-pinned-heading" }),
@@ -191,9 +199,10 @@ function cardSearch(onPinned: () => Promise<void>): HTMLElement {
         pin.disabled = true;
         showBusy(status, tr("projects-pinning"));
         try {
-          const pinned = await invoke<PinnedProject>("projects_pin", { spec: hit.id });
+          const info = await invoke<ProjectInfo>("projects_pin", { spec: hit.id });
+          known.set(info.repo.id.toLowerCase(), info);
           pin.replaceWith(pinnedBadge());
-          showDone(status, trFill("projects-pinned-done", { project: pinned.id }));
+          showDone(status, trFill("projects-pinned-done", { project: info.repo.id }));
           await onPinned();
         } catch (e) {
           pin.disabled = false;

@@ -22,8 +22,9 @@ pub(crate) fn projects_command(
             }
         }
         ProjectsAction::Pin { repo } => {
-            let pinned = projects::pin(l, repo)?;
-            println!("{}", l.tr_arg("projects-pinned-done", "project", &pinned.id));
+            let info = projects::pin(l, repo)?;
+            println!("{}", l.tr_arg("projects-pinned-done", "project", &info.repo.id));
+            print_project(l, &info);
         }
         ProjectsAction::Unpin { id } => {
             projects::unpin(l, id)?;

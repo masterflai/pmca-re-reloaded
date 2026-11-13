@@ -469,6 +469,7 @@ pub fn run() {
             install_downloaded_plugin,
             discard_plugin_download,
             projects_list,
+            projects_cached,
             projects_pin,
             projects_unpin,
             projects_search,

@@ -25,6 +25,10 @@ use crate::{Error, Result};
 /// The file the pins are kept in, under the user's data folder.
 const FILE: &str = "projects.json";
 
+/// The file the last-fetched content of each pin is cached in, so the page can
+/// show it at once without asking GitHub. Derived, disposable data.
+const CACHE_FILE: &str = "projects-cache.json";
+
 /// Projects left out after a notice of an obvious infringement, as lowercase
 /// `owner/repo`.
 const BLOCKED: &[&str] = &[];
@@ -173,6 +177,9 @@ static LOCK: Mutex<()> = Mutex::new(());
 /// Repositories described so far, by lowercase id; GitHub's rate limit is low.
 static REPOS: Mutex<BTreeMap<String, RepoInfo>> = Mutex::new(BTreeMap::new());
 
+/// Serialises read-modify-write of [`CACHE_FILE`] within the process.
+static CACHE_LOCK: Mutex<()> = Mutex::new(());
+
 fn path() -> Option<PathBuf> {
     Some(pmca_i18n::catalog::user_data_dir()?.join(FILE))
 }
@@ -195,6 +202,51 @@ fn save(l: &Localizer, file: &PinFile) -> Result<()> {
     Ok(())
 }
 
+fn cache_path() -> Option<PathBuf> {
+    Some(pmca_i18n::catalog::user_data_dir()?.join(CACHE_FILE))
+}
+
+/// The cached content of every pin, by lowercase id; unreadable means empty.
+fn load_cache() -> BTreeMap<String, ProjectInfo> {
+    cache_path()
+        .and_then(|p| std::fs::read(p).ok())
+        .and_then(|bytes| serde_json::from_slice(&bytes).ok())
+        .unwrap_or_default()
+}
+
+fn write_cache(cache: &BTreeMap<String, ProjectInfo>) {
+    let Some(path) = cache_path() else { return };
+    if let Some(dir) = path.parent() {
+        let _ = std::fs::create_dir_all(dir);
+    }
+    if let Ok(json) = serde_json::to_vec_pretty(cache) {
+        let _ = std::fs::write(path, json);
+    }
+}
+
+/// Remember the given infos as each pin's last-known content. Best effort: the
+/// cache is derived data, so failing to write it is not reported.
+fn cache_store(infos: &[ProjectInfo]) {
+    if infos.is_empty() {
+        return;
+    }
+    let _guard = CACHE_LOCK.lock().unwrap_or_else(PoisonError::into_inner);
+    let mut cache = load_cache();
+    for info in infos {
+        cache.insert(info.repo.id.to_ascii_lowercase(), info.clone());
+    }
+    write_cache(&cache);
+}
+
+/// Drop one project from the content cache.
+fn cache_forget(id: &str) {
+    let _guard = CACHE_LOCK.lock().unwrap_or_else(PoisonError::into_inner);
+    let mut cache = load_cache();
+    if cache.remove(&id.to_ascii_lowercase()).is_some() {
+        write_cache(&cache);
+    }
+}
+
 fn blocked(id: &str) -> bool {
     BLOCKED.contains(&id.to_ascii_lowercase().as_str())
 }
@@ -214,8 +266,26 @@ pub fn list() -> Vec<PinnedProject> {
         .collect()
 }
 
+/// The pinned projects' last-known content from the cache, in pin order; reads
+/// only local files, so it never asks GitHub. A pin without cached content yet
+/// is left out and appears as soon as it is refreshed or re-pinned.
+#[must_use]
+pub fn cached() -> Vec<ProjectInfo> {
+    let cache = load_cache();
+    load()
+        .pins
+        .iter()
+        .filter(|p| !blocked(&p.id()))
+        .filter_map(|p| cache.get(&p.id().to_ascii_lowercase()).cloned())
+        .collect()
+}
+
 /// Pin a project by name, after making sure it publishes a project file.
-pub fn pin(l: &Localizer, spec: &str) -> Result<PinnedProject> {
+///
+/// Reads the project once so the caller can show it the moment it is pinned,
+/// and remembers that content so the page has something to show next time
+/// without asking GitHub again.
+pub fn pin(l: &Localizer, spec: &str) -> Result<ProjectInfo> {
     let (owner, repo) =
         parse_spec(spec).ok_or_else(|| Error::Operation(l.tr("project-invalid")))?;
     let id = format!("{owner}/{repo}");
@@ -225,19 +295,26 @@ pub fn pin(l: &Localizer, spec: &str) -> Result<PinnedProject> {
     if is_pinned(&load().pins, &id) {
         return Err(Error::Operation(l.tr_arg("project-exists", "project", &id)));
     }
-    if appstore::project_file(&owner, &repo)?.is_none() {
+    // One read covers the file check and the content to show. A repository
+    // without the project file is not a project and is refused as before.
+    let mut info = read(&owner, &repo, &load().pins, false)?;
+    if info.details.is_none() {
         return Err(Error::Operation(
             l.tr_args("project-no-file", &[("project", &id), ("file", appstore::PROJECT_FILE)]),
         ));
     }
+    info.repo.pinned = true;
 
     let _guard = LOCK.lock().unwrap_or_else(PoisonError::into_inner);
     let mut file = load();
     if !is_pinned(&file.pins, &id) {
-        file.pins.push(Pin { owner, repo, seen_release: None });
+        // The release just shown counts as seen, so it is not flagged new later.
+        let seen = info.release.as_ref().map(|r| r.version.clone());
+        file.pins.push(Pin { owner, repo, seen_release: seen });
         save(l, &file)?;
     }
-    Ok(PinnedProject { url: format!("https://github.com/{id}"), id })
+    cache_store(std::slice::from_ref(&info));
+    Ok(info)
 }
 
 /// Unpin a project.
@@ -249,7 +326,9 @@ pub fn unpin(l: &Localizer, id: &str) -> Result<()> {
     if file.pins.len() == before {
         return Err(Error::Operation(l.tr_arg("project-unknown", "project", id)));
     }
-    save(l, &file)
+    save(l, &file)?;
+    cache_forget(id);
+    Ok(())
 }
 
 fn describe(info: &RepoInfo, pins: &[Pin]) -> ProjectRepo {
@@ -394,6 +473,7 @@ pub fn refresh(l: &Localizer) -> Result<ProjectList> {
         }
         save(l, &file)?;
     }
+    cache_store(&list.entries);
     Ok(list)
 }
 

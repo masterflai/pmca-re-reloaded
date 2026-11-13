@@ -10,12 +10,18 @@ pub(crate) fn projects_list() -> Vec<PinnedProject> {
     pmca_app::projects::list()
 }
 
+/// The pinned projects' last-known content from the local cache; no network.
+#[tauri::command]
+pub(crate) fn projects_cached() -> Vec<ProjectInfo> {
+    pmca_app::projects::cached()
+}
+
 /// Pin a project after making sure it publishes a project file.
 #[tauri::command]
 pub(crate) async fn projects_pin(
     app: AppHandle,
     spec: String,
-) -> Result<PinnedProject, CommandError> {
+) -> Result<ProjectInfo, CommandError> {
     in_background(move || {
         let localizer = app.state::<AppState>().localizer()?;
         Ok(pmca_app::projects::pin(&localizer, &spec)?)

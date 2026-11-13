@@ -14,6 +14,12 @@ All notable changes to this project are documented here. The format follows
   be entered, instead of showing an opaque "invalid authentication response 9".
   Reading camera information and installing apps over MTP are unaffected.
 
+### Changed
+
+- The *Projects* page now shows a pinned project's details the moment it is
+  added, and keeps them so the page is filled in again on the next start
+  without asking GitHub. *Refresh* is only needed to check for newer releases.
+
 ## [1.12.1-rc.3] - 2026-11-13
 
 Pre-release for testing on macOS 26. It changes how the service and tweaks
