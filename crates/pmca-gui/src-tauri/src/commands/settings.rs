@@ -2,6 +2,7 @@
 
 use crate::*;
 
+use tauri_plugin_updater::UpdaterExt;
 /// List the locales shipped with the application.
 #[tauri::command]
 pub(crate) fn available_locales() -> Vec<String> {
@@ -87,6 +88,119 @@ pub(crate) fn update_supported() -> bool {
 #[tauri::command]
 pub(crate) fn update_blockers(state: State<'_, AppState>) -> Vec<String> {
     state.update_blockers().iter().map(|&code| code.to_string()).collect()
+}
+
+/// Event the window listens to for application-update download progress.
+const UPDATE_PROGRESS_EVENT: &str = "pmca://update-progress";
+
+/// How far an application-update download has got, for the window's progress bar.
+#[derive(Clone, serde::Serialize)]
+struct UpdateProgress {
+    /// Bytes received so far.
+    downloaded: u64,
+    /// Total bytes, when the server announced a content length.
+    total: Option<u64>,
+}
+
+/// Wrap an updater-plugin failure as a [`CommandError`] under a stable code the
+/// window can translate; the plugin's own wording is kept as the fallback.
+fn update_error(code: &str, e: impl std::fmt::Display) -> CommandError {
+    let message = e.to_string();
+    CommandError {
+        code: code.into(),
+        message: message.clone(),
+        detail: Some(message),
+        recovery: None,
+    }
+}
+
+/// Refuse while a camera operation, session, batch install or un-restored write
+/// test is in progress, so an update never interrupts work on the camera.
+fn refuse_if_busy(state: &AppState) -> Result<(), CommandError> {
+    let blockers = state.update_blockers();
+    if blockers.is_empty() {
+        return Ok(());
+    }
+    Err(CommandError {
+        code: "update-busy".into(),
+        message: "an operation is in progress; the update has to wait".into(),
+        detail: Some(blockers.join(",")),
+        recovery: None,
+    })
+}
+
+/// Download the newest release and verify its signature, keeping the installer
+/// in memory for [`update_install`]. Returns the version that was fetched.
+///
+/// The signature is checked against the public key built into the application
+/// before the bytes are returned, so a tampered download never reaches the
+/// install step. Progress is reported through [`UPDATE_PROGRESS_EVENT`]; the
+/// camera guard is checked first so a download cannot start mid-operation.
+#[tauri::command]
+pub(crate) async fn update_download(
+    app: AppHandle,
+    state: State<'_, AppState>,
+) -> Result<String, CommandError> {
+    refuse_if_busy(&state)?;
+    let update = app
+        .updater()
+        .map_err(|e| update_error("update-check-failed", e))?
+        .check()
+        .await
+        .map_err(|e| update_error("update-check-failed", e))?
+        .ok_or_else(|| CommandError {
+            code: "update-none".into(),
+            message: "no newer release is available".into(),
+            detail: None,
+            recovery: None,
+        })?;
+    let version = update.version.clone();
+    let reporter = app.clone();
+    let mut downloaded: u64 = 0;
+    let bytes = update
+        .download(
+            move |chunk, total| {
+                downloaded += chunk as u64;
+                let _ = reporter.emit(UPDATE_PROGRESS_EVENT, UpdateProgress { downloaded, total });
+            },
+            || {},
+        )
+        .await
+        .map_err(|e| update_error("update-download-failed", e))?;
+    *state.pending_update.lock().map_err(CommandError::internal)? =
+        Some(PendingUpdate { update, bytes });
+    Ok(version)
+}
+
+/// Install the update fetched by [`update_download`] and restart into it.
+///
+/// The camera guard is checked again: the user may have started an operation
+/// between downloading and confirming, and replacing the program while the
+/// camera is being written could brick it. This never returns on success — the
+/// process is replaced by the restarted application.
+#[tauri::command]
+pub(crate) async fn update_install(
+    app: AppHandle,
+    state: State<'_, AppState>,
+) -> Result<(), CommandError> {
+    refuse_if_busy(&state)?;
+    let pending =
+        state.pending_update.lock().map_err(CommandError::internal)?.take().ok_or_else(|| {
+            CommandError {
+                code: "update-not-downloaded".into(),
+                message: "no update has been downloaded yet".into(),
+                detail: None,
+                recovery: None,
+            }
+        })?;
+    // The elevated helper holds a copy of the running program open; it has to
+    // go before the installer replaces the files underneath it.
+    #[cfg(target_os = "macos")]
+    if let Ok(mut broker) = state.broker.lock() {
+        broker.take();
+    }
+    pending.update.install(&pending.bytes).map_err(|e| update_error("update-install-failed", e))?;
+    app.restart();
 }
 
 /// Which operating system the window is running on.

@@ -44,6 +44,17 @@ pub(crate) enum Reply<T> {
 /// Event name the front-end subscribes to for installation progress.
 const PROGRESS_EVENT: &str = "pmca://progress";
 
+/// An application update that has been downloaded and signature-verified, held
+/// until the user says to install it now or when the window closes. The bytes
+/// are the installer the updater returned; keeping the [`Update`] alongside
+/// them is what [`Update::install`] needs to place them.
+///
+/// [`Update`]: tauri_plugin_updater::Update
+pub(crate) struct PendingUpdate {
+    pub(crate) update: tauri_plugin_updater::Update,
+    pub(crate) bytes: Vec<u8>,
+}
+
 /// A failure handed to the webview.
 ///
 /// The front-end looks up `err-{code}` in its catalogue and appends `detail`;
@@ -178,6 +189,9 @@ struct AppState {
     /// Held by every operation that talks to the camera; `true` once the
     /// start-up sweep has run. See [`with_camera`].
     camera: Mutex<bool>,
+    /// An application update downloaded and verified, waiting to be installed
+    /// now or when the window closes. Holds no camera session.
+    pending_update: Mutex<Option<PendingUpdate>>,
     /// macOS: the elevated copy holding the service-mode work, once started.
     #[cfg(target_os = "macos")]
     broker: Mutex<Option<pmca_app::broker::Broker>>,
@@ -199,6 +213,7 @@ impl AppState {
             plugin_downloads: Mutex::new(HashMap::new()),
             install_series: Mutex::new(None),
             camera: Mutex::new(false),
+            pending_update: Mutex::new(None),
             #[cfg(target_os = "macos")]
             broker: Mutex::new(None),
         }
@@ -419,6 +434,8 @@ pub fn run() {
             check_for_update,
             update_supported,
             update_blockers,
+            update_download,
+            update_install,
             host_platform,
             check_interfering_services,
             get_camera_info,
