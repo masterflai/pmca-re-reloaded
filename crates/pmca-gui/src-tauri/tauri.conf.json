@@ -38,6 +38,7 @@
   "bundle": {
     "active": true,
     "targets": "all",
+    "createUpdaterArtifacts": true,
     "publisher": "masterflai",
     "copyright": "Copyright (c) 2015 ma1co, (c) 2026 masterflai. MIT License.",
     "homepage": "https://github.com/masterflai/pmca-re-reloaded",

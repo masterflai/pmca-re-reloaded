@@ -45,14 +45,15 @@ jobs:
             target: x86_64-apple-darwin
             archive: pmca-console-x86_64-macos.tar.gz
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
 
       - name: Install Rust toolchain
-        uses: dtolnay/rust-toolchain@stable
+        uses: dtolnay/rust-toolchain@b725eda525362e7cf34af9a7243cac1e3f01a7ec # stable
         with:
+          toolchain: stable
           targets: ${{ matrix.target }}
 
-      - uses: Swatinem/rust-cache@v2
+      - uses: Swatinem/rust-cache@d1527c8f67ef9af357290475d4af4b0fab8f12e0 # v2.9.3
         with:
           key: ${{ matrix.target }}
 
@@ -98,7 +99,7 @@ jobs:
           fi
 
       - name: Upload artifact
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5.0.0
         with:
           name: ${{ matrix.archive }}
           path: |
@@ -109,6 +110,11 @@ jobs:
   gui:
     name: GUI ${{ matrix.label }}
     runs-on: ${{ matrix.os }}
+    # The updater signing key lives in this environment's secrets, so a build
+    # that produces signed updater artifacts has to run in it. The environment
+    # carries a required-reviewer rule, which is the manual gate that stops a
+    # single push from signing and publishing an update unreviewed.
+    environment: release
     strategy:
       fail-fast: false
       matrix:
@@ -136,19 +142,20 @@ jobs:
             targets: ""
             bundle-dir: target/release/bundle
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
 
       - name: Install Rust toolchain
-        uses: dtolnay/rust-toolchain@stable
+        uses: dtolnay/rust-toolchain@b725eda525362e7cf34af9a7243cac1e3f01a7ec # stable
         with:
+          toolchain: stable
           targets: ${{ matrix.targets }}
 
-      - uses: Swatinem/rust-cache@v2
+      - uses: Swatinem/rust-cache@d1527c8f67ef9af357290475d4af4b0fab8f12e0 # v2.9.3
         with:
           workspaces: crates/pmca-gui/src-tauri -> ../../../target
           key: ${{ matrix.label }}
 
-      - uses: actions/setup-node@v5
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5.0.0
         with:
           node-version: 22
 
@@ -166,17 +173,30 @@ jobs:
 
       # `tauri build` runs the frontend build itself through
       # `beforeBuildCommand` and adds the `custom-protocol` feature.
+      #
+      # The signing key is exposed only on this step, not job-wide: it signs
+      # the updater artifacts here and nothing else in the job needs it, so no
+      # later action can read it. `createUpdaterArtifacts` in tauri.conf makes
+      # the bundler emit a `.sig` beside each updatable bundle.
       - name: Build bundle
         working-directory: crates/pmca-gui
+        env:
+          TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
+          TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
         run: npm run tauri -- build --bundles ${{ matrix.bundles }} ${{ matrix.tauri-target && format('--target {0}', matrix.tauri-target) || '' }}
 
       - name: Collect bundles
         shell: bash
         run: |
           mkdir -p gui-artifacts
+          # `.sig` is the updater's detached minisign signature; macOS updates
+          # from the `.app.tar.gz`, not the .dmg, so both the archive and its
+          # signature are collected. The .deb is managed by the system package
+          # manager and is not an updater target, so it gets no signature.
           find "${{ matrix.bundle-dir }}" -type f \
             \( -name '*.msi' -o -name '*-setup.exe' -o -name '*.dmg' \
-               -o -name '*.deb' -o -name '*.AppImage' \) \
+               -o -name '*.deb' -o -name '*.AppImage' \
+               -o -name '*.app.tar.gz' -o -name '*.sig' \) \
             -exec cp {} gui-artifacts/ \;
           # An empty directory here means the bundler silently produced
           # nothing, which is easy to miss in a green log. This runs before
@@ -188,6 +208,11 @@ jobs:
       # of the newest release's .zsync file and writes that file. The AppImage is
       # renamed first to the name GitHub gives the asset (spaces become dots),
       # because the .zsync file refers to it by name. Tool and runtime are pinned.
+      #
+      # Repacking changes the AppImage's bytes, so the signature the bundler
+      # wrote over the original no longer matches. The old `.sig` is dropped and
+      # a fresh one is signed over the repacked file, so the updater verifies
+      # exactly what it downloads.
       - name: Embed AppImage update information
         if: matrix.label == 'linux'
         shell: bash
@@ -198,6 +223,8 @@ jobs:
           RUNTIME_URL: https://github.com/AppImage/type2-runtime/releases/download/20251108/runtime-x86_64
           RUNTIME_SHA256: 2fca8b443c92510f1483a883f60061ad09b46b978b2631c807cd873a47ec260d
           UPDATE_INFORMATION: gh-releases-zsync|masterflai|pmca-re-reloaded|latest|PMCA-RE.RELOADED_*_amd64.AppImage.zsync
+          TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
+          TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
         run: |
           set -euo pipefail
           built=(*.AppImage)
@@ -209,6 +236,8 @@ jobs:
           echo "$RUNTIME_SHA256  /tmp/runtime" | sha256sum -c -
           chmod +x /tmp/appimagetool "${built[0]}"
           "./${built[0]}" --appimage-extract >/dev/null
+          # Drop the now-stale signature of the original image.
+          rm -f "${built[0]}.sig" "$name.sig"
           rm "${built[0]}"
           ARCH=x86_64 /tmp/appimagetool --appimage-extract-and-run --no-appstream \
             --runtime-file /tmp/runtime -u "$UPDATE_INFORMATION" squashfs-root "$name"
@@ -220,6 +249,14 @@ jobs:
           chmod +x "$name"
           "./$name" --appimage-extract >/dev/null
           rm -rf squashfs-root
+          # Re-sign the repacked image; the CLI writes "$name.sig". The version
+          # binding matches what `tauri build` put in the other artifacts' sigs.
+          ver=$(jq -r .version "$GITHUB_WORKSPACE/crates/pmca-gui/src-tauri/tauri.conf.json")
+          npm --prefix "$GITHUB_WORKSPACE/crates/pmca-gui" run tauri -- \
+            signer sign --private-key "$TAURI_SIGNING_PRIVATE_KEY" \
+            --password "$TAURI_SIGNING_PRIVATE_KEY_PASSWORD" \
+            --app-version "$ver" "$PWD/$name"
+          [ -f "$name.sig" ] || { echo "the repacked AppImage was not signed"; exit 1; }
 
       # Windows is the one platform where "portable" is not the default: both
       # bundles above install. macOS ships a .app and Linux an AppImage, which
@@ -241,6 +278,10 @@ jobs:
           cp target/release/pmca-gui.exe "$DIR/"
           cp -r updatershell/bodyfs "$DIR/bodyfs"
           cp LICENSE.txt README.md THIRD-PARTY.md "$DIR/"
+          # The marker tells the unpacked program it was installed by hand, so
+          # `update_supported` hides the in-app updater: there is no installer
+          # to replace it, and overwriting a running .exe in place would fail.
+          touch "$DIR/portable.marker"
           7z a gui-artifacts/pmca-gui-portable-x86_64-windows.zip "$DIR"
 
       - name: Checksum
@@ -257,7 +298,7 @@ jobs:
           ls -l
 
       - name: Upload artifact
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5.0.0
         with:
           name: pmca-gui-${{ matrix.label }}
           path: gui-artifacts/*
@@ -278,12 +319,12 @@ jobs:
       actions: read
       contents: read
     steps:
-      - uses: actions/download-artifact@v5
+      - uses: actions/download-artifact@634f93cb2916e3fdff6788551b99b062d0335ce0 # v5.0.0
         with:
           name: pmca-console-x86_64-windows.zip
           path: unsigned/console
 
-      - uses: actions/download-artifact@v5
+      - uses: actions/download-artifact@634f93cb2916e3fdff6788551b99b062d0335ce0 # v5.0.0
         with:
           name: pmca-gui-windows
           path: unsigned/gui
@@ -305,14 +346,14 @@ jobs:
 
       - name: Upload unsigned files
         id: upload-unsigned
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5.0.0
         with:
           name: signpath-input
           path: signpath-input/*
           if-no-files-found: error
 
       - name: Sign
-        uses: signpath/github-action-submit-signing-request@v3
+        uses: signpath/github-action-submit-signing-request@f6d04783b4569d051e0c80105fe66e82819d0092 # v3
         with:
           api-token: ${{ secrets.SIGNPATH_API_TOKEN }}
           organization-id: ${{ vars.SIGNPATH_ORGANIZATION_ID }}
@@ -341,7 +382,7 @@ jobs:
           for f in *; do sha256sum "$f" > "$f.sha256"; done
           ls -l
 
-      - uses: actions/upload-artifact@v5
+      - uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5.0.0
         with:
           name: windows-signed
           path: out/*
@@ -359,13 +400,13 @@ jobs:
     permissions:
       contents: write
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
         with:
           sparse-checkout: CHANGELOG.md
           sparse-checkout-cone-mode: false
 
       - name: Download artifacts
-        uses: actions/download-artifact@v5
+        uses: actions/download-artifact@634f93cb2916e3fdff6788551b99b062d0335ce0 # v5.0.0
         with:
           path: artifacts
 
@@ -386,6 +427,67 @@ jobs:
             echo "SIGNED=1" >> "$GITHUB_ENV"
           fi
           ls -l release
+
+      # The updater fetches this file from the "latest" release and compares
+      # its version with the running one. It is written only for final tags:
+      # a pre-release is never the "latest" release the endpoint resolves to,
+      # so it must not carry an updater manifest that would offer itself.
+      #
+      # The signature of each platform's artifact is the detached minisign
+      # signature the build (or, for the AppImage, the re-sign after repacking)
+      # produced; it is carried inline here, so the updater has everything it
+      # needs to verify the download before running it. GitHub turns spaces in
+      # an asset name into dots, so the download URL uses the dotted form.
+      #
+      # Windows points at the NSIS installer. While SignPath is inactive the
+      # published installer is the one the bundler signed, so its signature
+      # matches; enabling SignPath repackages the installer and would need its
+      # updater signature refreshed too (see the sign job).
+      - name: Build updater manifest
+        if: ${{ !contains(github.ref_name, '-') }}
+        shell: bash
+        working-directory: release
+        run: |
+          set -euo pipefail
+          shopt -s nullglob
+          version="${GITHUB_REF_NAME#v}"
+          base="https://github.com/masterflai/pmca-re-reloaded/releases/download/${GITHUB_REF_NAME}"
+          pick() {
+            local m=( $1 )
+            [ "${#m[@]}" -eq 1 ] || { echo "expected one match for '$1', found ${#m[@]}" >&2; return 1; }
+            printf '%s' "${m[0]}"
+          }
+          url() { printf '%s/%s' "$base" "${1// /.}"; }
+          win=$(pick '*-setup.exe')
+          mac=$(pick '*.app.tar.gz')
+          lin=$(pick '*.AppImage')
+          for f in "$win" "$mac" "$lin"; do
+            [ -f "$f.sig" ] || { echo "missing signature for $f"; exit 1; }
+          done
+          notes=$(awk -v v="$version" '
+            /^## \[/ { inside = index($0, "## [" v "]") == 1; next }
+            /^\[[^]]+\]: / { next }
+            inside { print }
+          ' "$GITHUB_WORKSPACE/CHANGELOG.md")
+          jq -n \
+            --arg version "$version" \
+            --arg notes "$notes" \
+            --arg pub_date "$(date -u +%Y-%m-%dT%H:%M:%SZ)" \
+            --arg win_url "$(url "$win")" --arg win_sig "$(cat "$win.sig")" \
+            --arg mac_url "$(url "$mac")" --arg mac_sig "$(cat "$mac.sig")" \
+            --arg lin_url "$(url "$lin")" --arg lin_sig "$(cat "$lin.sig")" \
+            '{
+              version: $version,
+              notes: $notes,
+              pub_date: $pub_date,
+              platforms: {
+                "windows-x86_64": { signature: $win_sig, url: $win_url },
+                "darwin-aarch64": { signature: $mac_sig, url: $mac_url },
+                "darwin-x86_64": { signature: $mac_sig, url: $mac_url },
+                "linux-x86_64": { signature: $lin_sig, url: $lin_url }
+              }
+            }' > latest.json
+          cat latest.json
 
       - name: Release notes
         shell: bash
@@ -450,7 +552,7 @@ jobs:
           cat notes.md
 
       - name: Create GitHub release
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@3bb12739c298aeb8a4eeaf626c5b8d85266b0e65 # v2.6.2
         with:
           files: release/*
           name: PMCA-RE RELOADED ${{ github.ref_name }}
