@@ -352,6 +352,7 @@ fn resolve_resource(app: &AppHandle, relative: &str, dev_fallback: &Path) -> Pat
 pub fn run() {
     tauri::Builder::default()
         .plugin(tauri_plugin_dialog::init())
+        .plugin(tauri_plugin_updater::Builder::new().build())
         .setup(|app| {
             let handle = app.handle();
             let manifest = Path::new(env!("CARGO_MANIFEST_DIR"));

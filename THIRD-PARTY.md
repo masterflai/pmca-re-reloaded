@@ -11,48 +11,48 @@ this file is for. It ships alongside `LICENSE.txt` in every release archive.
 The licence of this project itself is in [LICENSE.txt](LICENSE.txt) and is not
 repeated here.
 
-Generated: 2026-10-30
+Generated: 2026-11-14
 
-* Packages: **526**
-* With a copyright notice recovered from their sources: **381**
+* Packages: **552**
+* With a copyright notice recovered from their sources: **400**
 * Workspaces read: pmca (CLI, core, USB, market), pmca-gui (Tauri desktop shell)
 
 ## Licences in use
 
 | Licence (SPDX) | Packages |
 | --- | ---: |
-| `MIT OR Apache-2.0` | 252 |
-| `MIT` | 111 |
-| `Apache-2.0 OR MIT` | 43 |
-| `MIT/Apache-2.0` | 20 |
+| `MIT OR Apache-2.0` | 269 |
+| `MIT` | 113 |
+| `Apache-2.0 OR MIT` | 45 |
+| `MIT/Apache-2.0` | 21 |
+| `Zlib OR Apache-2.0 OR MIT` | 18 |
 | `Unicode-3.0` | 18 |
-| `Zlib OR Apache-2.0 OR MIT` | 17 |
 | `Unlicense OR MIT` | 10 |
 | `Apache-2.0 WITH LLVM-exception OR Apache-2.0 OR MIT` | 10 |
 | `MPL-2.0` | 5 |
 | `Apache-2.0/MIT` | 4 |
-| `ISC` | 3 |
-| `Apache-2.0` | 3 |
-| `BSD-3-Clause` | 3 |
 | `Zlib` | 3 |
+| `Apache-2.0` | 3 |
+| `Apache-2.0 OR ISC OR MIT` | 3 |
+| `ISC` | 3 |
+| `BSD-3-Clause` | 3 |
 | `MIT OR Apache-2.0 OR Zlib` | 2 |
-| `MIT OR Apache-2.0 OR LGPL-2.1-or-later` | 2 |
 | `Unlicense/MIT` | 2 |
+| `MIT OR Apache-2.0 OR LGPL-2.1-or-later` | 2 |
+| `CDLA-Permissive-2.0` | 2 |
 | `BSD-3-Clause OR MIT OR Apache-2.0` | 2 |
 | `BSD-2-Clause` | 2 |
-| `CC0-1.0 OR MIT-0 OR Apache-2.0` | 1 |
-| `CDLA-Permissive-2.0` | 1 |
+| `BSD-3-Clause/MIT` | 1 |
 | `BSD-3-Clause AND MIT` | 1 |
 | `BSD-2-Clause OR MIT OR Apache-2.0` | 1 |
 | `Apache-2.0 WITH LLVM-exception` | 1 |
-| `Apache-2.0 OR ISC OR MIT` | 1 |
 | `MIT OR Zlib OR Apache-2.0` | 1 |
 | `Apache-2.0 OR GPL-2.0-only` | 1 |
 | `Apache-2.0 AND MIT` | 1 |
 | `Apache-2.0 AND ISC` | 1 |
 | `Apache-2.0 / MIT` | 1 |
 | `0BSD OR MIT OR Apache-2.0` | 1 |
-| `BSD-3-Clause/MIT` | 1 |
+| `CC0-1.0 OR MIT-0 OR Apache-2.0` | 1 |
 | `(MIT OR Apache-2.0) AND Unicode-3.0` | 1 |
 
 A slash or `OR` means the package offers a choice; this project relies on the
@@ -464,6 +464,13 @@ in executable form must tell the recipients where its source is available
 
   > Copyright (c) 2012-2013 Mozilla Foundation
 
+### core-foundation 0.9.4
+
+* Licence: `MIT OR Apache-2.0`
+* Source: https://github.com/servo/core-foundation-rs
+
+  > Copyright (c) 2012-2013 Mozilla Foundation
+
 ### core-foundation-sys 0.8.7
 
 * Licence: `MIT OR Apache-2.0`
@@ -780,6 +787,13 @@ in executable form must tell the recipients where its source is available
 * Source: https://github.com/Diggsey/rust-field-offset
 
   > Copyright (c) 2016-2021 Diggory Blake, and other contributors.
+
+### filetime 0.2.29
+
+* Licence: `MIT/Apache-2.0`
+* Source: https://github.com/alexcrichton/filetime
+
+  > Copyright (c) 2014 Alex Crichton
 
 ### find-msvc-tools 0.1.10
 
@@ -1152,6 +1166,14 @@ in executable form must tell the recipients where its source is available
 
   > Copyright (c) 2014-2026 Sean McArthur
 
+### hyper-rustls 0.27.10
+
+* Licence: `Apache-2.0 OR ISC OR MIT`
+* Source: https://github.com/rustls/hyper-rustls
+
+  > Copyright (c) 2016, Joseph Birr-Pixton <jpixton@gmail.com>
+  > Copyright (c) 2016 Joseph Birr-Pixton <jpixton@gmail.com>
+
 ### hyper-util 0.1.20
 
 * Licence: `MIT`
@@ -1374,6 +1396,16 @@ in executable form must tell the recipients where its source is available
 
   > Copyright (c) 2016 Prevoty, Inc. and jni-rs contributors
 
+### jni 0.22.4
+
+* Licence: `MIT OR Apache-2.0`
+* Source: https://github.com/jni-rs/jni-rs
+
+### jni-macros 0.22.4
+
+* Licence: `MIT OR Apache-2.0`
+* Source: https://github.com/jni-rs/jni-rs
+
 ### jni-sys 0.3.1
 
 * Licence: `MIT OR Apache-2.0`
@@ -1567,6 +1599,15 @@ in executable form must tell the recipients where its source is available
 
   > Copyright (c) 2015 Austin Bonander
 
+### minisign-verify 0.3.0
+
+* Licence: `MIT`
+* Source: https://github.com/jedisct1/rust-minisign-verify
+
+  > Copyright (c) 2019-2025 Frank Denis
+  > Copyright (c) 2006-2009 Graydon Hoare
+  > Copyright (c) 2009-2013 Mozilla Foundation
+
 ### miniz_oxide 0.8.9
 
 * Licence: `MIT OR Zlib OR Apache-2.0`
@@ -1740,6 +1781,11 @@ in executable form must tell the recipients where its source is available
 * Licence: `Zlib OR Apache-2.0 OR MIT`
 * Source: https://github.com/madsmtm/objc2
 
+### objc2-osa-kit 0.3.2
+
+* Licence: `Zlib OR Apache-2.0 OR MIT`
+* Source: https://github.com/madsmtm/objc2
+
 ### objc2-quartz-core 0.3.2
 
 * Licence: `Zlib OR Apache-2.0 OR MIT`
@@ -1772,10 +1818,24 @@ in executable form must tell the recipients where its source is available
 
   > Copyright (c) Individual contributors
 
+### openssl-probe 0.2.2
+
+* Licence: `MIT OR Apache-2.0`
+* Source: https://github.com/rustls/openssl-probe
+
+  > Copyright (c) 2014 Alex Crichton
+
 ### option-ext 0.2.0
 
 * Licence: `MPL-2.0`
 * Source: https://github.com/soc/option-ext.git
+
+### osakit 0.3.1
+
+* Licence: `MIT OR Apache-2.0`
+* Source: https://github.com/mdevils/rust-osakit
+
+  > Copyright (c) 2024 Marat Dulin
 
 ### pango 0.18.3
 
@@ -2089,6 +2149,14 @@ in executable form must tell the recipients where its source is available
   > Copyright (c) 2016, Joseph Birr-Pixton <jpixton@gmail.com>
   > Copyright (c) 2016 Joseph Birr-Pixton <jpixton@gmail.com>
 
+### rustls-native-certs 0.8.5
+
+* Licence: `Apache-2.0 OR ISC OR MIT`
+* Source: https://github.com/rustls/rustls-native-certs
+
+  > Copyright (c) 2016, Joseph Birr-Pixton <jpixton@gmail.com>
+  > Copyright (c) 2016 Joseph Birr-Pixton <jpixton@gmail.com>
+
 ### rustls-pki-types 1.15.1
 
 * Licence: `MIT OR Apache-2.0`
@@ -2096,6 +2164,18 @@ in executable form must tell the recipients where its source is available
 
   > Copyright 2023 Dirkjan Ochtman
   > Copyright (c) 2023 Dirkjan Ochtman <dirkjan@ochtman.nl>
+
+### rustls-platform-verifier 0.7.1
+
+* Licence: `MIT OR Apache-2.0`
+* Source: https://github.com/rustls/rustls-platform-verifier
+
+  > Copyright (c) 2022 1Password
+
+### rustls-platform-verifier-android 0.2.0
+
+* Licence: `MIT OR Apache-2.0`
+* Source: https://github.com/rustls/rustls-platform-verifier
 
 ### rustls-webpki 0.103.16
 
@@ -2115,6 +2195,13 @@ in executable form must tell the recipients where its source is available
 * Source: https://github.com/BurntSushi/same-file
 
   > Copyright (c) 2017 Andrew Gallant
+
+### schannel 0.1.30
+
+* Licence: `MIT`
+* Source: https://github.com/steffengy/schannel-rs
+
+  > Copyright (c) 2015 steffengy
 
 ### schemars 0.8.22
 
@@ -2150,6 +2237,20 @@ in executable form must tell the recipients where its source is available
 * Source: https://github.com/bluss/scopeguard
 
   > Copyright (c) 2016-2019 Ulrik Sverdrup "bluss" and scopeguard developers
+
+### security-framework 3.7.0
+
+* Licence: `MIT OR Apache-2.0`
+* Source: https://github.com/kornelski/rust-security-framework
+
+  > Copyright (c) 2015 Steven Fackler
+
+### security-framework-sys 2.17.0
+
+* Licence: `MIT OR Apache-2.0`
+* Source: https://github.com/kornelski/rust-security-framework
+
+  > Copyright (c) 2015 Steven Fackler
 
 ### selectors 0.38.0
 
@@ -2294,12 +2395,22 @@ in executable form must tell the recipients where its source is available
   > Copyright 2015 Nicholas Allegra (comex).
   > Copyright (c) 2015 Nicholas Allegra (comex).
 
+### simd_cesu8 1.2.0
+
+* Licence: `Apache-2.0 OR MIT`
+* Source: https://github.com/seancroach/simd_cesu8
+
 ### simd-adler32 0.3.10
 
 * Licence: `MIT`
 * Source: https://github.com/mcountryman/simd-adler32
 
   > Copyright (c) [2021] [Marvin Countryman]
+
+### simdutf8 0.1.5
+
+* Licence: `MIT OR Apache-2.0`
+* Source: https://github.com/rusticstuff/simdutf8
 
 ### siphasher 1.0.3
 
@@ -2439,6 +2550,20 @@ in executable form must tell the recipients where its source is available
 
   > Copyright 2016 Nika Layzell
 
+### system-configuration 0.7.0
+
+* Licence: `MIT OR Apache-2.0`
+* Source: https://github.com/mullvad/system-configuration-rs
+
+  > Copyright (c) 2024 Mullvad VPN AB
+
+### system-configuration-sys 0.6.0
+
+* Licence: `MIT OR Apache-2.0`
+* Source: https://github.com/mullvad/system-configuration-rs
+
+  > Copyright (c) 2024 Mullvad VPN AB
+
 ### system-deps 6.2.2
 
 * Licence: `MIT OR Apache-2.0`
@@ -2455,6 +2580,13 @@ in executable form must tell the recipients where its source is available
 * Source: https://github.com/tauri-apps/tao
 
   > Copyright (c) 2022 - Present Tauri Apps Contributors
+
+### tar 0.4.46
+
+* Licence: `MIT OR Apache-2.0`
+* Source: https://github.com/composefs/tar-rs
+
+  > Copyright (c) The tar-rs Project Contributors
 
 ### target-lexicon 0.12.16
 
@@ -2508,6 +2640,13 @@ in executable form must tell the recipients where its source is available
 
   > Copyright (c) 2017 - Present Tauri Apps Contributors
 
+### tauri-plugin-updater 2.14.1
+
+* Licence: `Apache-2.0 OR MIT`
+* Source: https://github.com/tauri-apps/plugins-workspace
+
+  > Copyright (c) 2017 - Present Tauri Apps Contributors
+
 ### tauri-runtime 2.12.1
 
 * Licence: `Apache-2.0 OR MIT`
@@ -2536,6 +2675,13 @@ in executable form must tell the recipients where its source is available
 
   > Copyright (c) 2023 - Present Tauri Apps Contributors
   > Copyright (c) 2016 Max Resch
+
+### tempfile 3.27.0
+
+* Licence: `MIT OR Apache-2.0`
+* Source: https://github.com/Stebalien/tempfile
+
+  > Copyright (c) 2015 Steven Allen
 
 ### tendril 0.5.1
 
@@ -2620,6 +2766,14 @@ in executable form must tell the recipients where its source is available
 * Source: https://github.com/tokio-rs/tokio
 
   > Copyright (c) Tokio Contributors
+
+### tokio-rustls 0.26.6
+
+* Licence: `MIT OR Apache-2.0`
+* Source: https://github.com/rustls/tokio-rustls
+
+  > Copyright 2017 quininer kel
+  > Copyright (c) 2017 quininer kel
 
 ### tokio-util 0.7.19
 
@@ -3058,6 +3212,11 @@ in executable form must tell the recipients where its source is available
 
   > Copyright (c) 2016 Boucher, Antoni <bouanto@zoho.com>
 
+### webpki-root-certs 1.0.12
+
+* Licence: `CDLA-Permissive-2.0`
+* Source: https://github.com/rustls/webpki-roots
+
 ### webpki-roots 1.0.10
 
 * Licence: `CDLA-Permissive-2.0`
@@ -3326,6 +3485,13 @@ in executable form must tell the recipients where its source is available
 
   > Copyright (c) Microsoft Corporation.
 
+### windows-registry 0.6.1
+
+* Licence: `MIT OR Apache-2.0`
+* Source: https://github.com/microsoft/windows-rs
+
+  > Copyright (c) Microsoft Corporation.
+
 ### windows-result 0.4.1
 
 * Licence: `MIT OR Apache-2.0`
@@ -3462,6 +3628,13 @@ in executable form must tell the recipients where its source is available
 
 * Licence: `MIT`
 * Source: https://github.com/AltF02/x11-rs.git
+
+### xattr 1.7.0
+
+* Licence: `MIT OR Apache-2.0`
+* Source: https://github.com/Stebalien/xattr
+
+  > Copyright (c) 2015 Steven Allen
 
 ### yoke 0.8.3
 

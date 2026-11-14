@@ -54,6 +54,9 @@
 *.dat
 *.hdr
 *.key
+# The updater's minisign public key lives in tauri.conf.json; the loose file
+# that `tauri signer generate` writes beside the private key is redundant.
+updater.key.pub
 *.pem
 *.p12
 *.pfx

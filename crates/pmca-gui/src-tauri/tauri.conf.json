@@ -24,6 +24,17 @@
       "csp": "default-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self' ipc: http://ipc.localhost; object-src 'none'; base-uri 'self'; form-action 'none'"
     }
   },
+  "plugins": {
+    "updater": {
+      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDBERDcxRDExM0I1M0ExNEMKUldSTW9WTTdFUjNYRGNDQk42Z0tRb1JNWXUyd2lKSHBqV1h3Y3RJVktJb29jam1Zd1lrdHJPUGwK",
+      "endpoints": [
+        "https://github.com/masterflai/pmca-re-reloaded/releases/latest/download/latest.json"
+      ],
+      "windows": {
+        "installMode": "passive"
+      }
+    }
+  },
   "bundle": {
     "active": true,
     "targets": "all",
