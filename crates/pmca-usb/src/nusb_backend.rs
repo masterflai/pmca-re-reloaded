@@ -580,14 +580,28 @@ fn capture_round(
     // through to the IOUSBHost capture below; a capture that then failed resets
     // the device on drop, and the next round retries this same path on the
     // settled, re-enumerated device -- it is the only path that has moved data.
-    match crate::macos_capture::iokit_usb::CapturedUsbInterface::capture(id, interface_number, note)
-    {
-        Ok(iface) => return Ok(Link::UsbLib(iface)),
-        Err(e) => {
-            let reset = e.device_reset;
-            note(e.message);
-            if reset {
-                return Err("device reset by the capture, retrying on the settled device".into());
+    //
+    // The final round skips it: macOS 26's new mass-storage DriverKit driver
+    // (IOUSBMassStorageDriverNub) re-grabs the freed interface before it can be
+    // opened, so the plug-in is refused (0xe00002be) and the re-enumerate only
+    // resets the device, round after round. When that has happened on every
+    // earlier round the last one is spent giving the IOUSBHost path a settled
+    // device instead of resetting once more.
+    if !last {
+        match crate::macos_capture::iokit_usb::CapturedUsbInterface::capture(
+            id,
+            interface_number,
+            note,
+        ) {
+            Ok(iface) => return Ok(Link::UsbLib(iface)),
+            Err(e) => {
+                let reset = e.device_reset;
+                note(e.message);
+                if reset {
+                    return Err(
+                        "device reset by the capture, retrying on the settled device".into()
+                    );
+                }
             }
         }
     }
