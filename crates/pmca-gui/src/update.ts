@@ -4,12 +4,21 @@
  */
 
 import { invoke } from "@tauri-apps/api/core";
+import { listen } from "@tauri-apps/api/event";
 import { fieldList, make, showBusy, showDone, showError, showStatus, statusLine } from "./dom";
 import type { AvailableUpdate } from "./dto";
 import { tr, trFill } from "./i18n";
 import { setUpdateCheck, updateCheckOn } from "./preferences";
 
 const TOGGLE_NAME = "update-check";
+
+/** Download progress of an in-app update, emitted by the backend. */
+const UPDATE_PROGRESS_EVENT = "pmca://update-progress";
+
+interface UpdateProgress {
+  downloaded: number;
+  total: number | null;
+}
 
 export async function announceUpdate(): Promise<void> {
   if (!updateCheckOn) return;
@@ -71,6 +80,91 @@ function showUpdate(update: AvailableUpdate): void {
     status,
     startupChoice(),
   );
+  // Builds that can replace themselves gain a download-and-install button; the
+  // copy-URL notice above still serves the portable archive and the .deb.
+  void addInstallSection();
+}
+
+/** The reason the update is held, translated, or `null` when it is free to go. */
+async function blockedReason(): Promise<string | null> {
+  const blockers = await invoke<string[]>("update_blockers").catch(() => []);
+  if (blockers.length === 0) return null;
+  return `${tr("update-blocked-intro")} ${blockers.map((code) => tr(code)).join("; ")}`;
+}
+
+/**
+ * Add the in-app updater to the open notice, on a build that can replace itself.
+ *
+ * The backend verified the download against the key built into the application
+ * before handing it over, so the install step runs a signed artifact. The
+ * blockers are checked before the download, so a finished download is never
+ * left unable to install; `update_install` re-checks them and then restarts
+ * into the new version, which is why its call is not expected to return.
+ */
+async function addInstallSection(): Promise<void> {
+  let supported: boolean;
+  try {
+    supported = await invoke<boolean>("update_supported");
+  } catch {
+    return;
+  }
+  if (!supported) return;
+  const banner = document.querySelector<HTMLElement>(".update-banner");
+  if (!banner) return;
+
+  const status = statusLine();
+  const install = make("button", { className: "primary", i18n: "btn-update-install" });
+  const restart = make("button", { className: "primary", i18n: "btn-update-restart", hidden: true });
+
+  install.addEventListener("click", async () => {
+    const blocked = await blockedReason();
+    if (blocked) {
+      showStatus(status, blocked);
+      return;
+    }
+    install.disabled = true;
+    const unlisten = await listen<UpdateProgress>(UPDATE_PROGRESS_EVENT, (event) => {
+      const { downloaded, total } = event.payload;
+      const percent = total ? Math.round((downloaded / total) * 100) : null;
+      showBusy(status, tr("update-downloading"), percent);
+    });
+    try {
+      await invoke("update_download");
+      showDone(status, tr("update-downloaded"));
+      install.hidden = true;
+      restart.hidden = false;
+      restart.focus();
+    } catch (e) {
+      showError(status, e);
+      install.disabled = false;
+    } finally {
+      unlisten();
+    }
+  });
+
+  restart.addEventListener("click", async () => {
+    const blocked = await blockedReason();
+    if (blocked) {
+      showStatus(status, blocked);
+      return;
+    }
+    restart.disabled = true;
+    try {
+      await invoke("update_install");
+    } catch (e) {
+      showError(status, e);
+      restart.disabled = false;
+    }
+  });
+
+  const section = make(
+    "div",
+    { className: "update-install" },
+    make("div", { className: "row" }, install, restart),
+    status,
+  );
+  // Above the copy-URL row, which is the first `.row` in the banner.
+  banner.querySelector(".row")?.before(section);
 }
 
 /** Every toggle for the start-up check on screen shows the stored choice. */

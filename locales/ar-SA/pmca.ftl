@@ -578,6 +578,21 @@ update-current = الإصدار المثبَّت
 update-latest = الإصدار الجديد
 btn-update-dismiss = إخفاء
 update-optin-note = يعرف GitHub حينها عنوان IP الخاص بك. يمكنك إيقاف ذلك في أي وقت من الإعدادات.
+btn-update-install = تنزيل وتثبيت
+btn-update-restart = التثبيت الآن وإعادة التشغيل
+update-downloading = جارٍ تنزيل التحديث…
+update-downloaded = اكتمل التنزيل. اختر ”التثبيت الآن وإعادة التشغيل“ لتطبيقه.
+update-blocked-intro = لا يمكن تثبيت التحديث الآن:
+update-busy-camera = الكاميرا قيد الاستخدام
+update-busy-session = هناك جلسة مع الكاميرا مفتوحة
+update-busy-install = هناك عملية تثبيت تطبيق جارية
+update-busy-analysis = لا يزال لدى التحليل اختبار كتابة يجب استعادته
+err-update-busy = يجب أن ينتظر التحديث حتى تنتهي العملية الحالية مع الكاميرا.
+err-update-none = لا تتوفر نسخة أحدث.
+err-update-not-downloaded = لم يتم تنزيل أي تحديث بعد.
+err-update-check-failed = تعذّر التحقق من وجود تحديثات.
+err-update-download-failed = تعذّر تنزيل التحديث. تحقق من الاتصال وأعد المحاولة.
+err-update-install-failed = تعذّر تثبيت التحديث.
 btn-open-settings = فتح الإعدادات
 
 # تحرير الترجمة. يمكن تنزيل ملفات اللغة وتعديلها في أي محرر نصوص

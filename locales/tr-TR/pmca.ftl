@@ -579,6 +579,21 @@ update-current = Yüklü sürüm
 update-latest = Yeni sürüm
 btn-update-dismiss = Gizle
 update-optin-note = GitHub bu sırada IP adresinizi öğrenir. Bunu istediğiniz zaman ayarlardan yeniden kapatabilirsiniz.
+btn-update-install = İndir ve kur
+btn-update-restart = Şimdi kur ve yeniden başlat
+update-downloading = Güncelleme indiriliyor…
+update-downloaded = İndirme tamamlandı. Uygulamak için “Şimdi kur ve yeniden başlat” seçeneğini seçin.
+update-blocked-intro = Güncelleme şu anda kurulamıyor:
+update-busy-camera = kamera kullanımda
+update-busy-session = bir kamera oturumu açık
+update-busy-install = bir uygulama kurulumu sürüyor
+update-busy-analysis = bir analizin geri yüklenecek bir yazma testi var
+err-update-busy = Güncelleme, kamerayla yürütülen işlem bitene kadar beklemeli.
+err-update-none = Daha yeni bir sürüm yok.
+err-update-not-downloaded = Henüz hiçbir güncelleme indirilmedi.
+err-update-check-failed = Güncellemeler denetlenemedi.
+err-update-download-failed = Güncelleme indirilemedi. Bağlantıyı denetleyip yeniden deneyin.
+err-update-install-failed = Güncelleme kurulamadı.
 btn-open-settings = Ayarları aç
 
 # Çevirinin düzenlenmesi. Dil dosyaları indirilebilir, herhangi bir metin

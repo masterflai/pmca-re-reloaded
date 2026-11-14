@@ -591,6 +591,21 @@ update-current = Installed version
 update-latest = New version
 btn-update-dismiss = Hide
 update-optin-note = GitHub learns your IP address in the process. You can switch this off again in the settings at any time.
+btn-update-install = Download and install
+btn-update-restart = Install now and restart
+update-downloading = Downloading the update…
+update-downloaded = Download complete. Choose “Install now and restart” to apply it.
+update-blocked-intro = The update cannot be installed right now:
+update-busy-camera = the camera is in use
+update-busy-session = a camera session is open
+update-busy-install = an app installation is in progress
+update-busy-analysis = an analysis still has a write test to restore
+err-update-busy = The update has to wait until the current camera operation has finished.
+err-update-none = No newer version is available.
+err-update-not-downloaded = No update has been downloaded yet.
+err-update-check-failed = The update could not be checked for.
+err-update-download-failed = The update could not be downloaded. Check the connection and try again.
+err-update-install-failed = The update could not be installed.
 btn-open-settings = Open settings
 
 # Editing a translation. Language files can be downloaded, changed in any text

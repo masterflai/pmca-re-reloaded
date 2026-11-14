@@ -576,6 +576,21 @@ update-current = ইনস্টল করা সংস্করণ
 update-latest = নতুন সংস্করণ
 btn-update-dismiss = লুকান
 update-optin-note = এতে GitHub আপনার IP ঠিকানা জানতে পারে। আপনি যেকোনো সময় সেটিংসে এটি আবার বন্ধ করতে পারেন।
+btn-update-install = ডাউনলোড ও ইনস্টল করুন
+btn-update-restart = এখনই ইনস্টল করুন ও পুনরায় চালু করুন
+update-downloading = আপডেট ডাউনলোড হচ্ছে…
+update-downloaded = ডাউনলোড সম্পন্ন। এটি প্রয়োগ করতে “এখনই ইনস্টল করুন ও পুনরায় চালু করুন” বেছে নিন।
+update-blocked-intro = এখন আপডেট ইনস্টল করা যাচ্ছে না:
+update-busy-camera = ক্যামেরা ব্যবহৃত হচ্ছে
+update-busy-session = ক্যামেরার একটি সেশন খোলা আছে
+update-busy-install = একটি অ্যাপ ইনস্টল হচ্ছে
+update-busy-analysis = একটি বিশ্লেষণে এখনও পুনরুদ্ধার করার মতো একটি রাইট টেস্ট আছে
+err-update-busy = ক্যামেরার বর্তমান কাজ শেষ না হওয়া পর্যন্ত আপডেটকে অপেক্ষা করতে হবে।
+err-update-none = নতুন কোনো সংস্করণ নেই।
+err-update-not-downloaded = এখনও কোনো আপডেট ডাউনলোড করা হয়নি।
+err-update-check-failed = আপডেট যাচাই করা যায়নি।
+err-update-download-failed = আপডেট ডাউনলোড করা যায়নি। সংযোগ যাচাই করে আবার চেষ্টা করুন।
+err-update-install-failed = আপডেট ইনস্টল করা যায়নি।
 btn-open-settings = সেটিংস খুলুন
 
 # অনুবাদ সম্পাদনা। ভাষা ফাইল ডাউনলোড করে যেকোনো টেক্সট এডিটরে

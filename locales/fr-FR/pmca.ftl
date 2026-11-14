@@ -579,6 +579,21 @@ update-current = Version installée
 update-latest = Nouvelle version
 btn-update-dismiss = Masquer
 update-optin-note = GitHub apprend alors votre adresse IP. Vous pouvez désactiver cela à tout moment dans les paramètres.
+btn-update-install = Télécharger et installer
+btn-update-restart = Installer maintenant et redémarrer
+update-downloading = Téléchargement de la mise à jour…
+update-downloaded = Téléchargement terminé. Choisissez « Installer maintenant et redémarrer » pour l’appliquer.
+update-blocked-intro = La mise à jour ne peut pas être installée pour le moment :
+update-busy-camera = l’appareil photo est en cours d’utilisation
+update-busy-session = une session avec l’appareil est ouverte
+update-busy-install = une installation d’application est en cours
+update-busy-analysis = une analyse a encore un test d’écriture à restaurer
+err-update-busy = La mise à jour doit attendre la fin de l’opération en cours sur l’appareil.
+err-update-none = Aucune version plus récente n’est disponible.
+err-update-not-downloaded = Aucune mise à jour n’a encore été téléchargée.
+err-update-check-failed = Impossible de vérifier les mises à jour.
+err-update-download-failed = La mise à jour n’a pas pu être téléchargée. Vérifiez la connexion et réessayez.
+err-update-install-failed = La mise à jour n’a pas pu être installée.
 btn-open-settings = Ouvrir les paramètres
 
 # Modification d'une traduction. Les fichiers de langue peuvent être

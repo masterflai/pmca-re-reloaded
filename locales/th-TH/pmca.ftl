@@ -591,6 +591,21 @@ update-current = เวอร์ชันที่ติดตั้ง
 update-latest = เวอร์ชันใหม่
 btn-update-dismiss = ซ่อน
 update-optin-note = ในระหว่างนี้ GitHub จะทราบที่อยู่ IP ของคุณ คุณปิดตัวเลือกนี้ได้ทุกเมื่อในการตั้งค่า
+btn-update-install = ดาวน์โหลดและติดตั้ง
+btn-update-restart = ติดตั้งเดี๋ยวนี้แล้วเริ่มใหม่
+update-downloading = กำลังดาวน์โหลดการอัปเดต…
+update-downloaded = ดาวน์โหลดเสร็จแล้ว เลือก “ติดตั้งเดี๋ยวนี้แล้วเริ่มใหม่” เพื่อใช้งาน
+update-blocked-intro = ขณะนี้ยังติดตั้งการอัปเดตไม่ได้:
+update-busy-camera = กล้องกำลังถูกใช้งาน
+update-busy-session = มีเซสชันกับกล้องเปิดอยู่
+update-busy-install = กำลังติดตั้งแอป
+update-busy-analysis = การวิเคราะห์ยังมีการทดสอบการเขียนที่ต้องกู้คืน
+err-update-busy = การอัปเดตต้องรอจนกว่าการทำงานกับกล้องในขณะนี้จะเสร็จสิ้น
+err-update-none = ไม่มีเวอร์ชันที่ใหม่กว่า
+err-update-not-downloaded = ยังไม่ได้ดาวน์โหลดการอัปเดตใด ๆ
+err-update-check-failed = ตรวจสอบการอัปเดตไม่สำเร็จ
+err-update-download-failed = ดาวน์โหลดการอัปเดตไม่สำเร็จ ตรวจสอบการเชื่อมต่อแล้วลองอีกครั้ง
+err-update-install-failed = ติดตั้งการอัปเดตไม่สำเร็จ
 btn-open-settings = เปิดการตั้งค่า
 
 # การแก้ไขคำแปล ไฟล์ภาษาสามารถดาวน์โหลด แก้ไขในโปรแกรมแก้ไขข้อความใดก็ได้

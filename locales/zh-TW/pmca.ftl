@@ -591,6 +591,21 @@ update-current = 已安裝的版本
 update-latest = 新版本
 btn-update-dismiss = 隱藏
 update-optin-note = 在此過程中，GitHub 會得知您的 IP 位址。您隨時可以在設定中再次關閉此選項。
+btn-update-install = 下載並安裝
+btn-update-restart = 立即安裝並重新啟動
+update-downloading = 正在下載更新…
+update-downloaded = 下載完成。選擇「立即安裝並重新啟動」以套用更新。
+update-blocked-intro = 目前無法安裝更新：
+update-busy-camera = 相機正在使用中
+update-busy-session = 相機工作階段已開啟
+update-busy-install = 正在安裝應用程式
+update-busy-analysis = 某項分析還有待還原的寫入測試
+err-update-busy = 更新必須等待目前的相機作業完成。
+err-update-none = 沒有更新的版本。
+err-update-not-downloaded = 尚未下載任何更新。
+err-update-check-failed = 無法檢查更新。
+err-update-download-failed = 無法下載更新。請檢查連線後再試一次。
+err-update-install-failed = 無法安裝更新。
 btn-open-settings = 開啟設定
 
 # 編輯翻譯。語言檔案可以下載、在任何文字編輯器中修改，

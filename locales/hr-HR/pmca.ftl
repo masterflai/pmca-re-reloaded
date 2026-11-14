@@ -579,6 +579,21 @@ update-current = Instalirana verzija
 update-latest = Nova verzija
 btn-update-dismiss = Sakrij
 update-optin-note = GitHub pritom saznaje vašu IP adresu. To možete u bilo kojem trenutku ponovno isključiti u postavkama.
+btn-update-install = Preuzmi i instaliraj
+btn-update-restart = Instaliraj sada i ponovno pokreni
+update-downloading = Preuzimanje ažuriranja…
+update-downloaded = Preuzimanje dovršeno. Odaberite „Instaliraj sada i ponovno pokreni“ da biste ga primijenili.
+update-blocked-intro = Ažuriranje se trenutačno ne može instalirati:
+update-busy-camera = fotoaparat je u upotrebi
+update-busy-session = otvorena je sesija s fotoaparatom
+update-busy-install = u tijeku je instalacija aplikacije
+update-busy-analysis = analiza još ima test pisanja za vraćanje
+err-update-busy = Ažuriranje mora pričekati da završi trenutačna radnja s fotoaparatom.
+err-update-none = Nema dostupne novije verzije.
+err-update-not-downloaded = Nijedno ažuriranje još nije preuzeto.
+err-update-check-failed = Provjera ažuriranja nije uspjela.
+err-update-download-failed = Ažuriranje nije moguće preuzeti. Provjerite vezu i pokušajte ponovno.
+err-update-install-failed = Ažuriranje nije moguće instalirati.
 btn-open-settings = Otvori postavke
 
 # Uređivanje prijevoda. Jezične datoteke mogu se preuzeti, urediti u bilo kojem

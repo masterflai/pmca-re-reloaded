@@ -8,6 +8,15 @@ All notable changes to this project are documented here. The format follows
 
 ### Added
 
+- The desktop app can update itself. When a newer version is announced, a
+  *Download and install* button fetches that release, checks its signature
+  against a key built into the program and, on your word, installs it and
+  restarts into the new version. It is offered only on the installed Windows
+  and macOS builds and the Linux AppImage; the portable archive and the Debian
+  package are updated the way they were installed. An update waits until any
+  camera operation, open session or running installation has finished.
+  Installations from before this release do not have the updater yet and need
+  updating by hand once.
 - When a newer, BIONZ XR body (such as the ILCE-7M5) is asked for service mode,
   the camera is now recognised by its RSA-signed sign-in ("Senser v2") and the
   tool explains that this mode needs the manufacturer's private key and cannot

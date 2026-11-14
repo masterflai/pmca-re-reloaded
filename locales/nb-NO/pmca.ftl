@@ -579,6 +579,21 @@ update-current = Installert versjon
 update-latest = Ny versjon
 btn-update-dismiss = Skjul
 update-optin-note = GitHub får da vite IP-adressen din. Du kan når som helst slå det av igjen i innstillingene.
+btn-update-install = Last ned og installer
+btn-update-restart = Installer nå og start på nytt
+update-downloading = Laster ned oppdateringen…
+update-downloaded = Nedlasting fullført. Velg «Installer nå og start på nytt» for å ta den i bruk.
+update-blocked-intro = Oppdateringen kan ikke installeres akkurat nå:
+update-busy-camera = kameraet er i bruk
+update-busy-session = en kameraøkt er åpen
+update-busy-install = en app-installasjon pågår
+update-busy-analysis = en analyse har fortsatt en skrivetest som må gjenopprettes
+err-update-busy = Oppdateringen må vente til den pågående kamerahandlingen er fullført.
+err-update-none = Det finnes ingen nyere versjon.
+err-update-not-downloaded = Ingen oppdatering er lastet ned ennå.
+err-update-check-failed = Kunne ikke søke etter oppdateringer.
+err-update-download-failed = Oppdateringen kunne ikke lastes ned. Sjekk tilkoblingen og prøv igjen.
+err-update-install-failed = Oppdateringen kunne ikke installeres.
 btn-open-settings = Åpne innstillinger
 
 # Redigering av en oversettelse. Språkfiler kan lastes ned, endres i et

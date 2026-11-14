@@ -591,6 +591,21 @@ update-current = Phiên bản đã cài đặt
 update-latest = Phiên bản mới
 btn-update-dismiss = Ẩn
 update-optin-note = Trong quá trình này GitHub biết được địa chỉ IP của bạn. Bạn có thể tắt lại tính năng này bất cứ lúc nào trong phần cài đặt.
+btn-update-install = Tải xuống và cài đặt
+btn-update-restart = Cài đặt ngay và khởi động lại
+update-downloading = Đang tải xuống bản cập nhật…
+update-downloaded = Đã tải xuống xong. Chọn “Cài đặt ngay và khởi động lại” để áp dụng.
+update-blocked-intro = Hiện không thể cài đặt bản cập nhật:
+update-busy-camera = máy ảnh đang được sử dụng
+update-busy-session = một phiên làm việc với máy ảnh đang mở
+update-busy-install = đang cài đặt một ứng dụng
+update-busy-analysis = một phân tích vẫn còn một phép thử ghi cần khôi phục
+err-update-busy = Bản cập nhật phải đợi cho đến khi thao tác hiện tại với máy ảnh hoàn tất.
+err-update-none = Không có phiên bản mới hơn.
+err-update-not-downloaded = Chưa có bản cập nhật nào được tải xuống.
+err-update-check-failed = Không thể kiểm tra bản cập nhật.
+err-update-download-failed = Không thể tải xuống bản cập nhật. Hãy kiểm tra kết nối và thử lại.
+err-update-install-failed = Không thể cài đặt bản cập nhật.
 btn-open-settings = Mở cài đặt
 
 # Chỉnh sửa bản dịch. Tệp ngôn ngữ có thể được tải xuống, sửa trong bất kỳ trình soạn

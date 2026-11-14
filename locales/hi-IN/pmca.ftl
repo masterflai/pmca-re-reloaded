@@ -577,6 +577,21 @@ update-current = स्थापित संस्करण
 update-latest = नया संस्करण
 btn-update-dismiss = छिपाएँ
 update-optin-note = इस दौरान GitHub आपका IP पता जान लेता है। आप इसे कभी भी सेटिंग्स में फिर से बंद कर सकते हैं।
+btn-update-install = डाउनलोड करें और इंस्टॉल करें
+btn-update-restart = अभी इंस्टॉल करें और पुनः आरंभ करें
+update-downloading = अपडेट डाउनलोड हो रहा है…
+update-downloaded = डाउनलोड पूरा हुआ। इसे लागू करने के लिए “अभी इंस्टॉल करें और पुनः आरंभ करें” चुनें।
+update-blocked-intro = अभी अपडेट इंस्टॉल नहीं किया जा सकता:
+update-busy-camera = कैमरा उपयोग में है
+update-busy-session = कैमरे का एक सत्र खुला है
+update-busy-install = एक ऐप इंस्टॉल हो रहा है
+update-busy-analysis = एक विश्लेषण में अभी भी बहाल करने के लिए एक राइट टेस्ट है
+err-update-busy = अपडेट को कैमरे के मौजूदा काम के पूरा होने तक इंतज़ार करना होगा।
+err-update-none = कोई नया संस्करण उपलब्ध नहीं है।
+err-update-not-downloaded = अभी तक कोई अपडेट डाउनलोड नहीं हुआ है।
+err-update-check-failed = अपडेट की जाँच नहीं की जा सकी।
+err-update-download-failed = अपडेट डाउनलोड नहीं हो सका। कनेक्शन जाँचें और फिर से कोशिश करें।
+err-update-install-failed = अपडेट इंस्टॉल नहीं हो सका।
 btn-open-settings = सेटिंग्स खोलें
 
 # अनुवाद का संपादन। भाषा फ़ाइलें डाउनलोड करके किसी भी टेक्स्ट एडिटर में

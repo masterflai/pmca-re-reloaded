@@ -579,6 +579,21 @@ update-current = Nainstalovaná verze
 update-latest = Nová verze
 btn-update-dismiss = Skrýt
 update-optin-note = GitHub se přitom dozví vaši IP adresu. V nastavení to můžete kdykoli znovu vypnout.
+btn-update-install = Stáhnout a nainstalovat
+btn-update-restart = Nainstalovat nyní a restartovat
+update-downloading = Stahování aktualizace…
+update-downloaded = Stahování dokončeno. Vyberte „Nainstalovat nyní a restartovat“ pro její použití.
+update-blocked-intro = Aktualizaci teď nelze nainstalovat:
+update-busy-camera = fotoaparát se právě používá
+update-busy-session = je otevřená relace s fotoaparátem
+update-busy-install = probíhá instalace aplikace
+update-busy-analysis = analýza má ještě zápisový test k obnovení
+err-update-busy = Aktualizace musí počkat, až skončí probíhající operace s fotoaparátem.
+err-update-none = Není k dispozici žádná novější verze.
+err-update-not-downloaded = Zatím nebyla stažena žádná aktualizace.
+err-update-check-failed = Aktualizace se nepodařilo zkontrolovat.
+err-update-download-failed = Aktualizaci se nepodařilo stáhnout. Zkontrolujte připojení a zkuste to znovu.
+err-update-install-failed = Aktualizaci se nepodařilo nainstalovat.
 btn-open-settings = Otevřít nastavení
 
 # Úprava překladu. Jazykové soubory lze stáhnout, změnit v libovolném textovém

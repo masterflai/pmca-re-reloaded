@@ -578,6 +578,21 @@ update-current = ਇੰਸਟਾਲ ਕੀਤਾ ਸੰਸਕਰਣ
 update-latest = ਨਵਾਂ ਸੰਸਕਰਣ
 btn-update-dismiss = ਲੁਕਾਓ
 update-optin-note = ਇਸ ਦੌਰਾਨ GitHub ਨੂੰ ਤੁਹਾਡਾ IP ਸਿਰਨਾਵਾਂ ਪਤਾ ਲੱਗ ਜਾਂਦਾ ਹੈ। ਤੁਸੀਂ ਇਸਨੂੰ ਕਦੇ ਵੀ ਸੈਟਿੰਗਾਂ ਵਿੱਚ ਮੁੜ ਬੰਦ ਕਰ ਸਕਦੇ ਹੋ।
+btn-update-install = ਡਾਊਨਲੋਡ ਕਰੋ ਤੇ ਇੰਸਟਾਲ ਕਰੋ
+btn-update-restart = ਹੁਣੇ ਇੰਸਟਾਲ ਕਰੋ ਤੇ ਮੁੜ-ਚਾਲੂ ਕਰੋ
+update-downloading = ਅੱਪਡੇਟ ਡਾਊਨਲੋਡ ਹੋ ਰਿਹਾ ਹੈ…
+update-downloaded = ਡਾਊਨਲੋਡ ਪੂਰਾ ਹੋਇਆ। ਇਸਨੂੰ ਲਾਗੂ ਕਰਨ ਲਈ “ਹੁਣੇ ਇੰਸਟਾਲ ਕਰੋ ਤੇ ਮੁੜ-ਚਾਲੂ ਕਰੋ” ਚੁਣੋ।
+update-blocked-intro = ਹੁਣੇ ਅੱਪਡੇਟ ਇੰਸਟਾਲ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਦਾ:
+update-busy-camera = ਕੈਮਰਾ ਵਰਤੋਂ ਵਿੱਚ ਹੈ
+update-busy-session = ਕੈਮਰੇ ਦਾ ਇੱਕ ਸੈਸ਼ਨ ਖੁੱਲ੍ਹਾ ਹੈ
+update-busy-install = ਇੱਕ ਐਪ ਇੰਸਟਾਲ ਹੋ ਰਹੀ ਹੈ
+update-busy-analysis = ਇੱਕ ਵਿਸ਼ਲੇਸ਼ਣ ਵਿੱਚ ਅਜੇ ਵੀ ਬਹਾਲ ਕਰਨ ਲਈ ਇੱਕ ਰਾਈਟ ਟੈਸਟ ਹੈ
+err-update-busy = ਅੱਪਡੇਟ ਨੂੰ ਕੈਮਰੇ ਦਾ ਮੌਜੂਦਾ ਕੰਮ ਪੂਰਾ ਹੋਣ ਤੱਕ ਉਡੀਕ ਕਰਨੀ ਪਵੇਗੀ।
+err-update-none = ਕੋਈ ਨਵਾਂ ਵਰਜਨ ਉਪਲਬਧ ਨਹੀਂ ਹੈ।
+err-update-not-downloaded = ਹਾਲੇ ਤੱਕ ਕੋਈ ਅੱਪਡੇਟ ਡਾਊਨਲੋਡ ਨਹੀਂ ਹੋਇਆ।
+err-update-check-failed = ਅੱਪਡੇਟ ਦੀ ਜਾਂਚ ਨਹੀਂ ਕੀਤੀ ਜਾ ਸਕੀ।
+err-update-download-failed = ਅੱਪਡੇਟ ਡਾਊਨਲੋਡ ਨਹੀਂ ਹੋ ਸਕਿਆ। ਕਨੈਕਸ਼ਨ ਜਾਂਚੋ ਤੇ ਮੁੜ ਕੋਸ਼ਿਸ਼ ਕਰੋ।
+err-update-install-failed = ਅੱਪਡੇਟ ਇੰਸਟਾਲ ਨਹੀਂ ਹੋ ਸਕਿਆ।
 btn-open-settings = ਸੈਟਿੰਗਾਂ ਖੋਲ੍ਹੋ
 
 # ਅਨੁਵਾਦ ਦੀ ਸੋਧ. ਭਾਸ਼ਾ ਫਾਈਲਾਂ ਡਾਊਨਲੋਡ ਕਰਕੇ ਕਿਸੇ ਵੀ ਟੈਕਸਟ ਐਡਿਟਰ

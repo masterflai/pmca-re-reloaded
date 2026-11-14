@@ -591,6 +591,21 @@ update-current = 설치된 버전
 update-latest = 새 버전
 btn-update-dismiss = 숨기기
 update-optin-note = 이 과정에서 GitHub는 사용자의 IP 주소를 알게 됩니다. 설정에서 언제든지 다시 끌 수 있습니다.
+btn-update-install = 다운로드하여 설치
+btn-update-restart = 지금 설치하고 다시 시작
+update-downloading = 업데이트를 다운로드하는 중…
+update-downloaded = 다운로드가 완료되었습니다. 적용하려면 ‘지금 설치하고 다시 시작’을 선택하세요.
+update-blocked-intro = 지금은 업데이트를 설치할 수 없습니다:
+update-busy-camera = 카메라를 사용 중입니다
+update-busy-session = 카메라 세션이 열려 있습니다
+update-busy-install = 앱 설치가 진행 중입니다
+update-busy-analysis = 분석에 아직 복원할 쓰기 테스트가 있습니다
+err-update-busy = 업데이트는 현재 카메라 작업이 끝날 때까지 기다려야 합니다.
+err-update-none = 더 새로운 버전이 없습니다.
+err-update-not-downloaded = 아직 다운로드된 업데이트가 없습니다.
+err-update-check-failed = 업데이트를 확인할 수 없습니다.
+err-update-download-failed = 업데이트를 다운로드할 수 없습니다. 연결을 확인하고 다시 시도하세요.
+err-update-install-failed = 업데이트를 설치할 수 없습니다.
 btn-open-settings = 설정 열기
 
 # 번역 편집. 언어 파일을 다운로드하여 아무 텍스트 편집기에서 변경한 뒤

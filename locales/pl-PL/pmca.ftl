@@ -579,6 +579,21 @@ update-current = Zainstalowana wersja
 update-latest = Nowa wersja
 btn-update-dismiss = Ukryj
 update-optin-note = GitHub poznaje przy tym adres IP komputera. W ustawieniach można to w każdej chwili ponownie wyłączyć.
+btn-update-install = Pobierz i zainstaluj
+btn-update-restart = Zainstaluj teraz i uruchom ponownie
+update-downloading = Pobieranie aktualizacji…
+update-downloaded = Pobieranie zakończone. Wybierz „Zainstaluj teraz i uruchom ponownie”, aby ją zastosować.
+update-blocked-intro = Aktualizacji nie można teraz zainstalować:
+update-busy-camera = aparat jest w użyciu
+update-busy-session = otwarta jest sesja z aparatem
+update-busy-install = trwa instalacja aplikacji
+update-busy-analysis = analiza ma jeszcze test zapisu do przywrócenia
+err-update-busy = Aktualizacja musi poczekać, aż bieżąca operacja na aparacie się zakończy.
+err-update-none = Nie jest dostępna żadna nowsza wersja.
+err-update-not-downloaded = Nie pobrano jeszcze żadnej aktualizacji.
+err-update-check-failed = Nie udało się sprawdzić aktualizacji.
+err-update-download-failed = Nie udało się pobrać aktualizacji. Sprawdź połączenie i spróbuj ponownie.
+err-update-install-failed = Nie udało się zainstalować aktualizacji.
 btn-open-settings = Otwórz ustawienia
 
 # Edycja tłumaczenia. Pliki językowe można pobrać, zmienić w dowolnym edytorze

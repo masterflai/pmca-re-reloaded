@@ -579,6 +579,21 @@ update-current = Versi terpasang
 update-latest = Versi baru
 btn-update-dismiss = Sembunyikan
 update-optin-note = GitHub mengetahui alamat IP Anda dalam proses ini. Anda dapat menonaktifkannya kembali kapan saja di pengaturan.
+btn-update-install = Unduh dan pasang
+btn-update-restart = Pasang sekarang dan mulai ulang
+update-downloading = Mengunduh pembaruan…
+update-downloaded = Unduhan selesai. Pilih “Pasang sekarang dan mulai ulang” untuk menerapkannya.
+update-blocked-intro = Pembaruan tidak dapat dipasang sekarang:
+update-busy-camera = kamera sedang digunakan
+update-busy-session = sesi kamera sedang terbuka
+update-busy-install = pemasangan aplikasi sedang berlangsung
+update-busy-analysis = sebuah analisis masih punya uji tulis yang harus dipulihkan
+err-update-busy = Pembaruan harus menunggu hingga operasi kamera saat ini selesai.
+err-update-none = Tidak ada versi yang lebih baru.
+err-update-not-downloaded = Belum ada pembaruan yang diunduh.
+err-update-check-failed = Tidak dapat memeriksa pembaruan.
+err-update-download-failed = Pembaruan tidak dapat diunduh. Periksa koneksi lalu coba lagi.
+err-update-install-failed = Pembaruan tidak dapat dipasang.
 btn-open-settings = Buka pengaturan
 
 # Menyunting terjemahan. Berkas bahasa dapat diunduh, diubah di editor teks
