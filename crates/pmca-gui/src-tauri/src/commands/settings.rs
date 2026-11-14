@@ -54,6 +54,41 @@ pub(crate) async fn check_for_update()
     in_background(|| Ok(pmca_app::update::check()?)).await
 }
 
+/// The portable Windows archive carries this marker file beside the executable,
+/// so the program it unpacks knows it must not try to replace itself in place.
+const PORTABLE_MARKER: &str = "portable.marker";
+
+fn portable_marker_present() -> bool {
+    std::env::current_exe()
+        .ok()
+        .and_then(|exe| exe.parent().map(|dir| dir.join(PORTABLE_MARKER)))
+        .is_some_and(|marker| marker.exists())
+}
+
+/// Whether this build can replace itself through the in-app updater.
+///
+/// False for a debug build (nothing to replace it with), for the portable
+/// Windows archive (the user unpacked it and replaces it by hand), and for a
+/// Linux build not started as an AppImage (a `.deb` is the system package
+/// manager's to update). The window hides the update button accordingly.
+#[tauri::command]
+pub(crate) fn update_supported() -> bool {
+    if cfg!(debug_assertions) {
+        return false;
+    }
+    if cfg!(target_os = "linux") && std::env::var_os("APPIMAGE").is_none() {
+        return false;
+    }
+    !portable_marker_present()
+}
+
+/// Why an application update cannot be applied at this moment, as reason codes
+/// the window translates; an empty list means it is safe to update now.
+#[tauri::command]
+pub(crate) fn update_blockers(state: State<'_, AppState>) -> Vec<String> {
+    state.update_blockers().iter().map(|&code| code.to_string()).collect()
+}
+
 /// Which operating system the window is running on.
 ///
 /// The driver advice differs per platform and is not a matter of taste: on

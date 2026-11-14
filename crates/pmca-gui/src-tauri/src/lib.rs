@@ -230,6 +230,37 @@ impl AppState {
             || self.updater.lock().map_or(true, |s| s.is_some())
             || self.tweaks.lock().map_or(true, |s| s.is_some())
     }
+
+    /// Reason codes for why an application update must not be applied right now;
+    /// an empty list means it is safe. Replacing the program mid-operation would
+    /// lose the work and, while the camera is being written, could brick it, so
+    /// an update waits for a camera operation, an open session, a running batch
+    /// install and an analysis with an un-restored write test to finish first.
+    /// A poisoned lock counts as busy.
+    fn update_blockers(&self) -> Vec<&'static str> {
+        let mut reasons = Vec::new();
+        if self.camera.try_lock().is_err() {
+            reasons.push("update-busy-camera");
+        }
+        if self.holds_session() {
+            reasons.push("update-busy-session");
+        }
+        if self.install_series.lock().map_or(true, |s| s.is_some()) {
+            reasons.push("update-busy-install");
+        }
+        let analysis_pending = self
+            .analysis
+            .lock()
+            .map_or(true, |s| s.as_ref().is_some_and(|run| run.needs_restore()));
+        let reference_pending = self
+            .reference
+            .lock()
+            .map_or(true, |s| s.as_ref().is_some_and(|run| run.needs_restore()));
+        if analysis_pending || reference_pending {
+            reasons.push("update-busy-analysis");
+        }
+        reasons
+    }
 }
 
 /// Undo whatever a previous run left behind.
@@ -385,6 +416,8 @@ pub fn run() {
             reset_catalog,
             about_info,
             check_for_update,
+            update_supported,
+            update_blockers,
             host_platform,
             check_interfering_services,
             get_camera_info,
@@ -499,4 +532,15 @@ pub fn run() {
         ])
         .run(tauri::generate_context!())
         .expect("failed to start the PMCA-RE RELOADED application");
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn a_fresh_state_blocks_no_update() {
+        let state = AppState::new(std::path::PathBuf::new());
+        assert!(state.update_blockers().is_empty());
+    }
 }
