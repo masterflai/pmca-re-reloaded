@@ -115,6 +115,7 @@ async function addInstallSection(): Promise<void> {
   const status = statusLine();
   const install = make("button", { className: "primary", i18n: "btn-update-install" });
   const restart = make("button", { className: "primary", i18n: "btn-update-restart", hidden: true });
+  const onExit = make("button", { i18n: "btn-update-on-exit", hidden: true });
 
   install.addEventListener("click", async () => {
     const blocked = await blockedReason();
@@ -133,6 +134,7 @@ async function addInstallSection(): Promise<void> {
       showDone(status, tr("update-downloaded"));
       install.hidden = true;
       restart.hidden = false;
+      onExit.hidden = false;
       restart.focus();
     } catch (e) {
       showError(status, e);
@@ -157,10 +159,23 @@ async function addInstallSection(): Promise<void> {
     }
   });
 
+  // Queue the install for when the window closes; the backend re-checks the
+  // guard at that point, so an operation started afterwards postpones it.
+  onExit.addEventListener("click", async () => {
+    try {
+      await invoke("update_install_on_exit");
+      restart.hidden = true;
+      onExit.hidden = true;
+      showDone(status, tr("update-on-exit-set"));
+    } catch (e) {
+      showError(status, e);
+    }
+  });
+
   const section = make(
     "div",
     { className: "update-install" },
-    make("div", { className: "row" }, install, restart),
+    make("div", { className: "row" }, install, restart, onExit),
     status,
   );
   // Above the copy-URL row, which is the first `.row` in the banner.

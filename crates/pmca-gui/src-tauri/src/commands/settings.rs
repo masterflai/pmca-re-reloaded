@@ -168,7 +168,7 @@ pub(crate) async fn update_download(
         .await
         .map_err(|e| update_error("update-download-failed", e))?;
     *state.pending_update.lock().map_err(CommandError::internal)? =
-        Some(PendingUpdate { update, bytes });
+        Some(PendingUpdate { update, bytes, install_on_exit: false });
     Ok(version)
 }
 
@@ -201,6 +201,27 @@ pub(crate) async fn update_install(
     }
     pending.update.install(&pending.bytes).map_err(|e| update_error("update-install-failed", e))?;
     app.restart();
+}
+
+/// Mark the downloaded update to be installed when the window is closed instead
+/// of now. Nothing is written until then, and the camera guard is checked again
+/// at that moment, so a session opened in the meantime postpones it rather than
+/// losing work.
+#[tauri::command]
+pub(crate) fn update_install_on_exit(state: State<'_, AppState>) -> Result<(), CommandError> {
+    let mut guard = state.pending_update.lock().map_err(CommandError::internal)?;
+    match guard.as_mut() {
+        Some(pending) => {
+            pending.install_on_exit = true;
+            Ok(())
+        }
+        None => Err(CommandError {
+            code: "update-not-downloaded".into(),
+            message: "no update has been downloaded yet".into(),
+            detail: None,
+            recovery: None,
+        }),
+    }
 }
 
 /// Which operating system the window is running on.

@@ -53,6 +53,8 @@ const PROGRESS_EVENT: &str = "pmca://progress";
 pub(crate) struct PendingUpdate {
     pub(crate) update: tauri_plugin_updater::Update,
     pub(crate) bytes: Vec<u8>,
+    /// Install it when the window closes instead of now, if the user chose so.
+    pub(crate) install_on_exit: bool,
 }
 
 /// A failure handed to the webview.
@@ -276,6 +278,20 @@ impl AppState {
         }
         reasons
     }
+
+    /// Take the downloaded update if it is marked to install on exit and nothing
+    /// blocks it now. A blocker (a session opened after the choice was made)
+    /// leaves it in place, so closing the window simply does not install it.
+    fn exit_install(&self) -> Option<PendingUpdate> {
+        if !self.update_blockers().is_empty() {
+            return None;
+        }
+        let mut guard = self.pending_update.lock().ok()?;
+        match guard.as_ref() {
+            Some(pending) if pending.install_on_exit => guard.take(),
+            _ => None,
+        }
+    }
 }
 
 /// Undo whatever a previous run left behind.
@@ -399,8 +415,26 @@ pub fn run() {
         // authentication, and closing the window is the one way out of the
         // application that no command sees. The session is therefore ended
         // here as well, while the process is still alive to send the request.
-        .on_window_event(|window, event| {
-            if matches!(event, tauri::WindowEvent::Destroyed) {
+        .on_window_event(|window, event| match event {
+            // A download the user chose to install on closing goes in now, while
+            // the process can still launch the installer. On Windows that exits
+            // the app; elsewhere it applies in place and the next launch runs it.
+            tauri::WindowEvent::CloseRequested { .. } => {
+                let state = window.state::<AppState>();
+                if let Some(pending) = state.exit_install() {
+                    #[cfg(target_os = "macos")]
+                    if let Ok(mut broker) = state.broker.lock() {
+                        broker.take();
+                    }
+                    let update = pending.update;
+                    // The window is closing, so the Windows installer must not
+                    // relaunch the app afterwards.
+                    #[cfg(windows)]
+                    let update = update.restart_after_install(false);
+                    let _ = update.install(&pending.bytes);
+                }
+            }
+            tauri::WindowEvent::Destroyed => {
                 let state = window.state::<AppState>();
                 // Let a running operation finish rather than cut the camera off
                 // in the middle of a mode switch or a write.
@@ -421,6 +455,7 @@ pub fn run() {
                     guard.take();
                 }
             }
+            _ => {}
         })
         .invoke_handler(tauri::generate_handler![
             available_locales,
@@ -436,6 +471,7 @@ pub fn run() {
             update_blockers,
             update_download,
             update_install,
+            update_install_on_exit,
             host_platform,
             check_interfering_services,
             get_camera_info,
