@@ -6,6 +6,12 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+## [1.12.1-rc.4] - 2026-11-14
+
+Pre-release: another attempt at the macOS 26 mass-storage capture, together with
+the changes gathered since rc.3. Please report whether the service and tweaks
+modes can now reach a camera on macOS 26.
+
 ### Added
 
 - The desktop app can update itself. When a newer version is announced, a
@@ -28,6 +34,16 @@ All notable changes to this project are documented here. The format follows
 - The *Projects* page now shows a pinned project's details the moment it is
   added, and keeps them so the page is filled in again on the next start
   without asking GitHub. *Refresh* is only needed to check for newer releases.
+
+### Fixed
+
+- macOS 26: reaching the service and tweaks modes on a camera in mass-storage
+  mode could still fail with "The USB transfer failed" (error 0xe00002be). The
+  release's new mass-storage driver reclaims the freed interface before the
+  program can open it, so the capture only reset the camera and tried the same
+  way again, round after round. The final attempt now takes the other route
+  (through IOUSBHost) on a settled camera instead of resetting once more.
+  Reading the camera, installing apps and the usage log over MTP are unaffected.
 
 ## [1.12.1-rc.3] - 2026-11-13
 
