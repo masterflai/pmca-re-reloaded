@@ -219,6 +219,27 @@ information, reading and changing the settings memory and installing apps all
 worked. The macOS build has been tried only in
 part so far. Reports are welcome — see [Feedback](#feedback).
 
+### Updating
+
+The installed Windows and macOS builds and the Linux AppImage can update
+themselves. When the update notification is on, or when you click the version
+number below the navigation, the program asks GitHub for the newest release; if
+it is newer, a *Download and install* button appears. It downloads that
+release, checks its signature against a key built into the program and — only
+when you say so — installs it, either at once (restarting into the new version)
+or when you next close the window. An update waits until any camera operation,
+open session or running installation has finished.
+
+The portable Windows archive and the Debian package do not update themselves;
+they are replaced the way they were installed. A build older than this feature
+has to be updated by hand once, and offers the button from then on.
+
+The update is described by a `latest.json` file on the latest release, and each
+installer carries a detached [minisign](https://jedisct1.github.io/minisign/)
+signature (`.sig`). The program runs an installer only when its signature
+matches the public key built into it, so a tampered or intercepted download is
+rejected before it runs.
+
 ### Signatures
 
 The Windows downloads are to be signed through SignPath (see the
@@ -235,7 +256,9 @@ given release is. Until then, and on the other systems:
 * **Linux** starts the packages without complaint.
 
 Every download has a `.sha256` file beside it, which confirms that the file
-arrived intact.
+arrived intact. The updater's installers additionally carry a `.sig`, a minisign
+signature over the file that the in-app updater checks against a key built into
+the program; see [Updating](#updating).
 
 Some virus scanners judge unsigned programs by heuristics and now and then
 report a release as malware; CleanMyMac, for example, once named the macOS
@@ -483,7 +506,8 @@ their stars and, when you ask, a search there; apps and plugins come from the
 addresses those sources name) and the key
 import (from the address you enter). If you switch on the update notification
 in the settings, the app also asks GitHub for the newest release at every
-start; it is off by default. There is no telemetry.
+start; it is off by default. When you then choose to download and install an
+update, its installer is fetched from GitHub as well. There is no telemetry.
 
 ## Acknowledgements and license
 
