@@ -126,10 +126,13 @@ jobs:
             bundle-dir: target/release/bundle
           # One universal binary instead of two builds: `lipo` puts both
           # architectures into the same .dmg, so there is one download for
-          # Apple silicon and Intel alike.
+          # Apple silicon and Intel alike. The `app` target rides along so the
+          # updater artifact (the signed `.app.tar.gz`) is produced: the .dmg
+          # itself is not an updater target, and without `app` the bundler warns
+          # and writes no macOS updater artifact.
           - os: macos-latest
             label: macos
-            bundles: dmg
+            bundles: dmg,app
             targets: aarch64-apple-darwin,x86_64-apple-darwin
             tauri-target: universal-apple-darwin
             bundle-dir: target/universal-apple-darwin/release/bundle
