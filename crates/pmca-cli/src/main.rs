@@ -443,6 +443,18 @@ enum Command {
         #[command(subcommand)]
         action: PluginsAction,
     },
+    /// Download and install a newer release of this program.
+    ///
+    /// Checks GitHub for a newer version and, with your go-ahead, downloads the
+    /// build for this platform, verifies its signature against a key compiled
+    /// into the program, and replaces the running executable. Only the
+    /// downloadable archive builds update themselves: a copy installed by a
+    /// package manager is left to that manager. Never runs on its own.
+    Update {
+        /// Install without the interactive confirmation (for scripts).
+        #[arg(long)]
+        yes: bool,
+    },
 }
 
 /// What [`Command::Plugins`] should do.
@@ -756,6 +768,7 @@ fn uses_camera(cmd: &Command) -> bool {
         | Command::Sources { .. }
         | Command::Projects { .. }
         | Command::Driver { .. }
+        | Command::Update { .. }
         | Command::Keys { .. } => false,
         // Spelled out, so a new plugin action has to decide as well.
         Command::Plugins { action } => match action {
@@ -890,6 +903,9 @@ fn run(cmd: &Command, l: &Localizer) -> Result<(), Box<dyn std::error::Error>> {
         }
         Command::Plugins { action } => {
             plugins_command(l, action)?;
+        }
+        Command::Update { yes } => {
+            update_command(l, *yes)?;
         }
         Command::Tweaks { enable, disable, set, confirm, accept_caution, undo, whole_image } => {
             let write = match (undo, whole_image) {

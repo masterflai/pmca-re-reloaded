@@ -596,6 +596,18 @@ err-update-not-downloaded = Belum ada pembaruan yang diunduh.
 err-update-check-failed = Tidak dapat memeriksa pembaruan.
 err-update-download-failed = Pembaruan tidak dapat diunduh. Periksa koneksi lalu coba lagi.
 err-update-install-failed = Pembaruan tidak dapat dipasang.
+update-available-cli = Versi baru tersedia: { $current } → { $latest }.
+update-confirm = Unduh dan pasang sekarang? [y/N]
+update-yes-word = ya
+update-cancelled = Pembaruan dibatalkan. Tidak ada yang diubah.
+update-verifying = Memeriksa tanda tangan…
+update-verify-failed = Tanda tangan unduhan tidak cocok. Tidak ada yang dipasang.
+update-extract-failed = Unduhan tidak berisi programnya. Tidak ada yang dipasang.
+update-applying = Mengganti program…
+update-done = Diperbarui ke versi { $version }. Jalankan perintah lagi untuk menggunakannya.
+update-unsupported-platform = Tidak ada unduhan siap pakai untuk platform ini. Silakan perbarui secara manual.
+update-managed-install = Salinan ini dipasang oleh pengelola paket. Perbarui dengan cara yang sama seperti saat Anda memasangnya.
+update-not-writable = Salinan ini tidak dapat diganti di tempat: foldernya tidak dapat ditulisi. Perbarui dengan cara yang sama seperti saat Anda memasangnya.
 btn-open-settings = Buka pengaturan
 
 # Menyunting terjemahan. Berkas bahasa dapat diunduh, diubah di editor teks

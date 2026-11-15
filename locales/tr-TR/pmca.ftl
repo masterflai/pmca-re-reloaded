@@ -596,6 +596,18 @@ err-update-not-downloaded = Henüz hiçbir güncelleme indirilmedi.
 err-update-check-failed = Güncellemeler denetlenemedi.
 err-update-download-failed = Güncelleme indirilemedi. Bağlantıyı denetleyip yeniden deneyin.
 err-update-install-failed = Güncelleme kurulamadı.
+update-available-cli = Yeni bir sürüm mevcut: { $current } → { $latest }.
+update-confirm = Şimdi indirilip kurulsun mu? [y/N]
+update-yes-word = evet
+update-cancelled = Güncelleme iptal edildi. Hiçbir şey değiştirilmedi.
+update-verifying = İmza doğrulanıyor…
+update-verify-failed = İndirilen dosyanın imzası eşleşmedi. Hiçbir şey kurulmadı.
+update-extract-failed = İndirilen dosya programı içermiyordu. Hiçbir şey kurulmadı.
+update-applying = Program değiştiriliyor…
+update-done = { $version } sürümüne güncellendi. Kullanmak için komutu yeniden çalıştırın.
+update-unsupported-platform = Bu platform için hazır bir indirme yok. Lütfen elle güncelleyin.
+update-managed-install = Bu kopya bir paket yöneticisiyle kuruldu. Onu kurduğunuz yolla güncelleyin.
+update-not-writable = Bu kopya yerinde değiştirilemiyor: klasör yazılabilir değil. Onu kurduğunuz yolla güncelleyin.
 btn-open-settings = Ayarları aç
 
 # Çevirinin düzenlenmesi. Dil dosyaları indirilebilir, herhangi bir metin

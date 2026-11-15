@@ -307,6 +307,72 @@ jobs:
           path: gui-artifacts/*
           if-no-files-found: error
 
+  # Detached minisign signatures for the command-line archives, so
+  # `pmca-console update` can verify a download against the key compiled into
+  # the binary before it replaces itself. The same release-signing key and the
+  # same manual approval gate as the desktop updater; the signer is the Tauri
+  # CLI, which produces exactly the signature format the console verifies.
+  #
+  # The signatures are made over the archives the build job produced. While
+  # SignPath is inactive those are the archives that get published, so the
+  # signatures match. If SignPath is enabled it repackages the Windows console
+  # archive (its bytes change), and that archive's signature would then have to
+  # be refreshed after the sign job — the same caveat as the Windows installer.
+  sign-console:
+    name: Sign console downloads
+    needs: build
+    runs-on: ubuntu-latest
+    environment: release
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
+        with:
+          sparse-checkout: crates/pmca-gui
+
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5.0.0
+        with:
+          node-version: 22
+
+      - name: Install the Tauri signer
+        working-directory: crates/pmca-gui
+        run: npm ci
+
+      - name: Download console archives
+        uses: actions/download-artifact@634f93cb2916e3fdff6788551b99b062d0335ce0 # v5.0.0
+        with:
+          pattern: pmca-console-*
+          path: console
+          merge-multiple: true
+
+      - name: Sign each archive
+        working-directory: console
+        env:
+          TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
+          TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
+        run: |
+          set -euo pipefail
+          shopt -s nullglob
+          ver="${GITHUB_REF_NAME#v}"
+          archives=( *.zip *.tar.gz )
+          [ "${#archives[@]}" -gt 0 ] || { echo "no console archive to sign"; exit 1; }
+          for archive in "${archives[@]}"; do
+            npm --prefix "$GITHUB_WORKSPACE/crates/pmca-gui" run tauri -- \
+              signer sign --private-key "$TAURI_SIGNING_PRIVATE_KEY" \
+              --password "$TAURI_SIGNING_PRIVATE_KEY_PASSWORD" \
+              --app-version "$ver" "$PWD/$archive"
+            [ -f "$archive.sig" ] || { echo "signing produced no $archive.sig"; exit 1; }
+            sha256sum "$archive.sig" > "$archive.sig.sha256"
+          done
+          ls -l
+
+      - name: Upload signatures
+        uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5.0.0
+        with:
+          name: console-signatures
+          path: console/*.sig*
+          if-no-files-found: error
+
   # Authenticode signing of the Windows downloads through SignPath.io (free for
   # open source, certificate by SignPath Foundation). Runs only once the
   # repository variable SIGNPATH_ORGANIZATION_ID is set; until then releases
@@ -393,12 +459,16 @@ jobs:
 
   release:
     name: Publish release
-    needs: [build, gui, sign]
+    needs: [build, gui, sign-console, sign]
     runs-on: ubuntu-latest
-    # `sign` is skipped while signing is not set up; that must not stop the release.
+    # `sign` is skipped while signing is not set up; that must not stop the
+    # release. `sign-console` uses the same key as the desktop updater, so if
+    # the GUI build signed, it signed too; its signatures let the command line
+    # update itself, so a final release requires them.
     if: >-
       always() && startsWith(github.ref, 'refs/tags/v')
       && needs.build.result == 'success' && needs.gui.result == 'success'
+      && needs.sign-console.result == 'success'
       && (needs.sign.result == 'success' || needs.sign.result == 'skipped')
     permissions:
       contents: write

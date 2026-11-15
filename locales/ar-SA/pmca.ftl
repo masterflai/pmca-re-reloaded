@@ -595,6 +595,18 @@ err-update-not-downloaded = لم يتم تنزيل أي تحديث بعد.
 err-update-check-failed = تعذّر التحقق من وجود تحديثات.
 err-update-download-failed = تعذّر تنزيل التحديث. تحقق من الاتصال وأعد المحاولة.
 err-update-install-failed = تعذّر تثبيت التحديث.
+update-available-cli = يتوفر إصدار جديد: { $current } → { $latest }.
+update-confirm = هل تريد تنزيله وتثبيته الآن؟ [y/N]
+update-yes-word = نعم
+update-cancelled = تم إلغاء التحديث. لم يتغيّر شيء.
+update-verifying = جارٍ التحقق من التوقيع…
+update-verify-failed = لم يتطابق توقيع الملف الذي جرى تنزيله. لم يُثبَّت شيء.
+update-extract-failed = لم يحتوِ الملف الذي جرى تنزيله على البرنامج. لم يُثبَّت شيء.
+update-applying = جارٍ استبدال البرنامج…
+update-done = تم التحديث إلى الإصدار { $version }. شغّل الأمر مرة أخرى لاستخدامه.
+update-unsupported-platform = لا يوجد تنزيل جاهز لهذه المنصة. يُرجى التحديث يدويًا.
+update-managed-install = جرى تثبيت هذه النسخة عبر مدير حزم. حدّثها بالطريقة نفسها التي ثبّتها بها.
+update-not-writable = لا يمكن استبدال هذه النسخة في مكانها: المجلد غير قابل للكتابة. حدّثها بالطريقة نفسها التي ثبّتها بها.
 btn-open-settings = فتح الإعدادات
 
 # تحرير الترجمة. يمكن تنزيل ملفات اللغة وتعديلها في أي محرر نصوص

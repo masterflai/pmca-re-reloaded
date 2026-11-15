@@ -234,6 +234,14 @@ The portable Windows archive and the Debian package do not update themselves;
 they are replaced the way they were installed. A build older than this feature
 has to be updated by hand once, and offers the button from then on.
 
+The command-line program updates itself too, but only when asked: run
+`pmca-console update`. It checks GitHub for a newer version and, once you
+confirm, downloads the archive for your platform, verifies its signature
+against a key built into the program, and replaces the running executable. Add
+`--yes` to skip the prompt in a script. A copy installed by a package manager
+(for example `cargo install`, Homebrew or the Debian package) is left to that
+manager; only the downloadable archive builds replace themselves.
+
 The update is described by a `latest.json` file on the latest release, and each
 installer carries a detached [minisign](https://jedisct1.github.io/minisign/)
 signature (`.sig`). The program runs an installer only when its signature
@@ -256,9 +264,10 @@ given release is. Until then, and on the other systems:
 * **Linux** starts the packages without complaint.
 
 Every download has a `.sha256` file beside it, which confirms that the file
-arrived intact. The updater's installers additionally carry a `.sig`, a minisign
-signature over the file that the in-app updater checks against a key built into
-the program; see [Updating](#updating).
+arrived intact. The updater's installers and the command-line archives
+additionally carry a `.sig`, a minisign signature over the file that the in-app
+updater and `pmca-console update` check against a key built into the program;
+see [Updating](#updating).
 
 Some virus scanners judge unsigned programs by heuristics and now and then
 report a release as malware; CleanMyMac, for example, once named the macOS

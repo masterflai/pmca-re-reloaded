@@ -608,6 +608,18 @@ err-update-not-downloaded = No update has been downloaded yet.
 err-update-check-failed = The update could not be checked for.
 err-update-download-failed = The update could not be downloaded. Check the connection and try again.
 err-update-install-failed = The update could not be installed.
+update-available-cli = A new version is available: { $current } → { $latest }.
+update-confirm = Download and install it now? [y/N]
+update-yes-word = yes
+update-cancelled = Update cancelled. Nothing was changed.
+update-verifying = Checking the signature…
+update-verify-failed = The download's signature did not match. Nothing was installed.
+update-extract-failed = The download did not contain the program. Nothing was installed.
+update-applying = Replacing the program…
+update-done = Updated to version { $version }. Run the command again to use it.
+update-unsupported-platform = There is no prebuilt download for this platform. Please update by hand.
+update-managed-install = This copy was installed by a package manager. Update it the way you installed it.
+update-not-writable = This copy cannot be replaced in place: its folder is not writable. Update it the way you installed it.
 btn-open-settings = Open settings
 
 # Editing a translation. Language files can be downloaded, changed in any text

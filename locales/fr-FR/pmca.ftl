@@ -596,6 +596,18 @@ err-update-not-downloaded = Aucune mise à jour n’a encore été téléchargé
 err-update-check-failed = Impossible de vérifier les mises à jour.
 err-update-download-failed = La mise à jour n’a pas pu être téléchargée. Vérifiez la connexion et réessayez.
 err-update-install-failed = La mise à jour n’a pas pu être installée.
+update-available-cli = Une nouvelle version est disponible : { $current } → { $latest }.
+update-confirm = La télécharger et l’installer maintenant ? [y/N]
+update-yes-word = oui
+update-cancelled = Mise à jour annulée. Rien n’a été modifié.
+update-verifying = Vérification de la signature…
+update-verify-failed = La signature du téléchargement ne correspond pas. Rien n’a été installé.
+update-extract-failed = Le téléchargement ne contenait pas le programme. Rien n’a été installé.
+update-applying = Remplacement du programme…
+update-done = Mis à jour vers la version { $version }. Relancez la commande pour l’utiliser.
+update-unsupported-platform = Aucun téléchargement prêt n’existe pour cette plateforme. Veuillez mettre à jour à la main.
+update-managed-install = Cette copie a été installée par un gestionnaire de paquets. Mettez-la à jour de la même façon que vous l’avez installée.
+update-not-writable = Cette copie ne peut pas être remplacée sur place : le dossier n’est pas accessible en écriture. Mettez-la à jour de la même façon que vous l’avez installée.
 btn-open-settings = Ouvrir les paramètres
 
 # Modification d'une traduction. Les fichiers de langue peuvent être

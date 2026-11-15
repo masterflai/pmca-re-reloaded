@@ -608,6 +608,18 @@ err-update-not-downloaded = 아직 다운로드된 업데이트가 없습니다.
 err-update-check-failed = 업데이트를 확인할 수 없습니다.
 err-update-download-failed = 업데이트를 다운로드할 수 없습니다. 연결을 확인하고 다시 시도하세요.
 err-update-install-failed = 업데이트를 설치할 수 없습니다.
+update-available-cli = 새 버전이 있습니다: { $current } → { $latest }.
+update-confirm = 지금 다운로드하여 설치할까요? [y/N]
+update-yes-word = 예
+update-cancelled = 업데이트를 취소했습니다. 아무것도 변경되지 않았습니다.
+update-verifying = 서명을 확인하는 중…
+update-verify-failed = 다운로드의 서명이 일치하지 않았습니다. 아무것도 설치되지 않았습니다.
+update-extract-failed = 다운로드에 프로그램이 들어 있지 않았습니다. 아무것도 설치되지 않았습니다.
+update-applying = 프로그램을 교체하는 중…
+update-done = 버전 { $version }(으)로 업데이트했습니다. 사용하려면 명령을 다시 실행하세요.
+update-unsupported-platform = 이 플랫폼에 맞는 준비된 다운로드가 없습니다. 수동으로 업데이트하세요.
+update-managed-install = 이 사본은 패키지 관리자로 설치되었습니다. 설치한 것과 같은 방법으로 업데이트하세요.
+update-not-writable = 이 사본은 제자리에서 교체할 수 없습니다. 폴더에 쓸 수 없습니다. 설치한 것과 같은 방법으로 업데이트하세요.
 btn-open-settings = 설정 열기
 
 # 번역 편집. 언어 파일을 다운로드하여 아무 텍스트 편집기에서 변경한 뒤

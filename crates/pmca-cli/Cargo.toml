@@ -18,6 +18,20 @@ pmca-app = { path = "../pmca-app" }
 clap.workspace = true
 serde.workspace = true
 serde_json.workspace = true
+# Self-update: verify the release signature against a built-in key, then swap
+# the running executable. The archive is unpacked only after it verifies.
+minisign-verify = "0.3"
+base64 = "0.23"
+self-replace = "1"
+
+# The release archive is a `.zip` on Windows and a `.tar.gz` elsewhere; each
+# platform only needs the matching extractor.
+[target.'cfg(windows)'.dependencies]
+zip.workspace = true
+
+[target.'cfg(not(windows))'.dependencies]
+tar = "0.4"
+flate2 = "1"
 
 [build-dependencies]
 winresource = { version = "0.1.34", default-features = false }

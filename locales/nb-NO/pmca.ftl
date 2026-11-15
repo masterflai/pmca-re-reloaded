@@ -596,6 +596,18 @@ err-update-not-downloaded = Ingen oppdatering er lastet ned ennå.
 err-update-check-failed = Kunne ikke søke etter oppdateringer.
 err-update-download-failed = Oppdateringen kunne ikke lastes ned. Sjekk tilkoblingen og prøv igjen.
 err-update-install-failed = Oppdateringen kunne ikke installeres.
+update-available-cli = En ny versjon er tilgjengelig: { $current } → { $latest }.
+update-confirm = Vil du laste ned og installere den nå? [y/N]
+update-yes-word = ja
+update-cancelled = Oppdatering avbrutt. Ingenting ble endret.
+update-verifying = Kontrollerer signaturen…
+update-verify-failed = Signaturen til nedlastingen stemte ikke. Ingenting ble installert.
+update-extract-failed = Nedlastingen inneholdt ikke programmet. Ingenting ble installert.
+update-applying = Erstatter programmet…
+update-done = Oppdatert til versjon { $version }. Kjør kommandoen på nytt for å bruke den.
+update-unsupported-platform = Det finnes ingen ferdig nedlasting for denne plattformen. Oppdater manuelt.
+update-managed-install = Denne kopien ble installert av en pakkebehandler. Oppdater den på samme måte som du installerte den.
+update-not-writable = Denne kopien kan ikke erstattes på stedet: mappen er ikke skrivbar. Oppdater den på samme måte som du installerte den.
 btn-open-settings = Åpne innstillinger
 
 # Redigering av en oversettelse. Språkfiler kan lastes ned, endres i et

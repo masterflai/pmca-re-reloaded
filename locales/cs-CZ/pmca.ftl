@@ -596,6 +596,18 @@ err-update-not-downloaded = Zatím nebyla stažena žádná aktualizace.
 err-update-check-failed = Aktualizace se nepodařilo zkontrolovat.
 err-update-download-failed = Aktualizaci se nepodařilo stáhnout. Zkontrolujte připojení a zkuste to znovu.
 err-update-install-failed = Aktualizaci se nepodařilo nainstalovat.
+update-available-cli = Je dostupná nová verze: { $current } → { $latest }.
+update-confirm = Stáhnout a nainstalovat ji nyní? [y/N]
+update-yes-word = ano
+update-cancelled = Aktualizace zrušena. Nic se nezměnilo.
+update-verifying = Ověřuje se podpis…
+update-verify-failed = Podpis staženého souboru neodpovídá. Nic nebylo nainstalováno.
+update-extract-failed = Stažený soubor neobsahoval program. Nic nebylo nainstalováno.
+update-applying = Nahrazuje se program…
+update-done = Aktualizováno na verzi { $version }. Pro použití spusťte příkaz znovu.
+update-unsupported-platform = Pro tuto platformu není připravený soubor ke stažení. Aktualizujte prosím ručně.
+update-managed-install = Tato kopie byla nainstalována správcem balíčků. Aktualizujte ji stejným způsobem, jakým jste ji nainstalovali.
+update-not-writable = Tuto kopii nelze nahradit na místě: složka není zapisovatelná. Aktualizujte ji stejným způsobem, jakým jste ji nainstalovali.
 btn-open-settings = Otevřít nastavení
 
 # Úprava překladu. Jazykové soubory lze stáhnout, změnit v libovolném textovém

@@ -596,6 +596,18 @@ err-update-not-downloaded = Nijedno ažuriranje još nije preuzeto.
 err-update-check-failed = Provjera ažuriranja nije uspjela.
 err-update-download-failed = Ažuriranje nije moguće preuzeti. Provjerite vezu i pokušajte ponovno.
 err-update-install-failed = Ažuriranje nije moguće instalirati.
+update-available-cli = Dostupna je nova verzija: { $current } → { $latest }.
+update-confirm = Želite li je sada preuzeti i instalirati? [y/N]
+update-yes-word = da
+update-cancelled = Ažuriranje otkazano. Ništa nije promijenjeno.
+update-verifying = Provjera potpisa…
+update-verify-failed = Potpis preuzimanja ne odgovara. Ništa nije instalirano.
+update-extract-failed = Preuzimanje nije sadržavalo program. Ništa nije instalirano.
+update-applying = Zamjena programa…
+update-done = Ažurirano na verziju { $version }. Pokrenite naredbu ponovno da biste je koristili.
+update-unsupported-platform = Za ovu platformu nema gotovog preuzimanja. Ažurirajte ručno.
+update-managed-install = Ovu je kopiju instalirao upravitelj paketa. Ažurirajte je na isti način na koji ste je instalirali.
+update-not-writable = Ovu kopiju nije moguće zamijeniti na mjestu: mapa nije dostupna za pisanje. Ažurirajte je na isti način na koji ste je instalirali.
 btn-open-settings = Otvori postavke
 
 # Uređivanje prijevoda. Jezične datoteke mogu se preuzeti, urediti u bilo kojem

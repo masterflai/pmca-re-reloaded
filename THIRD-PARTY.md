@@ -11,9 +11,9 @@ this file is for. It ships alongside `LICENSE.txt` in every release archive.
 The licence of this project itself is in [LICENSE.txt](LICENSE.txt) and is not
 repeated here.
 
-Generated: 2026-11-14
+Generated: 2026-11-15
 
-* Packages: **552**
+* Packages: **553**
 * With a copyright notice recovered from their sources: **400**
 * Workspaces read: pmca (CLI, core, USB, market), pmca-gui (Tauri desktop shell)
 
@@ -30,9 +30,9 @@ Generated: 2026-11-14
 | `Unlicense OR MIT` | 10 |
 | `Apache-2.0 WITH LLVM-exception OR Apache-2.0 OR MIT` | 10 |
 | `MPL-2.0` | 5 |
+| `Apache-2.0` | 4 |
 | `Apache-2.0/MIT` | 4 |
 | `Zlib` | 3 |
-| `Apache-2.0` | 3 |
 | `Apache-2.0 OR ISC OR MIT` | 3 |
 | `ISC` | 3 |
 | `BSD-3-Clause` | 3 |
@@ -2263,6 +2263,11 @@ in executable form must tell the recipients where its source is available
 * Source: https://github.com/Voultapher/self_cell
 
   > Copyright (C) 1989, 1991 Free Software Foundation, Inc.,
+
+### self-replace 1.5.1
+
+* Licence: `Apache-2.0`
+* Source: https://github.com/mitsuhiko/self-replace
 
 ### semver 1.0.28
 

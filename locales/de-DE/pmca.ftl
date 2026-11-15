@@ -602,6 +602,18 @@ err-update-not-downloaded = Es wurde noch keine Aktualisierung heruntergeladen.
 err-update-check-failed = Nach Aktualisierungen konnte nicht gesucht werden.
 err-update-download-failed = Die Aktualisierung konnte nicht heruntergeladen werden. Prüfe die Verbindung und versuche es erneut.
 err-update-install-failed = Die Aktualisierung konnte nicht installiert werden.
+update-available-cli = Eine neue Version ist verfügbar: { $current } → { $latest }.
+update-confirm = Jetzt herunterladen und installieren? [y/N]
+update-yes-word = ja
+update-cancelled = Aktualisierung abgebrochen. Es wurde nichts geändert.
+update-verifying = Signatur wird geprüft…
+update-verify-failed = Die Signatur des Downloads stimmte nicht. Es wurde nichts installiert.
+update-extract-failed = Der Download enthielt das Programm nicht. Es wurde nichts installiert.
+update-applying = Programm wird ersetzt…
+update-done = Auf Version { $version } aktualisiert. Rufen Sie den Befehl erneut auf, um sie zu nutzen.
+update-unsupported-platform = Für diese Plattform gibt es keinen fertigen Download. Bitte von Hand aktualisieren.
+update-managed-install = Diese Kopie wurde von einer Paketverwaltung installiert. Aktualisieren Sie sie auf demselben Weg, auf dem Sie sie installiert haben.
+update-not-writable = Diese Kopie kann nicht an Ort und Stelle ersetzt werden: Der Ordner ist nicht beschreibbar. Aktualisieren Sie sie auf demselben Weg, auf dem Sie sie installiert haben.
 btn-open-settings = Zu den Einstellungen
 
 # Bearbeiten einer Übersetzung. Sprachdateien lassen sich herunterladen, in

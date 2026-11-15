@@ -608,6 +608,18 @@ err-update-not-downloaded = Chưa có bản cập nhật nào được tải xu�
 err-update-check-failed = Không thể kiểm tra bản cập nhật.
 err-update-download-failed = Không thể tải xuống bản cập nhật. Hãy kiểm tra kết nối và thử lại.
 err-update-install-failed = Không thể cài đặt bản cập nhật.
+update-available-cli = Đã có phiên bản mới: { $current } → { $latest }.
+update-confirm = Tải xuống và cài đặt ngay bây giờ? [y/N]
+update-yes-word = có
+update-cancelled = Đã hủy cập nhật. Không có gì thay đổi.
+update-verifying = Đang kiểm tra chữ ký…
+update-verify-failed = Chữ ký của tệp tải xuống không khớp. Không có gì được cài đặt.
+update-extract-failed = Tệp tải xuống không chứa chương trình. Không có gì được cài đặt.
+update-applying = Đang thay thế chương trình…
+update-done = Đã cập nhật lên phiên bản { $version }. Chạy lại lệnh để sử dụng.
+update-unsupported-platform = Không có bản tải xuống sẵn cho nền tảng này. Vui lòng cập nhật thủ công.
+update-managed-install = Bản sao này được cài đặt bằng trình quản lý gói. Hãy cập nhật theo cách bạn đã cài đặt.
+update-not-writable = Không thể thay thế bản sao này tại chỗ: thư mục không ghi được. Hãy cập nhật theo cách bạn đã cài đặt.
 btn-open-settings = Mở cài đặt
 
 # Chỉnh sửa bản dịch. Tệp ngôn ngữ có thể được tải xuống, sửa trong bất kỳ trình soạn

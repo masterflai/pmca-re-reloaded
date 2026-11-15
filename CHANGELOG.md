@@ -6,11 +6,7 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
-## [1.12.1-rc.4] - 2026-11-14
-
-Pre-release: another attempt at the macOS 26 mass-storage capture, together with
-the changes gathered since rc.3. Please report whether the service and tweaks
-modes can now reach a camera on macOS 26.
+## [1.13.0] - 2026-11-15
 
 ### Added
 
@@ -23,6 +19,13 @@ modes can now reach a camera on macOS 26.
   installed. An update waits until any camera operation, open session or running
   installation has finished. Installations from before this release do not have
   the updater yet and need updating by hand once.
+- The command-line program can update itself with `pmca-console update`. It
+  checks GitHub for a newer version and, once you confirm (or with `--yes` in a
+  script), downloads the archive for your platform, verifies its signature
+  against a key built into the program, and replaces the running executable. It
+  never runs on its own, and a copy installed by a package manager is left to
+  that manager. The release's command-line archives now carry a `.sig`
+  signature for it to check.
 - When a newer, BIONZ XR body (such as the ILCE-7M5) is asked for service mode,
   the camera is now recognised by its RSA-signed sign-in ("Senser v2") and the
   tool explains that this mode needs the manufacturer's private key and cannot
@@ -34,24 +37,6 @@ modes can now reach a camera on macOS 26.
 - The *Projects* page now shows a pinned project's details the moment it is
   added, and keeps them so the page is filled in again on the next start
   without asking GitHub. *Refresh* is only needed to check for newer releases.
-
-### Fixed
-
-- macOS 26: reaching the service and tweaks modes on a camera in mass-storage
-  mode could still fail with "The USB transfer failed" (error 0xe00002be). The
-  release's new mass-storage driver reclaims the freed interface before the
-  program can open it, so the capture only reset the camera and tried the same
-  way again, round after round. The final attempt now takes the other route
-  (through IOUSBHost) on a settled camera instead of resetting once more.
-  Reading the camera, installing apps and the usage log over MTP are unaffected.
-
-## [1.12.1-rc.3] - 2026-11-13
-
-Pre-release for testing on macOS 26. It changes how the service and tweaks
-modes capture the camera's mass-storage interface; please report back.
-
-### Changed
-
 - The note under *Show the Application menu* explains how to put a single app
   on the AEL button or soft key B: set the key to *Download Appli.* first, then
   choose the app under *Select Application*, which stays greyed out until then.
@@ -59,13 +44,14 @@ modes capture the camera's mass-storage interface; please report back.
 
 ### Fixed
 
-- On macOS 26, reaching the service and tweaks modes (which need the camera's
-  mass-storage interface) could fail even when the interface was free: it was
-  captured while its disk driver was still settling, which left it refusing
-  every open. The capture now waits for the mass-storage driver and for the
-  registry to go quiet first, and keeps retrying the path that is known to
-  carry data on macOS 26 instead of giving up after the first attempt. Reading
-  the camera, installing apps and the usage log over MTP are unaffected.
+- macOS 26: reaching the service and tweaks modes on a camera in mass-storage
+  mode could fail with "The USB transfer failed" (error 0xe00002be). The new
+  mass-storage driver reclaims the freed interface before the program can open
+  it, and the interface was also captured while its disk driver was still
+  settling. The capture now waits for the mass-storage driver and for the
+  registry to go quiet first, and the final attempt takes the other route
+  (through IOUSBHost) on a settled camera instead of resetting once more.
+  Reading the camera, installing apps and the usage log over MTP are unaffected.
 - The light rim of the program icon was too faint on a dark taskbar: Windows
   shrank a larger image to the taskbar size and blurred the thin rim into the
   dark camera. The icon now carries every size the taskbar uses, its edges sit

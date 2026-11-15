@@ -595,6 +595,18 @@ err-update-not-downloaded = まだ更新がダウンロードされていませ�
 err-update-check-failed = 更新を確認できませんでした。
 err-update-download-failed = 更新をダウンロードできませんでした。接続を確認してやり直してください。
 err-update-install-failed = 更新をインストールできませんでした。
+update-available-cli = 新しいバージョンがあります: { $current } → { $latest }。
+update-confirm = 今すぐダウンロードしてインストールしますか？ [y/N]
+update-yes-word = はい
+update-cancelled = 更新を中止しました。何も変更していません。
+update-verifying = 署名を確認しています…
+update-verify-failed = ダウンロードの署名が一致しませんでした。何もインストールしていません。
+update-extract-failed = ダウンロードにプログラムが含まれていませんでした。何もインストールしていません。
+update-applying = プログラムを置き換えています…
+update-done = バージョン { $version } に更新しました。使用するにはコマンドをもう一度実行してください。
+update-unsupported-platform = このプラットフォーム向けの配布ファイルはありません。手動で更新してください。
+update-managed-install = このコピーはパッケージマネージャーでインストールされています。インストールした方法と同じ方法で更新してください。
+update-not-writable = このコピーはその場で置き換えられません。フォルダーが書き込み不可です。インストールした方法と同じ方法で更新してください。
 btn-open-settings = 設定を開く
 
 # 翻訳の編集。言語ファイルはダウンロードして任意のテキストエディタで編集し、

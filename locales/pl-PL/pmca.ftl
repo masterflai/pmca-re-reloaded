@@ -596,6 +596,18 @@ err-update-not-downloaded = Nie pobrano jeszcze żadnej aktualizacji.
 err-update-check-failed = Nie udało się sprawdzić aktualizacji.
 err-update-download-failed = Nie udało się pobrać aktualizacji. Sprawdź połączenie i spróbuj ponownie.
 err-update-install-failed = Nie udało się zainstalować aktualizacji.
+update-available-cli = Dostępna jest nowa wersja: { $current } → { $latest }.
+update-confirm = Pobrać ją i zainstalować teraz? [y/N]
+update-yes-word = tak
+update-cancelled = Anulowano aktualizację. Nic nie zmieniono.
+update-verifying = Sprawdzanie podpisu…
+update-verify-failed = Podpis pobranego pliku nie zgadza się. Nic nie zainstalowano.
+update-extract-failed = Pobrany plik nie zawierał programu. Nic nie zainstalowano.
+update-applying = Zastępowanie programu…
+update-done = Zaktualizowano do wersji { $version }. Uruchom polecenie ponownie, aby jej użyć.
+update-unsupported-platform = Dla tej platformy nie ma gotowego pliku do pobrania. Zaktualizuj ręcznie.
+update-managed-install = Ta kopia została zainstalowana przez menedżera pakietów. Zaktualizuj ją w ten sam sposób, w jaki ją zainstalowano.
+update-not-writable = Tej kopii nie można zastąpić w miejscu: folder nie jest zapisywalny. Zaktualizuj ją w ten sam sposób, w jaki ją zainstalowano.
 btn-open-settings = Otwórz ustawienia
 
 # Edycja tłumaczenia. Pliki językowe można pobrać, zmienić w dowolnym edytorze

@@ -598,6 +598,18 @@ err-update-not-downloaded = Er is nog geen update gedownload.
 err-update-check-failed = Er kon niet op updates worden gecontroleerd.
 err-update-download-failed = De update kon niet worden gedownload. Controleer de verbinding en probeer het opnieuw.
 err-update-install-failed = De update kon niet worden geïnstalleerd.
+update-available-cli = Er is een nieuwe versie beschikbaar: { $current } → { $latest }.
+update-confirm = Nu downloaden en installeren? [y/N]
+update-yes-word = ja
+update-cancelled = Bijwerken geannuleerd. Er is niets gewijzigd.
+update-verifying = De handtekening wordt gecontroleerd…
+update-verify-failed = De handtekening van de download kwam niet overeen. Er is niets geïnstalleerd.
+update-extract-failed = De download bevatte het programma niet. Er is niets geïnstalleerd.
+update-applying = Het programma wordt vervangen…
+update-done = Bijgewerkt naar versie { $version }. Voer de opdracht opnieuw uit om deze te gebruiken.
+update-unsupported-platform = Er is geen kant-en-klare download voor dit platform. Werk het handmatig bij.
+update-managed-install = Deze kopie is geïnstalleerd door een pakketbeheerder. Werk deze op dezelfde manier bij als waarop u deze hebt geïnstalleerd.
+update-not-writable = Deze kopie kan niet ter plekke worden vervangen: de map is niet beschrijfbaar. Werk deze op dezelfde manier bij als waarop u deze hebt geïnstalleerd.
 btn-open-settings = Instellingen openen
 
 # Een vertaling bewerken. Taalbestanden kunnen worden gedownload, in elke

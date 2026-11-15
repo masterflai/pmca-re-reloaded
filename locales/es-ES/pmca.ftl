@@ -596,6 +596,18 @@ err-update-not-downloaded = Todavía no se ha descargado ninguna actualización.
 err-update-check-failed = No se han podido buscar actualizaciones.
 err-update-download-failed = No se ha podido descargar la actualización. Comprueba la conexión e inténtalo de nuevo.
 err-update-install-failed = No se ha podido instalar la actualización.
+update-available-cli = Hay una versión nueva disponible: { $current } → { $latest }.
+update-confirm = ¿Descargarla e instalarla ahora? [y/N]
+update-yes-word = sí
+update-cancelled = Actualización cancelada. No se cambió nada.
+update-verifying = Comprobando la firma…
+update-verify-failed = La firma de la descarga no coincidió. No se instaló nada.
+update-extract-failed = La descarga no contenía el programa. No se instaló nada.
+update-applying = Sustituyendo el programa…
+update-done = Actualizado a la versión { $version }. Ejecuta el comando de nuevo para usarla.
+update-unsupported-platform = No hay una descarga preparada para esta plataforma. Actualiza a mano, por favor.
+update-managed-install = Esta copia se instaló con un gestor de paquetes. Actualízala del mismo modo en que la instalaste.
+update-not-writable = Esta copia no se puede sustituir en su sitio: la carpeta no permite escritura. Actualízala del mismo modo en que la instalaste.
 btn-open-settings = Abrir configuración
 
 # Edición de una traducción. Los archivos de idioma se pueden descargar,

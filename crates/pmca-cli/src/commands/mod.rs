@@ -11,6 +11,7 @@ mod projects;
 mod service;
 mod sources;
 mod tweaks;
+mod update;
 mod updater;
 
 pub(crate) use analyze::*;
@@ -23,4 +24,5 @@ pub(crate) use projects::*;
 pub(crate) use service::*;
 pub(crate) use sources::*;
 pub(crate) use tweaks::*;
+pub(crate) use update::*;
 pub(crate) use updater::*;

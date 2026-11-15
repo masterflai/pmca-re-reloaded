@@ -608,6 +608,18 @@ err-update-not-downloaded = 尚未下載任何更新。
 err-update-check-failed = 無法檢查更新。
 err-update-download-failed = 無法下載更新。請檢查連線後再試一次。
 err-update-install-failed = 無法安裝更新。
+update-available-cli = 有新版本可用：{ $current } → { $latest }。
+update-confirm = 現在下載並安裝嗎？[y/N]
+update-yes-word = 是
+update-cancelled = 已取消更新。未做任何變更。
+update-verifying = 正在驗證簽章…
+update-verify-failed = 下載內容的簽章不符。未安裝任何內容。
+update-extract-failed = 下載內容不包含該程式。未安裝任何內容。
+update-applying = 正在取代程式…
+update-done = 已更新至版本 { $version }。請再次執行該命令以使用它。
+update-unsupported-platform = 沒有適用於此平台的現成下載。請手動更新。
+update-managed-install = 此副本由套件管理員安裝。請以安裝它的相同方式更新。
+update-not-writable = 無法就地取代此副本：該資料夾無法寫入。請以安裝它的相同方式更新。
 btn-open-settings = 開啟設定
 
 # 編輯翻譯。語言檔案可以下載、在任何文字編輯器中修改，
