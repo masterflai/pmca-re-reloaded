@@ -29,7 +29,7 @@
   "description": "Desktop toolkit for Sony cameras over USB: camera information, shutter count, installing PlayMemories camera apps, firmware updates and access to the camera's settings memory. A from-scratch Rust implementation of the ideas of Sony-PMCA-RE.",
   "applicationCategory": "UtilitiesApplication",
   "operatingSystem": "Windows, macOS, Linux",
-  "softwareVersion": "1.12.0",
+  "softwareVersion": "1.13.0",
   "license": "https://opensource.org/licenses/MIT",
   "url": "https://masterflai.github.io/pmca-re-reloaded/",
   "downloadUrl": "https://github.com/masterflai/pmca-re-reloaded/releases/latest",
@@ -172,6 +172,7 @@ footer { border-top: 1px solid var(--border); padding: 28px 0 48px; color: var(-
     <div class="card"><h3>Hidden settings</h3><p>Change settings the camera has but does not show in its menu, such as the video recording limit (30-minute limit), all menu languages or PAL/NTSC. Every change is backed up, verified and reversible.</p></div>
     <div class="card"><h3>Compare settings memories</h3><p>Save a camera's whole settings memory as a readable JSON file and lay two or more side by side. Each value is marked as the same everywhere, nearly the same, different, apparently unused or missing on one camera &mdash; which is how a setting that one body has and another lacks becomes visible. Works on saved files alone.</p></div>
     <div class="card"><h3>Plugins and app sources</h3><p>Anyone can publish camera apps and plugins from their own GitHub repository. There is no store and no approval. Plugins run as sandboxed WebAssembly.</p></div>
+    <div class="card"><h3>Updates itself</h3><p>The desktop app and <code>pmca-console</code> can fetch a newer release, check its signature against a key built into the program, and install it on your word &mdash; never on their own.</p></div>
     <div class="card"><h3>Private and careful</h3><p>No telemetry and no account. No Sony keys or firmware files ship with the program. Expert shells sit behind an <em>Advanced mode</em> switch.</p></div>
   </div>
 </section>
@@ -217,6 +218,10 @@ footer { border-top: 1px solid var(--border); padding: 28px 0 48px; color: var(-
   <details>
     <summary>Do I need Zadig or other drivers on Windows?</summary>
     <p>No. Most functions use the drivers Windows already has. Where raw USB is needed, the program assigns a WinUSB driver itself and removes it afterwards. Old Zadig drivers from Sony-PMCA-RE are detected and can be removed.</p>
+  </details>
+  <details>
+    <summary>Does it update itself?</summary>
+    <p>Yes, when you ask it to. The installed desktop builds and the Linux AppImage offer a <em>Download and install</em> button; on the command line, <code>pmca-console update</code> does the same. Each download's signature is checked against a key built into the program before it is installed, and nothing happens automatically. The portable archive and the Debian package are updated the way they were installed.</p>
   </details>
   <details>
     <summary>Is it made by Sony?</summary>

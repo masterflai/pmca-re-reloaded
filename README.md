@@ -71,6 +71,7 @@ in Rust, and it needs neither Python nor extra driver tools.
 | **Safety net built in** | Every write to the settings memory is preceded by a saved copy, read back and compared, and can be rolled back. |
 | **Your keys, not ours** | No Sony key material and no Sony firmware files ship with the program. Functions that need keys use material you import yourself. |
 | **Private by design** | No telemetry, no account. The network is used only by the features that obviously need it, and only when you use them. |
+| **Keeps itself current** | The desktop app updates itself through a signed, in-app updater; the command line does the same with `pmca-console update`. Each verifies the download against a key built into the program before installing it. |
 | **Extensible** | Plugins add languages, compatibility notes, settings and sandboxed WebAssembly tools. |
 | **Open to every developer** | Anyone can publish camera apps and plugins from a GitHub repository of their own — no store, no approval, no central hosting. Users add the sources they choose. [How to publish](#publish-your-own-apps-and-plugins) |
 | **27 languages** | Every text is translated, and each translation can be edited from within the app. |
@@ -135,6 +136,10 @@ the live-streaming feature.
 **Expert shells** — the service shell and the updater shell give direct access
 to the camera's Linux system. Hidden behind an *Advanced mode* switch in the
 app, so reaching them stays a deliberate step.
+
+**Updates itself** — the desktop app and `pmca-console` can fetch a newer
+release, check its signature against a key built into the program, and install
+it on your word — never on their own. See [Updating](#updating).
 
 ## Getting started
 
