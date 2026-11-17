@@ -13,6 +13,7 @@ mod sources;
 mod tweaks;
 mod update;
 mod updater;
+mod wbi;
 
 pub(crate) use analyze::*;
 pub(crate) use backup::*;
@@ -26,3 +27,4 @@ pub(crate) use sources::*;
 pub(crate) use tweaks::*;
 pub(crate) use update::*;
 pub(crate) use updater::*;
+pub(crate) use wbi::*;

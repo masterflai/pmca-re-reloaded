@@ -15,6 +15,8 @@ pmca-i18n = { path = "../pmca-i18n" }
 pmca-usb = { path = "../pmca-usb" }
 pmca-market = { path = "../pmca-market" }
 pmca-app = { path = "../pmca-app" }
+pmca-core = { path = "../pmca-core" }
+sha2.workspace = true
 clap.workspace = true
 serde.workspace = true
 serde_json.workspace = true

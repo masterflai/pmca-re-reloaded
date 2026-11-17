@@ -11,6 +11,7 @@
 //! * [`fdat`] – FDAT firmware-image (de)cryption, parsing and re-assembly.
 //! * [`backup`] – Read-only parser for the camera `Backup.bin` settings file.
 //! * [`camset`] – Read-only reader for the menu's Save/Load Settings file.
+//! * [`wbi`] – Read-only Sony warm-boot RAM image parser and segment diff.
 //! * [`usagelog`] – Read-only reader for the camera's usage log ("KikiLog").
 //! * [`photo`] – Read-only reader for the shutter count and capture details
 //!   Sony cameras record in their images.
@@ -43,6 +44,7 @@ pub mod sha1;
 pub mod spk;
 pub mod usagelog;
 pub mod util;
+pub mod wbi;
 pub mod xpd;
 
 /// Crate-wide error type shared by all parsers.
