@@ -622,6 +622,9 @@ function renderReport(
     );
   }
   nodes.push(findingsHelp());
+  if (report.rows.some((row) => row.id.includes(":"))) {
+    nodes.push(make("p", { className: "hint", i18n: "compare-further-image-note" }));
+  }
   if (shown.length === 0) {
     nodes.push(make("p", { i18n: "compare-no-rows" }));
   } else {

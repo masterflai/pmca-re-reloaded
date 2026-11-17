@@ -234,8 +234,27 @@ pub struct DumpFile {
     pub layout: DumpLayout,
     /// Every property that has a table entry.
     pub properties: Vec<PropertyView>,
+    /// The images behind the first, on bodies that send more than one.
+    #[serde(default)]
+    pub further_images: Vec<FurtherImageView>,
     /// What was left out, in plain words.
     pub privacy: String,
+}
+
+/// An image behind the first in the same `Backup.bin`.
+///
+/// It numbers its properties on its own, and the toolkit has no way to write
+/// to it, so none of its properties is ever marked writable.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+#[cfg_attr(test, derive(ts_rs::TS), ts(export))]
+pub struct FurtherImageView {
+    /// Where the image starts in the file, as hex.
+    pub offset: String,
+    /// The shape of the image.
+    pub layout: DumpLayout,
+    /// Every property that has a table entry.
+    pub properties: Vec<PropertyView>,
 }
 
 /// One property as a comparison sees it.
@@ -269,6 +288,14 @@ pub struct CompareRow {
     pub shape: String,
     /// The value on each camera, `null` where it has no such property.
     pub values: Vec<Option<String>>,
+}
+
+impl CompareRow {
+    /// Whether the row belongs to an image behind the first.
+    #[must_use]
+    pub fn from_further_image(&self) -> bool {
+        self.id.contains(':')
+    }
 }
 
 /// Where one side of a comparison came from.
@@ -540,6 +567,22 @@ pub fn dump_image(
 ) -> Result<DumpFile> {
     let file = BackupFile::new(image).map_err(|e| invalid(l, &e))?;
     let dump = Dump::from_image(&file).map_err(|e| Error::Operation(e.to_string()))?;
+    let further_images = file
+        .further_images()
+        .iter()
+        .map(|(offset, further)| {
+            let dump = Dump::from_image(further).map_err(|e| Error::Operation(e.to_string()))?;
+            Ok(FurtherImageView {
+                offset: format!("{offset:#010x}"),
+                layout: layout_view(&dump),
+                properties: dump
+                    .entries
+                    .iter()
+                    .map(|e| PropertyView { writable: false, ..property_view(e, privacy) })
+                    .collect(),
+            })
+        })
+        .collect::<Result<Vec<_>>>()?;
     let patch = BackupPatch::new(image.to_vec()).map_err(|e| invalid(l, &e))?;
     let identity = pmca_platform::identity::list(&patch);
     let value = |id: &str| identity.iter().find(|v| v.id == id).map(|v| v.value.clone());
@@ -558,6 +601,7 @@ pub fn dump_image(
         },
         layout: layout_view(&dump),
         properties,
+        further_images,
         privacy: privacy.describe(),
     })
 }
@@ -618,22 +662,46 @@ pub fn compare_dumps(files: &[(PathBuf, DumpFile)], options: &CompareOptions) ->
     let dumps: Vec<Dump> = files.iter().map(|(_, f)| f.to_dump()).collect();
 
     let mut noise = options.noise.clone();
-    let measured = options.auto_noise && add_measured_noise(files, &dumps, &mut noise);
+    let mut measured = options.auto_noise && add_measured_noise(files, &dumps, &mut noise);
 
     let refs: Vec<&Dump> = dumps.iter().collect();
     let comparison = cmp::compare(
         &refs,
         &cmp::Options { similar_distance: options.similar_distance, noise: noise.clone() },
     );
+    let mut counts = comparison.counts();
+    let mut rows: Vec<CompareRow> = comparison.rows.iter().map(|r| compare_row(r, 1)).collect();
+    let mut noise_ids: Vec<String> = noise.iter().map(|id| format!("{id:#010x}")).collect();
 
-    let counts =
-        comparison.counts().into_iter().map(|(class, n)| (class.as_str().to_string(), n)).collect();
+    // Image n of every source side by side; a source without one counts as
+    // having none of its properties. Supplied noise ids name first-image ids.
+    let mut further: Vec<_> = files.iter().map(|(_, f)| f.further_dumps().into_iter()).collect();
+    let deepest = files.iter().map(|(_, f)| f.further_images.len()).max().unwrap_or(0);
+    for image in 2..deepest + 2 {
+        let dumps: Vec<Dump> =
+            further.iter_mut().map(|d| d.next().unwrap_or_else(empty_dump)).collect();
+        let mut noise = BTreeSet::new();
+        if options.auto_noise {
+            measured |= add_measured_noise(files, &dumps, &mut noise);
+        }
+        let refs: Vec<&Dump> = dumps.iter().collect();
+        let comparison = cmp::compare(
+            &refs,
+            &cmp::Options { similar_distance: options.similar_distance, noise: noise.clone() },
+        );
+        for (class, n) in comparison.counts() {
+            *counts.entry(class).or_default() += n;
+        }
+        rows.extend(comparison.rows.iter().map(|r| compare_row(r, image)));
+        noise_ids.extend(noise.iter().map(|id| format!("{image}:{id:#010x}")));
+    }
+
     CompareReport {
         schema: COMPARE_SCHEMA.to_string(),
         tool: format!("PMCA-RE RELOADED {}", env!("CARGO_PKG_VERSION")),
         created: timestamp(),
         similar_distance: options.similar_distance,
-        noise_ids: noise.iter().map(|id| format!("{id:#010x}")).collect(),
+        noise_ids,
         noise_measured: measured,
         sources: files
             .iter()
@@ -645,10 +713,10 @@ pub fn compare_dumps(files: &[(PathBuf, DumpFile)], options: &CompareOptions) ->
                 properties: file.properties.len(),
             })
             .collect(),
-        total: comparison.rows.len(),
+        total: rows.len(),
         included: Class::all().iter().map(|c| c.as_str().to_string()).collect(),
-        rows: comparison.rows.iter().map(compare_row).collect(),
-        counts,
+        rows,
+        counts: counts.into_iter().map(|(class, n)| (class.as_str().to_string(), n)).collect(),
         privacy: "Serial numbers are withheld unless a source dump was made with them.".to_string(),
     }
 }
@@ -711,6 +779,9 @@ pub fn report_text(l: &Localizer, report: &CompareReport) -> String {
             if report.noise_measured { "compare-noise-measured" } else { "compare-noise-supplied" };
         let _ = writeln!(out, "\n{}", l.tr_arg(key, "count", &report.noise_ids.len().to_string()));
     }
+    if report.rows.iter().any(CompareRow::from_further_image) {
+        let _ = writeln!(out, "\n{}", l.tr("compare-further-image-note"));
+    }
 
     if report.rows.is_empty() {
         let _ = writeln!(out, "\n{}", l.tr("compare-no-rows"));
@@ -761,34 +832,60 @@ impl DumpFile {
     /// The properties of this dump, as the comparison layer wants them.
     #[must_use]
     pub fn to_dump(&self) -> Dump {
-        let mut entries: Vec<DumpEntry> = self
-            .properties
+        dump_from_views(&self.camera.region, &self.layout, &self.properties)
+    }
+
+    /// The images behind the first, in order.
+    fn further_dumps(&self) -> Vec<Dump> {
+        self.further_images
             .iter()
-            .filter_map(|p| {
-                let id = parse_hex_u32(&p.id)?;
-                Some(DumpEntry {
-                    id,
-                    attr: parse_hex_u32(&p.attr)? as u16,
-                    offset: parse_hex_u32(&p.offset)? as usize,
-                    max_size: p.max_size,
-                    slot_size: p.max_size,
-                    data: parse_hex_bytes(&p.hex),
-                    reset: p.reset.as_deref().map(parse_hex_bytes),
-                })
+            .map(|f| dump_from_views(&self.camera.region, &f.layout, &f.properties))
+            .collect()
+    }
+}
+
+fn dump_from_views(region: &str, layout: &DumpLayout, properties: &[PropertyView]) -> Dump {
+    let mut entries: Vec<DumpEntry> = properties
+        .iter()
+        .filter_map(|p| {
+            let id = parse_hex_u32(&p.id)?;
+            Some(DumpEntry {
+                id,
+                attr: parse_hex_u32(&p.attr)? as u16,
+                offset: parse_hex_u32(&p.offset)? as usize,
+                max_size: p.max_size,
+                slot_size: p.max_size,
+                data: parse_hex_bytes(&p.hex),
+                reset: p.reset.as_deref().map(parse_hex_bytes),
             })
-            .collect();
-        entries.sort_unstable_by_key(|e| e.id);
-        Dump {
-            region: self.camera.region.clone(),
-            revision: self.layout.revision,
-            image_size: self.layout.image_size,
-            buffer_size: self.layout.image_size,
-            data_offset: parse_hex_u32(&self.layout.data_offset).unwrap_or_default() as usize,
-            table_end: parse_hex_u32(&self.layout.table_end).unwrap_or_default() as usize,
-            num_subsystems: self.layout.num_subsystems,
-            num_properties: self.layout.num_properties,
-            entries,
-        }
+        })
+        .collect();
+    entries.sort_unstable_by_key(|e| e.id);
+    Dump {
+        region: region.to_string(),
+        revision: layout.revision,
+        image_size: layout.image_size,
+        buffer_size: layout.image_size,
+        data_offset: parse_hex_u32(&layout.data_offset).unwrap_or_default() as usize,
+        table_end: parse_hex_u32(&layout.table_end).unwrap_or_default() as usize,
+        num_subsystems: layout.num_subsystems,
+        num_properties: layout.num_properties,
+        entries,
+    }
+}
+
+/// The stand-in for an image a source does not have.
+fn empty_dump() -> Dump {
+    Dump {
+        region: String::new(),
+        revision: 0,
+        image_size: 0,
+        buffer_size: 0,
+        data_offset: 0,
+        table_end: 0,
+        num_subsystems: 0,
+        num_properties: 0,
+        entries: Vec::new(),
     }
 }
 
@@ -881,9 +978,12 @@ fn layout_view(dump: &Dump) -> DumpLayout {
     }
 }
 
-fn compare_row(row: &cmp::Row) -> CompareRow {
+/// One row of the report. Rows of image 2 onwards carry the image number in
+/// front of the id and are never writable.
+fn compare_row(row: &cmp::Row, image: usize) -> CompareRow {
+    let further = image > 1;
     CompareRow {
-        id: format!("{:#010x}", row.id),
+        id: if further { format!("{image}:{:#010x}", row.id) } else { format!("{:#010x}", row.id) },
         subsystem: format!("{:#06x}", row.id >> 16),
         name: row.size.and_then(|size| prop_name(row.id, size)),
         class: row.class.as_str().to_string(),
@@ -896,8 +996,8 @@ fn compare_row(row: &cmp::Row) -> CompareRow {
         attr_differs: row.attr_differs,
         distance: row.distance,
         touched: row.touched,
-        writable: row.writable,
-        shape: row.shape.as_str().to_string(),
+        writable: row.writable && !further,
+        shape: if further { Shape::Plain } else { row.shape }.as_str().to_string(),
         values: row.values.iter().map(|v| v.as_deref().map(hex)).collect(),
     }
 }
@@ -1094,6 +1194,53 @@ mod tests {
         assert!(report.noise_measured);
         let row = report.rows.iter().find(|r| r.id == FIRST).unwrap();
         assert_eq!(row.class, "noise");
+    }
+
+    /// Two images in one file, as the ILCE-7CR sends them.
+    fn two_images(first: u8, second: u8) -> Vec<u8> {
+        let mut buf = image([1, 2, 3, 4], first);
+        buf.resize(0x1000, 0);
+        buf.extend_from_slice(&image([1, 2, 3, 4], second));
+        buf
+    }
+
+    #[test]
+    fn a_second_image_is_dumped_but_never_writable() {
+        let file = dump_image(&localizer(), &two_images(9, 5), Privacy::MASKED, None).unwrap();
+        assert_eq!(file.further_images.len(), 1);
+        let further = &file.further_images[0];
+        assert_eq!(further.offset, "0x00001000");
+        assert!(further.properties.iter().all(|p| !p.writable));
+        // The serial rule follows the id, so it holds in the second image too.
+        assert!(further.properties.iter().find(|p| p.id == "0x00e70003").unwrap().redacted);
+        let back: DumpFile = serde_json::from_str(&serde_json::to_string(&file).unwrap()).unwrap();
+        assert_eq!(back, file);
+    }
+
+    #[test]
+    fn second_image_rows_carry_their_image_number() {
+        let read = |first, second| {
+            dump_image(&localizer(), &two_images(first, second), Privacy::MASKED, None).unwrap()
+        };
+        let a = (PathBuf::from("a.json"), read(9, 5));
+        let b = (PathBuf::from("b.json"), read(9, 6));
+        let options = CompareOptions { auto_noise: false, ..CompareOptions::default() };
+        let report = compare_dumps(&[a, b], &options);
+        let first = report.rows.iter().find(|r| r.id == FIRST).unwrap();
+        assert_eq!(first.class, "identical");
+        let row = report.rows.iter().find(|r| r.id == format!("2:{FIRST}")).unwrap();
+        assert_eq!(row.class, "similar");
+        assert!(row.from_further_image() && !row.writable);
+        assert_eq!(report.total, report.rows.len());
+        assert!(report_text(&localizer(), &report).contains(&format!("2:{FIRST}")));
+    }
+
+    #[test]
+    fn a_dump_without_further_images_still_reads() {
+        let mut value = serde_json::to_value(dump_of([1, 2, 3, 4], 9)).unwrap();
+        value.as_object_mut().unwrap().remove("furtherImages");
+        let file: DumpFile = serde_json::from_value(value).unwrap();
+        assert!(file.further_images.is_empty());
     }
 
     #[test]

@@ -6,6 +6,14 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+### Added
+
+- Newer bodies such as the ILCE-7CR store a second, complete settings image
+  behind the first one in `Backup.bin`, which the tools used to skip as
+  padding. `print-backup`, the service shell's `bk dump-txt`, backup dumps and
+  the camera comparison now include it. Its properties are numbered separately
+  and appear as `2:0x…`; they are shown only and never offered for writing.
+
 ## [1.13.0] - 2026-11-15
 
 ### Added

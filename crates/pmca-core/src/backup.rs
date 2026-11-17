@@ -359,6 +359,28 @@ impl<D: AsRef<[u8]>> BackupFile<D> {
         Ok(Layout { attr, slot_offset, offset, size, max_size, slot_size, has_reset })
     }
 
+    /// The further images behind this one, as `(offset, image)` pairs.
+    ///
+    /// Newer bodies (ILCE-7CR) send a second, complete image starting at the
+    /// next 4 KiB boundary after the first. Each image numbers its properties
+    /// on its own, so an id means nothing without saying which image it is in.
+    /// The search stops at the first boundary that does not hold an image with
+    /// a valid checksum.
+    pub fn further_images(&self) -> Vec<(usize, BackupFile<&[u8]>)> {
+        const ALIGN: usize = 0x1000;
+        let buf = self.data.as_ref();
+        let mut out = Vec::new();
+        let mut end = self.size;
+        loop {
+            let start = end.next_multiple_of(ALIGN);
+            let Some(rest) = buf.get(start..).filter(|r| !r.is_empty()) else { break };
+            let Ok(image) = BackupFile::new(rest) else { break };
+            end = start + image.size();
+            out.push((start, image));
+        }
+        out
+    }
+
     /// Iterate over all present `(id, Layout)` pairs.
     pub fn list_layouts(&self) -> Result<Vec<(u32, Layout)>> {
         let mut out = Vec::new();
@@ -495,6 +517,36 @@ mod tests {
         assert_eq!(bf.get_property(0).unwrap().data, vec![0, 29, 50]);
         assert_eq!(bf.get_property(1).unwrap().data, vec![0x2c, 0x01]);
         assert_eq!(bf.list_properties().unwrap().len(), 2);
+    }
+
+    #[test]
+    fn finds_a_second_image_at_the_next_4k_boundary() {
+        let mut second = sample_backup();
+        second[0x200] = 7;
+        let end = (0x200 + 0x40) as usize;
+        let sum = BackupFile::<&[u8]>::calc_checksum(&second[..end]);
+        second[CHECKSUM_OFFSET..CHECKSUM_OFFSET + 4].copy_from_slice(&sum.to_le_bytes());
+
+        let mut buf = sample_backup();
+        buf.resize(0x1000, 0xff);
+        buf.extend_from_slice(&second);
+        let bf = BackupFile::new(&buf).unwrap();
+        let further = bf.further_images();
+        assert_eq!(further.len(), 1);
+        assert_eq!(further[0].0, 0x1000);
+        assert_eq!(further[0].1.get_property(0).unwrap().data, vec![7, 29, 50]);
+        assert_eq!(bf.get_property(0).unwrap().data, vec![0, 29, 50]);
+    }
+
+    #[test]
+    fn padding_or_a_damaged_tail_is_not_an_image() {
+        assert!(BackupFile::new(&sample_backup()).unwrap().further_images().is_empty());
+        let mut buf = sample_backup();
+        buf.resize(0x1000, 0);
+        let mut tail = sample_backup();
+        tail[0x200] ^= 1; // checksum no longer matches
+        buf.extend_from_slice(&tail);
+        assert!(BackupFile::new(&buf).unwrap().further_images().is_empty());
     }
 
     #[test]

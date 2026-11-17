@@ -324,12 +324,34 @@ fn camset_value(record: Option<&camset::Record>) -> String {
 /// Shared by `print-backup` and the service shell's `bk dump-txt`, so a dump
 /// taken from the camera reads exactly like one printed from a file later.
 /// Attribute bits and the names of known settings are spelled out, as in the
-/// LAK132 fork's text dump.
+/// LAK132 fork's text dump. A further image behind the first follows under a
+/// heading of its own, since its ids are numbered independently.
 pub(crate) fn backup_report(l: &Localizer, data: &[u8]) -> Result<String> {
     let image =
         backup::BackupFile::new(data).map_err(|e| invalid(l, "tools-backup-invalid", &e))?;
     let mut report = String::new();
     let _ = writeln!(report, "{}: {}", l.tr("info-region"), image.region());
+    write_properties(l, &mut report, &image)?;
+    for (n, (offset, further)) in image.further_images().iter().enumerate() {
+        let _ = writeln!(
+            report,
+            "\n{}",
+            l.tr_args(
+                "backup-further-image",
+                &[("number", &(n + 2).to_string()), ("offset", &format!("0x{offset:x}"))],
+            )
+        );
+        write_properties(l, &mut report, further)?;
+    }
+    Ok(report)
+}
+
+/// One line per property of `image`, with its value and any reset value.
+fn write_properties(
+    l: &Localizer,
+    report: &mut String,
+    image: &backup::BackupFile<&[u8]>,
+) -> Result<()> {
     for (id, property) in
         image.list_properties().map_err(|e| invalid(l, "tools-backup-invalid", &e))?
     {
@@ -351,17 +373,17 @@ pub(crate) fn backup_report(l: &Localizer, data: &[u8]) -> Result<String> {
             let _ = write!(report, ", name=\"{}\"", def.name);
         }
         report.push_str(":\n");
-        indent(&mut report, &hexdump(&property.data));
+        indent(report, &hexdump(&property.data));
         // Only worth showing when it differs: a reset value equal to the
         // current one is noise on every single property.
         if let Some(reset) = &property.reset_data
             && reset != &property.data
         {
             let _ = writeln!(report, "  {}", l.tr("tools-reset-value"));
-            indent(&mut report, &hexdump(reset));
+            indent(report, &hexdump(reset));
         }
     }
-    Ok(report)
+    Ok(())
 }
 
 /// Report that a file was written, naming where it went.
