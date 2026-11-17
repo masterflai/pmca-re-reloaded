@@ -38,6 +38,7 @@ pub mod plugins;
 pub mod projects;
 pub mod proxy;
 pub mod service;
+mod service_verified;
 pub mod service_mode;
 pub mod sources;
 pub mod store;

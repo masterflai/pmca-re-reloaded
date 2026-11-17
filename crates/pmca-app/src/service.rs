@@ -45,6 +45,7 @@ use crate::{Error, ProgressSink, Result};
 pub const HELP: &str = "\
 hasp                              read the HASP block
 pull <remote> [local]             copy a camera file to the computer
+pull-verified <remote> <local> <size> [sha256]  read twice, verify and atomically export
 push <local> <remote>             copy a local file to the camera (WRITES)
 rm <remote>                       delete a camera file (WRITES)
 rmem <hexoff> <hexlen> <outfile>  dump device memory
@@ -80,6 +81,18 @@ pub enum ServiceRequest {
         remote: String,
         /// Destination on this computer.
         local: PathBuf,
+    },
+    /// Copy a remote file or partition twice, checking its exact length and hash
+    /// before atomically publishing the host copy without replacing anything.
+    PullVerified {
+        /// Absolute path on the camera, e.g. a read-only block-device source.
+        remote: String,
+        /// New destination on the host; an existing path is never replaced.
+        local: PathBuf,
+        /// Required expected number of bytes (decimal).
+        expected_bytes: u64,
+        /// Optional trusted baseline SHA-256 in addition to cross-read matching.
+        expected_sha256: Option<[u8; 32]>,
     },
     /// Copy a file onto the camera.
     Push {
@@ -192,6 +205,7 @@ impl ServiceRequest {
     pub fn local_outputs(&self) -> Vec<PathBuf> {
         match self {
             Self::Pull { local, .. }
+            | Self::PullVerified { local, .. }
             | Self::ReadMemory { local, .. }
             | Self::BackupDump { local }
             | Self::BackupTrace { local } => vec![local.clone()],
@@ -325,6 +339,31 @@ pub fn parse(line: &str, l: &Localizer) -> Result<Option<ServiceRequest>> {
             ServiceRequest::Pull { remote: remote.clone(), local: PathBuf::from(local) }
         }
         ("pull", _) => return Err(usage(l, "pull <remote> [local]")),
+        ("pull-verified", [remote, local, expected_bytes]) => ServiceRequest::PullVerified {
+            remote: remote.clone(),
+            local: PathBuf::from(local),
+            expected_bytes: expected_bytes
+                .parse::<u64>()
+                .map_err(|_| usage(l, "pull-verified <remote> <local> <size> [sha256]"))?,
+            expected_sha256: None,
+        },
+        ("pull-verified", [remote, local, expected_bytes, sha256]) => {
+            ServiceRequest::PullVerified {
+                remote: remote.clone(),
+                local: PathBuf::from(local),
+                expected_bytes: expected_bytes
+                    .parse::<u64>()
+                    .map_err(|_| usage(l, "pull-verified <remote> <local> <size> [sha256]"))?,
+                expected_sha256: Some(
+                    crate::service_verified::parse_sha256(sha256).ok_or_else(|| {
+                        usage(l, "pull-verified <remote> <local> <size> [sha256]")
+                    })?,
+                ),
+            }
+        }
+        ("pull-verified", _) => {
+            return Err(usage(l, "pull-verified <remote> <local> <size> [sha256]"));
+        }
         ("push", [local, remote]) => {
             ServiceRequest::Push { local: PathBuf::from(local), remote: remote.clone() }
         }
@@ -513,6 +552,24 @@ impl ServiceSession {
                     "service-pulled",
                     &[("remote", remote), ("local", &local.display().to_string())],
                 )))
+            }
+            ServiceRequest::PullVerified { remote, local, expected_bytes, expected_sha256 } => {
+                let verified = crate::service_verified::export_twice(
+                    local,
+                    *expected_bytes,
+                    *expected_sha256,
+                    |out| self.cam.read_file(remote, out).map_err(Error::from),
+                )?;
+                Ok(ServiceOutcome::dump(
+                    l.tr_args(
+                        "service-pulled",
+                        &[("remote", remote), ("local", &local.display().to_string())],
+                    ),
+                    format!(
+                        "Verified twice: {} bytes; SHA-256: {}\n",
+                        verified.bytes, verified.sha256
+                    ),
+                ))
             }
             ServiceRequest::Push { local, remote } => {
                 let data = std::fs::read(local)?;
@@ -751,6 +808,26 @@ mod tests {
         );
     }
 
+    #[test]
+    fn verified_pull_parses_and_is_read_only() {
+        let request =
+            parse("pull-verified /dev/nflasha05 image.bin 41943040", &l()).unwrap().unwrap();
+        assert_eq!(
+            request,
+            ServiceRequest::PullVerified {
+                remote: "/dev/nflasha05".into(),
+                local: PathBuf::from("image.bin"),
+                expected_bytes: 41943040,
+                expected_sha256: None,
+            }
+        );
+        assert!(!request.writes());
+        assert_eq!(request.local_outputs(), vec![PathBuf::from("image.bin")]);
+        assert!(parse("pull-verified /dev/nflasha05 image.bin 0 nope", &l()).is_err());
+        assert!(parse("pull-verified /dev/nflasha05 image.bin nope", &l()).is_err());
+        assert!(parse("pull-verified /dev/nflasha05", &l()).is_err());
+    }
+
     /// Acting on half a path is worse than refusing the line.
     #[test]
     fn an_unterminated_quote_is_refused() {
@@ -802,6 +879,7 @@ mod tests {
         assert!(writes("term on"));
         assert!(!writes("hasp"));
         assert!(!writes("pull /b"));
+        assert!(!writes("pull-verified /dev/nflasha05 out.bin 4096"));
         assert!(!writes("rmem 0 10 out.bin"));
         assert!(!writes("bk r 1"));
         assert!(!writes("bk d out.bin"));
