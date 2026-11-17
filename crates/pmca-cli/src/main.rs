@@ -63,6 +63,11 @@ enum Command {
     Apk2spk { input: PathBuf, output: PathBuf },
     /// Convert an SPK package back to an APK file.
     Spk2apk { input: PathBuf, output: PathBuf },
+    /// Inspect, unpack, or diff offline Sony WBI1 warm-boot memory images.
+    Wbi {
+        #[command(subcommand)]
+        action: WbiAction,
+    },
     /// Print the contents of a `Backup.bin` file.
     PrintBackup { file: PathBuf },
     /// Write the whole contents of a `Backup.bin` file out as JSON.
@@ -465,6 +470,43 @@ enum Command {
     },
 }
 
+/// Operations on local Sony warm-boot RAM images (no camera connection).
+#[derive(Subcommand)]
+enum WbiAction {
+    /// Inspect a WBI1 image, including uncompressed section SHA-256 values.
+    Inspect {
+        /// WBI1 file on the host.
+        file: PathBuf,
+        /// Print machine-readable JSON.
+        #[arg(long)]
+        json: bool,
+        /// Write JSON to this new file instead of stdout.
+        #[arg(long)]
+        out: Option<PathBuf>,
+    },
+    /// Extract physical memory sections into a new directory.
+    Unpack {
+        /// WBI1 file on the host.
+        file: PathBuf,
+        /// New directory to create (must not exist).
+        #[arg(long)]
+        out: PathBuf,
+    },
+    /// Compare two WBI1 images by physical address and decoded section bytes.
+    Diff {
+        /// Baseline WBI1 file.
+        before: PathBuf,
+        /// New WBI1 file.
+        after: PathBuf,
+        /// Print machine-readable JSON.
+        #[arg(long)]
+        json: bool,
+        /// Write JSON to this new file instead of stdout.
+        #[arg(long)]
+        out: Option<PathBuf>,
+    },
+}
+
 /// What [`Command::Plugins`] should do.
 #[derive(Subcommand)]
 enum PluginsAction {
@@ -783,6 +825,7 @@ fn uses_camera(cmd: &Command) -> bool {
         Command::License { .. }
         | Command::Apk2spk { .. }
         | Command::Spk2apk { .. }
+        | Command::Wbi { .. }
         | Command::PrintBackup { .. }
         | Command::DumpBackup { .. }
         | Command::CompareBackups { .. }
@@ -828,6 +871,9 @@ fn run(cmd: &Command, l: &Localizer) -> Result<(), Box<dyn std::error::Error>> {
                 l,
                 ToolRequest::SpkToApk { input: input.clone(), output: output.clone() },
             )?;
+        }
+        Command::Wbi { action } => {
+            wbi_command(action)?;
         }
         Command::PrintBackup { file } => {
             tool_command(l, ToolRequest::PrintBackup { input: file.clone() })?;
