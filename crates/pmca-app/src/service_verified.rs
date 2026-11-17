@@ -103,7 +103,16 @@ impl StagingFile {
         for _ in 0..32 {
             let sequence = NEXT_TEMP.fetch_add(1, Ordering::Relaxed);
             let path = parent.join(format!(".{name}.pmca-{}-{sequence}.tmp", std::process::id()));
-            match File::options().write(true).create_new(true).open(&path) {
+            let mut options = File::options();
+            options.write(true).create_new(true);
+            // Raw camera partitions may carry credentials and identifiers;
+            // protect the staging file before the first byte is written.
+            #[cfg(unix)]
+            {
+                use std::os::unix::fs::OpenOptionsExt;
+                options.mode(0o600);
+            }
+            match options.open(&path) {
                 Ok(file) => return Ok(Self { path, file: Some(file) }),
                 Err(error) if error.kind() == io::ErrorKind::AlreadyExists => continue,
                 Err(error) => return Err(error.into()),
@@ -220,6 +229,11 @@ mod tests {
         assert_eq!(result.bytes, 5);
         assert_eq!(result.sha256, hex(&Sha256::digest(b"hello").into()));
         assert_eq!(fs::read(dir.dest()).unwrap(), b"hello");
+        #[cfg(unix)]
+        {
+            use std::os::unix::fs::PermissionsExt;
+            assert_eq!(fs::metadata(dir.dest()).unwrap().permissions().mode() & 0o777, 0o600);
+        }
         assert_eq!(dir.entries(), 1);
     }
 
