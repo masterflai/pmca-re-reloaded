@@ -876,6 +876,10 @@ camset-saved = 儲存時間
 camset-video-system = 視訊制式
 camset-sections = 各區段的記錄數
 camset-changes = 已變更的記錄
+camset-bridge-live = 目前設定：{ $records } 筆記錄，在備份子系統 0x02cf 的 { $properties } 個屬性中尋找
+camset-bridge-sets = 記憶組：{ $sets } 組，每組 { $values } 個值，透過其陣列尋找
+camset-bridge-legend = same：位元組相同 · width：數值相同但寬度不同 · consecutive / stride2：元素 i 位於 N+i / N+2i · partial：只找到前面的元素 · differs：屬性 N 的值不同 · missing：沒有屬性 N · beside：記憶組陣列緊接在目前值之後 · elsewhere：在其他 ID 找到陣列 · unlocated：沒有唯一相符的陣列
+camset-bridge-other-camera = 設定檔來自 { $file }，備份來自 { $backup }。只有兩者來自同一台相機時才能找到記錄。
 camset-no-changes = 兩個檔案的值相同。
 msg-link-copied = 連結已複製到剪貼簿。
 

@@ -867,6 +867,10 @@ camset-saved = Opgeslagen
 camset-video-system = Videosysteem
 camset-sections = Records per sectie
 camset-changes = Gewijzigde records
+camset-bridge-live = Huidige instellingen: { $records } records, gezocht tussen { $properties } eigenschappen van subsysteem 0x02cf van de back-up
+camset-bridge-sets = Geheugensets: { $sets } met elk { $values } waarden, gezocht via hun arrays
+camset-bridge-legend = same: dezelfde bytes · width: hetzelfde getal in een andere breedte · consecutive / stride2: element i op N+i / N+2i · partial: alleen de eerste elementen gevonden · differs: eigenschap N heeft een andere waarde · missing: geen eigenschap N · beside: geheugenset-array direct na de huidige waarde · elsewhere: array onder een ander id gevonden · unlocated: geen enkele array past eenduidig
+camset-bridge-other-camera = Het instellingenbestand komt van een { $file }, de back-up van een { $backup }. Records worden alleen gevonden als beide van dezelfde camera komen.
 camset-no-changes = Beide bestanden bevatten dezelfde waarden.
 msg-link-copied = Koppeling naar het klembord gekopieerd.
 

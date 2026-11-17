@@ -865,6 +865,10 @@ camset-saved = Disimpan
 camset-video-system = Sistem video
 camset-sections = Entri per bagian
 camset-changes = Entri yang berubah
+camset-bridge-live = Pengaturan aktif: { $records } rekaman, dicari di antara { $properties } properti subsistem 0x02cf cadangan
+camset-bridge-sets = Set memori: { $sets } dengan masing-masing { $values } nilai, dicari melalui larik masing-masing
+camset-bridge-legend = same: bita sama · width: angka sama dengan lebar lain · consecutive / stride2: elemen i di N+i / N+2i · partial: hanya elemen pertama yang ditemukan · differs: properti N berisi nilai lain · missing: tidak ada properti N · beside: larik set memori tepat setelah nilai aktif · elsewhere: larik ditemukan di ID lain · unlocated: tidak ada satu larik pun yang cocok
+camset-bridge-other-camera = Berkas pengaturan berasal dari { $file }, cadangan dari { $backup }. Rekaman hanya ditemukan bila keduanya berasal dari kamera yang sama.
 camset-no-changes = Kedua berkas berisi nilai yang sama.
 msg-link-copied = Tautan disalin ke papan klip.
 

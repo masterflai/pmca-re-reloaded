@@ -863,6 +863,10 @@ camset-saved = సేవ్ చేసిన సమయం
 camset-video-system = వీడియో సిస్టమ్
 camset-sections = ప్రతి విభాగంలో రికార్డులు
 camset-changes = మారిన రికార్డులు
+camset-bridge-live = ప్రస్తుత సెట్టింగ్‌లు: { $records } రికార్డులు, బ్యాకప్ సబ్‌సిస్టమ్ 0x02cf లోని { $properties } ప్రాపర్టీలలో వెతకబడ్డాయి
+camset-bridge-sets = మెమరీ సెట్‌లు: { $sets }, ఒక్కో సెట్‌లో { $values } విలువలు, వాటి అరేల ద్వారా వెతకబడ్డాయి
+camset-bridge-legend = same: అవే బైట్‌లు · width: వేరే వెడల్పులో అదే సంఖ్య · consecutive / stride2: అంశం i, N+i / N+2i వద్ద · partial: మొదటి అంశాలు మాత్రమే దొరికాయి · differs: ప్రాపర్టీ N లో వేరే విలువ · missing: ప్రాపర్టీ N లేదు · beside: మెమరీ సెట్ అరే ప్రస్తుత విలువ వెంటనే తర్వాత · elsewhere: అరే వేరే ఐడీ వద్ద దొరికింది · unlocated: ఏ ఒక్క అరే సరిపోలలేదు
+camset-bridge-other-camera = సెట్టింగ్‌ల ఫైల్ { $file } నుండి, బ్యాకప్ { $backup } నుండి వచ్చాయి. రెండూ ఒకే కెమెరా నుండి వచ్చినప్పుడే రికార్డులు దొరుకుతాయి.
 camset-no-changes = రెండు ఫైళ్లలోనూ ఒకే విలువలు ఉన్నాయి.
 msg-link-copied = లింక్ క్లిప్‌బోర్డ్‌కు కాపీ చేయబడింది.
 

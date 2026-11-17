@@ -858,6 +858,10 @@ camset-saved = 保存时间
 camset-video-system = 视频制式
 camset-sections = 各部分的记录数
 camset-changes = 已更改的记录
+camset-bridge-live = 当前设置：{ $records } 条记录，在备份子系统 0x02cf 的 { $properties } 个属性中查找
+camset-bridge-sets = 记忆组：{ $sets } 组，每组 { $values } 个值，通过其数组查找
+camset-bridge-legend = same：字节相同 · width：数值相同但宽度不同 · consecutive / stride2：元素 i 位于 N+i / N+2i · partial：只找到前面的元素 · differs：属性 N 的值不同 · missing：没有属性 N · beside：记忆组数组紧跟在当前值之后 · elsewhere：在其他 ID 处找到数组 · unlocated：没有唯一匹配的数组
+camset-bridge-other-camera = 设置文件来自 { $file }，备份来自 { $backup }。只有两者来自同一台相机时才能找到记录。
 camset-no-changes = 两个文件的值相同。
 msg-link-copied = 链接已复制到剪贴板。
 

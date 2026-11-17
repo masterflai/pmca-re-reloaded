@@ -863,6 +863,10 @@ camset-saved = تاريخ الحفظ
 camset-video-system = نظام الفيديو
 camset-sections = عدد السجلات في كل قسم
 camset-changes = السجلات المتغيرة
+camset-bridge-live = الإعدادات الحالية: { $records } سجلًا، جرى البحث عنها بين { $properties } خاصية في النظام الفرعي 0x02cf من النسخة الاحتياطية
+camset-bridge-sets = مجموعات الذاكرة: { $sets }، و{ $values } قيمة لكل مجموعة، حُدّد موضعها عبر مصفوفاتها
+camset-bridge-legend = same: البايتات نفسها · width: الرقم نفسه بعرض مختلف · consecutive / stride2: العنصر i عند N+i / N+2i · partial: وُجدت العناصر الأولى فقط · differs: الخاصية N تحمل قيمة أخرى · missing: لا توجد خاصية N · beside: مصفوفة مجموعة الذاكرة بعد القيمة الحالية مباشرة · elsewhere: وُجدت المصفوفة عند معرّف آخر · unlocated: لا تطابق مصفوفة واحدة بعينها
+camset-bridge-other-camera = ملف الإعدادات من { $file } والنسخة الاحتياطية من { $backup }. لا يُعثر على السجلات إلا إذا جاء الملفان من الكاميرا نفسها.
 camset-no-changes = يحتوي الملفان على القيم نفسها.
 msg-link-copied = نُسخ الرابط إلى الحافظة.
 

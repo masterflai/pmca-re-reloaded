@@ -876,6 +876,10 @@ camset-saved = Đã lưu
 camset-video-system = Hệ thống video
 camset-sections = Số mục mỗi phần
 camset-changes = Các mục đã thay đổi
+camset-bridge-live = Cài đặt hiện tại: { $records } bản ghi, được tìm trong { $properties } thuộc tính của hệ con 0x02cf trong bản sao lưu
+camset-bridge-sets = Bộ nhớ cài đặt: { $sets } bộ, mỗi bộ { $values } giá trị, được tìm qua mảng của chúng
+camset-bridge-legend = same: cùng byte · width: cùng số nhưng khác độ rộng · consecutive / stride2: phần tử i tại N+i / N+2i · partial: chỉ tìm thấy các phần tử đầu · differs: thuộc tính N có giá trị khác · missing: không có thuộc tính N · beside: mảng bộ nhớ cài đặt nằm ngay sau giá trị hiện tại · elsewhere: tìm thấy mảng ở ID khác · unlocated: không có mảng duy nhất nào khớp
+camset-bridge-other-camera = Tệp cài đặt đến từ { $file }, bản sao lưu đến từ { $backup }. Chỉ tìm được bản ghi khi cả hai đến từ cùng một máy ảnh.
 camset-no-changes = Hai tệp chứa cùng các giá trị.
 msg-link-copied = Đã sao chép liên kết vào bảng tạm.
 

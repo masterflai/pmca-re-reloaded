@@ -864,6 +864,10 @@ camset-saved = Spremljeno
 camset-video-system = Video sustav
 camset-sections = Zapisi po odjeljku
 camset-changes = Promijenjeni zapisi
+camset-bridge-live = Trenutačne postavke: { $records } zapisa, traženo među { $properties } svojstava podsustava 0x02cf sigurnosne kopije
+camset-bridge-sets = Memorijski skupovi: { $sets } s po { $values } vrijednosti, pronađeni preko svojih polja
+camset-bridge-legend = same: isti bajtovi · width: isti broj u drugoj širini · consecutive / stride2: element i na N+i / N+2i · partial: pronađeni samo prvi elementi · differs: svojstvo N ima drugu vrijednost · missing: nema svojstva N · beside: polje memorijskog skupa odmah iza trenutačne vrijednosti · elsewhere: polje pronađeno pod drugim ID-om · unlocated: nijedno polje ne odgovara jednoznačno
+camset-bridge-other-camera = Datoteka postavki potječe s { $file }, sigurnosna kopija s { $backup }. Zapisi se pronalaze samo ako oboje potječu s istog fotoaparata.
 camset-no-changes = Obje datoteke sadrže iste vrijednosti.
 msg-link-copied = Poveznica je kopirana u međuspremnik.
 

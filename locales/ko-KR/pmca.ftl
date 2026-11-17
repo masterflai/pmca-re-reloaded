@@ -876,6 +876,10 @@ camset-saved = 저장 시각
 camset-video-system = 비디오 방식
 camset-sections = 섹션별 레코드 수
 camset-changes = 변경된 레코드
+camset-bridge-live = 현재 설정: 레코드 { $records }개를 백업 하위 시스템 0x02cf의 속성 { $properties }개에서 찾음
+camset-bridge-sets = 메모리 세트: { $sets }개, 세트마다 값 { $values }개를 배열을 통해 찾음
+camset-bridge-legend = same: 같은 바이트 · width: 너비만 다른 같은 숫자 · consecutive / stride2: 요소 i가 N+i / N+2i에 있음 · partial: 앞쪽 요소만 찾음 · differs: 속성 N의 값이 다름 · missing: 속성 N 없음 · beside: 메모리 세트 배열이 현재 값 바로 뒤에 있음 · elsewhere: 배열을 다른 ID에서 찾음 · unlocated: 하나로 일치하는 배열 없음
+camset-bridge-other-camera = 설정 파일은 { $file }, 백업은 { $backup }에서 나왔습니다. 둘 다 같은 카메라에서 나온 경우에만 레코드를 찾을 수 있습니다.
 camset-no-changes = 두 파일의 값이 같습니다.
 msg-link-copied = 링크를 클립보드에 복사했습니다.
 

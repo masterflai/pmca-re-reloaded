@@ -865,6 +865,10 @@ camset-saved = Salvo em
 camset-video-system = Sistema de vídeo
 camset-sections = Registros por seção
 camset-changes = Registros alterados
+camset-bridge-live = Configurações atuais: { $records } registros, procurados entre { $properties } propriedades do subsistema 0x02cf do backup
+camset-bridge-sets = Conjuntos de memória: { $sets } com { $values } valores cada, localizados por suas matrizes
+camset-bridge-legend = same: mesmos bytes · width: mesmo número com outra largura · consecutive / stride2: elemento i em N+i / N+2i · partial: só os primeiros elementos encontrados · differs: a propriedade N tem outro valor · missing: não há propriedade N · beside: matriz do conjunto de memória logo após o valor atual · elsewhere: matriz encontrada em outro ID · unlocated: nenhuma matriz corresponde de forma única
+camset-bridge-other-camera = O arquivo de configurações vem de uma { $file } e o backup de uma { $backup }. Os registros só são encontrados quando ambos vêm da mesma câmera.
 camset-no-changes = Os dois arquivos contêm os mesmos valores.
 msg-link-copied = Link copiado para a área de transferência.
 

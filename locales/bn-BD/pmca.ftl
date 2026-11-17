@@ -859,6 +859,10 @@ camset-saved = সংরক্ষণের সময়
 camset-video-system = ভিডিও সিস্টেম
 camset-sections = প্রতিটি অংশে রেকর্ড
 camset-changes = পরিবর্তিত রেকর্ড
+camset-bridge-live = চলতি সেটিং: { $records }টি রেকর্ড, ব্যাকআপের সাবসিস্টেম 0x02cf-এর { $properties }টি প্রপার্টির মধ্যে খোঁজা হয়েছে
+camset-bridge-sets = মেমরি সেট: { $sets }টি, প্রতি সেটে { $values }টি মান, এদের অ্যারে দিয়ে খোঁজা হয়েছে
+camset-bridge-legend = same: একই বাইট · width: একই সংখ্যা ভিন্ন প্রস্থে · consecutive / stride2: উপাদান i রয়েছে N+i / N+2i-এ · partial: কেবল প্রথম উপাদানগুলো পাওয়া গেছে · differs: প্রপার্টি N-এ অন্য মান · missing: প্রপার্টি N নেই · beside: মেমরি সেটের অ্যারে চলতি মানের ঠিক পরে · elsewhere: অ্যারে অন্য আইডিতে পাওয়া গেছে · unlocated: কোনো একক অ্যারে মেলেনি
+camset-bridge-other-camera = সেটিং ফাইলটি { $file } থেকে, ব্যাকআপটি { $backup } থেকে। দুটি একই ক্যামেরা থেকে এলে তবেই রেকর্ড পাওয়া যায়।
 camset-no-changes = দুটি ফাইলেই একই মান রয়েছে।
 msg-link-copied = লিঙ্কটি ক্লিপবোর্ডে কপি হয়েছে।
 

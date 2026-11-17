@@ -141,14 +141,19 @@ enum Command {
     /// Records are shown by number and value; their meaning differs between
     /// models and is not guessed. With `--against`, only the records that
     /// differ from a second file are listed, which is how one menu change
-    /// shows up. The file can hold a title name, lens serial numbers and
-    /// network settings, so treat it like other personal data.
+    /// shows up. With `--backup`, every record is located in a `Backup.bin`
+    /// of the same camera, memory sets included. The file can hold a title
+    /// name, lens serial numbers and network settings, so treat it like other
+    /// personal data.
     PrintCamset {
         /// The settings file to read.
         file: PathBuf,
         /// A later file of the same camera to compare against.
         #[arg(long)]
         against: Option<PathBuf>,
+        /// A `Backup.bin` of the same camera, read at about the same time.
+        #[arg(long, conflicts_with = "against")]
+        backup: Option<PathBuf>,
     },
     /// Locate the firmware payload (FDAT) inside a `.dat` file.
     GuessFirmware { file: PathBuf },
@@ -842,10 +847,14 @@ fn run(cmd: &Command, l: &Localizer) -> Result<(), Box<dyn std::error::Error>> {
         Command::PrintUsageLog { file } => {
             tool_command(l, ToolRequest::PrintUsageLog { input: file.clone() })?;
         }
-        Command::PrintCamset { file, against } => {
+        Command::PrintCamset { file, against, backup } => {
             tool_command(
                 l,
-                ToolRequest::PrintCamset { input: file.clone(), against: against.clone() },
+                ToolRequest::PrintCamset {
+                    input: file.clone(),
+                    against: against.clone(),
+                    backup: backup.clone(),
+                },
             )?;
         }
         Command::GuessFirmware { file } => {

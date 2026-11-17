@@ -862,6 +862,10 @@ camset-saved = सहेजा गया
 camset-video-system = वीडियो सिस्टम
 camset-sections = हर खंड में रिकॉर्ड
 camset-changes = बदले गए रिकॉर्ड
+camset-bridge-live = वर्तमान सेटिंग: { $records } रिकॉर्ड, बैकअप के सबसिस्टम 0x02cf की { $properties } प्रॉपर्टी में खोजे गए
+camset-bridge-sets = मेमोरी सेट: { $sets }, हर सेट में { $values } मान, उनकी ऐरे से खोजे गए
+camset-bridge-legend = same: वही बाइट · width: वही संख्या अलग चौड़ाई में · consecutive / stride2: तत्व i, N+i / N+2i पर · partial: केवल पहले तत्व मिले · differs: प्रॉपर्टी N में दूसरा मान · missing: प्रॉपर्टी N नहीं है · beside: मेमोरी सेट ऐरे वर्तमान मान के ठीक बाद · elsewhere: ऐरे किसी दूसरी आईडी पर मिला · unlocated: कोई एक ऐरे मेल नहीं खाता
+camset-bridge-other-camera = सेटिंग फ़ाइल { $file } से है और बैकअप { $backup } से। रिकॉर्ड तभी मिलते हैं जब दोनों एक ही कैमरे से हों।
 camset-no-changes = दोनों फ़ाइलों में एक जैसे मान हैं।
 msg-link-copied = लिंक क्लिपबोर्ड पर कॉपी हो गया।
 

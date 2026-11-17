@@ -3,10 +3,10 @@
 //!
 //! The file is not [`crate::backup`]'s image. It holds the settings a user can
 //! reach in the menu, each under a 16-bit record number, whereas `Backup.bin`
-//! holds the camera's whole settings store under 32-bit property ids. Nothing
-//! in either file links the two numberings; this reader exists so that two
-//! files saved before and after one menu change can be compared, and the
-//! record that moved set against the backup property that moved with it.
+//! holds the camera's whole settings store under 32-bit property ids. Neither
+//! file names the link, but it was measured on an ILCE-7CR: record `N` is
+//! property `0x02cf000N` of the same camera's backup. [`bridge`] checks that
+//! rule record by record against a given backup instead of assuming it.
 //!
 //! The layout is the one the camset project documents
 //! (<https://github.com/camset-dev/camset>, `docs/formats/sony_camset.ksy`),
@@ -24,6 +24,7 @@
 
 use std::collections::BTreeMap;
 
+use crate::backup::{BackupFile, Property, attr};
 use crate::util::{parse16le, parse32le};
 use crate::{Error, Result};
 
@@ -213,6 +214,222 @@ pub fn changes<'a>(a: &'a Camset, b: &'a Camset) -> Vec<Change<'a>> {
     out
 }
 
+/// The backup subsystem that holds the settings a settings file carries.
+pub const BACKUP_SUBSYSTEM: u32 = 0x02cf;
+
+/// How a live record sits in the backup, relative to property `N` of
+/// [`BACKUP_SUBSYSTEM`], where `N` is the record number.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
+pub enum Placement {
+    /// One property holding the same bytes.
+    Same,
+    /// One property holding the same number at another width.
+    Width,
+    /// Element `i` at property `N + i`.
+    Consecutive,
+    /// Element `i` at property `N + 2i`; each element's memory-set array lies
+    /// between two elements.
+    Stride2,
+    /// Only the first elements were found in one of the two layouts; the rest
+    /// sit somewhere else.
+    Partial,
+    /// Property `N` exists but holds another value.
+    Differs,
+    /// The backup has no property `N`.
+    Missing,
+}
+
+impl Placement {
+    /// A stable, untranslated name for reports.
+    #[must_use]
+    pub fn as_str(self) -> &'static str {
+        match self {
+            Self::Same => "same",
+            Self::Width => "width",
+            Self::Consecutive => "consecutive",
+            Self::Stride2 => "stride2",
+            Self::Partial => "partial",
+            Self::Differs => "differs",
+            Self::Missing => "missing",
+        }
+    }
+}
+
+/// Where one live record was found.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct LiveLink {
+    /// The record number.
+    pub id: u16,
+    /// How it sits in the backup.
+    pub placement: Placement,
+    /// The backup property of each element that was found, in element order.
+    pub properties: Vec<u32>,
+}
+
+/// Where the memory-set values of one element of one record were found.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct SetLink {
+    /// The record number.
+    pub id: u16,
+    /// The element within the record.
+    pub element: u16,
+    /// The array property whose element `s` holds memory set `s`, if one was
+    /// found unambiguously. Its element 0 is not part of the settings file.
+    pub array: Option<u32>,
+    /// Whether that array is the property right after the live element.
+    pub beside: bool,
+}
+
+/// How the records of a settings file line up with a `Backup.bin` of the same
+/// camera.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct Bridge {
+    /// One entry per record of the live section.
+    pub live: Vec<LiveLink>,
+    /// How many memory sets the file holds.
+    pub sets: usize,
+    /// One entry per element of every record of the first memory set.
+    pub set_links: Vec<SetLink>,
+    /// How many properties the backup holds in [`BACKUP_SUBSYSTEM`].
+    pub backup_properties: usize,
+}
+
+/// Set the records of `file` against the properties of `backup`.
+///
+/// The rule behind it was measured on an ILCE-7CR and reported for an
+/// ILCE-7RM5: record `N` of the live section is property `N` of subsystem
+/// `0x02cf`, and a memory set is element `s` of an array property, usually the
+/// one right after the live value. Values are compared, not assumed, so a
+/// backup from another camera or another day shows up as `Differs`.
+pub fn bridge<D: AsRef<[u8]>>(file: &Camset, backup: &BackupFile<D>) -> Result<Bridge> {
+    let props: BTreeMap<u16, Property> = backup
+        .list_properties()?
+        .into_iter()
+        .filter(|(id, _)| id >> 16 == BACKUP_SUBSYSTEM)
+        .map(|(id, p)| (id as u16, p))
+        .collect();
+    let at = |n: u16, step: u16, i: u16| {
+        i.checked_mul(step)
+            .and_then(|o| n.checked_add(o))
+            .and_then(|k| props.get(&k).map(|p| (k, p)))
+    };
+
+    let mut live = Vec::new();
+    for r in file.sections.first().into_iter().flatten() {
+        let elems: Vec<&[u8]> = r.data.chunks_exact(usize::from(r.elem_size).max(1)).collect();
+        let found = |step: u16| -> Vec<u16> {
+            elems
+                .iter()
+                .zip(0u16..)
+                .map_while(|(e, i)| at(r.id, step, i).filter(|(_, p)| same_number(&p.data, e)))
+                .map(|(k, _)| k)
+                .collect()
+        };
+        let (placement, indices) = if r.count == 1 {
+            match props.get(&r.id) {
+                None => (Placement::Missing, vec![]),
+                Some(p) if p.data == r.data => (Placement::Same, vec![r.id]),
+                Some(p) if same_number(&p.data, &r.data) => (Placement::Width, vec![r.id]),
+                Some(_) => (Placement::Differs, vec![]),
+            }
+        } else {
+            let (one, two) = (found(1), found(2));
+            if one.len() == elems.len() {
+                (Placement::Consecutive, one)
+            } else if two.len() == elems.len() {
+                (Placement::Stride2, two)
+            } else if !one.is_empty() || !two.is_empty() {
+                (Placement::Partial, if one.len() >= two.len() { one } else { two })
+            } else if props.contains_key(&r.id) {
+                (Placement::Differs, vec![])
+            } else {
+                (Placement::Missing, vec![])
+            }
+        };
+        let properties = indices.iter().map(|&k| (BACKUP_SUBSYSTEM << 16) | u32::from(k)).collect();
+        live.push(LiveLink { id: r.id, placement, properties });
+    }
+
+    let sets = file.sections.len().saturating_sub(1);
+    let mut set_links = Vec::new();
+    if sets > 0 {
+        let width = |p: &Property| p.data.len() / (sets + 1);
+        let arrays: Vec<(u16, &Property)> = props
+            .iter()
+            .filter(|(_, p)| p.attr & attr::ARRAY_DATA != 0 && !p.data.is_empty())
+            .filter(|(_, p)| p.data.len() % (sets + 1) == 0)
+            .map(|(k, p)| (*k, p))
+            .collect();
+        let by_set: Vec<BTreeMap<u16, &Record>> =
+            file.sections[1..].iter().map(|s| s.iter().map(|r| (r.id, r)).collect()).collect();
+        let holds = |p: &Property, id: u16, i: usize| {
+            let w = width(p);
+            (1..=sets).all(|s| {
+                by_set[s - 1]
+                    .get(&id)
+                    .and_then(|r| element(r, i))
+                    .is_some_and(|e| same_number(&p.data[s * w..(s + 1) * w], e))
+            })
+        };
+        let live_at: BTreeMap<u16, &LiveLink> = live.iter().map(|l| (l.id, l)).collect();
+        for r in &file.sections[1] {
+            let varies = (0..usize::from(r.count)).map(|i| {
+                let first = by_set[0].get(&r.id).and_then(|x| element(x, i));
+                by_set.iter().any(|m| m.get(&r.id).and_then(|x| element(x, i)) != first)
+            });
+            for (i, varies) in varies.enumerate() {
+                let index = live_at
+                    .get(&r.id)
+                    .and_then(|l| l.properties.get(i))
+                    .map_or_else(|| r.id.checked_add(i as u16), |&id| Some(id as u16));
+                let next = index.and_then(|k| k.checked_add(1));
+                let beside = next.and_then(|k| props.get(&k)).is_some_and(|p| {
+                    p.attr & attr::ARRAY_DATA != 0
+                        && p.data.len() % (sets + 1) == 0
+                        && holds(p, r.id, i)
+                });
+                let array = if beside {
+                    next
+                } else if varies {
+                    // Only values that differ between the sets single out one array.
+                    let mut hits = arrays.iter().filter(|(_, p)| holds(p, r.id, i));
+                    match (hits.next(), hits.next()) {
+                        (Some((k, _)), None) => Some(*k),
+                        _ => None,
+                    }
+                } else {
+                    None
+                };
+                set_links.push(SetLink {
+                    id: r.id,
+                    element: i as u16,
+                    array: array.map(|k| (BACKUP_SUBSYSTEM << 16) | u32::from(k)),
+                    beside,
+                });
+            }
+        }
+    }
+    Ok(Bridge { live, sets, set_links, backup_properties: props.len() })
+}
+
+/// Element `i` of a record, if it has one.
+fn element(r: &Record, i: usize) -> Option<&[u8]> {
+    let size = usize::from(r.elem_size);
+    r.data.get(i * size..(i + 1) * size)
+}
+
+/// Whether two little-endian integers of possibly different widths hold the
+/// same number: the wider one is the narrower one zero- or sign-extended.
+fn same_number(a: &[u8], b: &[u8]) -> bool {
+    let (short, long) = if a.len() <= b.len() { (a, b) } else { (b, a) };
+    let Some(&top) = short.last() else { return long.is_empty() };
+    if short != &long[..short.len()] {
+        return false;
+    }
+    let rest = &long[short.len()..];
+    rest.iter().all(|&x| x == 0) || (top & 0x80 != 0 && rest.iter().all(|&x| x == 0xff))
+}
+
 /// Low byte of the sum of `byte[p] << (p mod 8)` over everything before the
 /// header checksum.
 fn header_checksum(data: &[u8]) -> u8 {
@@ -286,6 +503,108 @@ mod tests {
         let last = body.len() - TRAILER - 1;
         body[last] ^= 1;
         assert!(matches!(parse(&body), Err(Error::Checksum)));
+    }
+
+    /// A revision-4 backup whose subsystem `0x02cf` holds `props` as
+    /// `(index, attr, value)`; every other index has no entry.
+    fn backup(props: &[(u16, u16, &[u8])]) -> Vec<u8> {
+        const SUBSYSTEMS: usize = 0x2d0;
+        let count = usize::from(props.iter().map(|p| p.0).max().unwrap()) + 1;
+        let table = 0x100 + SUBSYSTEMS * 6;
+        let data_offset = (table + count * 6).next_multiple_of(0x100);
+        let mut buf = vec![0u8; data_offset];
+        buf[12..16].copy_from_slice(b"BK4\0");
+        buf[16..20].copy_from_slice(&(SUBSYSTEMS as u32).to_le_bytes());
+        buf[20..24].copy_from_slice(&(count as u32).to_le_bytes());
+        buf[24..28].copy_from_slice(&(data_offset as u32).to_le_bytes());
+        let sub = 0x100 + 0x2cf * 6;
+        buf[sub..sub + 2].copy_from_slice(&(count as u16).to_le_bytes());
+        for i in 0..count {
+            let e = table + i * 6;
+            buf[e + 2..e + 6].copy_from_slice(&u32::MAX.to_le_bytes());
+        }
+        for &(index, attr, value) in props {
+            let e = table + usize::from(index) * 6;
+            let ptr = ((value.len() as u32) << 24) | buf.len() as u32;
+            buf[e..e + 2].copy_from_slice(&attr.to_le_bytes());
+            buf[e + 2..e + 6].copy_from_slice(&ptr.to_le_bytes());
+            buf.extend_from_slice(value);
+        }
+        let size = (buf.len() - data_offset) as u32;
+        buf[28..32].copy_from_slice(&size.to_le_bytes());
+        let sum = buf
+            .iter()
+            .enumerate()
+            .filter(|(i, _)| !(0x20..0x24).contains(i))
+            .fold(0u32, |s, (_, &b)| s.wrapping_add(u32::from(b)));
+        buf[0x20..0x24].copy_from_slice(&sum.to_le_bytes());
+        buf
+    }
+
+    #[test]
+    fn records_are_found_in_the_backup_with_their_memory_sets() {
+        const ARRAY: u16 = attr::ARRAY_DATA;
+        let file = parse(&build(&[
+            &[
+                (0x10, 1, &[5]),
+                (0x20, 4, &[2, 0, 0, 0]),
+                (0x30, 1, &[1, 2]),
+                (0x40, 1, &[9]),
+                (0x50, 1, &[1]),
+                (0x60, 1, &[1]),
+            ],
+            &[(0x10, 1, &[7]), (0x30, 1, &[4, 5]), (0x60, 1, &[3])],
+            &[(0x10, 1, &[8]), (0x30, 1, &[6, 7]), (0x60, 1, &[4])],
+        ]))
+        .unwrap();
+        let image = backup(&[
+            (0x10, 0, &[5]),
+            (0x11, ARRAY, &[5, 7, 8]),
+            (0x20, 0, &[2]),
+            (0x30, 0, &[1]),
+            (0x31, ARRAY, &[1, 4, 6]),
+            (0x32, 0, &[2]),
+            (0x33, ARRAY, &[2, 5, 7]),
+            (0x40, 0, &[3]),
+            (0x60, 0, &[1]),
+            (0x70, ARRAY, &[1, 3, 4]),
+        ]);
+        let b = bridge(&file, &BackupFile::new(&image).unwrap()).unwrap();
+
+        let placements: Vec<_> = b.live.iter().map(|l| (l.id, l.placement)).collect();
+        assert_eq!(
+            placements,
+            [
+                (0x10, Placement::Same),
+                (0x20, Placement::Width),
+                (0x30, Placement::Stride2),
+                (0x40, Placement::Differs),
+                (0x50, Placement::Missing),
+                (0x60, Placement::Same),
+            ]
+        );
+        assert_eq!(b.live[2].properties, [0x02cf_0030, 0x02cf_0032]);
+        assert_eq!(b.sets, 2);
+
+        let sets: Vec<_> =
+            b.set_links.iter().map(|s| (s.id, s.element, s.array, s.beside)).collect();
+        assert_eq!(
+            sets,
+            [
+                (0x10, 0, Some(0x02cf_0011), true),
+                (0x30, 0, Some(0x02cf_0031), true),
+                (0x30, 1, Some(0x02cf_0033), true),
+                (0x60, 0, Some(0x02cf_0070), false),
+            ]
+        );
+    }
+
+    #[test]
+    fn numbers_match_across_widths_but_not_across_signs() {
+        assert!(same_number(&[2], &[2, 0, 0, 0]));
+        assert!(same_number(&[0xfe, 0xff], &[0xfe]));
+        assert!(!same_number(&[0xfe, 0xff], &[0xfe, 0]));
+        assert!(!same_number(&[1], &[2]));
     }
 
     #[test]

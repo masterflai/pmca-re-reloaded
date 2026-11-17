@@ -864,6 +864,10 @@ camset-saved = Gemt
 camset-video-system = Videosystem
 camset-sections = Poster pr. sektion
 camset-changes = Ændrede poster
+camset-bridge-live = Aktuelle indstillinger: { $records } poster, fundet blandt { $properties } egenskaber i backuppens undersystem 0x02cf
+camset-bridge-sets = Hukommelsessæt: { $sets } med hver { $values } værdier, fundet via deres arrays
+camset-bridge-legend = same: samme bytes · width: samme tal i anden bredde · consecutive / stride2: element i ved N+i / N+2i · partial: kun de første elementer fundet · differs: egenskab N har en anden værdi · missing: ingen egenskab N · beside: hukommelsessættets array lige efter den aktuelle værdi · elsewhere: array fundet under et andet id · unlocated: intet entydigt array passer
+camset-bridge-other-camera = Indstillingsfilen stammer fra et { $file }, backuppen fra et { $backup }. Poster findes kun, når begge kommer fra samme kamera.
 camset-no-changes = Begge filer indeholder de samme værdier.
 msg-link-copied = Linket er kopieret til udklipsholderen.
 

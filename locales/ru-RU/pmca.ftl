@@ -865,6 +865,10 @@ camset-saved = Сохранено
 camset-video-system = Видеосистема
 camset-sections = Записей в разделе
 camset-changes = Изменённые записи
+camset-bridge-live = Текущие настройки: { $records } записей, найденных среди { $properties } свойств подсистемы 0x02cf резервной копии
+camset-bridge-sets = Наборы памяти: { $sets } по { $values } значений, найденные по их массивам
+camset-bridge-legend = same: те же байты · width: то же число другой ширины · consecutive / stride2: элемент i в N+i / N+2i · partial: найдены только первые элементы · differs: свойство N содержит другое значение · missing: свойства N нет · beside: массив набора памяти сразу за текущим значением · elsewhere: массив найден под другим идентификатором · unlocated: ни один массив не подходит однозначно
+camset-bridge-other-camera = Файл настроек получен с { $file }, резервная копия — с { $backup }. Записи находятся, только если оба файла с одной и той же камеры.
 camset-no-changes = Оба файла содержат одинаковые значения.
 msg-link-copied = Ссылка скопирована в буфер обмена.
 

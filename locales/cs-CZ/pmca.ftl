@@ -864,6 +864,10 @@ camset-saved = Uloženo
 camset-video-system = Videosystém
 camset-sections = Záznamy v oddílu
 camset-changes = Změněné záznamy
+camset-bridge-live = Aktuální nastavení: { $records } záznamů, hledáno mezi { $properties } vlastnostmi subsystému 0x02cf zálohy
+camset-bridge-sets = Paměťové sady: { $sets }, po { $values } hodnotách, hledány podle svých polí
+camset-bridge-legend = same: stejné bajty · width: stejné číslo v jiné šířce · consecutive / stride2: prvek i na N+i / N+2i · partial: nalezeny jen první prvky · differs: vlastnost N má jinou hodnotu · missing: vlastnost N chybí · beside: pole paměťové sady hned za aktuální hodnotou · elsewhere: pole nalezeno pod jiným ID · unlocated: neodpovídá žádné jednoznačné pole
+camset-bridge-other-camera = Soubor nastavení pochází z { $file }, záloha z { $backup }. Záznamy se najdou jen tehdy, když oba pocházejí ze stejného fotoaparátu.
 camset-no-changes = Oba soubory obsahují stejné hodnoty.
 msg-link-copied = Odkaz byl zkopírován do schránky.
 

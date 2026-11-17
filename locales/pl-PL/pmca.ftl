@@ -864,6 +864,10 @@ camset-saved = Zapisano
 camset-video-system = System wideo
 camset-sections = Rekordy w sekcji
 camset-changes = Zmienione rekordy
+camset-bridge-live = Bieżące ustawienia: { $records } rekordów, szukanych wśród { $properties } właściwości podsystemu 0x02cf kopii zapasowej
+camset-bridge-sets = Zestawy pamięci: { $sets } po { $values } wartości, wyszukane według ich tablic
+camset-bridge-legend = same: te same bajty · width: ta sama liczba o innej szerokości · consecutive / stride2: element i pod N+i / N+2i · partial: znaleziono tylko pierwsze elementy · differs: właściwość N ma inną wartość · missing: brak właściwości N · beside: tablica zestawu pamięci tuż za bieżącą wartością · elsewhere: tablica znaleziona pod innym identyfikatorem · unlocated: żadna tablica nie pasuje jednoznacznie
+camset-bridge-other-camera = Plik ustawień pochodzi z { $file }, kopia zapasowa z { $backup }. Rekordy można znaleźć tylko wtedy, gdy oba pochodzą z tego samego aparatu.
 camset-no-changes = Oba pliki zawierają te same wartości.
 msg-link-copied = Odnośnik skopiowano do schowka.
 

@@ -13,6 +13,12 @@ All notable changes to this project are documented here. The format follows
   padding. `print-backup`, the service shell's `bk dump-txt`, backup dumps and
   the camera comparison now include it. Its properties are numbered separately
   and appear as `2:0x…`; they are shown only and never offered for writing.
+- `print-camset --backup <Backup.bin>` locates every record of a settings
+  file in a backup of the same camera: record `N` is backup property
+  `0x02cf000N`, arrays lie consecutively or in steps of two, and each memory
+  set is one element of an array property, usually right after the live
+  value. Values are compared, not assumed, so a backup from another camera or
+  another day shows up as such.
 
 ## [1.13.0] - 2026-11-15
 

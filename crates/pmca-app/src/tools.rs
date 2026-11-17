@@ -59,6 +59,8 @@ pub enum ToolRequest {
         input: PathBuf,
         /// A later file of the same camera; only differing records are shown.
         against: Option<PathBuf>,
+        /// A `Backup.bin` of the same camera; each record is located in it.
+        backup: Option<PathBuf>,
     },
     /// Report where the `FDAT` payload sits inside a firmware `.dat`.
     GuessFirmware {
@@ -125,7 +127,7 @@ pub fn run(l: &Localizer, request: &ToolRequest) -> Result<ToolOutcome> {
                 usagelog::parse(&data).map_err(|e| invalid(l, "tools-usagelog-invalid", &e))?;
             Ok(ToolOutcome { message: l.tr("msg-done"), report: Some(usage_log_report(l, &log)) })
         }
-        ToolRequest::PrintCamset { input, against } => {
+        ToolRequest::PrintCamset { input, against, backup } => {
             let read = |path: &Path| -> Result<camset::Camset> {
                 let data = std::fs::read(path)?;
                 if camset::is_older_format(&data) {
@@ -134,11 +136,14 @@ pub fn run(l: &Localizer, request: &ToolRequest) -> Result<ToolOutcome> {
                 camset::parse(&data).map_err(|e| invalid(l, "tools-camset-invalid", &e))
             };
             let first = read(input)?;
-            let second = against.as_deref().map(read).transpose()?;
-            Ok(ToolOutcome {
-                message: l.tr("msg-done"),
-                report: Some(camset_report(l, &first, second.as_ref())),
-            })
+            let report = if let Some(backup) = backup {
+                let data = std::fs::read(backup)?;
+                camset_bridge_report(l, &first, &data)?
+            } else {
+                let second = against.as_deref().map(read).transpose()?;
+                camset_report(l, &first, second.as_ref())
+            };
+            Ok(ToolOutcome { message: l.tr("msg-done"), report: Some(report) })
         }
         ToolRequest::GuessFirmware { input } => {
             let data = std::fs::read(input)?;
@@ -242,23 +247,7 @@ fn camset_report(l: &Localizer, file: &camset::Camset, against: Option<&camset::
         if against.is_some() {
             let _ = writeln!(out, "#{}", n + 1);
         }
-        let video = match file.video_system {
-            0 => "NTSC".to_string(),
-            1 => "PAL".to_string(),
-            other => other.to_string(),
-        };
-        let counts: Vec<String> = file.sections.iter().map(|s| s.len().to_string()).collect();
-        let _ = writeln!(out, "{}: {}", l.tr("info-model"), file.model);
-        let _ = writeln!(out, "{}: {}", l.tr("camset-saved"), file.saved);
-        let _ = writeln!(
-            out,
-            "{}: {}.{:02}",
-            l.tr("info-firmware"),
-            file.firmware[0],
-            file.firmware[1]
-        );
-        let _ = writeln!(out, "{}: {video}", l.tr("camset-video-system"));
-        let _ = writeln!(out, "{}: {}\n", l.tr("camset-sections"), counts.join(", "));
+        write_camset_header(l, &mut out, file);
     }
 
     let Some(later) = against else {
@@ -299,6 +288,124 @@ fn camset_report(l: &Localizer, file: &camset::Camset, against: Option<&camset::
         );
     }
     out
+}
+
+/// Model, save time, firmware, video system and section sizes of one file.
+fn write_camset_header(l: &Localizer, out: &mut String, file: &camset::Camset) {
+    let video = match file.video_system {
+        0 => "NTSC".to_string(),
+        1 => "PAL".to_string(),
+        other => other.to_string(),
+    };
+    let counts: Vec<String> = file.sections.iter().map(|s| s.len().to_string()).collect();
+    let _ = writeln!(out, "{}: {}", l.tr("info-model"), file.model);
+    let _ = writeln!(out, "{}: {}", l.tr("camset-saved"), file.saved);
+    let _ =
+        writeln!(out, "{}: {}.{:02}", l.tr("info-firmware"), file.firmware[0], file.firmware[1]);
+    let _ = writeln!(out, "{}: {video}", l.tr("camset-video-system"));
+    let _ = writeln!(out, "{}: {}\n", l.tr("camset-sections"), counts.join(", "));
+}
+
+/// Locate every record of a settings file in a `Backup.bin` of the same camera.
+///
+/// A tally first, then one line per live record and one per memory-set
+/// element, so a record number can be searched for.
+fn camset_bridge_report(l: &Localizer, file: &camset::Camset, data: &[u8]) -> Result<String> {
+    use camset::Placement;
+    let image =
+        backup::BackupFile::new(data).map_err(|e| invalid(l, "tools-backup-invalid", &e))?;
+    let bridge =
+        camset::bridge(file, &image).map_err(|e| invalid(l, "tools-backup-invalid", &e))?;
+    let mut out = String::new();
+    write_camset_header(l, &mut out, file);
+    let model = pmca_platform::props::find("modelName")
+        .and_then(|def| image.get_property(def.base).ok())
+        .map(|p| pmca_core::util::latin1_trim_nul(&p.data));
+    if let Some(model) = model
+        && model != file.model
+    {
+        let args = [("file", file.model.as_str()), ("backup", model.as_str())];
+        let _ = writeln!(out, "{}\n", l.tr_args("camset-bridge-other-camera", &args));
+    }
+
+    let mut placed: BTreeMap<Placement, usize> = BTreeMap::new();
+    for link in &bridge.live {
+        *placed.entry(link.placement).or_default() += 1;
+    }
+    let _ = writeln!(
+        out,
+        "{}",
+        l.tr_args(
+            "camset-bridge-live",
+            &[
+                ("records", &bridge.live.len().to_string()),
+                ("properties", &bridge.backup_properties.to_string()),
+            ],
+        )
+    );
+    for (placement, n) in &placed {
+        let _ = writeln!(out, "  {:<12} {n:>6}", placement.as_str());
+    }
+    let set_tag = |s: &camset::SetLink| match (s.array, s.beside) {
+        (Some(_), true) => "beside",
+        (Some(_), false) => "elsewhere",
+        (None, _) => "unlocated",
+    };
+    if bridge.sets > 0 {
+        let mut tally: BTreeMap<&str, usize> = BTreeMap::new();
+        for link in &bridge.set_links {
+            *tally.entry(set_tag(link)).or_default() += 1;
+        }
+        let _ = writeln!(
+            out,
+            "\n{}",
+            l.tr_args(
+                "camset-bridge-sets",
+                &[
+                    ("sets", &bridge.sets.to_string()),
+                    ("values", &bridge.set_links.len().to_string()),
+                ],
+            )
+        );
+        for (tag, n) in &tally {
+            let _ = writeln!(out, "  {tag:<12} {n:>6}");
+        }
+    }
+    let _ = writeln!(out, "\n{}\n", l.tr("camset-bridge-legend"));
+
+    let shape: BTreeMap<u16, (u16, u16)> = file
+        .sections
+        .first()
+        .into_iter()
+        .flatten()
+        .map(|r| (r.id, (r.elem_size, r.count)))
+        .collect();
+    for link in &bridge.live {
+        let (size, count) = shape.get(&link.id).copied().unwrap_or_default();
+        let ids: Vec<String> = link.properties.iter().map(|id| format!("0x{id:08x}")).collect();
+        let ids = match ids.as_slice() {
+            [] => "-".to_string(),
+            [first, .., last] if ids.len() > 3 => format!("{first} … {last} ({})", ids.len()),
+            _ => ids.join(", "),
+        };
+        let _ = writeln!(
+            out,
+            "s0  id=0x{:04x} {size}x{count} {:<12} {ids}",
+            link.id,
+            link.placement.as_str()
+        );
+    }
+    for link in &bridge.set_links {
+        let array = link.array.map_or_else(|| "-".to_string(), |id| format!("0x{id:08x}"));
+        let _ = writeln!(
+            out,
+            "mr  id=0x{:04x}[{}] {:<12} {array}",
+            link.id,
+            link.element,
+            set_tag(link)
+        );
+    }
+    Ok(out)
 }
 
 /// Bytes worth showing of one record value, with the integer reading of a
@@ -458,7 +565,11 @@ mod tests {
         );
         assert!(ToolRequest::PrintBackup { input: path.clone() }.output().is_none());
         assert!(ToolRequest::PrintUsageLog { input: path.clone() }.output().is_none());
-        assert!(ToolRequest::PrintCamset { input: path.clone(), against: None }.output().is_none());
+        assert!(
+            ToolRequest::PrintCamset { input: path.clone(), against: None, backup: None }
+                .output()
+                .is_none()
+        );
         assert!(ToolRequest::GuessFirmware { input: path.clone() }.output().is_none());
         assert!(ToolRequest::XpdChecksum { input: path }.output().is_none());
     }

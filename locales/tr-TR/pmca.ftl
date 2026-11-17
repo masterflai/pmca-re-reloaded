@@ -865,6 +865,10 @@ camset-saved = Kaydedilme
 camset-video-system = Video sistemi
 camset-sections = Bölüm başına kayıt
 camset-changes = Değişen kayıtlar
+camset-bridge-live = Geçerli ayarlar: { $records } kayıt, yedeğin 0x02cf alt sistemindeki { $properties } özellik arasında arandı
+camset-bridge-sets = Bellek setleri: her biri { $values } değerli { $sets } set, dizileri üzerinden arandı
+camset-bridge-legend = same: aynı baytlar · width: başka genişlikte aynı sayı · consecutive / stride2: i. öğe N+i / N+2i konumunda · partial: yalnızca ilk öğeler bulundu · differs: N özelliğinde başka bir değer var · missing: N özelliği yok · beside: bellek seti dizisi geçerli değerin hemen ardında · elsewhere: dizi başka bir kimlikte bulundu · unlocated: tek bir dizi eşleşmiyor
+camset-bridge-other-camera = Ayar dosyası bir { $file }, yedek ise bir { $backup } cihazından geliyor. Kayıtlar yalnızca ikisi aynı kameradan geldiğinde bulunur.
 camset-no-changes = İki dosya da aynı değerleri içeriyor.
 msg-link-copied = Bağlantı panoya kopyalandı.
 
