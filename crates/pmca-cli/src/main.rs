@@ -114,6 +114,9 @@ enum Command {
         /// Keep only properties the toolkit has a name for.
         #[arg(long)]
         only_named: bool,
+        /// Keep only properties an installed plugin has a firmware name for.
+        #[arg(long)]
+        only_fw_named: bool,
         /// Keep only properties whose form suggests a setting: one byte that
         /// the cameras disagree about and that holds a small number.
         #[arg(long)]
@@ -847,6 +850,7 @@ fn run(cmd: &Command, l: &Localizer) -> Result<(), Box<dyn std::error::Error>> {
             include,
             only_writable,
             only_named,
+            only_fw_named,
             only_switches,
             similar_distance,
             no_auto_noise,
@@ -858,6 +862,7 @@ fn run(cmd: &Command, l: &Localizer) -> Result<(), Box<dyn std::error::Error>> {
                 include.as_deref(),
                 *only_writable,
                 *only_named,
+                *only_fw_named,
                 *only_switches,
                 *similar_distance,
                 !*no_auto_noise,

@@ -2003,6 +2003,19 @@ label.app-entry input[type="checkbox"] {
   white-space: nowrap;
 }
 
+/* A firmware name from a plugin: display only, so set apart from the toolkit's own names. */
+.fw-name {
+  font-family: ui-monospace, "Cascadia Mono", Consolas, monospace;
+  font-size: 0.85em;
+  font-weight: normal;
+  color: var(--text-muted);
+  overflow-wrap: anywhere;
+}
+
+.fw-name.conflict {
+  color: var(--warning);
+}
+
 .cmp-export {
   margin-top: 1.25rem;
   padding-top: 0.75rem;

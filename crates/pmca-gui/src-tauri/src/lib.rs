@@ -544,6 +544,8 @@ pub fn run() {
             plugins_remove,
             plugins_compatibility,
             plugins_entries,
+            names_tables,
+            names_search,
             plugins_run_tool,
             plugins_run_diagnostic,
             sources_list,

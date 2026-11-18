@@ -138,6 +138,10 @@ pub struct CandidateView {
     pub attr: String,
     /// Names of the attribute bits.
     pub attr_names: Vec<String>,
+    /// The firmware's name, where an installed plugin knows it.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    #[cfg_attr(test, ts(optional))]
+    pub fw_name: Option<crate::names::FwName>,
     /// Reset value as hex, for small values that have one.
     pub reset: Option<String>,
     /// Whether menu values and property values correspond one to one.
@@ -401,6 +405,8 @@ pub struct AnalysisRun {
     evaluation: std::cell::OnceCell<find::Evaluation>,
     camera: Option<CameraFacts>,
     key: Option<String>,
+    /// What firmware name tables need to know about the camera.
+    names: Option<crate::names::CameraKey>,
     steps: Vec<StepRecord>,
     write: Option<WriteTest>,
     cross_checks: Vec<CrossCheckView>,

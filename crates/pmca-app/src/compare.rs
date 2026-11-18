@@ -31,6 +31,7 @@ use sha2::{Digest, Sha256};
 
 use crate::analysis::report::{hex, timestamp};
 use crate::dto::{ProgressEvent, ProgressKind};
+use crate::names::{self, FwName, NameTable, NameView};
 use crate::{Error, ProgressSink, Result};
 
 /// Re-exported so a front-end that does not depend on the platform crate — the
@@ -108,6 +109,10 @@ pub struct DumpCamera {
     /// firmware together identify what a dump describes well enough to line
     /// two of them up later.
     pub firmware: Option<String>,
+    /// Build string from the image header, which firmware name tables of newer
+    /// bodies are keyed by.
+    #[serde(default)]
+    pub build: Option<String>,
     /// Android platform version, where the image carries one.
     pub android_platform_version: Option<String>,
     /// Short digest of model and serial number. Two dumps of the same body
@@ -193,6 +198,10 @@ pub struct PropertyView {
     pub subsystem: String,
     /// The toolkit's name for the setting, where it knows one.
     pub name: Option<String>,
+    /// The firmware's name, where an installed plugin knows it.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[cfg_attr(test, ts(optional))]
+    pub fw_name: Option<FwName>,
     /// First byte of the value in the image, as hex.
     pub offset: String,
     /// Length of the value.
@@ -268,6 +277,11 @@ pub struct CompareRow {
     pub subsystem: String,
     /// The toolkit's name for the setting, where it knows one.
     pub name: Option<String>,
+    /// The firmware's name, where an installed plugin or a source dump knows
+    /// it; competing names of different cameras are marked as a conflict.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[cfg_attr(test, ts(optional))]
+    pub fw_name: Option<FwName>,
     /// The class, as named by [`Class::as_str`].
     pub class: String,
     /// The common length, where every camera agrees on one.
@@ -351,6 +365,8 @@ pub struct Filter {
     pub only_writable: bool,
     /// Keep only properties the toolkit has a name for.
     pub only_named: bool,
+    /// Keep only properties a firmware name table names.
+    pub only_fw_named: bool,
     /// Keep only properties whose form suggests a setting (`switch` or
     /// `choice`).
     pub only_switches: bool,
@@ -362,6 +378,7 @@ impl Default for Filter {
             classes: Class::all().iter().map(|c| c.as_str().to_string()).collect(),
             only_writable: false,
             only_named: false,
+            only_fw_named: false,
             only_switches: false,
         }
     }
@@ -565,6 +582,17 @@ pub fn dump_image(
     privacy: Privacy,
     firmware: Option<String>,
 ) -> Result<DumpFile> {
+    dump_with_names(l, image, privacy, firmware, names::tables())
+}
+
+/// [`dump_image`] with the name tables given rather than the installed ones.
+fn dump_with_names(
+    l: &Localizer,
+    image: &[u8],
+    privacy: Privacy,
+    firmware: Option<String>,
+    tables: &[NameTable],
+) -> Result<DumpFile> {
     let file = BackupFile::new(image).map_err(|e| invalid(l, &e))?;
     let dump = Dump::from_image(&file).map_err(|e| Error::Operation(e.to_string()))?;
     let further_images = file
@@ -587,7 +615,17 @@ pub fn dump_image(
     let identity = pmca_platform::identity::list(&patch);
     let value = |id: &str| identity.iter().find(|v| v.id == id).map(|v| v.value.clone());
 
-    let properties = dump.entries.iter().map(|e| property_view(e, privacy)).collect();
+    // Only the first image: the tables name the ids of the image that is written.
+    let fw_names = NameView::new(tables, &names::camera_key(&file, firmware.as_deref()));
+    let properties = dump
+        .entries
+        .iter()
+        .map(|e| PropertyView {
+            fw_name: names::lookup(&fw_names, e.id),
+            ..property_view(e, privacy)
+        })
+        .collect();
+    let build = Some(file.build()).filter(|b| !b.is_empty());
     Ok(DumpFile {
         schema: DUMP_SCHEMA.to_string(),
         tool: format!("PMCA-RE RELOADED {}", env!("CARGO_PKG_VERSION")),
@@ -596,6 +634,7 @@ pub fn dump_image(
             model: value("modelName"),
             region: dump.region.clone(),
             firmware,
+            build,
             android_platform_version: value("androidPlatformVersion"),
             camera_id: camera_id(&patch),
         },
@@ -659,6 +698,15 @@ pub fn compare_paths(
 /// Compare dumps that have already been read.
 #[must_use]
 pub fn compare_dumps(files: &[(PathBuf, DumpFile)], options: &CompareOptions) -> CompareReport {
+    compare_with_names(files, options, names::tables())
+}
+
+/// [`compare_dumps`] with the name tables given rather than the installed ones.
+fn compare_with_names(
+    files: &[(PathBuf, DumpFile)],
+    options: &CompareOptions,
+    tables: &[NameTable],
+) -> CompareReport {
     let dumps: Vec<Dump> = files.iter().map(|(_, f)| f.to_dump()).collect();
 
     let mut noise = options.noise.clone();
@@ -670,7 +718,12 @@ pub fn compare_dumps(files: &[(PathBuf, DumpFile)], options: &CompareOptions) ->
         &cmp::Options { similar_distance: options.similar_distance, noise: noise.clone() },
     );
     let mut counts = comparison.counts();
-    let mut rows: Vec<CompareRow> = comparison.rows.iter().map(|r| compare_row(r, 1)).collect();
+    let fw_names = SourceNames::new(files, tables);
+    let mut rows: Vec<CompareRow> = comparison
+        .rows
+        .iter()
+        .map(|r| CompareRow { fw_name: fw_names.get(r.id), ..compare_row(r, 1) })
+        .collect();
     let mut noise_ids: Vec<String> = noise.iter().map(|id| format!("{id:#010x}")).collect();
 
     // Image n of every source side by side; a source without one counts as
@@ -739,6 +792,7 @@ impl CompareReport {
             filter.classes.contains(&row.class)
                 && (!filter.only_writable || row.writable)
                 && (!filter.only_named || row.name.is_some())
+                && (!filter.only_fw_named || row.fw_name.is_some())
                 && (!filter.only_switches || row.shape != Shape::Plain.as_str())
         });
         out
@@ -806,9 +860,53 @@ pub fn report_text(l: &Localizer, report: &CompareReport) -> String {
             let text = value.as_deref().map_or_else(|| "-".to_string(), shorten);
             let _ = write!(out, " {text:<24}");
         }
+        if let Some(fw) = &row.fw_name {
+            let _ = write!(out, " {}", names::render_fw(fw));
+        }
         out.push('\n');
     }
     out
+}
+
+/// The firmware names each source of a comparison knows.
+struct SourceNames<'a> {
+    views: Vec<NameView<'a>>,
+    stored: Vec<BTreeMap<u32, &'a FwName>>,
+}
+
+impl<'a> SourceNames<'a> {
+    fn new(files: &'a [(PathBuf, DumpFile)], tables: &'a [NameTable]) -> Self {
+        let views = files
+            .iter()
+            .map(|(_, f)| {
+                let c = &f.camera;
+                let key = names::camera_key_of(
+                    c.model.as_deref(),
+                    c.firmware.as_deref(),
+                    c.build.as_deref(),
+                );
+                NameView::new(tables, &key)
+            })
+            .collect();
+        let stored = files
+            .iter()
+            .map(|(_, f)| {
+                f.properties
+                    .iter()
+                    .filter_map(|p| Some((parse_hex_u32(&p.id)?, p.fw_name.as_ref()?)))
+                    .collect()
+            })
+            .collect();
+        Self { views, stored }
+    }
+
+    /// What the installed tables say for each source, else what its dump says.
+    fn get(&self, id: u32) -> Option<FwName> {
+        let each = self.views.iter().zip(&self.stored).filter_map(|(view, stored)| {
+            names::lookup(view, id).or_else(|| stored.get(&id).map(|fw| (*fw).clone()))
+        });
+        names::merge(each)
+    }
 }
 
 /// A translated name for a class, falling back to its stable name.
@@ -926,6 +1024,7 @@ fn property_view(entry: &DumpEntry, privacy: Privacy) -> PropertyView {
         id: format!("{:#010x}", entry.id),
         subsystem: format!("{:#06x}", entry.id >> 16),
         name: prop_name(entry.id, entry.data.len()),
+        fw_name: None,
         offset: format!("{:#010x}", entry.offset),
         size: entry.data.len(),
         max_size: entry.max_size,
@@ -986,6 +1085,7 @@ fn compare_row(row: &cmp::Row, image: usize) -> CompareRow {
         id: if further { format!("{image}:{:#010x}", row.id) } else { format!("{:#010x}", row.id) },
         subsystem: format!("{:#06x}", row.id >> 16),
         name: row.size.and_then(|size| prop_name(row.id, size)),
+        fw_name: None,
         class: row.class.as_str().to_string(),
         size: row.size,
         attr: row.attr.map(|a| format!("{a:#04x}")),
@@ -1233,6 +1333,47 @@ mod tests {
         assert!(row.from_further_image() && !row.writable);
         assert_eq!(report.total, report.rows.len());
         assert!(report_text(&localizer(), &report).contains(&format!("2:{FIRST}")));
+    }
+
+    /// A dump whose first property carries the firmware name `name`.
+    fn named_dump(other: u8, name: &str) -> DumpFile {
+        let mut file = dump_of([1, 2, 3, 4], other);
+        let first = file.properties.iter_mut().find(|p| p.id == FIRST).unwrap();
+        first.fw_name = Some(FwName {
+            name: name.to_string(),
+            evidence: "fw-log".to_string(),
+            conflict: false,
+            table: "p/t".to_string(),
+        });
+        file
+    }
+
+    #[test]
+    fn a_comparison_carries_the_names_its_dumps_brought() {
+        let options = CompareOptions { auto_noise: false, ..CompareOptions::default() };
+        let a = (PathBuf::from("a.json"), named_dump(9, "BKID_A"));
+        let b = (PathBuf::from("b.json"), dump_of([9, 9, 9, 9], 8));
+        let report = compare_with_names(&[a.clone(), b], &options, &[]);
+        let row = report.rows.iter().find(|r| r.id == FIRST).unwrap();
+        assert_eq!(row.fw_name.as_ref().unwrap().name, "BKID_A");
+        assert!(report_text(&localizer(), &report).contains("fw=\"BKID_A\" [fw-log]"));
+        let named = Filter { only_fw_named: true, ..Filter::default() };
+        assert_eq!(report.filtered(&named).rows.len(), 1);
+
+        let c = (PathBuf::from("c.json"), named_dump(8, "BKID_C"));
+        let report = compare_with_names(&[a, c], &options, &[]);
+        let fw = report.rows.iter().find(|r| r.id == FIRST).unwrap().fw_name.clone().unwrap();
+        assert_eq!(fw.name, "BKID_A | BKID_C");
+        assert!(fw.conflict);
+    }
+
+    #[test]
+    fn a_dump_without_names_leaves_the_field_out() {
+        let file =
+            dump_with_names(&localizer(), &image([1, 2, 3, 4], 9), Privacy::MASKED, None, &[])
+                .unwrap();
+        assert!(file.properties.iter().all(|p| p.fw_name.is_none()));
+        assert!(!serde_json::to_string(&file).unwrap().contains("fwName"));
     }
 
     #[test]

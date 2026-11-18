@@ -15,6 +15,7 @@ import {
   withProgressTarget,
 } from "../dom";
 import { tr, trFill } from "../i18n";
+import { fwNameLabel } from "./names";
 
 /** The most dumps one comparison takes; mirrors `MAX_SOURCES` in `pmca-app`. */
 const MAX_SOURCES = 8;
@@ -719,6 +720,8 @@ function grid(report: CompareReport, rows: CompareRow[], labels: string[]): HTML
         " ",
       );
     }
+    const fw = fwNameLabel(row.fwName);
+    if (fw !== null) name.append(make("div", {}, fw));
     tbody.append(
       make(
         "tr",
@@ -758,6 +761,7 @@ function exportSection(report: CompareReport, visible: Set<Cls>, status: HTMLEle
   const all = make("input", { type: "checkbox" });
   const onlyWritable = make("input", { type: "checkbox" });
   const onlyNamed = make("input", { type: "checkbox" });
+  const onlyFwNamed = make("input", { type: "checkbox" });
   const onlySwitches = make("input", { type: "checkbox" });
   const button = make("button", { className: "primary", i18n: "compare-export" });
 
@@ -776,6 +780,7 @@ function exportSection(report: CompareReport, visible: Set<Cls>, status: HTMLEle
         classes,
         onlyWritable: onlyWritable.checked,
         onlyNamed: onlyNamed.checked,
+        onlyFwNamed: onlyFwNamed.checked,
         onlySwitches: onlySwitches.checked,
       });
       showDone(status, trFill("compare-saved", { count, path }));
@@ -799,6 +804,9 @@ function exportSection(report: CompareReport, visible: Set<Cls>, status: HTMLEle
     ),
     checkboxRow(onlyWritable, "compare-only-writable", "compare-only-writable-hint"),
     checkboxRow(onlyNamed, "compare-only-named", "compare-only-named-hint"),
+    ...(report.rows.some((row) => row.fwName !== undefined)
+      ? [checkboxRow(onlyFwNamed, "compare-only-fw-named", "compare-only-fw-named-hint")]
+      : []),
     checkboxRow(onlySwitches, "compare-only-switches", "compare-only-switches-hint"),
     make("div", { className: "row" }, button),
   );

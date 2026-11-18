@@ -19,6 +19,11 @@ region: string,
  */
 firmware: string | null, 
 /**
+ * Build string from the image header, which firmware name tables of newer
+ * bodies are keyed by.
+ */
+build: string | null, 
+/**
  * Android platform version, where the image carries one.
  */
 androidPlatformVersion: string | null, 

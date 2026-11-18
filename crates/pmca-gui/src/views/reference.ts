@@ -18,6 +18,7 @@ import {
   withProgressTarget,
 } from "../dom";
 import { tr, trFill } from "../i18n";
+import { fwNameLabel } from "./names";
 
 type RefRender = (state: ReferenceState | null) => void;
 
@@ -297,6 +298,8 @@ function resultRow(
     make("div", { textContent: r.label || tr("reference-unnamed") }),
     make("div", { className: "hint", textContent: verdict + attrText }),
   );
+  const fw = fwNameLabel(r.fwName);
+  if (fw !== null) cell.append(make("div", {}, fw));
   const actions = make("td");
   if (r.writable) {
     const button = make("button", { i18n: "btn-reference-write" });

@@ -100,6 +100,9 @@ export function cardPlugins(): HTMLElement {
       body.push(make("p", { textContent: pluginText(plugin.descriptionKey, plugin.description) }));
     }
     body.push(make("p", { className: "hint", textContent: signerText(plugin), title: plugin.signer ?? "" }));
+    if (plugin.names > 0) {
+      body.push(make("p", { className: "hint", textContent: trFill("plugin-names-count", { count: plugin.names }) }));
+    }
     body.push(make("ul", {}, ...plugin.permissions.map((p) => make("li", { i18n: `plugin-perm-${p}` }))));
     return make("div", { className: "plugin-row" }, ...body);
   }

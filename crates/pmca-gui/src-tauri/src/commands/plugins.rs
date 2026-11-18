@@ -55,6 +55,25 @@ pub(crate) fn plugins_entries(diagnostics: bool) -> Vec<pmca_app::plugins::Plugi
     pmca_app::plugins::entries(diagnostics)
 }
 
+/// A camera key from a model the user typed, or none for an empty field.
+fn names_camera(model: Option<String>) -> Option<pmca_app::names::CameraKey> {
+    let model = model.map(|m| m.trim().to_string()).filter(|m| !m.is_empty())?;
+    Some(pmca_app::names::camera_key_of_model(&model, None))
+}
+
+/// The loaded firmware name tables, or those that fit `model`.
+#[tauri::command]
+pub(crate) fn names_tables(model: Option<String>) -> Vec<pmca_app::names::NameTableInfo> {
+    pmca_app::names::table_infos(names_camera(model).as_ref())
+}
+
+/// Firmware names that contain `text` or properties whose id it is.
+#[tauri::command]
+pub(crate) fn names_search(text: String, model: Option<String>) -> Vec<pmca_app::names::NameHit> {
+    let tables = pmca_app::names::tables();
+    pmca_app::names::search(tables, &text, names_camera(model).as_ref())
+}
+
 /// The result of a plugin tool, with where its output went, if anywhere.
 #[derive(Serialize)]
 #[serde(rename_all = "camelCase")]

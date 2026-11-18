@@ -302,6 +302,9 @@ pub(crate) fn print_cross_check(l: &Localizer, check: &pmca_app::analysis::Cross
 /// One property with its value at every snapshot.
 pub(crate) fn print_analysis_values(c: &pmca_app::analysis::CandidateView, note: &str) {
     println!("  {}  {} B  attr {} ({})  {note}", c.id, c.size, c.attr, c.attr_names.join(", "));
+    if let Some(fw) = &c.fw_name {
+        println!("      {}", pmca_app::names::render_fw(fw));
+    }
     for v in &c.values {
         let shown = match &v.hex {
             Some(hex) => hex.clone(),

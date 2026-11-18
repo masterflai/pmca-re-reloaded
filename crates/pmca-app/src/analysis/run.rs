@@ -36,6 +36,7 @@ impl AnalysisRun {
             evaluation: std::cell::OnceCell::new(),
             camera: None,
             key: None,
+            names: None,
             steps: Vec::new(),
             write: None,
             cross_checks: Vec::new(),
@@ -206,6 +207,9 @@ impl AnalysisRun {
         let snapshot =
             Snapshot::parse(label.clone(), &image).map_err(|e| Error::Operation(e.to_string()))?;
         let revision = BackupFile::new(&image[..]).map(|f| f.revision()).unwrap_or_default();
+        let names = BackupFile::new(&image[..])
+            .map(|f| crate::names::camera_key(&f, firmware.as_deref()))
+            .ok();
         let size = image.len();
         let patch = BackupPatch::new(image).map_err(|e| Error::Operation(e.to_string()))?;
         let key = direct::camera_key(&patch);
@@ -217,6 +221,7 @@ impl AnalysisRun {
             None => {
                 self.camera = Some(facts(&patch, size, revision, firmware));
                 self.key = Some(key);
+                self.names = names;
             }
         }
 
@@ -238,18 +243,25 @@ impl AnalysisRun {
     pub fn evaluate(&self, l: &Localizer) -> EvaluationView {
         let evaluation = self.evaluation();
         let labels = self.labels();
+        let names = self.fw_names();
         let (write, write_refusal) = match self.preview(evaluation) {
             Ok(preview) => (Some(preview), None),
             Err(refusal) => (None, Some(refusal_text(l, refusal))),
         };
         EvaluationView {
             compared: evaluation.compared,
-            candidates: evaluation.candidates.iter().map(|c| view(c, &labels)).collect(),
+            candidates: evaluation.candidates.iter().map(|c| view(c, &labels, &names)).collect(),
             running: evaluation.running.len(),
-            changed: small_running(evaluation, &labels),
+            changed: small_running(evaluation, &labels, &names),
             write,
             write_refusal,
         }
+    }
+
+    /// The installed name tables that fit the analysed camera.
+    pub(crate) fn fw_names(&self) -> crate::names::NameView<'static> {
+        let key = self.names.clone().unwrap_or_default();
+        pmca_platform::names::for_camera(&key)
     }
 
     /// The comparison of the snapshots taken so far, computed once per change.
@@ -503,16 +515,21 @@ pub(crate) fn facts(
 pub(crate) fn small_running(
     evaluation: &find::Evaluation,
     labels: &[String],
+    names: &crate::names::NameView<'_>,
 ) -> Vec<CandidateView> {
     evaluation
         .running
         .iter()
         .filter(|c| c.size() <= MAX_WRITE_SIZE)
-        .map(|c| view(c, labels))
+        .map(|c| view(c, labels, names))
         .collect()
 }
 
-pub(crate) fn view(c: &Candidate, labels: &[String]) -> CandidateView {
+pub(crate) fn view(
+    c: &Candidate,
+    labels: &[String],
+    names: &crate::names::NameView<'_>,
+) -> CandidateView {
     let small = c.size() <= MAX_WRITE_SIZE;
     let first = &c.values[0];
     CandidateView {
@@ -520,6 +537,7 @@ pub(crate) fn view(c: &Candidate, labels: &[String]) -> CandidateView {
         size: c.size(),
         attr: format!("{:#04x}", c.attr),
         attr_names: attr::names(c.attr).into_iter().map(str::to_string).collect(),
+        fw_name: crate::names::lookup(names, c.id),
         reset: c.reset.as_deref().filter(|_| small).map(hex),
         consistent: c.consistent,
         values: c

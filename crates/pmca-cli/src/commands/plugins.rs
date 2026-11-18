@@ -139,61 +139,24 @@ fn print_names(
         (None, Some(model)) => Some(names::camera_key_of_model(model, firmware)),
         (None, None) => None,
     };
-    let Some(camera) = camera else {
-        // No camera: every table on its own, so unrelated tables do not read as conflicts.
-        let needle = find.map(str::to_ascii_uppercase);
-        for table in tables {
-            let Some(needle) = &needle else {
-                println!(
-                    "{}/{}  {} ({})  {}",
-                    table.plugin,
-                    table.id,
-                    table.entries.len(),
-                    names::describe_scope(&table.scope),
-                    table.source
-                );
-                continue;
-            };
-            for (id, entry) in &table.entries {
-                if entry.name.to_ascii_uppercase().contains(needle.as_str()) {
-                    let evidence = entry.evidence.as_str();
-                    println!(
-                        "0x{id:08x}  fw=\"{}\" [{evidence}]  ({}/{})",
-                        entry.name, table.plugin, table.id
-                    );
-                }
-            }
+    if let Some(text) = find {
+        let hits = names::search(tables, text, camera.as_ref());
+        if hits.is_empty() {
+            println!("{}", l.tr("plugin-names-no-match"));
+        }
+        for hit in hits {
+            println!("{}  {}  ({})", hit.id, names::render_fw(&hit.fw), hit.fw.table);
         }
         return Ok(());
-    };
-    let view = names::NameView::new(tables, &camera);
-    if view.is_empty() {
-        println!("{}", l.tr("plugin-names-no-match"));
-        return Ok(());
     }
-    let Some(text) = find else {
-        for table in view.tables() {
-            println!(
-                "{}/{}  {} ({})  {}",
-                table.plugin,
-                table.id,
-                table.entries.len(),
-                names::describe_scope(&table.scope),
-                table.source
-            );
-        }
-        return Ok(());
-    };
-    let hits = view.find(text);
-    if hits.is_empty() {
+    let listed = names::table_infos(camera.as_ref());
+    if listed.is_empty() {
         println!("{}", l.tr("plugin-names-no-match"));
     }
-    for (id, named) in hits {
+    for table in listed {
         println!(
-            "0x{id:08x}  {}  ({}/{})",
-            names::render(&named),
-            named.table.plugin,
-            named.table.id
+            "{}/{}  {} ({})  {}",
+            table.plugin, table.id, table.entries, table.scope, table.source
         );
     }
     Ok(())

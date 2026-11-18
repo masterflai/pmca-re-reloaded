@@ -8,6 +8,7 @@ impl AnalysisRun {
     pub fn report(&self) -> AnalysisReport {
         let evaluation = self.evaluation();
         let labels = self.labels();
+        let names = self.fw_names();
         let refusal = match (self.complete(), self.preview(evaluation)) {
             (true, Err(r)) => Some(refusal_code(r).to_string()),
             _ => None,
@@ -22,9 +23,9 @@ impl AnalysisRun {
             complete: self.complete(),
             steps: self.steps.clone(),
             compared: evaluation.compared,
-            candidates: evaluation.candidates.iter().map(|c| view(c, &labels)).collect(),
+            candidates: evaluation.candidates.iter().map(|c| view(c, &labels, &names)).collect(),
             running: evaluation.running.iter().map(|c| format!("{:#010x}", c.id)).collect(),
-            running_values: small_running(evaluation, &labels),
+            running_values: small_running(evaluation, &labels, &names),
             write_test_consent: self.write_consent.clone(),
             write_test_refusal: refusal,
             write_test: self.write.as_ref().map(|w| WriteTestReport {

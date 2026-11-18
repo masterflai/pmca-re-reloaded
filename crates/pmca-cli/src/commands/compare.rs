@@ -39,6 +39,7 @@ pub(crate) fn compare_backups_command(
     include: Option<&[String]>,
     only_writable: bool,
     only_named: bool,
+    only_fw_named: bool,
     only_switches: bool,
     similar_distance: Option<usize>,
     auto_noise: bool,
@@ -49,7 +50,13 @@ pub(crate) fn compare_backups_command(
         ..CompareOptions::default()
     };
     let report = compare::compare_paths(l, files, &options)?;
-    let filter = Filter { classes: classes(l, include)?, only_writable, only_named, only_switches };
+    let filter = Filter {
+        classes: classes(l, include)?,
+        only_writable,
+        only_named,
+        only_fw_named,
+        only_switches,
+    };
     let narrowed = report.filtered(&filter);
 
     print!("{}", compare::report_text(l, &narrowed));

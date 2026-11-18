@@ -25,6 +25,7 @@ import {
 import { refreshElevation, type DriverRights } from "../elevation";
 import { tr, trFill } from "../i18n";
 import { hostPlatform } from "../platform";
+import { fwNameLabel, viewNames } from "./names";
 import { viewReference } from "./reference";
 
 // ---------------------------------------------------------------------------
@@ -155,6 +156,12 @@ export function viewAnalysis(host: HTMLElement): void {
         labelKey: "analysis-mode-reference",
         subKey: "analysis-mode-reference-sub",
         render: viewReference,
+      },
+      {
+        id: "plugins",
+        labelKey: "analysis-mode-plugins",
+        subKey: "analysis-mode-plugins-sub",
+        render: viewNames,
       },
     ]),
   );
@@ -453,6 +460,8 @@ function analysisTable(c: AnalysisCandidate, fitKey: string | null): HTMLElement
     textContent: `${c.id} · ${c.size} B · attr ${c.attr}${names}`,
   });
   if (fitKey !== null) caption.append(" · ", make("span", { i18n: fitKey }));
+  const fw = fwNameLabel(c.fwName);
+  if (fw !== null) caption.append(" · ", fw);
   const table = make("table", { className: "analysis-table" });
   for (const v of c.values) {
     const shown = v.hex ?? `Δ ${v.changedOffsets.map((o) => `0x${o.toString(16)}`).join(", ")}`;

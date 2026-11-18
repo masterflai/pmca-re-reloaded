@@ -26,6 +26,14 @@ All notable changes to this project are documented here. The format follows
   tables and searches them. Names are for reading only and never used to
   write a value. `plugin.json` and the tables may now start with a
   byte-order mark.
+- Firmware names also appear in backup dumps (`fwName`), in the camera
+  comparison (beside the name column, in the text report and with a new
+  export filter, `--only-fw-named` on the console), in the function analysis
+  and in the reference check. Where the compared cameras disagree about a
+  name, it is marked as a conflict. The analysis page has a new Plugins tab
+  that lists the installed name tables, looks up names and ids, and offers
+  the same plugin installation as the settings. The plugin list shows how
+  many names a plugin brings.
 
 ## [1.13.0] - 2026-11-15
 

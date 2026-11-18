@@ -67,6 +67,10 @@ pub struct ReferenceResult {
     pub attr: Option<String>,
     /// Names of the attribute bits, when known.
     pub attr_names: Vec<String>,
+    /// The firmware's name on this camera, where an installed plugin knows it.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    #[cfg_attr(test, ts(optional))]
+    pub fw_name: Option<crate::names::FwName>,
     /// The write test may be offered for this finding on this camera.
     pub writable: bool,
     /// The menu value whose stored value the camera's value equals, if any.
@@ -200,6 +204,14 @@ impl ReferenceCheck {
 
         let ids = pmca_platform::identity::list(&identity);
         let get = |id: &str| ids.iter().find(|v| v.id == id).map(|v| v.value.clone());
+        let key =
+            crate::names::camera_key_of(get("modelName").as_deref(), firmware.as_deref(), None);
+        let fw_names = pmca_platform::names::for_camera(&key);
+        let results = results
+            .into_iter()
+            .zip(&self.findings)
+            .map(|(r, f)| ReferenceResult { fw_name: crate::names::lookup(&fw_names, f.id), ..r })
+            .collect();
         self.result = Some(ReferenceResultView {
             at: timestamp(),
             camera: CrossCamera {
@@ -414,6 +426,7 @@ fn result_for(finding: &Finding, data: Option<&[u8]>, attr: Option<u16>) -> Refe
         attr_names: attr
             .map(|a| attr::names(a).iter().map(|s| s.to_string()).collect())
             .unwrap_or_default(),
+        fw_name: None,
         writable,
         matches,
     }

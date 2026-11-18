@@ -156,6 +156,7 @@ pub(crate) async fn compare_export(
     classes: Vec<String>,
     only_writable: bool,
     only_named: bool,
+    only_fw_named: bool,
     only_switches: bool,
 ) -> Result<usize, CommandError> {
     in_background(move || {
@@ -171,6 +172,7 @@ pub(crate) async fn compare_export(
             classes: classes.into_iter().collect(),
             only_writable,
             only_named,
+            only_fw_named,
             only_switches,
         };
         let narrowed = report.filtered(&filter);
