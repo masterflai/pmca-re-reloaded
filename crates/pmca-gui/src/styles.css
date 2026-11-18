@@ -2016,6 +2016,74 @@ label.app-entry input[type="checkbox"] {
   color: var(--warning);
 }
 
+/* The analysis chooser: three tiles, each a question the user has. */
+.analysis-tiles {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+  gap: 12px;
+  margin: 12px 0 16px;
+}
+
+.content button.analysis-tile {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+  padding: 14px 16px;
+  text-align: start;
+  white-space: normal;
+  border: 1px solid var(--control-border);
+  border-radius: 8px;
+  background: var(--control);
+  color: var(--text);
+  cursor: pointer;
+}
+
+.content button.analysis-tile:hover {
+  border-color: var(--accent);
+  background: var(--control-hover);
+}
+
+.analysis-tile-title {
+  font-size: 1.05rem;
+  font-weight: 600;
+}
+
+.analysis-tile-sub {
+  color: var(--text-muted);
+}
+
+.analysis-tile-tags {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  margin-top: auto;
+  padding-top: 4px;
+}
+
+.analysis-tag {
+  font-size: 0.8em;
+  color: var(--text-muted);
+}
+
+.content button.analysis-back {
+  margin-bottom: 8px;
+}
+
+.memory-filters {
+  flex-wrap: wrap;
+  gap: 4px 16px;
+}
+
+.memory-table td.cmp-mono {
+  overflow-wrap: anywhere;
+}
+
+.memory-touched > td:first-child {
+  border-inline-start: 3px solid var(--accent);
+}
+
 .cmp-export {
   margin-top: 1.25rem;
   padding-top: 0.75rem;

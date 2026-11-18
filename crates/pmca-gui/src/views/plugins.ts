@@ -125,6 +125,26 @@ export function cardPlugins(): HTMLElement {
     }
   });
 
+  const sources = pluginSources(() => void refresh().catch((e) => showError(status, e)));
+
+  refresh().catch((e) => showError(status, e));
+  return card(
+    make("h2", { i18n: "plugin-heading" }),
+    make("p", { i18n: "plugin-intro" }),
+    list,
+    restart,
+    make("div", { className: "row" }, install),
+    status,
+    make("h3", { i18n: "plugin-sources-heading" }),
+    ...sources,
+  );
+}
+
+/**
+ * The plugins the user's sources offer, loaded on request, each with its own
+ * install button. `installed` runs after one was installed.
+ */
+export function pluginSources(installed: () => void): Node[] {
   const sourceStatus = statusLine();
   const sourceList = make("div", { className: "plugin-list" });
   const loadSources = make("button", { i18n: "btn-plugin-sources-load" });
@@ -144,8 +164,8 @@ export function cardPlugins(): HTMLElement {
           return;
         }
         await invoke<PluginInfo>("install_downloaded_plugin", ids);
-        showDone(sourceStatus, tr("plugin-installed"));
-        await refresh();
+        showDone(sourceStatus, `${tr("plugin-installed")} ${tr("plugin-restart")}`);
+        installed();
       } catch (e) {
         showError(sourceStatus, e);
       } finally {
@@ -197,20 +217,12 @@ export function cardPlugins(): HTMLElement {
     }
   });
 
-  refresh().catch((e) => showError(status, e));
-  return card(
-    make("h2", { i18n: "plugin-heading" }),
-    make("p", { i18n: "plugin-intro" }),
-    list,
-    restart,
-    make("div", { className: "row" }, install),
-    status,
-    make("h3", { i18n: "plugin-sources-heading" }),
+  return [
     make("p", { className: "hint", i18n: "plugin-sources-hint" }),
     make("div", { className: "row" }, loadSources),
     sourceStatus,
     sourceList,
-  );
+  ];
 }
 
 /** What installing would do, and for a plugin from a source that it is unchecked. */

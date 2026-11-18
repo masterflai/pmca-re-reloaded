@@ -18,7 +18,15 @@ import {
   withProgressTarget,
 } from "../dom";
 import { tr, trFill } from "../i18n";
+import { openSettings, writeTestsAllowed } from "../preferences";
 import { fwNameLabel } from "./names";
+
+/** Says that the settings lock write tests, with the way to the switch. */
+export function writeLockedNote(): HTMLElement {
+  const link = make("button", { className: "link-button", i18n: "btn-open-settings" });
+  link.addEventListener("click", openSettings);
+  return make("span", { className: "hint" }, make("span", { i18n: "analysis-write-locked" }), " ", link);
+}
 
 type RefRender = (state: ReferenceState | null) => void;
 
@@ -301,10 +309,12 @@ function resultRow(
   const fw = fwNameLabel(r.fwName);
   if (fw !== null) cell.append(make("div", {}, fw));
   const actions = make("td");
-  if (r.writable) {
+  if (r.writable && writeTestsAllowed) {
     const button = make("button", { i18n: "btn-reference-write" });
     button.addEventListener("click", () => startWriteTest(index, state, status, render));
     actions.append(accessBadge("write"), " ", button);
+  } else if (r.writable) {
+    actions.append(writeLockedNote());
   }
   return make("tr", {}, make("th", { className: "mono", textContent: r.id }), cell, actions);
 }

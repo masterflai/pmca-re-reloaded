@@ -3,7 +3,6 @@
 import { card, make } from "../dom";
 import { keyCard, keyStatus } from "../keys";
 import { hostPlatform } from "../platform";
-import { analysisOn } from "../preferences";
 
 // ---------------------------------------------------------------------------
 // Views
@@ -121,8 +120,7 @@ function welcomeMap(): HTMLElement {
       continue;
     }
     const view = entry.dataset.view;
-    // `hidden` also marks pages of a folded group, so the lock is asked directly.
-    if (!view || view === "welcome" || (view === "analysis" && !analysisOn)) continue;
+    if (!view || view === "welcome") continue;
     if (!list || entry.dataset.group !== group) {
       group = entry.dataset.group;
       list = make("dl", { className: group ? "fields welcome-map" : "fields welcome-map welcome-map-rest" });

@@ -23,6 +23,11 @@ name: string | null,
  */
 fwName?: FwName, 
 /**
+ * The columns (from 1) the firmware name holds for, when it does not
+ * hold for every camera.
+ */
+fwNameFor?: Array<number>, 
+/**
  * The class, as named by [`Class::as_str`].
  */
 class: string, 

@@ -30,10 +30,28 @@ All notable changes to this project are documented here. The format follows
   comparison (beside the name column, in the text report and with a new
   export filter, `--only-fw-named` on the console), in the function analysis
   and in the reference check. Where the compared cameras disagree about a
-  name, it is marked as a conflict. The analysis page has a new Plugins tab
-  that lists the installed name tables, looks up names and ids, and offers
-  the same plugin installation as the settings. The plugin list shows how
-  many names a plugin brings.
+  name, it is marked as a conflict; a name only some of them know is marked
+  with the cameras it holds for. The plugin list shows how many names a
+  plugin brings.
+- Look at the memory: a new analysis that reads a camera or opens a
+  `Backup.bin` or dump and lists every value with its toolkit and firmware
+  name, searchable and filterable (named, changed from the factory value,
+  writable, second image).
+
+### Changed
+
+- The analysis is one menu entry with a choice of three: look at the memory,
+  find a setting (search for it, or check a place already known), and
+  compare cameras. The separate entries for the function analysis and the
+  camera comparison are gone. Name tables can be fetched from the plugin
+  sources right there.
+- The analysis switch in the settings is now "Allow write tests in the
+  analysis", off by default and asked for with the same ticked consent as a
+  write test. It no longer hides the analysis: reading, looking and comparing
+  always work, while write tests in the function analysis and the reference
+  check stay locked until it is on, and the backend refuses them as well.
+  Putting back a value a test wrote is never locked. The console is
+  unchanged.
 
 ## [1.13.0] - 2026-11-15
 

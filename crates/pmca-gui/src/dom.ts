@@ -398,3 +398,54 @@ export async function withProgressTarget<T>(target: HTMLElement, work: () => Pro
     delete target.dataset.progressTarget;
   }
 }
+
+/** Whether a camera is on the bus. Opens no device, so it costs nothing. */
+export async function cameraAnswers(): Promise<boolean> {
+  try {
+    return (await invoke<string>("camera_presence")) === "connected";
+  } catch {
+    // Unanswerable here; let the read itself report what went wrong.
+    return true;
+  }
+}
+
+/**
+ * Ask for consent to writing into the camera, with a box that has to be ticked.
+ *
+ * An in-page dialog rather than the native one, which cannot hold a checkbox.
+ * Cancelling is the default: it has the focus, and Escape means cancel.
+ */
+export function writeConsentDialog(okKey: string): Promise<boolean> {
+  return new Promise((resolve) => {
+    const accept = make("input", { type: "checkbox" });
+    const cancel = make("button", { i18n: "btn-cancel" });
+    const enable = make("button", { className: "primary", i18n: okKey });
+    enable.disabled = true;
+    accept.addEventListener("change", () => {
+      enable.disabled = !accept.checked;
+    });
+    const dialog = make(
+      "dialog",
+      { className: "consent-dialog" },
+      make("h2", {}, accessBadge("write"), " ", make("span", { i18n: "analysis-write-heading" })),
+      make("p", { className: "warning", i18n: "analysis-write-warning" }),
+      make("label", { className: "row" }, accept, make("span", { i18n: "analysis-write-consent" })),
+      make("div", { className: "row" }, cancel, enable),
+    );
+    const finish = (ok: boolean): void => {
+      dialog.close();
+      dialog.remove();
+      resolve(ok);
+    };
+    cancel.addEventListener("click", () => finish(false));
+    enable.addEventListener("click", () => finish(accept.checked));
+    dialog.addEventListener("cancel", (e) => {
+      e.preventDefault();
+      finish(false);
+    });
+    // Inside `.content` so the buttons get the window's button style.
+    (document.querySelector(".content") ?? document.body).append(dialog);
+    dialog.showModal();
+    cancel.focus();
+  });
+}

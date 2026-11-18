@@ -282,6 +282,11 @@ pub struct CompareRow {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     #[cfg_attr(test, ts(optional))]
     pub fw_name: Option<FwName>,
+    /// The columns (from 1) the firmware name holds for, when it does not
+    /// hold for every camera.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[cfg_attr(test, ts(optional))]
+    pub fw_name_for: Option<Vec<usize>>,
     /// The class, as named by [`Class::as_str`].
     pub class: String,
     /// The common length, where every camera agrees on one.
@@ -722,7 +727,10 @@ fn compare_with_names(
     let mut rows: Vec<CompareRow> = comparison
         .rows
         .iter()
-        .map(|r| CompareRow { fw_name: fw_names.get(r.id), ..compare_row(r, 1) })
+        .map(|r| {
+            let (fw_name, fw_name_for) = fw_names.get(r.id);
+            CompareRow { fw_name, fw_name_for, ..compare_row(r, 1) }
+        })
         .collect();
     let mut noise_ids: Vec<String> = noise.iter().map(|id| format!("{id:#010x}")).collect();
 
@@ -862,6 +870,10 @@ pub fn report_text(l: &Localizer, report: &CompareReport) -> String {
         }
         if let Some(fw) = &row.fw_name {
             let _ = write!(out, " {}", names::render_fw(fw));
+            if let Some(only) = &row.fw_name_for {
+                let only: Vec<String> = only.iter().map(|c| format!("#{c}")).collect();
+                let _ = write!(out, " (only {})", only.join(", "));
+            }
         }
         out.push('\n');
     }
@@ -900,12 +912,24 @@ impl<'a> SourceNames<'a> {
         Self { views, stored }
     }
 
-    /// What the installed tables say for each source, else what its dump says.
-    fn get(&self, id: u32) -> Option<FwName> {
-        let each = self.views.iter().zip(&self.stored).filter_map(|(view, stored)| {
-            names::lookup(view, id).or_else(|| stored.get(&id).map(|fw| (*fw).clone()))
-        });
-        names::merge(each)
+    /// What the installed tables say for each source, else what its dump says,
+    /// and which columns that is, unless it is all of them.
+    fn get(&self, id: u32) -> (Option<FwName>, Option<Vec<usize>>) {
+        let mut columns = Vec::new();
+        let each: Vec<FwName> = self
+            .views
+            .iter()
+            .zip(&self.stored)
+            .enumerate()
+            .filter_map(|(i, (view, stored))| {
+                let fw =
+                    names::lookup(view, id).or_else(|| stored.get(&id).map(|fw| (*fw).clone()))?;
+                columns.push(i + 1);
+                Some(fw)
+            })
+            .collect();
+        let partial = !columns.is_empty() && columns.len() < self.views.len();
+        (names::merge(each), partial.then_some(columns))
     }
 }
 
@@ -1086,6 +1110,7 @@ fn compare_row(row: &cmp::Row, image: usize) -> CompareRow {
         subsystem: format!("{:#06x}", row.id >> 16),
         name: row.size.and_then(|size| prop_name(row.id, size)),
         fw_name: None,
+        fw_name_for: None,
         class: row.class.as_str().to_string(),
         size: row.size,
         attr: row.attr.map(|a| format!("{a:#04x}")),
@@ -1356,7 +1381,8 @@ mod tests {
         let report = compare_with_names(&[a.clone(), b], &options, &[]);
         let row = report.rows.iter().find(|r| r.id == FIRST).unwrap();
         assert_eq!(row.fw_name.as_ref().unwrap().name, "BKID_A");
-        assert!(report_text(&localizer(), &report).contains("fw=\"BKID_A\" [fw-log]"));
+        assert_eq!(row.fw_name_for, Some(vec![1]));
+        assert!(report_text(&localizer(), &report).contains("fw=\"BKID_A\" [fw-log] (only #1)"));
         let named = Filter { only_fw_named: true, ..Filter::default() };
         assert_eq!(report.filtered(&named).rows.len(), 1);
 
@@ -1365,6 +1391,7 @@ mod tests {
         let fw = report.rows.iter().find(|r| r.id == FIRST).unwrap().fw_name.clone().unwrap();
         assert_eq!(fw.name, "BKID_A | BKID_C");
         assert!(fw.conflict);
+        assert!(report.rows.iter().find(|r| r.id == FIRST).unwrap().fw_name_for.is_none());
     }
 
     #[test]

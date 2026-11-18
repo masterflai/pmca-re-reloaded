@@ -1,4 +1,4 @@
-/** Function analysis page. */
+/** Analysis page: a choice of three analyses, then the chosen one. */
 
 import { invoke } from "@tauri-apps/api/core";
 import type { Access as AnalysisAccess } from "../bindings/Access";
@@ -19,14 +19,17 @@ import {
   showError,
   showErrorKey,
   statusLine,
-  tabs,
   withProgressTarget,
+  writeConsentDialog,
 } from "../dom";
 import { refreshElevation, type DriverRights } from "../elevation";
 import { tr, trFill } from "../i18n";
 import { hostPlatform } from "../platform";
-import { fwNameLabel, viewNames } from "./names";
-import { viewReference } from "./reference";
+import { writeTestsAllowed } from "../preferences";
+import { viewCompare } from "./compare";
+import { viewMemory } from "./memory";
+import { fetchNames, fwNameLabel, namesLine } from "./names";
+import { viewReference, writeLockedNote } from "./reference";
 
 // ---------------------------------------------------------------------------
 // Function analysis
@@ -97,74 +100,118 @@ function analysisExplanation(): HTMLDetailsElement {
   return details;
 }
 
+type Mode = "memory" | "find" | "compare";
+type FindMode = "discover" | "reference";
+
+/** The analysis on screen; kept for the session so leaving the page does not lose the place. */
+let currentMode: Mode | null = null;
+let findMode: FindMode | null = null;
+
 /**
- * Ask for consent to the write test, with a box that has to be ticked.
+ * The analysis page: three analyses to choose from, then only the chosen one.
  *
- * An in-page dialog rather than the native one, which cannot hold a checkbox.
- * Cancelling is the default: it has the focus, and Escape means cancel.
+ * A discovery run or reference check under way opens its analysis directly.
  */
-function writeConsentDialog(): Promise<boolean> {
-  return new Promise((resolve) => {
-    const accept = make("input", { type: "checkbox" });
-    const cancel = make("button", { i18n: "btn-cancel" });
-    const enable = make("button", { className: "primary", i18n: "btn-analysis-write-enable" });
-    enable.disabled = true;
-    accept.addEventListener("change", () => {
-      enable.disabled = !accept.checked;
-    });
-    const dialog = make(
-      "dialog",
-      { className: "consent-dialog" },
-      make("h2", {}, accessBadge("write"), " ", make("span", { i18n: "analysis-write-heading" })),
-      make("p", { className: "warning", i18n: "analysis-write-warning" }),
-      make("label", { className: "row" }, accept, make("span", { i18n: "analysis-write-consent" })),
-      make("div", { className: "row" }, cancel, enable),
-    );
-    const finish = (ok: boolean): void => {
-      dialog.close();
-      dialog.remove();
-      resolve(ok);
-    };
-    cancel.addEventListener("click", () => finish(false));
-    enable.addEventListener("click", () => finish(accept.checked));
-    dialog.addEventListener("cancel", (e) => {
-      e.preventDefault();
-      finish(false);
-    });
-    // Inside `.content` so the buttons get the window's button style.
-    (document.querySelector(".content") ?? document.body).append(dialog);
-    dialog.showModal();
-    cancel.focus();
+export function viewAnalysis(host: HTMLElement): void {
+  const show = (mode: Mode | null): void => {
+    if (currentMode === "compare" && mode !== "compare") void invoke("compare_close").catch(() => undefined);
+    if (currentMode === "memory" && mode !== "memory") void invoke("memory_close").catch(() => undefined);
+    currentMode = mode;
+    host.replaceChildren();
+    if (mode === null) {
+      host.append(chooser(show));
+    } else {
+      const back = make("button", { className: "link-button analysis-back", i18n: "analysis-back" });
+      back.addEventListener("click", () => show(null));
+      const stage = make("div");
+      host.append(back, stage);
+      if (mode === "memory") viewMemory(stage);
+      else if (mode === "compare") viewCompare(stage);
+      else viewFind(stage);
+    }
+    host.closest<HTMLElement>(".content")?.scrollTo({ top: 0 });
+  };
+
+  show(currentMode);
+  if (currentMode !== null) return;
+  Promise.all([
+    invoke<unknown>("analysis_state").catch(() => null),
+    invoke<unknown>("reference_state").catch(() => null),
+  ]).then(([run, check]) => {
+    if (currentMode !== null || !host.isConnected || (run === null && check === null)) return;
+    findMode = run !== null ? "discover" : "reference";
+    show("find");
   });
 }
 
-/**
- * The analysis page: a switch between finding a setting (the discovery run) and
- * checking a known finding against the connected camera (the reference check).
- */
-export function viewAnalysis(host: HTMLElement): void {
-  host.append(
-    tabs([
-      {
-        id: "discover",
-        labelKey: "analysis-mode-discover",
-        subKey: "analysis-mode-discover-sub",
-        render: viewDiscovery,
-      },
-      {
-        id: "reference",
-        labelKey: "analysis-mode-reference",
-        subKey: "analysis-mode-reference-sub",
-        render: viewReference,
-      },
-      {
-        id: "plugins",
-        labelKey: "analysis-mode-plugins",
-        subKey: "analysis-mode-plugins-sub",
-        render: viewNames,
-      },
-    ]),
+/** The three analyses as tiles, and which firmware names are installed. */
+function chooser(show: (mode: Mode) => void): HTMLElement {
+  const tile = (mode: Mode, titleKey: string, subKey: string, tags: Node[]): HTMLElement => {
+    const button = make(
+      "button",
+      { className: "analysis-tile" },
+      make("span", { className: "analysis-tile-title", i18n: titleKey }),
+      make("span", { className: "analysis-tile-sub", i18n: subKey }),
+      make("span", { className: "analysis-tile-tags" }, ...tags),
+    );
+    button.addEventListener("click", () => show(mode));
+    return button;
+  };
+  const tag = (key: string): HTMLElement => make("span", { className: "analysis-tag", i18n: key });
+  const writeTag = writeTestsAllowed
+    ? make("span", { className: "analysis-tag" }, accessBadge("write"), " ", make("span", { i18n: "analysis-tag-write" }))
+    : tag("analysis-tag-write-locked");
+  return card(
+    make("h2", { i18n: "analysis-choose-heading" }),
+    make(
+      "div",
+      { className: "analysis-tiles" },
+      tile("memory", "analysis-tile-memory", "analysis-tile-memory-sub", [
+        accessBadge("read"),
+        tag("analysis-tag-source"),
+      ]),
+      tile("find", "analysis-tile-find", "analysis-tile-find-sub", [
+        accessBadge("read"),
+        tag("analysis-tag-camera"),
+        writeTag,
+      ]),
+      tile("compare", "analysis-tile-compare", "analysis-tile-compare-sub", [
+        accessBadge("read"),
+        tag("analysis-tag-source"),
+      ]),
+    ),
+    namesLine(),
+    fetchNames(),
   );
+}
+
+/** Finding a setting: search for it, or check a place already known. */
+function viewFind(host: HTMLElement): void {
+  const stage = make("div");
+  const render = (): void => {
+    stage.replaceChildren();
+    if (findMode === "discover") viewDiscovery(stage);
+    else if (findMode === "reference") viewReference(stage);
+  };
+  const choices = ([
+    ["discover", "analysis-mode-discover", "analysis-mode-discover-sub"],
+    ["reference", "analysis-mode-reference", "analysis-mode-reference-sub"],
+  ] as const).map(([value, labelKey, hintKey]) => {
+    const radio = make("input", { type: "radio", name: "find-mode", value, checked: findMode === value });
+    radio.addEventListener("change", () => {
+      if (!radio.checked) return;
+      findMode = value;
+      render();
+    });
+    return make(
+      "label",
+      { className: "cmp-choice" },
+      make("span", { className: "row cmp-choice-head" }, radio, make("span", { className: "cmp-choice-title", i18n: labelKey })),
+      make("span", { className: "hint cmp-choice-hint", i18n: hintKey }),
+    );
+  });
+  host.append(card(make("h2", { i18n: "analysis-find-question" }), ...choices), stage);
+  render();
 }
 
 function viewDiscovery(host: HTMLElement): void {
@@ -298,9 +345,9 @@ function analysisForm(status: HTMLElement, render: AnalysisRender): Node[] {
   };
   setting.addEventListener("input", remember);
   values.addEventListener("input", remember);
-  const write = make("input", { type: "checkbox" });
+  const write = make("input", { type: "checkbox", disabled: !writeTestsAllowed });
   write.addEventListener("change", async () => {
-    if (write.checked && !(await writeConsentDialog())) write.checked = false;
+    if (write.checked && !(await writeConsentDialog("btn-analysis-write-enable"))) write.checked = false;
   });
 
   const start = make("button", { className: "primary", i18n: "btn-analysis-start" });
@@ -341,6 +388,7 @@ function analysisForm(status: HTMLElement, render: AnalysisRender): Node[] {
       accessBadge("write"),
       make("span", { i18n: "analysis-write-option" }),
     ),
+    ...(writeTestsAllowed ? [] : [make("p", {}, writeLockedNote())]),
     make("div", { className: "row" }, start),
   ];
 }
@@ -577,7 +625,14 @@ function analysisRunNodes(
   if (state.writeRequested && evaluation.write === null && evaluation.writeRefusal) {
     nodes.push(make("p", { className: "warning", textContent: evaluation.writeRefusal }));
   }
-  const writing = state.writeRequested && evaluation.write !== null && !analysisWriteSkipped;
+  // Switched off in the settings since the run began: nothing more is written,
+  // but a value already written is still put back.
+  const allowed = writeTestsAllowed || state.written;
+  if (state.writeRequested && !allowed && evaluation.write !== null) {
+    nodes.push(make("p", {}, writeLockedNote()));
+  }
+  const writing =
+    state.writeRequested && evaluation.write !== null && !analysisWriteSkipped && allowed;
 
   if (writing && !state.written) {
     const p = evaluation.write!;

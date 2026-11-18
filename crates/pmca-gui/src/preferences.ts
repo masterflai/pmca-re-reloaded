@@ -1,5 +1,6 @@
 /** User preferences kept in local storage: advanced mode, the function analysis switch, the update notification and the theme. */
 
+import { invoke } from "@tauri-apps/api/core";
 import { tr } from "./i18n";
 
 // ---------------------------------------------------------------------------
@@ -47,35 +48,33 @@ export function setAdvancedMode(on: boolean): void {
 }
 
 // ---------------------------------------------------------------------------
-// Function analysis switch
+// Write tests in the analysis
 // ---------------------------------------------------------------------------
 
-const ANALYSIS_STORAGE_KEY = "pmca.analysis";
-
 /**
- * Whether the function analysis appears in the navigation.
+ * Whether the analysis may write test values into the camera.
  *
- * On by default; hidden only when the user has explicitly switched it off.
+ * Kept by the backend, which also refuses the writes while it is off; this is
+ * the window's copy, read once at start and updated when the setting changes.
  */
-export let analysisOn = readAnalysisMode();
+export let writeTestsAllowed = false;
 
-function readAnalysisMode(): boolean {
+export async function loadWriteTests(): Promise<void> {
   try {
-    return localStorage.getItem(ANALYSIS_STORAGE_KEY) !== "off";
+    writeTestsAllowed = await invoke<boolean>("analysis_write_tests");
   } catch {
-    return true;
+    writeTestsAllowed = false;
   }
 }
 
-/** Apply the choice, remember it, and show or hide the navigation entry. */
-export function setAnalysisMode(on: boolean): void {
-  analysisOn = on;
-  try {
-    localStorage.setItem(ANALYSIS_STORAGE_KEY, on ? "on" : "off");
-  } catch {
-    /* the choice still applies to this session */
-  }
-  applyNav();
+export async function setWriteTests(on: boolean): Promise<void> {
+  await invoke("set_analysis_write_tests", { on });
+  writeTestsAllowed = on;
+}
+
+/** Open the settings page, where write tests are allowed. */
+export function openSettings(): void {
+  document.querySelector<HTMLElement>('.nav-item[data-view="settings"]')?.click();
 }
 
 // ---------------------------------------------------------------------------
@@ -85,7 +84,7 @@ export function setAnalysisMode(on: boolean): void {
 // The one open group. Replaces `pmca.nav.groups`, whose list of folded groups
 // could not tell a group added later from one the user had opened.
 const NAV_OPEN_KEY = "pmca.nav.open";
-const NAV_GROUPS = ["camera", "apps", "analysis", "maintenance"];
+const NAV_GROUPS = ["camera", "apps", "maintenance"];
 
 /** Groups that are folded shut; all of them until the user opens one. */
 let collapsedGroups = readCollapsedGroups();
@@ -126,10 +125,7 @@ export function expandNavGroup(group: string): void {
   applyNav();
 }
 
-/**
- * Show or hide every navigation entry from its group's folded state, keeping
- * the analysis entry hidden until it is unlocked.
- */
+/** Show or hide every navigation entry from its group's folded state. */
 export function applyNav(): void {
   for (const group of NAV_GROUPS) {
     const folded = collapsedGroups.has(group);
@@ -137,15 +133,9 @@ export function applyNav(): void {
       .querySelector<HTMLElement>(`.nav-section[data-group="${group}"]`)
       ?.classList.toggle("collapsed", folded);
     for (const item of document.querySelectorAll<HTMLElement>(`.nav-item[data-group="${group}"]`)) {
-      const locked = item.dataset.view === "analysis" && !analysisOn;
-      item.hidden = folded || locked;
+      item.hidden = folded;
     }
   }
-}
-
-/** Kept for callers that only mean the analysis entry; folds are applied too. */
-export function applyAnalysisNav(): void {
-  applyNav();
 }
 
 // ---------------------------------------------------------------------------

@@ -40,12 +40,11 @@ import {
 } from "./i18n";
 import { setupNav, showLocation } from "./nav";
 import { detectHostPlatform } from "./platform";
-import { applyAnalysisNav, applyTheme, expandNavGroup, setupThemeSwitch, storedTheme, toggleNavGroup } from "./preferences";
+import { applyNav, applyTheme, expandNavGroup, loadWriteTests, setupThemeSwitch, storedTheme, toggleNavGroup } from "./preferences";
 import { announceUpdate, checkForUpdateNow } from "./update";
 import { viewAnalysis } from "./views/analysis";
 import { viewBackup } from "./views/backup";
 import { viewCameraInfo, viewCompatibility } from "./views/camera";
-import { viewCompare } from "./views/compare";
 import { viewDiagnose } from "./views/diagnose";
 import { viewFirmware } from "./views/firmware";
 import { viewInstall } from "./views/install";
@@ -66,7 +65,6 @@ const VIEWS: Record<string, (host: HTMLElement) => void> = {
   gps: viewGps,
   tweaks: viewTweaks,
   backup: viewBackup,
-  compare: viewCompare,
   diagnose: viewDiagnose,
   analysis: viewAnalysis,
   network: viewNetwork,
@@ -97,7 +95,11 @@ function renderView(name: string, host: HTMLElement): void {
   // only worth having while the view is on screen; once it is not, the camera
   // has no business staying in service mode.
   if (name !== "tweaks") void invoke("tweaks_close").catch(() => undefined);
-  if (name !== "compare") void invoke("compare_close").catch(() => undefined);
+  // The comparison and the memory view hold whole stores; both live on the analysis page.
+  if (name !== "analysis") {
+    void invoke("compare_close").catch(() => undefined);
+    void invoke("memory_close").catch(() => undefined);
+  }
   // Keep the page's group open so its entry stays visible when a view is
   // reached without a click (resume after an elevated restart, say).
   const navItem = document.querySelector<HTMLElement>(`.nav-item[data-view="${name}"]`);
@@ -207,7 +209,8 @@ async function main(): Promise<void> {
   // and a page rendered before the answer arrives would show the wrong one.
   await detectHostPlatform();
   await setupElevationBadge();
-  applyAnalysisNav();
+  await loadWriteTests();
+  applyNav();
   setupNav();
   setupNavigation();
   showAppVersion();

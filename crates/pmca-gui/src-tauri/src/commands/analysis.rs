@@ -4,6 +4,27 @@
 
 use crate::*;
 
+/// Whether the settings allow write tests.
+#[tauri::command]
+pub(crate) fn analysis_write_tests() -> bool {
+    pmca_app::analysis::write_tests_allowed()
+}
+
+/// Allow or forbid write tests. The window asks for consent before allowing.
+#[tauri::command]
+pub(crate) fn set_analysis_write_tests(on: bool) -> Result<(), CommandError> {
+    Ok(pmca_app::analysis::allow_write_tests(on)?)
+}
+
+/// Refuse a write the settings do not allow. Restoring is never refused.
+fn require_write_tests(app: &AppHandle) -> Result<(), CommandError> {
+    if pmca_app::analysis::write_tests_allowed() {
+        return Ok(());
+    }
+    let localizer = app.state::<AppState>().localizer()?;
+    Err(CommandError::localized(localizer.tr("analysis-write-locked")))
+}
+
 /// A step of the analysis, as both the window and the macOS broker run it.
 pub(crate) type Step<'a> = Box<
     dyn FnOnce(
@@ -97,6 +118,9 @@ pub(crate) async fn analysis_start(
     values: Vec<String>,
     write_test: bool,
 ) -> Result<Reply<pmca_app::analysis::RunState>, CommandError> {
+    if write_test {
+        require_write_tests(&app)?;
+    }
     in_background(move || {
         let state = app.state::<AppState>();
         #[cfg(target_os = "macos")]
@@ -154,6 +178,7 @@ pub(crate) async fn analysis_snapshot(
 pub(crate) async fn analysis_write(
     app: AppHandle,
 ) -> Result<Reply<pmca_app::analysis::RunState>, CommandError> {
+    require_write_tests(&app)?;
     with_camera(app, |app, state| {
         camera_step(
             app,
@@ -508,6 +533,7 @@ pub(crate) async fn reference_write(
     index: usize,
     variant: usize,
 ) -> Result<Reply<ReferenceState>, CommandError> {
+    require_write_tests(&app)?;
     with_camera(app, move |app, state| {
         reference_camera_step(
             app,

@@ -172,6 +172,9 @@ struct AppState {
     /// back from the webview. Holds no camera session and is dropped when the
     /// view is left.
     comparison: Mutex<Option<pmca_app::compare::CompareReport>>,
+    /// The store the memory view shows, served a page at a time. Holds no
+    /// camera session and is dropped when the analysis page is left.
+    memory: Mutex<Option<pmca_app::compare::DumpFile>>,
     /// The usage log last read, so saving writes exactly what was shown.
     usage_log: Mutex<Option<Vec<u8>>>,
     /// Store apps downloaded ahead of a batch installation, by source and package.
@@ -210,6 +213,7 @@ impl AppState {
             analysis: Mutex::new(None),
             reference: Mutex::new(None),
             comparison: Mutex::new(None),
+            memory: Mutex::new(None),
             usage_log: Mutex::new(None),
             downloads: Mutex::new(HashMap::new()),
             plugin_downloads: Mutex::new(HashMap::new()),
@@ -545,7 +549,6 @@ pub fn run() {
             plugins_compatibility,
             plugins_entries,
             names_tables,
-            names_search,
             plugins_run_tool,
             plugins_run_diagnostic,
             sources_list,
@@ -585,6 +588,11 @@ pub fn run() {
             compare_run,
             compare_export,
             compare_close,
+            memory_open,
+            memory_page,
+            memory_close,
+            analysis_write_tests,
+            set_analysis_write_tests,
         ])
         .run(tauri::generate_context!())
         .expect("failed to start the PMCA-RE RELOADED application");

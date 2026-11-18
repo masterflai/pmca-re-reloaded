@@ -3,6 +3,7 @@
 import { invoke } from "@tauri-apps/api/core";
 import type { CompareReport, CompareRow, CompareSource, DumpSummary } from "../dto";
 import {
+  cameraAnswers,
   card,
   fieldList,
   make,
@@ -409,16 +410,6 @@ function stepper(field: HTMLInputElement): HTMLElement {
   return make("div", { className: "cmp-stepper" }, button("\u2212", -1), field, button("+", 1));
 }
 
-/** Whether a camera is on the bus. Opens no device, so it costs nothing. */
-async function cameraAnswers(): Promise<boolean> {
-  try {
-    return (await invoke<string>("camera_presence")) === "connected";
-  } catch {
-    // Unanswerable here; let the read itself report what went wrong.
-    return true;
-  }
-}
-
 /** Model, region and firmware: what a dump says about where it came from. */
 function describe(summary: DumpSummary): string {
   const camera = summary.camera;
@@ -721,7 +712,14 @@ function grid(report: CompareReport, rows: CompareRow[], labels: string[]): HTML
       );
     }
     const fw = fwNameLabel(row.fwName);
-    if (fw !== null) name.append(make("div", {}, fw));
+    if (fw !== null) {
+      const line = make("div", {}, fw);
+      if (row.fwNameFor !== undefined) {
+        const only = row.fwNameFor.map((column) => labels[column - 1] ?? `#${column}`).join(", ");
+        line.append(" ", make("span", { className: "hint", textContent: trFill("compare-fw-only", { cameras: only }) }));
+      }
+      name.append(line);
+    }
     tbody.append(
       make(
         "tr",

@@ -67,13 +67,6 @@ pub(crate) fn names_tables(model: Option<String>) -> Vec<pmca_app::names::NameTa
     pmca_app::names::table_infos(names_camera(model).as_ref())
 }
 
-/// Firmware names that contain `text` or properties whose id it is.
-#[tauri::command]
-pub(crate) fn names_search(text: String, model: Option<String>) -> Vec<pmca_app::names::NameHit> {
-    let tables = pmca_app::names::tables();
-    pmca_app::names::search(tables, &text, names_camera(model).as_ref())
-}
-
 /// The result of a plugin tool, with where its output went, if anywhere.
 #[derive(Serialize)]
 #[serde(rename_all = "camelCase")]

@@ -414,11 +414,13 @@ pub struct AnalysisRun {
 }
 
 mod cross_check;
+mod permission;
 mod reference;
 pub(crate) mod report;
 mod run;
 
 use cross_check::*;
+pub use permission::{allow_write_tests, write_tests_allowed};
 pub use reference::{
     ReferenceCheck, ReferenceEntry, ReferenceResult, ReferenceResultView, ReferenceState,
     ReferenceVariant, ReferenceWriteState, entries_from_report, has_pending_reference_restore,

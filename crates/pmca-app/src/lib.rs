@@ -29,6 +29,7 @@ pub mod dto;
 pub mod fdat;
 pub mod firmware;
 pub mod keys;
+pub mod memory;
 pub mod names;
 pub mod network;
 pub mod ownership;

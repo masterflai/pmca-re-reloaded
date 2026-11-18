@@ -11,6 +11,7 @@ import {
   showErrorKey,
   showStatus,
   statusLine,
+  writeConsentDialog,
 } from "../dom";
 import type { CatalogReport } from "../dto";
 import {
@@ -25,11 +26,11 @@ import {
 } from "../i18n";
 import {
   advancedMode,
-  analysisOn,
   setAdvancedMode,
-  setAnalysisMode,
   setUpdateCheck,
+  setWriteTests,
   updateCheckOn,
+  writeTestsAllowed,
 } from "../preferences";
 import { syncUpdateToggles } from "../update";
 import { cardPlugins } from "./plugins";
@@ -51,7 +52,7 @@ export function viewSettings(host: HTMLElement): void {
     cardPlugins(),
     cardUpdateCheck(),
     cardAdvancedMode(),
-    cardAnalysisMode(),
+    cardWriteTests(),
   );
 }
 
@@ -83,33 +84,36 @@ function cardUpdateCheck(): HTMLElement {
 }
 
 /**
- * Switch the function analysis on or off.
+ * Allow the analysis to write test values into the camera.
  *
- * On by default since 1.10. The card says what the analysis is for, so the
- * choice is made knowing it. Turning it on asks once more; turning it
- * off does not, and leaves a run under way in the backend untouched.
+ * Off by default. Reading, looking up and comparing work either way; only the
+ * write tests depend on it, and each of them still asks on its own. Turning it
+ * on takes the same ticked consent; turning it off does not ask.
  */
-function cardAnalysisMode(): HTMLElement {
+function cardWriteTests(): HTMLElement {
   const status = statusLine();
   const toggle = make("input", { type: "checkbox" });
-  toggle.checked = analysisOn;
+  toggle.checked = writeTestsAllowed;
 
   const report = (): void => {
-    const key = analysisOn ? "settings-analysis-on" : "settings-analysis-off";
+    const key = writeTestsAllowed ? "settings-analysis-on" : "settings-analysis-off";
     showStatus(status, tr(key));
     status.dataset.i18n = key;
   };
 
   toggle.addEventListener("change", async () => {
-    if (
-      toggle.checked &&
-      !(await confirmed(tr("settings-analysis-confirm"), tr("btn-analysis-enable")))
-    ) {
+    const on = toggle.checked;
+    if (on && !(await writeConsentDialog("btn-analysis-write-enable"))) {
       toggle.checked = false;
       return;
     }
-    setAnalysisMode(toggle.checked);
-    report();
+    try {
+      await setWriteTests(on);
+      report();
+    } catch (e) {
+      toggle.checked = writeTestsAllowed;
+      showError(status, e);
+    }
   });
   report();
 

@@ -189,3 +189,39 @@ pub(crate) fn compare_close(state: State<'_, AppState>) -> Result<(), CommandErr
     *state.comparison.lock().map_err(CommandError::internal)? = None;
     Ok(())
 }
+
+/// Read a dump or a backup image for the memory view and say what it holds.
+#[tauri::command]
+pub(crate) async fn memory_open(
+    app: AppHandle,
+    path: String,
+) -> Result<pmca_app::memory::MemoryInfo, CommandError> {
+    in_background(move || {
+        let state = app.state::<AppState>();
+        let localizer = state.localizer()?;
+        let path = PathBuf::from(path);
+        let dump = pmca_app::memory::open(&localizer, &path)?;
+        let info = pmca_app::memory::info(&dump, &path);
+        *state.memory.lock().map_err(CommandError::internal)? = Some(dump);
+        Ok(info)
+    })
+    .await
+}
+
+/// One filtered page of the store the memory view holds.
+#[tauri::command(async)]
+pub(crate) fn memory_page(
+    state: State<'_, AppState>,
+    query: pmca_app::memory::MemoryQuery,
+) -> Result<pmca_app::memory::MemoryPage, CommandError> {
+    let guard = state.memory.lock().map_err(CommandError::internal)?;
+    let dump = guard.as_ref().ok_or_else(|| CommandError::internal("no store is open"))?;
+    Ok(pmca_app::memory::page(dump, &query))
+}
+
+/// Forget the store the memory view showed.
+#[tauri::command(async)]
+pub(crate) fn memory_close(state: State<'_, AppState>) -> Result<(), CommandError> {
+    *state.memory.lock().map_err(CommandError::internal)? = None;
+    Ok(())
+}
