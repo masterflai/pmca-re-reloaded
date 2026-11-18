@@ -40,7 +40,11 @@
 //!     "service": true, "updater": false, "note": "Reported working"
 //!   }],
 //!   "tools": [{ "id": "hexdump", "module": "hexdump.wasm", "input": ["bin"] }],
-//!   "diagnostics": [{ "id": "system", "module": "system-check.wasm", "host": ["os", "cameras"] }]
+//!   "diagnostics": [{ "id": "system", "module": "system-check.wasm", "host": ["os", "cameras"] }],
+//!   "names": [{
+//!     "id": "legacy", "file": "names/legacy.tsv",
+//!     "scope": { "platforms": ["CXD90014"] }, "source": "where the names come from", "license": "CC0-1.0"
+//!   }]
 //! }
 //! ```
 //!
@@ -60,6 +64,15 @@
 //!   setting that means something else on another camera. A camera's identity
 //!   (model, serial number) cannot be changed by a plugin.
 //! * **Compatibility** rows appear in their own table under the plugin's name.
+//! * **Names** are tables of the firmware's names for backup properties, shown
+//!   beside the ids and never used to write anything. A table is a
+//!   tab-separated file starting with `#pmca-names/1`; each row holds the id
+//!   (`0x003e0005`), the name, an optional shape (`4` or `1x13`), the evidence
+//!   (`fw-table`, `fw-log`, `camset`, `analysis` or `camera`) and a note.
+//!   `scope` needs `models` or `platforms` and may narrow them by `firmware`
+//!   and by `builds`, the string a `Backup.bin` carries at offset 0x40. The
+//!   table that fits a camera most closely wins; equally close tables that
+//!   disagree are shown as a conflict.
 //! * **Tools** read a file the user picks and may write one back; the user
 //!   chooses where. **Diagnostics** take no input; `host` lists what they may
 //!   ask the program for (`os`, `cameras`).

@@ -9,6 +9,8 @@
 //!   language pack for a language the program does not ship;
 //! * switches for camera settings, declared in the manifest;
 //! * rows for the compatibility overview, declared in the manifest;
+//! * tables of firmware names for backup properties (`names/*.tsv`), shown
+//!   beside the ids but never used to write anything;
 //! * tools and diagnostics as WebAssembly modules, run in the sandbox of
 //!   `wasm`;
 //! * optionally `signature.json`, an Ed25519 signature over all other files
@@ -33,6 +35,7 @@ use std::path::{Path, PathBuf};
 use std::sync::OnceLock;
 
 use pmca_i18n::Localizer;
+use pmca_platform::names::NameTable;
 use pmca_platform::props::{self, PropDef};
 use pmca_platform::tweaks::{self, PluginTweak};
 use serde::Serialize;
@@ -86,6 +89,8 @@ pub struct PluginInfo {
     pub diagnostics: Vec<PluginEntry>,
     /// Number of compatibility rows it adds.
     pub compatibility: u32,
+    /// Number of firmware names it brings, over all its tables.
+    pub names: u32,
     /// Public Ed25519 key (hex) the file is signed with; `None` if unsigned.
     pub signer: Option<String>,
     /// Whether it is in effect in this session.
@@ -179,6 +184,7 @@ struct Plugin {
     manifest: Manifest,
     catalogs: Vec<(String, String)>,
     modules: HashMap<String, Vec<u8>>,
+    names: Vec<NameTable>,
     file: String,
     signer: Option<String>,
 }
@@ -220,8 +226,10 @@ fn read_archive(bytes: &[u8], file: &str) -> std::result::Result<Plugin, String>
     if zip.len() > MAX_ENTRIES {
         return Err(format!("more than {MAX_ENTRIES} files in the archive"));
     }
-    let manifest: Manifest = serde_json::from_slice(&read_entry(&mut zip, "plugin.json", 1 << 20)?)
-        .map_err(manifest_error)?;
+    let raw = read_entry(&mut zip, "plugin.json", 1 << 20)?;
+    // Editors on Windows like to start the file with a byte-order mark.
+    let raw = raw.strip_prefix(b"\xEF\xBB\xBF").unwrap_or(&raw);
+    let manifest: Manifest = serde_json::from_slice(raw).map_err(manifest_error)?;
     manifest.validate()?;
 
     let prefix = format!("plg-{}-", manifest.id);
@@ -261,7 +269,21 @@ fn read_archive(bytes: &[u8], file: &str) -> std::result::Result<Plugin, String>
         wasm::check(&module).map_err(|e| format!("{path}: {e}"))?;
         modules.insert(path.to_string(), module);
     }
-    Ok(Plugin { manifest, catalogs, modules, file: file.to_string(), signer })
+    let mut names = Vec::new();
+    for table in &manifest.names {
+        let text = String::from_utf8(read_entry(&mut zip, &table.file, MAX_ENTRY_BYTES)?)
+            .map_err(|_| format!("`{}` is not UTF-8", table.file))?;
+        let entries =
+            pmca_platform::names::parse_table(&text).map_err(|e| format!("{}: {e}", table.file))?;
+        names.push(NameTable {
+            plugin: manifest.id.clone(),
+            id: table.id.clone(),
+            scope: table.scope.scope(),
+            source: table.source.clone(),
+            entries,
+        });
+    }
+    Ok(Plugin { manifest, catalogs, modules, names, file: file.to_string(), signer })
 }
 
 /// Verify `signature.json` over every other file; the signer's key if it holds.
@@ -352,6 +374,9 @@ impl Plugin {
         if !m.compatibility.is_empty() {
             permissions.push("compatibility");
         }
+        if !m.names.is_empty() {
+            permissions.push("names");
+        }
         if !m.tools.is_empty() || !m.diagnostics.is_empty() {
             permissions.push("code");
         }
@@ -375,6 +400,7 @@ impl Plugin {
             tools: self.entries(false),
             diagnostics: self.entries(true),
             compatibility: m.compatibility.len() as u32,
+            names: self.names.iter().map(|t| t.entries.len() as u32).sum(),
             signer: self.signer.clone(),
             active,
         }
@@ -418,6 +444,7 @@ pub fn load() {
     }
     props::register_extra(defs);
     tweaks::register_plugin_tweaks(switches);
+    pmca_platform::names::register(plugins.iter().flat_map(|p| p.names.clone()).collect());
     let _ = LOADED.set(Loaded { plugins, failed });
 }
 
@@ -797,6 +824,34 @@ mod tests {
             .replace("\"partSize\": 1", "\"partSize\": 4");
         let err = data_plugin(&manifest, "plg-demo-flag = Demo flag\n").err().unwrap();
         assert!(err.contains("identity"), "{err}");
+    }
+
+    #[test]
+    fn a_name_table_is_read_checked_and_counted() {
+        let manifest = r#"{ "api": 1, "id": "demo", "name": "Demo", "version": "1",
+            "names": [{ "id": "legacy", "file": "names/legacy.tsv",
+                        "scope": { "platforms": ["CXD90014"] }, "source": "test", "license": "CC0-1.0" }] }"#;
+        let table = "#pmca-names/1\n0x003e0005\tBKID_MODEL_NAME\t16\tfw-log\n";
+        let read = |manifest: &str, table: &str| {
+            read_archive(
+                &archive(&[
+                    ("plugin.json", manifest.as_bytes()),
+                    ("names/legacy.tsv", table.as_bytes()),
+                ]),
+                "x",
+            )
+        };
+        let plugin = read(manifest, table).unwrap();
+        assert_eq!(plugin.names[0].entries[&0x003e_0005].name, "BKID_MODEL_NAME");
+        let info = plugin.info(false);
+        assert_eq!((info.names, info.permissions), (1, vec!["names".to_string()]));
+
+        let err = read(manifest, "0x1\tA\t\tfw-log\n").err().unwrap();
+        assert!(err.starts_with("names/legacy.tsv: the first line"), "{err}");
+        let unbound = manifest.replace(r#""platforms": ["CXD90014"]"#, r#""firmware": ["1.00"]"#);
+        assert!(read(&unbound, table).err().unwrap().contains("scope"));
+        let outside = manifest.replace("names/legacy.tsv", "../legacy.tsv");
+        assert!(read(&outside, table).err().unwrap().contains("under names/"));
     }
 
     #[test]

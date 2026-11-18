@@ -188,6 +188,11 @@ impl<D: AsRef<[u8]>> BackupFile<D> {
         latin1_trim_nul(&self.data.as_ref()[0xc0..0xc0 + 0x20])
     }
 
+    /// The firmware build string from the header (e.g. `"34135_14.2019012401"`).
+    pub fn build(&self) -> String {
+        latin1_trim_nul(&self.data.as_ref()[0x40..0x40 + 0x20])
+    }
+
     /// The `id1` header field, the camera's backup write-protection flag.
     pub fn id1(&self) -> Result<u32> {
         parse32le(&self.data.as_ref()[ID1_OFFSET..ID1_OFFSET + 4])

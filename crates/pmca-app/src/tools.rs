@@ -380,6 +380,12 @@ fn camset_bridge_report(l: &Localizer, file: &camset::Camset, data: &[u8]) -> Re
         .flatten()
         .map(|r| (r.id, (r.elem_size, r.count)))
         .collect();
+    let firmware = format!("{}.{:02}", file.firmware[0], file.firmware[1]);
+    let names = crate::names::for_image(&image, Some(&firmware));
+    let named = |id: Option<u32>| {
+        id.and_then(|id| names.get(id))
+            .map_or_else(String::new, |n| format!("  {}", crate::names::render(&n)))
+    };
     for link in &bridge.live {
         let (size, count) = shape.get(&link.id).copied().unwrap_or_default();
         let ids: Vec<String> = link.properties.iter().map(|id| format!("0x{id:08x}")).collect();
@@ -390,19 +396,21 @@ fn camset_bridge_report(l: &Localizer, file: &camset::Camset, data: &[u8]) -> Re
         };
         let _ = writeln!(
             out,
-            "s0  id=0x{:04x} {size}x{count} {:<12} {ids}",
+            "s0  id=0x{:04x} {size}x{count} {:<12} {ids}{}",
             link.id,
-            link.placement.as_str()
+            link.placement.as_str(),
+            named(link.properties.first().copied())
         );
     }
     for link in &bridge.set_links {
         let array = link.array.map_or_else(|| "-".to_string(), |id| format!("0x{id:08x}"));
         let _ = writeln!(
             out,
-            "mr  id=0x{:04x}[{}] {:<12} {array}",
+            "mr  id=0x{:04x}[{}] {:<12} {array}{}",
             link.id,
             link.element,
-            set_tag(link)
+            set_tag(link),
+            named(link.array)
         );
     }
     Ok(out)
@@ -438,7 +446,8 @@ pub(crate) fn backup_report(l: &Localizer, data: &[u8]) -> Result<String> {
         backup::BackupFile::new(data).map_err(|e| invalid(l, "tools-backup-invalid", &e))?;
     let mut report = String::new();
     let _ = writeln!(report, "{}: {}", l.tr("info-region"), image.region());
-    write_properties(l, &mut report, &image)?;
+    let names = crate::names::for_image(&image, None);
+    write_properties(l, &mut report, &image, Some(&names))?;
     for (n, (offset, further)) in image.further_images().iter().enumerate() {
         let _ = writeln!(
             report,
@@ -448,7 +457,8 @@ pub(crate) fn backup_report(l: &Localizer, data: &[u8]) -> Result<String> {
                 &[("number", &(n + 2).to_string()), ("offset", &format!("0x{offset:x}"))],
             )
         );
-        write_properties(l, &mut report, further)?;
+        // The tables name the first image's ids; the others are numbered on their own.
+        write_properties(l, &mut report, further, None)?;
     }
     Ok(report)
 }
@@ -458,6 +468,7 @@ fn write_properties(
     l: &Localizer,
     report: &mut String,
     image: &backup::BackupFile<&[u8]>,
+    fw_names: Option<&pmca_platform::names::NameView<'_>>,
 ) -> Result<()> {
     for (id, property) in
         image.list_properties().map_err(|e| invalid(l, "tools-backup-invalid", &e))?
@@ -478,6 +489,9 @@ fn write_properties(
             .find(|p| p.part_size == property.data.len() && p.ids().any(|i| i == id))
         {
             let _ = write!(report, ", name=\"{}\"", def.name);
+        }
+        if let Some(named) = fw_names.and_then(|n| n.get(id)) {
+            let _ = write!(report, ", {}", crate::names::render(&named));
         }
         report.push_str(":\n");
         indent(report, &hexdump(&property.data));

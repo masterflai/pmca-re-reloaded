@@ -26,6 +26,7 @@ pub mod compare;
 pub mod direct;
 pub mod identity;
 pub mod languages;
+pub mod names;
 pub mod props;
 pub mod tweaks;
 

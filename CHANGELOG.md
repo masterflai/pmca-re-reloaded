@@ -19,6 +19,13 @@ All notable changes to this project are documented here. The format follows
   set is one element of an array property, usually right after the live
   value. Values are compared, not assumed, so a backup from another camera or
   another day shows up as such.
+- Plugins can bring tables of the firmware's names for backup properties
+  (`names` in `plugin.json`, files under `names/`). `print-backup`,
+  `bk dump-txt` and `print-camset --backup` show the name that fits the camera
+  beside each id, together with where it comes from; `plugins names` lists the
+  tables and searches them. Names are for reading only and never used to
+  write a value. `plugin.json` and the tables may now start with a
+  byte-order mark.
 
 ## [1.13.0] - 2026-11-15
 

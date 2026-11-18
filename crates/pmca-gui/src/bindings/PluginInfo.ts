@@ -63,6 +63,10 @@ diagnostics: Array<PluginEntry>,
  */
 compatibility: number, 
 /**
+ * Number of firmware names it brings, over all its tables.
+ */
+names: number, 
+/**
  * Public Ed25519 key (hex) the file is signed with; `None` if unsigned.
  */
 signer: string | null, 

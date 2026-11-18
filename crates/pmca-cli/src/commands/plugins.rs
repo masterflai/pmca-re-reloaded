@@ -87,6 +87,15 @@ pub(crate) fn plugins_command(
                 }
             }
         }
+        PluginsAction::Names { find, backup, model, firmware } => {
+            print_names(
+                l,
+                find.as_deref(),
+                backup.as_deref(),
+                model.as_deref(),
+                firmware.as_deref(),
+            )?;
+        }
         PluginsAction::Get { id, source } => {
             let kind = pmca_market::appstore::EntryKind::Plugin;
             let source = pick_source(l, id, source.as_deref(), kind)?;
@@ -99,6 +108,93 @@ pub(crate) fn plugins_command(
             println!("{}", l.tr("plugin-installed"));
             println!("{}", l.tr("plugin-restart"));
         }
+    }
+    Ok(())
+}
+
+/// The installed name tables, or the names that match `find`, optionally for one camera.
+fn print_names(
+    l: &Localizer,
+    find: Option<&str>,
+    backup: Option<&std::path::Path>,
+    model: Option<&str>,
+    firmware: Option<&str>,
+) -> Result<(), Box<dyn std::error::Error>> {
+    use pmca_app::names;
+
+    let tables = names::tables();
+    if tables.is_empty() {
+        println!("{}", l.tr("plugin-names-none"));
+        return Ok(());
+    }
+    let camera = match (backup, model) {
+        (Some(path), model) => {
+            let mut key = names::camera_key_of_file(path, firmware)?;
+            if let Some(model) = model {
+                let given = names::camera_key_of_model(model, firmware);
+                (key.model, key.platform) = (given.model, given.platform);
+            }
+            Some(key)
+        }
+        (None, Some(model)) => Some(names::camera_key_of_model(model, firmware)),
+        (None, None) => None,
+    };
+    let Some(camera) = camera else {
+        // No camera: every table on its own, so unrelated tables do not read as conflicts.
+        let needle = find.map(str::to_ascii_uppercase);
+        for table in tables {
+            let Some(needle) = &needle else {
+                println!(
+                    "{}/{}  {} ({})  {}",
+                    table.plugin,
+                    table.id,
+                    table.entries.len(),
+                    names::describe_scope(&table.scope),
+                    table.source
+                );
+                continue;
+            };
+            for (id, entry) in &table.entries {
+                if entry.name.to_ascii_uppercase().contains(needle.as_str()) {
+                    let evidence = entry.evidence.as_str();
+                    println!(
+                        "0x{id:08x}  fw=\"{}\" [{evidence}]  ({}/{})",
+                        entry.name, table.plugin, table.id
+                    );
+                }
+            }
+        }
+        return Ok(());
+    };
+    let view = names::NameView::new(tables, &camera);
+    if view.is_empty() {
+        println!("{}", l.tr("plugin-names-no-match"));
+        return Ok(());
+    }
+    let Some(text) = find else {
+        for table in view.tables() {
+            println!(
+                "{}/{}  {} ({})  {}",
+                table.plugin,
+                table.id,
+                table.entries.len(),
+                names::describe_scope(&table.scope),
+                table.source
+            );
+        }
+        return Ok(());
+    };
+    let hits = view.find(text);
+    if hits.is_empty() {
+        println!("{}", l.tr("plugin-names-no-match"));
+    }
+    for (id, named) in hits {
+        println!(
+            "0x{id:08x}  {}  ({}/{})",
+            names::render(&named),
+            named.table.plugin,
+            named.table.id
+        );
     }
     Ok(())
 }

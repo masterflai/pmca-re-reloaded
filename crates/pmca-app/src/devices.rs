@@ -225,6 +225,14 @@ fn find<'a, R>(table: &'a [(&str, &[R])], name: impl Fn(&R) -> &str, model: &str
     by(&key).or_else(|| key.strip_suffix('V').and_then(by))
 }
 
+/// The processor family of `model`, where a list names it.
+#[must_use]
+pub fn arch_of(model: &str) -> Option<&'static str> {
+    find(COMPAT, |r| r.0, model)
+        .map(|r| r.1)
+        .or_else(|| find(MORE, |r| r.0, model).and_then(|r| r.1))
+}
+
 /// What the lists say about `model` and `capability`.
 pub fn support(model: &str, capability: Capability) -> Support {
     let listed = find(COMPAT, |r| r.0, model);

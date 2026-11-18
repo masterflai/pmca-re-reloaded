@@ -27,6 +27,8 @@ pub(crate) struct Manifest {
     pub tools: Vec<ToolDef>,
     #[serde(default)]
     pub diagnostics: Vec<DiagnosticDef>,
+    #[serde(default)]
+    pub names: Vec<NamesDef>,
 }
 
 /// A switch for one backup setting: two exact values and the models it is for.
@@ -94,6 +96,46 @@ pub(crate) struct DiagnosticDef {
     /// Host operations the diagnostic may call (see [`HOST_OPS`]).
     #[serde(default)]
     pub host: Vec<String>,
+}
+
+/// A table of firmware names for backup properties (see [`pmca_platform::names`]).
+#[derive(Debug, Clone, Deserialize)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+pub(crate) struct NamesDef {
+    pub id: String,
+    /// Path of the table inside the archive, under `names/`.
+    pub file: String,
+    pub scope: ScopeDef,
+    /// Where the names were taken from.
+    #[serde(default)]
+    pub source: String,
+    /// Licence of the table, as an SPDX id.
+    #[serde(default)]
+    pub license: String,
+}
+
+#[derive(Debug, Clone, Default, Deserialize)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+pub(crate) struct ScopeDef {
+    #[serde(default)]
+    pub models: Vec<String>,
+    #[serde(default)]
+    pub firmware: Vec<String>,
+    #[serde(default)]
+    pub builds: Vec<String>,
+    #[serde(default)]
+    pub platforms: Vec<String>,
+}
+
+impl ScopeDef {
+    pub(crate) fn scope(&self) -> pmca_platform::names::Scope {
+        pmca_platform::names::Scope {
+            models: self.models.clone(),
+            firmware: self.firmware.clone(),
+            builds: self.builds.clone(),
+            platforms: self.platforms.clone(),
+        }
+    }
 }
 
 /// A plugin or entry id: lower-case letters, digits and single hyphens.
@@ -188,7 +230,8 @@ impl Manifest {
             .iter()
             .map(|t| &t.id)
             .chain(self.tools.iter().map(|t| &t.id))
-            .chain(self.diagnostics.iter().map(|d| &d.id));
+            .chain(self.diagnostics.iter().map(|d| &d.id))
+            .chain(self.names.iter().map(|n| &n.id));
         for id in entries {
             if !valid_id(id, 32) {
                 return Err(format!("`{id}` is not a valid entry id"));
@@ -239,6 +282,33 @@ impl Manifest {
         for diagnostic in &self.diagnostics {
             if let Some(op) = diagnostic.host.iter().find(|op| !HOST_OPS.contains(&op.as_str())) {
                 return Err(format!("diagnostic `{}`: unknown host access `{op}`", diagnostic.id));
+            }
+        }
+        for table in &self.names {
+            let file = &table.file;
+            if !file.starts_with("names/")
+                || !file.ends_with(".tsv")
+                || file.contains("..")
+                || file.contains('\\')
+            {
+                return Err(format!(
+                    "names `{}`: `{file}` must be a .tsv file under names/",
+                    table.id
+                ));
+            }
+            let s = &table.scope;
+            let lists = [&s.models, &s.firmware, &s.builds, &s.platforms];
+            let bad_list = lists
+                .iter()
+                .any(|l| l.len() > 500 || l.iter().any(|v| v.trim().is_empty() || v.len() > 64));
+            if bad_list || !table.scope.scope().is_bound() {
+                return Err(format!(
+                    "names `{}`: the scope needs models or platforms, each entry at most 64 characters",
+                    table.id
+                ));
+            }
+            if table.source.chars().count() > 300 || table.license.chars().count() > 64 {
+                return Err(format!("names `{}`: source or license is too long", table.id));
             }
         }
         Ok(())

@@ -500,6 +500,24 @@ enum PluginsAction {
     Keygen { file: PathBuf },
     /// List the plugins your sources offer.
     Available,
+    /// Show the firmware name tables installed plugins bring, or search them.
+    ///
+    /// Without options every table is listed. With `--backup` or the camera
+    /// options only the tables that fit that camera are used, best first.
+    Names {
+        /// Text to look for in the names, ignoring case.
+        #[arg(long)]
+        find: Option<String>,
+        /// A `Backup.bin` to take model and build from.
+        #[arg(long)]
+        backup: Option<PathBuf>,
+        /// Model name, e.g. ILCE-6000.
+        #[arg(long)]
+        model: Option<String>,
+        /// Firmware version, e.g. 3.21.
+        #[arg(long)]
+        firmware: Option<String>,
+    },
     /// Install or update a plugin from one of your sources.
     Get {
         /// Plugin id.
@@ -785,6 +803,7 @@ fn uses_camera(cmd: &Command) -> bool {
             | PluginsAction::Pack { .. }
             | PluginsAction::Keygen { .. }
             | PluginsAction::Available
+            | PluginsAction::Names { .. }
             | PluginsAction::Get { .. } => false,
         },
     }
