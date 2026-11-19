@@ -70,6 +70,10 @@ All notable changes to this project are documented here. The format follows
   check stay locked until it is on, and the backend refuses them as well.
   Putting back a value a test wrote is never locked. The console is
   unchanged.
+- Both ways of finding a setting now always say where the write test stands:
+  locked in the settings (with the way there), not chosen for this run, or,
+  per finding, why it cannot be offered (too large, protected by the camera,
+  attributes unknown).
 
 ## [1.13.0] - 2026-11-15
 

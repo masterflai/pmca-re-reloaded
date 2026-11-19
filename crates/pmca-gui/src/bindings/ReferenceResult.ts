@@ -42,6 +42,11 @@ fwName?: FwName,
  */
 writable: boolean, 
 /**
+ * Why it may not, for a property the camera has: `too-large`, `protected`
+ * or `no-attributes` (only single values could be read).
+ */
+writeRefusal: string | null, 
+/**
  * The menu value whose stored value the camera's value equals, if any.
  */
 matches: string | null, };

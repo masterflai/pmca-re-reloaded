@@ -630,14 +630,16 @@ function analysisRunNodes(
 
   const evaluation = state.evaluation!;
   nodes.push(analysisResult(evaluation));
-  if (state.writeRequested && evaluation.write === null && evaluation.writeRefusal) {
-    nodes.push(make("p", { className: "warning", textContent: evaluation.writeRefusal }));
-  }
   // Switched off in the settings since the run began: nothing more is written,
   // but a value already written is still put back.
   const allowed = writeTestsAllowed || state.written;
-  if (state.writeRequested && !allowed && evaluation.write !== null) {
-    nodes.push(make("p", {}, writeLockedNote()));
+  // One line on the write test, whatever the run asked for, so its absence is never unexplained.
+  if (!allowed) {
+    nodes.push(make("div", { className: "notice-block" }, make("p", {}, writeLockedNote())));
+  } else if (!state.writeRequested) {
+    nodes.push(make("p", { className: "hint", i18n: "analysis-write-not-chosen" }));
+  } else if (evaluation.write === null && evaluation.writeRefusal) {
+    nodes.push(make("p", { className: "warning", textContent: evaluation.writeRefusal }));
   }
   const writing =
     state.writeRequested && evaluation.write !== null && !analysisWriteSkipped && allowed;

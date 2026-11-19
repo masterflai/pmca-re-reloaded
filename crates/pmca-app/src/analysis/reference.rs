@@ -73,6 +73,9 @@ pub struct ReferenceResult {
     pub fw_name: Option<crate::names::FwName>,
     /// The write test may be offered for this finding on this camera.
     pub writable: bool,
+    /// Why it may not, for a property the camera has: `too-large`, `protected`
+    /// or `no-attributes` (only single values could be read).
+    pub write_refusal: Option<String>,
     /// The menu value whose stored value the camera's value equals, if any.
     pub matches: Option<String>,
 }
@@ -416,6 +419,13 @@ fn result_for(finding: &Finding, data: Option<&[u8]>, attr: Option<u16>) -> Refe
     let writable = data.is_some()
         && small
         && attr.is_some_and(|a| a & (attr::READ_ONLY | attr::PROTECTED) == 0);
+    let write_refusal = match (data, attr) {
+        (None, _) => None,
+        _ if !small => Some("too-large"),
+        (_, None) => Some("no-attributes"),
+        _ if !writable => Some("protected"),
+        _ => None,
+    };
     ReferenceResult {
         id: format!("{:#010x}", finding.id),
         label: finding.label.clone(),
@@ -428,6 +438,7 @@ fn result_for(finding: &Finding, data: Option<&[u8]>, attr: Option<u16>) -> Refe
             .unwrap_or_default(),
         fw_name: None,
         writable,
+        write_refusal: write_refusal.map(str::to_string),
         matches,
     }
 }
@@ -613,16 +624,23 @@ mod tests {
         assert!(r.present);
         assert_eq!(r.matches.as_deref(), Some("High"));
         assert!(r.writable);
+        assert_eq!(r.write_refusal, None);
         // Read-only attribute: not writable.
         let r = result_for(&f, Some(&[1]), Some(attr::READ_ONLY));
         assert!(!r.writable);
+        assert_eq!(r.write_refusal.as_deref(), Some("protected"));
         // No attributes known (per-property read): not writable.
         let r = result_for(&f, Some(&[1]), None);
         assert!(!r.writable);
+        assert_eq!(r.write_refusal.as_deref(), Some("no-attributes"));
+        // Too large to write back safely.
+        let r = result_for(&f, Some(&[0; 17]), Some(0x00));
+        assert_eq!(r.write_refusal.as_deref(), Some("too-large"));
         // Absent property.
         let r = result_for(&f, None, None);
         assert!(!r.present);
         assert_eq!(r.matches, None);
+        assert_eq!(r.write_refusal, None);
         // Present but none of the variants.
         let r = result_for(&f, Some(&[9]), Some(0x00));
         assert!(r.present);

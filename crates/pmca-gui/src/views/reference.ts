@@ -272,6 +272,11 @@ function referenceResult(state: ReferenceState, status: HTMLElement, render: Ref
   if (state.write !== null) {
     nodes.push(...referenceWritePanel(state, status, render));
   } else {
+    nodes.push(
+      writeTestsAllowed
+        ? make("p", { className: "hint", i18n: "reference-write-status-on" })
+        : make("div", { className: "notice-block" }, make("p", {}, writeLockedNote())),
+    );
     const table = make("table", { className: "analysis-table" });
     result.results.forEach((r, i) => table.append(resultRow(r, i, state, status, render)));
     nodes.push(make("div", { className: "analysis-property" }, table));
@@ -320,7 +325,9 @@ function resultRow(
     button.addEventListener("click", () => startWriteTest(index, state, status, render));
     actions.append(accessBadge("write"), " ", button);
   } else if (r.writable) {
-    actions.append(writeLockedNote());
+    actions.append(make("span", { className: "hint", i18n: "reference-write-locked-short" }));
+  } else if (r.writeRefusal !== null) {
+    actions.append(make("span", { className: "hint", i18n: `reference-write-${r.writeRefusal}` }));
   }
   return make("tr", {}, make("th", { className: "mono addr", textContent: r.id }), cell, actions);
 }

@@ -20,7 +20,7 @@ $sources = @(
 $corpus = ($sources | ForEach-Object { [IO.File]::ReadAllText($_.FullName) }) -join "`n"
 
 # Families whose keys are assembled at runtime from a prefix and a code.
-$dynamic = '^(err-|mode-|check-(apps|gps|updater)-|shutter-|catalog-problem-|settings-theme-|welcome-where-|names-evidence-|memory-display-|memory-attr-|memory-meaning-|elevation-[a-z]+-hint$)'
+$dynamic = '^(err-|mode-|check-(apps|gps|updater)-|shutter-|catalog-problem-|settings-theme-|welcome-where-|names-evidence-|memory-display-|memory-attr-|memory-meaning-|reference-write-(too-large|protected|no-attributes)$|elevation-[a-z]+-hint$)'
 
 $unused = @($keys | Where-Object { -not $corpus.Contains($_) -and $_ -notmatch $dynamic })
 foreach ($key in $unused) { Write-Output $key }
