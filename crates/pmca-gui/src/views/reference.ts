@@ -322,7 +322,7 @@ function resultRow(
   } else if (r.writable) {
     actions.append(writeLockedNote());
   }
-  return make("tr", {}, make("th", { className: "mono", textContent: r.id }), cell, actions);
+  return make("tr", {}, make("th", { className: "mono addr", textContent: r.id }), cell, actions);
 }
 
 /** Write one finding's other value, after two confirmations. */

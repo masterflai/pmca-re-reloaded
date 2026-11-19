@@ -2080,10 +2080,17 @@ label.app-entry input[type="checkbox"] {
   overflow-wrap: anywhere;
 }
 
-/* The address is read as one token; breaking it makes it unreadable. */
-.memory-table td:first-child {
+/* A property address is read as one token; breaking it makes it unreadable.
+ * Used wherever the analysis pages show one. */
+.addr,
+.memory-table td.addr,
+.cmp-grid td.addr {
   white-space: nowrap;
   overflow-wrap: normal;
+}
+
+.cmp-grid th:first-child {
+  width: 10rem;
 }
 
 .memory-touched > td:first-child {
@@ -2152,12 +2159,6 @@ label.app-entry input[type="checkbox"] {
 .memory-detail > td > * {
   max-width: 100%;
   box-sizing: border-box;
-}
-
-/* The detail cell is also a first cell; it must not inherit the address's no-wrap. */
-.memory-table tr.memory-detail > td:first-child {
-  white-space: normal;
-  overflow-wrap: break-word;
 }
 
 .memory-detail .analysis-table {

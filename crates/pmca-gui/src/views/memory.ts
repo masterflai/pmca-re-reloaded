@@ -383,7 +383,7 @@ function rowNodes(row: MemoryRow, mode: Display, actions: MemoryActions): HTMLEl
   const tr_ = make(
     "tr",
     { className: ["memory-row", row.touched ? "memory-touched" : "", row.changed ? "memory-changed" : ""].join(" ").trim() },
-    make("td", { className: "cmp-mono", textContent: row.id }),
+    make("td", { className: "cmp-mono addr", textContent: row.id }),
     name,
     make("td", { textContent: String(row.size) }),
     value,

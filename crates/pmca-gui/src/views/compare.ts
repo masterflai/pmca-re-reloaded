@@ -724,7 +724,7 @@ function grid(report: CompareReport, rows: CompareRow[], labels: string[]): HTML
       make(
         "tr",
         { className: `cmp-${row.class}` },
-        make("td", { className: "cmp-mono", textContent: row.id }),
+        make("td", { className: "cmp-mono addr", textContent: row.id }),
         make("td", { textContent: row.size !== null ? String(row.size) : "–" }),
         name,
         make("td", { textContent: tr(`compare-class-${row.class}`) }),

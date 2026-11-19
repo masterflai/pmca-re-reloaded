@@ -443,7 +443,7 @@ function crossCheckTable(check: AnalysisCrossCheck): HTMLElement {
           : make("span", { i18n: "analysis-cross-nomatch" }),
       );
     }
-    table.append(make("tr", {}, make("th", { className: "mono", textContent: v.id }), cell));
+    table.append(make("tr", {}, make("th", { className: "mono addr", textContent: v.id }), cell));
   }
   return make(
     "div",
@@ -509,10 +509,12 @@ function analysisResult(e: AnalysisEvaluation): HTMLElement {
 /** One property: its name on one line, its value at every snapshot below. */
 function analysisTable(c: AnalysisCandidate, fitKey: string | null): HTMLElement {
   const names = c.attrNames.length > 0 ? ` (${c.attrNames.join(", ")})` : "";
-  const caption = make("div", {
-    className: "analysis-caption",
-    textContent: `${c.id} · ${c.size} B · attr ${c.attr}${names}`,
-  });
+  const caption = make(
+    "div",
+    { className: "analysis-caption" },
+    make("span", { className: "addr", textContent: c.id }),
+    ` · ${c.size} B · attr ${c.attr}${names}`,
+  );
   if (fitKey !== null) caption.append(" · ", make("span", { i18n: fitKey }));
   const fw = fwNameLabel(c.fwName);
   if (fw !== null) caption.append(" · ", fw);
