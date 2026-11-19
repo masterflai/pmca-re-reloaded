@@ -125,8 +125,14 @@ export function viewAnalysis(host: HTMLElement): void {
       back.addEventListener("click", () => show(null));
       const stage = make("div");
       host.append(back, stage);
-      if (mode === "memory") viewMemory(stage);
-      else if (mode === "compare") viewCompare(stage);
+      if (mode === "memory") {
+        viewMemory(stage, {
+          openReference: () => {
+            findMode = "reference";
+            show("find");
+          },
+        });
+      } else if (mode === "compare") viewCompare(stage);
       else viewFind(stage);
     }
     host.closest<HTMLElement>(".content")?.scrollTo({ top: 0 });

@@ -324,6 +324,20 @@ fn is_enabled(d: &Def, patch: &(impl Settings + ?Sized), data: &[u8]) -> Result<
     Ok(data == on_value(d, patch, false)? || data == on_value(d, patch, true)?)
 }
 
+/// What a single-byte switch setting's stored value means, without a camera:
+/// `on`/`off`, or the name of the video system.
+#[must_use]
+pub fn meaning(prop: &str, data: &[u8]) -> Option<&'static str> {
+    let d = TWEAKS.iter().find(|t| t.prop == prop)?;
+    match (d.kind, data) {
+        (Kind::Boolean, [0]) => Some("off"),
+        (Kind::Boolean, [1]) => Some("on"),
+        (Kind::PalNtsc, [0]) => Some(PAL),
+        (Kind::PalNtsc, [1]) => Some(NTSC),
+        _ => None,
+    }
+}
+
 /// Report every tweak this camera supports, with its current state.
 ///
 /// Tweaks whose backup property is missing or holds an unrecognised value are

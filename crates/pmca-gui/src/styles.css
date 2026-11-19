@@ -2090,6 +2090,56 @@ label.app-entry input[type="checkbox"] {
   border-inline-start: 3px solid var(--accent);
 }
 
+.memory-actions {
+  flex-wrap: wrap;
+}
+
+.memory-group {
+  margin: 4px 0;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 4px 10px;
+}
+
+.memory-group > summary {
+  cursor: pointer;
+  padding: 4px 0;
+}
+
+.memory-row {
+  cursor: pointer;
+}
+
+.memory-row:hover {
+  background: var(--control-hover);
+}
+
+/* Changed since the reading before: the one thing a second reading is for. */
+.memory-changed > td {
+  background: color-mix(in srgb, var(--warning) 14%, transparent);
+}
+
+.memory-changed-tag,
+.memory-changed-note {
+  color: var(--warning);
+  font-weight: 600;
+}
+
+.memory-own {
+  font-style: italic;
+}
+
+.memory-detail > td {
+  background: var(--surface-solid);
+  padding: 8px 12px;
+}
+
+.memory-dump {
+  max-height: 16rem;
+  overflow: auto;
+  white-space: pre;
+}
+
 .cmp-export {
   margin-top: 1.25rem;
   padding-top: 0.75rem;

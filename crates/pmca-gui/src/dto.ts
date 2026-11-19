@@ -27,6 +27,8 @@ export type { FreeSpaceView } from "./bindings/FreeSpaceView";
 export type { FwName } from "./bindings/FwName";
 export type { GapView } from "./bindings/GapView";
 export type { GpsModel } from "./bindings/GpsModel";
+export type { MemoryDetail } from "./bindings/MemoryDetail";
+export type { MemoryGroup } from "./bindings/MemoryGroup";
 export type { MemoryInfo } from "./bindings/MemoryInfo";
 export type { MemoryPage } from "./bindings/MemoryPage";
 export type { MemoryRow } from "./bindings/MemoryRow";

@@ -174,7 +174,7 @@ struct AppState {
     comparison: Mutex<Option<pmca_app::compare::CompareReport>>,
     /// The store the memory view shows, served a page at a time. Holds no
     /// camera session and is dropped when the analysis page is left.
-    memory: Mutex<Option<pmca_app::compare::DumpFile>>,
+    memory: Mutex<Option<pmca_app::memory::Memory>>,
     /// The usage log last read, so saving writes exactly what was shown.
     usage_log: Mutex<Option<Vec<u8>>>,
     /// Store apps downloaded ahead of a batch installation, by source and package.
@@ -589,7 +589,12 @@ pub fn run() {
             compare_export,
             compare_close,
             memory_open,
+            memory_groups,
             memory_page,
+            memory_detail,
+            memory_set_own,
+            memory_export_csv,
+            memory_export_names,
             memory_close,
             analysis_write_tests,
             set_analysis_write_tests,

@@ -408,6 +408,19 @@ impl AnalysisRun {
         self.write.as_ref().is_some_and(|w| !w.restored)
     }
 
+    /// The model, the property and the setting, once a complete run found
+    /// exactly one property that follows the menu one to one.
+    pub fn finding(&self) -> Option<(String, u32, String)> {
+        if !self.complete() {
+            return None;
+        }
+        let model = self.camera.as_ref()?.model_name.clone()?;
+        match self.evaluation().candidates.as_slice() {
+            [only] if only.consistent => Some((model, only.id, self.setting.clone())),
+            _ => None,
+        }
+    }
+
     pub(crate) fn rollback_key(&self) -> String {
         format!("{}{ROLLBACK_SUFFIX}", self.key.as_deref().unwrap_or("camera"))
     }

@@ -37,6 +37,22 @@ All notable changes to this project are documented here. The format follows
   `Backup.bin` or dump and lists every value with its toolkit and firmware
   name, searchable and filterable (named, changed from the factory value,
   writable, second image).
+  - Values can be shown as hex, number, signed number, bits, text or BCD
+    digits; *Automatic* picks text or a number where it fits and names the
+    state of known switches (on/off, PAL/NTSC).
+  - Empty values are hidden by default and the rest is grouped by subsystem,
+    each group with its count, how many are named, and the word its firmware
+    names share.
+  - A click on a row opens its detail: a hex dump, every reading of the value
+    side by side, the factory value, the attributes in words and where the
+    name comes from.
+  - *Read the camera again* (or open a newer file) marks every value that
+    changed in between, with the old value in the detail.
+  - Own names and notes per property and model; a finished function analysis
+    adds its finding by itself. They can be saved as a name-table plugin.
+  - Per row: copy the address, or check it on another camera, which opens the
+    reference check with the address and current value filled in.
+  - The filtered list can be saved as CSV with whole values.
 
 ### Changed
 

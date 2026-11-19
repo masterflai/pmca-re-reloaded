@@ -191,21 +191,56 @@ pub(crate) fn compare_close(state: State<'_, AppState>) -> Result<(), CommandErr
 }
 
 /// Read a dump or a backup image for the memory view and say what it holds.
+///
+/// With `after`, the store already open is kept underneath, so every value
+/// that changed between the two readings is marked.
 #[tauri::command]
 pub(crate) async fn memory_open(
     app: AppHandle,
     path: String,
+    after: bool,
 ) -> Result<pmca_app::memory::MemoryInfo, CommandError> {
     in_background(move || {
         let state = app.state::<AppState>();
         let localizer = state.localizer()?;
         let path = PathBuf::from(path);
         let dump = pmca_app::memory::open(&localizer, &path)?;
-        let info = pmca_app::memory::info(&dump, &path);
-        *state.memory.lock().map_err(CommandError::internal)? = Some(dump);
+        let mut slot = state.memory.lock().map_err(CommandError::internal)?;
+        let memory = match slot.as_ref() {
+            Some(previous) if after => pmca_app::memory::Memory::after(dump, previous),
+            _ => pmca_app::memory::Memory::new(dump),
+        };
+        let info = pmca_app::memory::info(&memory, &own_names(&memory), &path);
+        *slot = Some(memory);
         Ok(info)
     })
     .await
+}
+
+/// The own names for the camera the memory view shows.
+fn own_names(
+    memory: &pmca_app::memory::Memory,
+) -> std::collections::BTreeMap<String, pmca_app::own_names::OwnName> {
+    memory.dump.camera.model.as_deref().map(pmca_app::own_names::for_model).unwrap_or_default()
+}
+
+/// Run `f` on the store the memory view holds.
+fn with_memory<T>(
+    state: &AppState,
+    f: impl FnOnce(&pmca_app::memory::Memory) -> T,
+) -> Result<T, CommandError> {
+    let guard = state.memory.lock().map_err(CommandError::internal)?;
+    let memory = guard.as_ref().ok_or_else(|| CommandError::internal("no store is open"))?;
+    Ok(f(memory))
+}
+
+/// The groups of the store that hold rows the query keeps.
+#[tauri::command(async)]
+pub(crate) fn memory_groups(
+    state: State<'_, AppState>,
+    query: pmca_app::memory::MemoryQuery,
+) -> Result<Vec<pmca_app::memory::MemoryGroup>, CommandError> {
+    with_memory(&state, |m| pmca_app::memory::groups(m, &own_names(m), &query))
 }
 
 /// One filtered page of the store the memory view holds.
@@ -214,9 +249,77 @@ pub(crate) fn memory_page(
     state: State<'_, AppState>,
     query: pmca_app::memory::MemoryQuery,
 ) -> Result<pmca_app::memory::MemoryPage, CommandError> {
-    let guard = state.memory.lock().map_err(CommandError::internal)?;
-    let dump = guard.as_ref().ok_or_else(|| CommandError::internal("no store is open"))?;
-    Ok(pmca_app::memory::page(dump, &query))
+    with_memory(&state, |m| pmca_app::memory::page(m, &own_names(m), &query))
+}
+
+/// Everything about one property of the store.
+#[tauri::command(async)]
+pub(crate) fn memory_detail(
+    state: State<'_, AppState>,
+    id: String,
+) -> Result<Option<pmca_app::memory::MemoryDetail>, CommandError> {
+    with_memory(&state, |m| pmca_app::memory::detail(m, &own_names(m), &id))
+}
+
+/// Give a property of the shown camera an own name and note; both empty removes them.
+#[tauri::command(async)]
+pub(crate) fn memory_set_own(
+    state: State<'_, AppState>,
+    id: String,
+    name: String,
+    note: String,
+) -> Result<(), CommandError> {
+    let localizer = state.localizer()?;
+    let model = with_memory(&state, |m| m.dump.camera.model.clone())?
+        .ok_or_else(|| CommandError::localized(localizer.tr("own-name-invalid")))?;
+    Ok(pmca_app::own_names::set(&localizer, &model, &id, &name, &note)?)
+}
+
+/// Save the rows the query keeps as CSV, to a path the user picks. The path, or
+/// `None` when the dialog was dismissed.
+#[tauri::command(async)]
+pub(crate) fn memory_export_csv(
+    app: AppHandle,
+    window: Window,
+    query: pmca_app::memory::MemoryQuery,
+) -> Result<Option<String>, CommandError> {
+    let state = app.state::<AppState>();
+    let (csv, stem) =
+        with_memory(&state, |m| (pmca_app::memory::csv(m, &own_names(m), &query), m.dump.stem()))?;
+    let picked = app
+        .dialog()
+        .file()
+        .set_parent(&window)
+        .add_filter("CSV", &["csv"])
+        .set_file_name(format!("{stem}.csv"))
+        .blocking_save_file();
+    let Some(path) = picked else { return Ok(None) };
+    let path = path.into_path().map_err(CommandError::internal)?;
+    std::fs::write(&path, csv).map_err(pmca_app::Error::from)?;
+    Ok(Some(absolute_display(&path)))
+}
+
+/// Save the own names of the shown camera's model as a name-table plugin.
+#[tauri::command(async)]
+pub(crate) fn memory_export_names(
+    app: AppHandle,
+    window: Window,
+) -> Result<Option<String>, CommandError> {
+    let state = app.state::<AppState>();
+    let localizer = state.localizer()?;
+    let model = with_memory(&state, |m| m.dump.camera.model.clone())?
+        .ok_or_else(|| CommandError::localized(localizer.tr("own-names-none")))?;
+    let picked = app
+        .dialog()
+        .file()
+        .set_parent(&window)
+        .add_filter(localizer.tr("file-filter-plugin"), &["pmcaplugin"])
+        .set_file_name(format!("own-names-{}.pmcaplugin", model.to_ascii_lowercase()))
+        .blocking_save_file();
+    let Some(path) = picked else { return Ok(None) };
+    let path = path.into_path().map_err(CommandError::internal)?;
+    pmca_app::own_names::export(&localizer, &model, &path)?;
+    Ok(Some(absolute_display(&path)))
 }
 
 /// Forget the store the memory view showed.

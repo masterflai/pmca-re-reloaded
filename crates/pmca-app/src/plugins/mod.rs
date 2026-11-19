@@ -594,8 +594,6 @@ fn collect(root: &Path, dir: &Path, out: &mut Vec<(String, PathBuf)>) -> std::io
 /// modules. With `key` (a file written by [`generate_key`]) the plugin is
 /// signed. Nothing is written unless the result would install.
 pub fn pack(l: &Localizer, dir: &Path, out: &Path, key: Option<&Path>) -> Result<PluginInfo> {
-    use std::io::Write;
-
     let mut paths = Vec::new();
     collect(dir, dir, &mut paths)?;
     let mut files = Vec::new();
@@ -610,6 +608,17 @@ pub fn pack(l: &Localizer, dir: &Path, out: &Path, key: Option<&Path>) -> Result
             signature::sign(&std::fs::read(key)?, &files).map_err(|r| invalid(l, &r))?;
         files.push((signature::FILE.to_string(), signed));
     }
+    pack_files(l, files, out)
+}
+
+/// Build a plugin file from files in memory, checked as [`pack`] checks it.
+pub(crate) fn pack_files(
+    l: &Localizer,
+    mut files: Vec<(String, Vec<u8>)>,
+    out: &Path,
+) -> Result<PluginInfo> {
+    use std::io::Write;
+
     files.sort();
     let mut zip = zip::ZipWriter::new(Cursor::new(Vec::new()));
     for (name, data) in &files {

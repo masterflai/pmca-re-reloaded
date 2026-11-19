@@ -27,6 +27,18 @@ further: number,
  */
 named: number, 
 /**
+ * Properties with an own name.
+ */
+own: number, 
+/**
  * The installed name tables that fit the camera, best first.
  */
-tables: Array<NameTableInfo>, };
+tables: Array<NameTableInfo>, 
+/**
+ * How many values changed since the reading before, if one was laid under.
+ */
+changed: number | null, 
+/**
+ * Whether that reading came from the same camera.
+ */
+sameCamera: boolean | null, };

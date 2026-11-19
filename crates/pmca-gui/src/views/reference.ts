@@ -78,6 +78,12 @@ function saveEntries(entries: ReferenceEntry[]): void {
   }
 }
 
+/** Put a finding into the check's form, after the ones already filled in. */
+export function addReferenceEntry(entry: ReferenceEntry): void {
+  const kept = storedEntries().filter((e) => e.id.trim() !== "" && e.id.trim() !== entry.id);
+  saveEntries([...kept, entry]);
+}
+
 export function viewReference(host: HTMLElement): void {
   const status = statusLine();
   const stage = make("div", { className: "analysis-stage" });

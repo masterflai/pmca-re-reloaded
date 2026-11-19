@@ -32,6 +32,7 @@ pub mod keys;
 pub mod memory;
 pub mod names;
 pub mod network;
+pub mod own_names;
 pub mod ownership;
 pub mod plugins;
 pub mod projects;

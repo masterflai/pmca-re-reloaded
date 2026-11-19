@@ -51,6 +51,10 @@ pub(crate) fn analysis_step(
     if run.taken() > 0 {
         let _ = run.save_report();
     }
+    if let Some((model, id, setting)) = run.finding() {
+        let day = run.report().started.get(..10).unwrap_or_default().to_string();
+        let _ = pmca_app::own_names::remember_finding(&model, id, &setting, &day);
+    }
     result?;
     Ok(run.state(localizer))
 }
