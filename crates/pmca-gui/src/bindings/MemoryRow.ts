@@ -43,7 +43,7 @@ attr: string,
  */
 attrNames: Array<string>, 
 /**
- * The value as spaced hex, cut after [`VALUE_BYTES`] bytes.
+ * The value as spaced hex, cut after 64 bytes.
  */
 value: string, 
 /**

@@ -11,7 +11,7 @@ this file is for. It ships alongside `LICENSE.txt` in every release archive.
 The licence of this project itself is in [LICENSE.txt](LICENSE.txt) and is not
 repeated here.
 
-Generated: 2026-11-15
+Generated: 2026-11-19
 
 * Packages: **553**
 * With a copyright notice recovered from their sources: **400**
@@ -3139,22 +3139,22 @@ in executable form must tell the recipients where its source is available
 * Licence: `MIT OR Apache-2.0`
 * Source: https://github.com/MattiasBuelens/wasm-streams/
 
-### wasmi 2.0.0
+### wasmi 2.0.2
 
 * Licence: `MIT/Apache-2.0`
 * Source: https://github.com/wasmi-labs/wasmi
 
-### wasmi_collections 2.0.0
+### wasmi_collections 2.0.2
 
 * Licence: `MIT/Apache-2.0`
 * Source: https://github.com/wasmi-labs/wasmi
 
-### wasmi_core 2.0.0
+### wasmi_core 2.0.2
 
 * Licence: `MIT/Apache-2.0`
 * Source: https://github.com/wasmi-labs/wasmi
 
-### wasmi_ir 2.0.0
+### wasmi_ir 2.0.2
 
 * Licence: `MIT/Apache-2.0`
 * Source: https://github.com/wasmi-labs/wasmi

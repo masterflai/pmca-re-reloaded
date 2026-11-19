@@ -121,7 +121,7 @@ pub struct MemoryRow {
     pub attr: String,
     /// The names of the bits that are set.
     pub attr_names: Vec<String>,
-    /// The value as spaced hex, cut after [`VALUE_BYTES`] bytes.
+    /// The value as spaced hex, cut after 64 bytes.
     pub value: String,
     /// Whether `value` was cut.
     pub truncated: bool,
