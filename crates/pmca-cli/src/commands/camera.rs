@@ -173,8 +173,27 @@ pub(crate) fn install_command(
         print_field(l, "info-product-code", Some(&device.product_code));
         print_field(l, "info-serial", Some(&device.device_id));
         print_field(l, "info-firmware", Some(&device.firmware_version));
+        if let (Some(free), Some(total)) = (device.free_space, device.total_space)
+            && free <= total
+        {
+            let mb = |bytes| megabytes(l.current(), bytes);
+            let value = l.tr_args(
+                "info-app-storage-value",
+                &[("used", &mb(total - free)), ("free", &mb(free)), ("total", &mb(total))],
+            );
+            print_field(l, "info-app-storage", Some(&value));
+        }
     }
     Ok(())
+}
+
+/// Bytes as megabytes with one decimal, in the locale's decimal separator.
+fn megabytes(locale: &str, bytes: u64) -> String {
+    const DECIMAL_COMMA: &[&str] =
+        &["cs", "da", "de", "es", "fr", "hr", "id", "nb", "nl", "pl", "pt", "ru", "tr", "uk", "vi"];
+    let text = format!("{:.1}", bytes as f64 / (1024.0 * 1024.0));
+    let language = locale.split('-').next().unwrap_or_default();
+    if DECIMAL_COMMA.contains(&language) { text.replace('.', ",") } else { text }
 }
 
 /// List the apps the user's sources offer.
@@ -238,4 +257,16 @@ pub(crate) fn apps_backup_command(
     }
     println!("{}: {}", l.tr("app-backup-folder"), outcome.folder);
     Ok(())
+}
+
+#[cfg(test)]
+mod tests {
+    use super::megabytes;
+
+    #[test]
+    fn megabytes_follow_the_locale_decimal_separator() {
+        assert_eq!(megabytes("en-US", 104_372_224), "99.5");
+        assert_eq!(megabytes("de-DE", 104_372_224), "99,5");
+        assert_eq!(megabytes("ja-JP", 3_110_912), "3.0");
+    }
 }

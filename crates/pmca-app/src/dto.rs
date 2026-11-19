@@ -207,6 +207,12 @@ pub struct InstalledDevice {
     pub device_id: String,
     /// Firmware version.
     pub firmware_version: String,
+    /// Free bytes in the camera's app storage.
+    #[cfg_attr(test, ts(type = "number | null"))]
+    pub free_space: Option<u64>,
+    /// Size of the camera's app storage in bytes.
+    #[cfg_attr(test, ts(type = "number | null"))]
+    pub total_space: Option<u64>,
 }
 
 /// Result of a completed application installation.

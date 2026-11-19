@@ -20,4 +20,12 @@ deviceId: string,
 /**
  * Firmware version.
  */
-firmwareVersion: string, };
+firmwareVersion: string, 
+/**
+ * Free bytes in the camera's app storage.
+ */
+freeSpace: number | null, 
+/**
+ * Size of the camera's app storage in bytes.
+ */
+totalSpace: number | null, };

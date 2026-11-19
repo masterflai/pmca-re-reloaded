@@ -8,6 +8,9 @@ All notable changes to this project are documented here. The format follows
 
 ### Added
 
+- After an app installation, the camera details show how much of the
+  camera's app storage is used and free, as the camera reports it (window
+  and console).
 - Newer bodies such as the ILCE-7CR store a second, complete settings image
   behind the first one in `Backup.bin`, which the tools used to skip as
   padding. `print-backup`, the service shell's `bk dump-txt`, backup dumps and

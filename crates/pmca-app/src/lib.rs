@@ -469,6 +469,8 @@ fn run_install_task(
                 product_code: result.device.product_code.clone(),
                 device_id: result.device.device_id.clone(),
                 firmware_version: result.device.firmware_version.clone(),
+                free_space: result.device.free_space,
+                total_space: result.device.total_space,
             }),
             apk: apk_summary,
             raw: Some(result.raw.clone()),

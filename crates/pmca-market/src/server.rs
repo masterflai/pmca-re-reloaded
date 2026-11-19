@@ -44,6 +44,10 @@ pub struct DeviceInfo {
     pub device_id: String,
     /// Firmware version string.
     pub firmware_version: String,
+    /// Free bytes in the camera's app storage.
+    pub free_space: Option<u64>,
+    /// Size of the camera's app storage in bytes.
+    pub total_space: Option<u64>,
 }
 
 /// The result the camera reports at the end of a task, as captured from its
@@ -83,11 +87,14 @@ pub fn parse_post_data(body: &[u8]) -> Result<InstallResult> {
             .unwrap_or("")
             .to_string()
     };
+    let bytes = |key: &str| raw.get("deviceinfo").and_then(|d| d.get(key)).and_then(Value::as_u64);
     let device = DeviceInfo {
         name: field("name"),
         product_code: field("productcode"),
         device_id: field("deviceid"),
         firmware_version: field("fwversion"),
+        free_space: bytes("freespace"),
+        total_space: bytes("storagetotalsize"),
     };
     Ok(InstallResult { device, raw })
 }
@@ -423,7 +430,7 @@ mod tests {
     use super::*;
 
     fn post_body() -> &'static [u8] {
-        br#"{"deviceinfo":{"name":"ILCE-5100","productcode":"1234","deviceid":"SN123","fwversion":"1.20"},"applications":[]}"#
+        br#"{"deviceinfo":{"name":"ILCE-5100","productcode":"1234","deviceid":"SN123","fwversion":"1.20","freespace":101261312,"storagetotalsize":104372224},"applications":[]}"#
     }
 
     #[test]
@@ -433,6 +440,8 @@ mod tests {
         assert_eq!(result.device.product_code, "1234");
         assert_eq!(result.device.device_id, "SN123");
         assert_eq!(result.device.firmware_version, "1.20");
+        assert_eq!(result.device.free_space, Some(101_261_312));
+        assert_eq!(result.device.total_space, Some(104_372_224));
         // The raw document is preserved for logging/output.
         assert!(result.raw.get("applications").is_some());
     }

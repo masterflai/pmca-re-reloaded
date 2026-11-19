@@ -23,7 +23,7 @@ import type {
   InstalledDevice,
   SourcesState,
 } from "../dto";
-import { errorText, tr, trFill } from "../i18n";
+import { currentLocale, errorText, tr, trFill } from "../i18n";
 import { cardAppBackup } from "./app-backup";
 import { capableDevices, lowRiskCheck } from "./camera";
 import { deviceToggle } from "./network";
@@ -640,5 +640,22 @@ function deviceFields(device: InstalledDevice): HTMLElement {
     ["info-product-code", device.productCode],
     ["info-serial", device.deviceId],
     ["info-firmware", device.firmwareVersion],
+    ["info-app-storage", storageText(device)],
   ]);
+}
+
+/** Used and free app storage, as the camera reports it. */
+function storageText(device: InstalledDevice): string | null {
+  const { freeSpace: free, totalSpace: total } = device;
+  if (free === null || total === null || free > total) return null;
+  const mb = (bytes: number): string =>
+    (bytes / (1024 * 1024)).toLocaleString(currentLocale, {
+      minimumFractionDigits: 1,
+      maximumFractionDigits: 1,
+    });
+  return trFill("info-app-storage-value", {
+    used: mb(total - free),
+    free: mb(free),
+    total: mb(total),
+  });
 }
