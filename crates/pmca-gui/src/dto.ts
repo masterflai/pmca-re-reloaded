@@ -32,6 +32,7 @@ export type { MemoryGroup } from "./bindings/MemoryGroup";
 export type { MemoryInfo } from "./bindings/MemoryInfo";
 export type { MemoryPage } from "./bindings/MemoryPage";
 export type { MemoryRow } from "./bindings/MemoryRow";
+export type { OwnName } from "./bindings/OwnName";
 export type { MoreModel } from "./bindings/MoreModel";
 export type { NameTableInfo } from "./bindings/NameTableInfo";
 export type { Support } from "./bindings/Support";

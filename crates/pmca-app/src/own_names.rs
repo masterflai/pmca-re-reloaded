@@ -93,6 +93,14 @@ pub fn set(l: &Localizer, model: &str, id: &str, name: &str, note: &str) -> Resu
     save(&store)
 }
 
+/// Remove every own name of one model; how many there were.
+pub fn clear(model: &str) -> Result<usize> {
+    let mut store = load();
+    let Some(names) = store.models.remove(model) else { return Ok(0) };
+    save(&store)?;
+    Ok(names.len())
+}
+
 /// Note what a function analysis found, unless the property is named already.
 pub fn remember_finding(model: &str, id: u32, setting: &str, day: &str) -> Result<bool> {
     let mut store = load();

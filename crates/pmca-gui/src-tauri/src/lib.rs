@@ -593,6 +593,7 @@ pub fn run() {
             memory_page,
             memory_detail,
             memory_set_own,
+            memory_clear_own,
             memory_export_csv,
             memory_export_names,
             memory_close,

@@ -275,6 +275,13 @@ pub(crate) fn memory_set_own(
     Ok(pmca_app::own_names::set(&localizer, &model, &id, &name, &note)?)
 }
 
+/// Remove every own name of the shown camera's model; how many there were.
+#[tauri::command(async)]
+pub(crate) fn memory_clear_own(state: State<'_, AppState>) -> Result<usize, CommandError> {
+    let Some(model) = with_memory(&state, |m| m.dump.camera.model.clone())? else { return Ok(0) };
+    Ok(pmca_app::own_names::clear(&model)?)
+}
+
 /// Save the rows the query keeps as CSV, to a path the user picks. The path, or
 /// `None` when the dialog was dismissed.
 #[tauri::command(async)]

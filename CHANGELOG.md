@@ -49,7 +49,8 @@ All notable changes to this project are documented here. The format follows
   - *Read the camera again* (or open a newer file) marks every value that
     changed in between, with the old value in the detail.
   - Own names and notes per property and model; a finished function analysis
-    adds its finding by itself. They can be saved as a name-table plugin.
+    adds its finding by itself. They can be saved as a name-table plugin,
+    deleted one by one in the detail, or all at once for the model.
   - Per row: copy the address, or check it on another camera, which opens the
     reference check with the address and current value filled in.
   - The filtered list can be saved as CSV with whole values.

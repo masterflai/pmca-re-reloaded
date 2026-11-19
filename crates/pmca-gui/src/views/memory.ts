@@ -8,12 +8,14 @@ import type {
   MemoryInfo,
   MemoryPage,
   MemoryRow,
+  OwnName,
 } from "../dto";
 import {
   accessBadge,
   cameraAnswers,
   card,
   clearStatusState,
+  confirmed,
   make,
   showBusy,
   showDone,
@@ -43,6 +45,11 @@ const DISPLAYS: Display[] = ["auto", "hex", "uint", "int", "bits", "text", "bcd"
 export interface MemoryActions {
   /** Open the reference check, where a finding was just added. */
   openReference: () => void;
+}
+
+/** The memory actions, and a report when an own name was added or removed. */
+interface RowActions extends MemoryActions {
+  ownChanged: (had: boolean, has: boolean) => void;
 }
 
 /** Read a camera into a dump in the default folder; its path, or null. */
@@ -172,7 +179,16 @@ function memoryResult(info: MemoryInfo, actions: MemoryActions, reopen: Reopen):
     make("p", { className: "hint cmp-mono", textContent: info.file }),
     make("p", { className: "hint", textContent: tablesText(info.tables) }),
   ];
-  if (info.own > 0) head.push(make("p", { className: "hint", textContent: trFill("memory-own-count", { count: info.own }) }));
+  let ownCount = info.own;
+  const ownLine = make("p", { className: "hint" });
+  const clearOwn = make("button", { i18n: "btn-memory-own-clear" });
+  const showOwn = (): void => {
+    ownLine.textContent = trFill("memory-own-count", { count: ownCount });
+    ownLine.hidden = ownCount === 0;
+    clearOwn.hidden = ownCount === 0;
+  };
+  showOwn();
+  head.push(ownLine);
   if (info.tables.length === 0) head.push(make("p", { i18n: "memory-no-names" }), fetchNames(true));
   if (info.changed !== null) {
     head.push(make("p", { className: "memory-changed-note", textContent: trFill("memory-changed-count", { count: info.changed }) }));
@@ -223,6 +239,13 @@ function memoryResult(info: MemoryInfo, actions: MemoryActions, reopen: Reopen):
     further: further.checked,
   });
   const mode = (): Display => display.value as Display;
+  const rowActions: RowActions = {
+    ...actions,
+    ownChanged: (had, has) => {
+      ownCount += Number(has) - Number(had);
+      showOwn();
+    },
+  };
 
   let generation = 0;
   const reload = async (): Promise<void> => {
@@ -233,7 +256,7 @@ function memoryResult(info: MemoryInfo, actions: MemoryActions, reopen: Reopen):
       const total = list.reduce((sum, g) => sum + g.total, 0);
       count.textContent = trFill("memory-match-count", { total, groups: list.length });
       const openAll = list.length === 1 || total <= AUTO_OPEN;
-      groups.replaceChildren(...list.map((g) => groupNode(g, query, mode, actions, openAll)));
+      groups.replaceChildren(...list.map((g) => groupNode(g, query, mode, rowActions, openAll)));
     } catch (e) {
       showError(status, e);
     }
@@ -253,6 +276,19 @@ function memoryResult(info: MemoryInfo, actions: MemoryActions, reopen: Reopen):
     try {
       const path = await invoke<string | null>("memory_export_names");
       if (path !== null) showDone(status, trFill("compare-saved-to", { path }));
+    } catch (e) {
+      showError(status, e);
+    }
+  });
+  clearOwn.addEventListener("click", async () => {
+    const message = trFill("memory-own-clear-confirm", { count: ownCount, model: c.model ?? "?" });
+    if (!(await confirmed(message, tr("btn-memory-own-clear-ok")))) return;
+    try {
+      const count = await invoke<number>("memory_clear_own");
+      ownCount = 0;
+      showOwn();
+      showDone(status, trFill("memory-own-cleared", { count }));
+      await reload();
     } catch (e) {
       showError(status, e);
     }
@@ -283,7 +319,7 @@ function memoryResult(info: MemoryInfo, actions: MemoryActions, reopen: Reopen):
   return [
     card(
       ...head,
-      make("div", { className: "row memory-actions" }, reread, reopenFile, csv, exportNames),
+      make("div", { className: "row memory-actions" }, reread, reopenFile, csv, exportNames, clearOwn),
       status,
     ),
     card(
@@ -303,7 +339,7 @@ function groupNode(
   group: MemoryGroup,
   query: () => Record<string, unknown>,
   mode: () => Display,
-  actions: MemoryActions,
+  actions: RowActions,
   open: boolean,
 ): HTMLElement {
   const summary = make(
@@ -370,8 +406,14 @@ function groupNode(
 }
 
 /** A row, and the folded detail row below it. */
-function rowNodes(row: MemoryRow, mode: Display, actions: MemoryActions): HTMLElement[] {
+function rowNodes(row: MemoryRow, mode: Display, actions: RowActions): HTMLElement[] {
   const name = make("td", {}, ...nameNodes(row));
+  const setOwn = (own: OwnName | null): void => {
+    actions.ownChanged(row.own !== undefined, own !== null);
+    if (own === null) delete row.own;
+    else row.own = own;
+    name.replaceChildren(...nameNodes(row));
+  };
   const bytes = bytesOf(row.value);
   const value = row.redacted
     ? make("td", {}, make("span", { className: "memory-redacted-badge", i18n: "memory-redacted-short", title: tr("memory-redacted") }))
@@ -396,7 +438,7 @@ function rowNodes(row: MemoryRow, mode: Display, actions: MemoryActions): HTMLEl
     if (detailRow.hidden || detailCell.childElementCount > 0) return;
     try {
       const detail = await invoke<MemoryDetail | null>("memory_detail", { id: row.id });
-      if (detail !== null) detailCell.append(...detailNodes(detail, actions));
+      if (detail !== null) detailCell.append(...detailNodes(detail, actions, setOwn));
     } catch (e) {
       const s = statusLine();
       detailCell.append(s);
@@ -419,7 +461,7 @@ function nameNodes(row: MemoryRow): Node[] {
 }
 
 /** Everything about one property, its own name to edit, and what to do next. */
-function detailNodes(d: MemoryDetail, actions: MemoryActions): Node[] {
+function detailNodes(d: MemoryDetail, actions: MemoryActions, setOwn: (own: OwnName | null) => void): Node[] {
   const bytes = bytesOf(d.hex);
   const status = statusLine();
   const facts: [string, string][] = [
@@ -471,21 +513,35 @@ function detailNodes(d: MemoryDetail, actions: MemoryActions): Node[] {
     const ownName = make("input", { type: "text", className: "path-input", value: d.row.own?.name ?? "" });
     const ownNote = make("input", { type: "text", className: "path-input", value: d.row.own?.note ?? "" });
     const save = make("button", { i18n: "btn-memory-own-save" });
-    save.addEventListener("click", async () => {
+    const remove = make("button", { i18n: "btn-memory-own-delete", hidden: !d.row.own });
+    const store = async (name: string, note: string, done: string): Promise<void> => {
       try {
-        await invoke("memory_set_own", { id: d.row.id, name: ownName.value, note: ownNote.value });
-        showDone(status, tr("memory-own-saved"));
+        await invoke("memory_set_own", { id: d.row.id, name, note });
+        // The backend trims, and drops a name whose fields are both empty.
+        const own: OwnName | null =
+          name.trim() || note.trim()
+            ? { name: name.trim(), note: note.trim(), evidence: "camera" }
+            : null;
+        if (own === null) delete d.row.own;
+        else d.row.own = own;
+        ownName.value = own?.name ?? "";
+        ownNote.value = own?.note ?? "";
+        remove.hidden = own === null;
+        setOwn(own);
+        showDone(status, tr(own === null ? "memory-own-deleted" : done));
       } catch (e) {
         showError(status, e);
       }
-    });
+    };
+    save.addEventListener("click", () => void store(ownName.value, ownNote.value, "memory-own-saved"));
+    remove.addEventListener("click", () => void store("", "", "memory-own-deleted"));
     nodes.push(
       make("h4", { i18n: "memory-own-heading" }),
       make("label", { className: "field-label", i18n: "memory-own-name" }),
       ownName,
       make("label", { className: "field-label", i18n: "memory-own-note" }),
       ownNote,
-      make("div", { className: "row" }, save),
+      make("div", { className: "row" }, save, remove),
     );
 
     const check = make("button", { i18n: "btn-memory-check-elsewhere" });
