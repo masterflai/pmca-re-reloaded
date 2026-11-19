@@ -448,8 +448,13 @@ pub fn csv(memory: &Memory, own: &BTreeMap<String, OwnName>, query: &MemoryQuery
             own.map(|o| o.note.clone()).unwrap_or_default(),
             r.size.to_string(),
             r.attr_names.join(" "),
-            full.as_ref().map(|d| d.hex.clone()).unwrap_or_default(),
-            full.and_then(|d| d.reset).unwrap_or_default(),
+            // Withheld at reading; the zeros the dump keeps in its place are no value.
+            if r.redacted {
+                "withheld".to_string()
+            } else {
+                full.as_ref().map(|d| d.hex.clone()).unwrap_or_default()
+            },
+            if r.redacted { String::new() } else { full.and_then(|d| d.reset).unwrap_or_default() },
             r.touched.to_string(),
             r.writable.to_string(),
             r.changed.to_string(),

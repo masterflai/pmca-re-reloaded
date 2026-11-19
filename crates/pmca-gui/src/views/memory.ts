@@ -19,7 +19,6 @@ import {
   showDone,
   showError,
   showErrorKey,
-  showStatus,
   statusLine,
   told,
   withProgressTarget,
@@ -374,12 +373,13 @@ function groupNode(
 function rowNodes(row: MemoryRow, mode: Display, actions: MemoryActions): HTMLElement[] {
   const name = make("td", {}, ...nameNodes(row));
   const bytes = bytesOf(row.value);
-  const shown = row.redacted ? "••" : render(mode, bytes, row);
-  const value = make("td", {
-    className: "cmp-mono",
-    textContent: row.truncated ? `${shown} …` : shown,
-    title: row.redacted ? "" : row.value,
-  });
+  const value = row.redacted
+    ? make("td", {}, make("span", { className: "memory-redacted-badge", i18n: "memory-redacted-short", title: tr("memory-redacted") }))
+    : make("td", {
+        className: "cmp-mono",
+        textContent: render(mode, bytes, row) + (row.truncated ? " …" : ""),
+        title: row.value,
+      });
   const tr_ = make(
     "tr",
     { className: ["memory-row", row.touched ? "memory-touched" : "", row.changed ? "memory-changed" : ""].join(" ").trim() },
@@ -425,8 +425,8 @@ function detailNodes(d: MemoryDetail, actions: MemoryActions): Node[] {
   const facts: [string, string][] = [
     [tr("memory-detail-offset"), `${d.offset} · ${trFill("memory-detail-size", { size: d.row.size, max: d.maxSize })}`],
   ];
-  if (d.reset !== null) facts.push([tr("memory-detail-factory"), d.reset]);
-  if (d.before !== null) facts.push([tr("memory-detail-before"), d.before]);
+  if (d.reset !== null && !d.row.redacted) facts.push([tr("memory-detail-factory"), d.reset]);
+  if (d.before !== null && !d.row.redacted) facts.push([tr("memory-detail-before"), d.before]);
   if (d.row.attrNames.length > 0) facts.push([tr("memory-col-attr"), d.row.attrNames.map(attrText).join(", ")]);
   if (d.row.fwName) {
     const fw = d.row.fwName;
@@ -446,12 +446,14 @@ function detailNodes(d: MemoryDetail, actions: MemoryActions): Node[] {
     ),
   );
 
-  const nodes: Node[] = [
-    make("pre", { className: "shell-output memory-dump", textContent: d.row.redacted ? "••" : hexDump(bytes) }),
-    make("h4", { i18n: "memory-detail-views" }),
-    views,
-    factTable,
-  ];
+  const nodes: Node[] = d.row.redacted
+    ? [make("div", { className: "notice-block memory-redacted-note" }, make("p", { i18n: "memory-redacted" })), factTable]
+    : [
+        make("pre", { className: "shell-output memory-dump", textContent: hexDump(bytes) }),
+        make("h4", { i18n: "memory-detail-views" }),
+        views,
+        factTable,
+      ];
 
   const copy = make("button", { i18n: "btn-memory-copy-id" });
   copy.addEventListener("click", async () => {
@@ -493,9 +495,10 @@ function detailNodes(d: MemoryDetail, actions: MemoryActions): Node[] {
       actions.openReference();
     });
     buttons.push(check);
+    // A withheld value cannot be carried over: only its stand-in zeros are known.
+    check.hidden = d.row.redacted;
   }
   nodes.push(make("div", { className: "row" }, ...buttons), status);
-  if (d.row.redacted) showStatus(status, tr("memory-redacted"));
   return nodes;
 }
 

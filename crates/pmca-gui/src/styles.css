@@ -2134,6 +2134,52 @@ label.app-entry input[type="checkbox"] {
   padding: 8px 12px;
 }
 
+/* Fixed layout: an opened detail must not widen the list it sits in. */
+.memory-table {
+  width: 100%;
+  table-layout: fixed;
+}
+
+.memory-table th:nth-child(1) { width: 10rem; }
+.memory-table th:nth-child(3) { width: 4.5rem; }
+.memory-table th:nth-child(4) { width: 36%; }
+.memory-table th:nth-child(5) { width: 16%; }
+
+.memory-table td {
+  overflow-wrap: anywhere;
+}
+
+.memory-detail > td > * {
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.memory-detail .analysis-table {
+  width: 100%;
+  table-layout: auto;
+}
+
+.memory-detail .path-input {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.memory-redacted-badge {
+  display: inline-block;
+  padding: 0 0.5rem;
+  border: 1px solid currentColor;
+  border-radius: 999px;
+  color: var(--warning);
+  background: color-mix(in srgb, var(--warning) 12%, transparent);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.memory-redacted-note {
+  margin-top: 0;
+  font-weight: 600;
+}
+
 .memory-dump {
   max-height: 16rem;
   overflow: auto;

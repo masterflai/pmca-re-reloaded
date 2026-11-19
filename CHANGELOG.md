@@ -53,6 +53,8 @@ All notable changes to this project are documented here. The format follows
   - Per row: copy the address, or check it on another camera, which opens the
     reference check with the address and current value filled in.
   - The filtered list can be saved as CSV with whole values.
+  - Serial number, photographer and copyright holder are marked as withheld
+    in the list and the detail, and left out of the CSV as of every dump.
 
 ### Changed
 
