@@ -8,6 +8,10 @@ All notable changes to this project are documented here. The format follows
 
 ### Added
 
+- `pmca-console wbi inspect|unpack|diff` reads Sony WBI1 warm-boot images
+  offline: the memory sections with their addresses, sizes and SHA-256, every
+  section unpacked into a new folder, or which sections differ between two
+  images (`--json` for scripts). Contributed by fkr-0.
 - Service shell: `pull-verified <camera path> <file> <size> [sha256]` reads a
   file or partition twice and saves it only when both reads have the expected
   size and the same SHA-256; an existing file is never replaced. Not yet

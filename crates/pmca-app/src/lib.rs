@@ -46,6 +46,7 @@ pub mod tools;
 pub mod tweaks;
 pub mod update;
 pub mod updater;
+pub mod wbi;
 
 use std::path::Path;
 use std::time::Duration;
