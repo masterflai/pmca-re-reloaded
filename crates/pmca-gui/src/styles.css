@@ -2154,6 +2154,12 @@ label.app-entry input[type="checkbox"] {
   box-sizing: border-box;
 }
 
+/* The detail cell is also a first cell; it must not inherit the address's no-wrap. */
+.memory-table tr.memory-detail > td:first-child {
+  white-space: normal;
+  overflow-wrap: break-word;
+}
+
 .memory-detail .analysis-table {
   width: 100%;
   table-layout: auto;
