@@ -873,7 +873,7 @@ fn run(cmd: &Command, l: &Localizer) -> Result<(), Box<dyn std::error::Error>> {
             )?;
         }
         Command::Wbi { action } => {
-            wbi_command(action)?;
+            wbi_command(l, action)?;
         }
         Command::PrintBackup { file } => {
             tool_command(l, ToolRequest::PrintBackup { input: file.clone() })?;

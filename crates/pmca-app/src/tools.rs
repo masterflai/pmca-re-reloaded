@@ -72,6 +72,25 @@ pub enum ToolRequest {
         /// The file to read.
         input: PathBuf,
     },
+    /// Describe the memory sections of a WBI1 warm-boot image.
+    PrintWbi {
+        /// The image to read.
+        input: PathBuf,
+    },
+    /// Write every section of a WBI1 image into a new folder.
+    UnpackWbi {
+        /// The image to read.
+        input: PathBuf,
+        /// The folder to create; it must not exist yet.
+        output: PathBuf,
+    },
+    /// Show which memory sections differ between two WBI1 images.
+    CompareWbi {
+        /// The earlier image.
+        input: PathBuf,
+        /// The later image.
+        against: PathBuf,
+    },
 }
 
 impl ToolRequest {
@@ -82,7 +101,9 @@ impl ToolRequest {
     #[must_use]
     pub fn output(&self) -> Option<&Path> {
         match self {
-            Self::ApkToSpk { output, .. } | Self::SpkToApk { output, .. } => Some(output),
+            Self::ApkToSpk { output, .. }
+            | Self::SpkToApk { output, .. }
+            | Self::UnpackWbi { output, .. } => Some(output),
             _ => None,
         }
     }
@@ -167,6 +188,30 @@ pub fn run(l: &Localizer, request: &ToolRequest) -> Result<ToolOutcome> {
             Ok(ToolOutcome {
                 message: format!("{}: {}", l.tr("tools-checksum"), checksum),
                 report: None,
+            })
+        }
+        ToolRequest::PrintWbi { input } => {
+            let report = crate::wbi::inspect(l, input)?;
+            Ok(ToolOutcome {
+                message: l.tr("msg-done"),
+                report: Some(crate::wbi::render_report(l, &report)),
+            })
+        }
+        ToolRequest::UnpackWbi { input, output } => {
+            let count = crate::wbi::unpack(l, input, output)?;
+            Ok(ToolOutcome {
+                message: l.tr_args(
+                    "wbi-unpacked",
+                    &[("count", &count.to_string()), ("dir", &output.display().to_string())],
+                ),
+                report: None,
+            })
+        }
+        ToolRequest::CompareWbi { input, against } => {
+            let diff = crate::wbi::diff(l, input, against)?;
+            Ok(ToolOutcome {
+                message: l.tr("msg-done"),
+                report: Some(crate::wbi::render_diff(l, &diff)),
             })
         }
     }
