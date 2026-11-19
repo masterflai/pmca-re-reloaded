@@ -13,7 +13,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::Result;
 use crate::compare::{self, DumpCamera, DumpFile, Privacy, PropertyView};
-use crate::names::{self, FwName, NameTable, NameTableInfo, NameView};
+use crate::names::{self, FwName, FwValue, NameTable, NameTableInfo, NameView};
 use crate::own_names::OwnName;
 
 /// The most value bytes a row carries; the detail and the dump have them all.
@@ -115,6 +115,10 @@ pub struct MemoryRow {
     #[serde(skip_serializing_if = "Option::is_none")]
     #[cfg_attr(test, ts(optional))]
     pub meaning: Option<String>,
+    /// The firmware's name for the stored value, where an installed table has one.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    #[cfg_attr(test, ts(optional))]
+    pub fw_value: Option<FwValue>,
     /// Length of the value.
     pub size: usize,
     /// Attribute bitfield, as hex.
@@ -182,6 +186,21 @@ pub struct MemoryDetail {
     pub offset: String,
     /// Bytes reserved for the value.
     pub max_size: usize,
+    /// The value split into memory-set slots, for an array that holds one element per slot.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    #[cfg_attr(test, ts(optional))]
+    pub memory_sets: Option<Vec<MemorySlot>>,
+}
+
+/// One element of a memory-set array.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize)]
+#[serde(rename_all = "camelCase")]
+#[cfg_attr(test, derive(ts_rs::TS), ts(export))]
+pub struct MemorySlot {
+    /// 0 is the working copy of the slot loaded last; 1 onwards are the slots.
+    pub index: usize,
+    /// The element, as spaced hex.
+    pub hex: String,
 }
 
 /// What the view says about the store before the rows.
@@ -207,6 +226,10 @@ pub struct MemoryInfo {
     pub changed: Option<usize>,
     /// Whether that reading came from the same camera.
     pub same_camera: Option<bool>,
+    /// Elements per memory-set array (working copy plus slots), where the store says.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    #[cfg_attr(test, ts(optional))]
+    pub memory_set_slots: Option<usize>,
 }
 
 /// Read a dump or a `Backup.bin` and name what the installed tables know.
@@ -222,6 +245,11 @@ fn fill_names(dump: &mut DumpFile, tables: &[NameTable]) {
     for p in &mut dump.properties {
         if p.fw_name.is_none() {
             p.fw_name = parse_id(&p.id).and_then(|id| names::lookup(&view, id));
+            if !p.redacted
+                && p.fw_name.as_ref().is_some_and(|f| compare::is_sensitive_name(&f.name))
+            {
+                compare::mask_sensitive(p);
+            }
         }
     }
 }
@@ -273,6 +301,7 @@ pub fn info(memory: &Memory, own: &BTreeMap<String, OwnName>, path: &Path) -> Me
             .as_ref()
             .map(|_| rows(dump).filter(|(i, p)| memory.changed(&row_id(*i, p), &p.hex)).count()),
         same_camera: memory.same_camera,
+        memory_set_slots: compare::memory_set_slot_count(dump),
     }
 }
 
@@ -331,6 +360,11 @@ fn row(
             .as_deref()
             .and_then(|n| pmca_platform::tweaks::meaning(n, &data))
             .map(str::to_string),
+        fw_value: (image == 1 && !p.redacted).then(|| parse_id(&p.id)).flatten().and_then(|id| {
+            let tables = names::tables();
+            let view = NameView::new(tables, &camera_key(&memory.dump.camera));
+            names::value_name(&view, id, &data)
+        }),
         size: p.size,
         attr: p.attr.clone(),
         attr_names: p.attr_names.clone(),
@@ -423,6 +457,31 @@ pub fn detail(memory: &Memory, own: &BTreeMap<String, OwnName>, id: &str) -> Opt
         before: memory.before_of(id).filter(|old| **old != p.hex).cloned(),
         offset: p.offset.clone(),
         max_size: p.max_size,
+        memory_sets: if image == 1 {
+            compare::memory_set_slot_count(&memory.dump).and_then(|n| slots(p, n))
+        } else {
+            None
+        },
+    })
+}
+
+/// An array property cut into `count` equal elements, one per memory-set slot.
+fn slots(p: &PropertyView, count: usize) -> Option<Vec<MemorySlot>> {
+    let attr = u16::from_str_radix(p.attr.trim_start_matches("0x"), 16).ok()?;
+    if p.redacted
+        || attr & pmca_core::backup::attr::ARRAY_DATA == 0
+        || !p.size.is_multiple_of(count)
+    {
+        return None;
+    }
+    let bytes: Vec<&str> = p.hex.split_whitespace().collect();
+    let width = bytes.len() / count;
+    (width > 0).then(|| {
+        bytes
+            .chunks(width)
+            .enumerate()
+            .map(|(index, b)| MemorySlot { index, hex: b.join(" ") })
+            .collect()
     })
 }
 
@@ -606,5 +665,42 @@ mod tests {
         let m = Memory::new(d);
         assert_eq!(page(&m, &BTreeMap::new(), &query("bkid_test")).total, 1);
         assert_eq!(groups(&m, &BTreeMap::new(), &query(""))[0].label.as_deref(), Some("TEST"));
+    }
+
+    #[test]
+    fn a_value_named_as_network_data_is_withheld_once_named() {
+        let mut d = dump("01");
+        let table = NameTable {
+            plugin: "p".to_string(),
+            id: "t".to_string(),
+            scope: names::Scope { models: vec!["ILCE-6000".to_string()], ..Default::default() },
+            source: String::new(),
+            entries: pmca_platform::names::parse_table(
+                "#pmca-names/1\n0x00020000\tBKID_APP_WIFI_SSID\t\tfw-log\t",
+            )
+            .unwrap(),
+        };
+        fill_names(&mut d, &[table]);
+        assert!(d.properties[1].redacted);
+        assert_eq!(d.properties[1].hex, "00");
+        assert!(!d.properties[2].redacted);
+    }
+
+    #[test]
+    fn a_memory_set_array_is_split_into_its_slots() {
+        let mut d = dump("01");
+        d.properties.push(property("0x003e000c", None, "02", false));
+        let mut array = property("0x02cf0010", None, "0a 00 0b 00 0c 00", false);
+        array.attr = "0x80".to_string();
+        d.properties.push(array);
+        let m = Memory::new(d);
+        let own = BTreeMap::new();
+        assert_eq!(info(&m, &own, Path::new("x")).memory_set_slots, Some(3));
+        let slots = detail(&m, &own, "0x02cf0010").unwrap().memory_sets.unwrap();
+        assert_eq!(
+            slots.iter().map(|s| (s.index, s.hex.as_str())).collect::<Vec<_>>(),
+            [(0, "0a 00"), (1, "0b 00"), (2, "0c 00")]
+        );
+        assert!(detail(&m, &own, "0x00020000").unwrap().memory_sets.is_none());
     }
 }

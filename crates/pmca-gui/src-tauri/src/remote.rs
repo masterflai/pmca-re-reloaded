@@ -336,6 +336,7 @@ fn run(
                 serial: with_serial,
                 photographer: with_photographer,
                 copyright: with_copyright,
+                accounts: false,
             };
             json(pmca_app::compare::dump_camera(l, sink, &folder, privacy, keep_image)?)
         }

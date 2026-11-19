@@ -67,6 +67,10 @@ compatibility: number,
  */
 names: number, 
 /**
+ * Number of stored-value names (menu options) it brings, over all its tables.
+ */
+values: number, 
+/**
  * Public Ed25519 key (hex) the file is signed with; `None` if unsigned.
  */
 signer: string | null, 

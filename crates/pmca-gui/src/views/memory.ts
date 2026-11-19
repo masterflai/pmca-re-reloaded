@@ -475,6 +475,10 @@ function detailNodes(d: MemoryDetail, actions: MemoryActions, setOwn: (own: OwnN
     const origin = fw.conflict ? tr("names-conflict") : tr(`names-evidence-${fw.evidence}`);
     facts.push([tr("memory-detail-fw"), `${fw.name} · ${origin} · ${fw.table}`]);
   }
+  if (d.row.fwValue) {
+    const v = d.row.fwValue;
+    facts.push([tr("memory-detail-fw-value"), `${v.name} · ${tr(`names-evidence-${v.evidence}`)} · ${v.table}`]);
+  }
   const factTable = make(
     "table",
     { className: "analysis-table" },
@@ -496,6 +500,23 @@ function detailNodes(d: MemoryDetail, actions: MemoryActions, setOwn: (own: OwnN
         views,
         factTable,
       ];
+  if (d.memorySets !== undefined) {
+    nodes.push(
+      make("h4", { i18n: "memory-slots-heading" }),
+      make(
+        "table",
+        { className: "analysis-table" },
+        ...d.memorySets.map((slot) =>
+          make(
+            "tr",
+            {},
+            make("th", { textContent: slot.index === 0 ? tr("memory-slot-current") : trFill("memory-slot", { slot: slot.index }) }),
+            make("td", { className: "cmp-mono", textContent: slot.hex }),
+          ),
+        ),
+      ),
+    );
+  }
 
   const copy = make("button", { i18n: "btn-memory-copy-id" });
   copy.addEventListener("click", async () => {
@@ -629,6 +650,7 @@ function render(mode: Display, bytes: number[], row: MemoryRow, full = false): s
       return asBcd(cut) + more;
     case "auto":
       if (row.meaning) return meaningText(row.meaning);
+      if (row.fwValue) return row.fwValue.name;
       if (looksLikeText(bytes)) return asText(bytes);
       if ([1, 2, 4].includes(bytes.length)) return asNumber(bytes, false);
       return render("hex", bytes, row);

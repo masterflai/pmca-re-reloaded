@@ -91,6 +91,8 @@ pub struct PluginInfo {
     pub compatibility: u32,
     /// Number of firmware names it brings, over all its tables.
     pub names: u32,
+    /// Number of stored-value names (menu options) it brings, over all its tables.
+    pub values: u32,
     /// Public Ed25519 key (hex) the file is signed with; `None` if unsigned.
     pub signer: Option<String>,
     /// Whether it is in effect in this session.
@@ -401,6 +403,12 @@ impl Plugin {
             diagnostics: self.entries(true),
             compatibility: m.compatibility.len() as u32,
             names: self.names.iter().map(|t| t.entries.len() as u32).sum(),
+            values: self
+                .names
+                .iter()
+                .flat_map(|t| t.entries.values())
+                .map(|e| e.values.len() as u32)
+                .sum(),
             signer: self.signer.clone(),
             active,
         }
@@ -861,6 +869,24 @@ mod tests {
         assert!(read(&unbound, table).err().unwrap().contains("scope"));
         let outside = manifest.replace("names/legacy.tsv", "../legacy.tsv");
         assert!(read(&outside, table).err().unwrap().contains("under names/"));
+    }
+
+    #[test]
+    fn a_names_table_may_also_carry_value_names_and_they_are_counted() {
+        let manifest = r#"{ "api": 1, "id": "demo", "name": "Demo", "version": "1",
+            "names": [{ "id": "legacy", "file": "names/legacy.tsv",
+                        "scope": { "platforms": ["CXD90014"] }, "source": "test", "license": "CC0-1.0" }] }"#;
+        let table = "#pmca-names/1\n0x00510014\tBKID_ASPECT\t\tfw-table\t\n=value\t0x00510014\t0\tVAL_OFF\tfw-table\n=value\t0x00510014\t0x03\tVAL_16_9\tcamera\n";
+        let plugin = read_archive(
+            &archive(&[
+                ("plugin.json", manifest.as_bytes()),
+                ("names/legacy.tsv", table.as_bytes()),
+            ]),
+            "x",
+        )
+        .unwrap();
+        assert_eq!(plugin.names[0].entries[&0x0051_0014].values[&3].name, "VAL_16_9");
+        assert_eq!(plugin.info(false).values, 2);
     }
 
     #[test]

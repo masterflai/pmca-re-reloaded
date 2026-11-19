@@ -217,6 +217,10 @@ pub fn changes<'a>(a: &'a Camset, b: &'a Camset) -> Vec<Change<'a>> {
 /// The backup subsystem that holds the settings a settings file carries.
 pub const BACKUP_SUBSYSTEM: u32 = 0x02cf;
 
+/// The backup property whose value plus one is the number of elements of
+/// every memory-set array: element 0 plus one per memory set.
+pub const MR_ELEMENT_COUNT_PROPERTY: u32 = 0x003e_000c;
+
 /// How a live record sits in the backup, relative to property `N` of
 /// [`BACKUP_SUBSYSTEM`], where `N` is the record number.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
@@ -230,6 +234,9 @@ pub enum Placement {
     /// Element `i` at property `N + 2i`; each element's memory-set array lies
     /// between two elements.
     Stride2,
+    /// Every element was found by its firmware name, at none of the
+    /// positions the step-based rules predict.
+    Named,
     /// Only the first elements were found in one of the two layouts; the rest
     /// sit somewhere else.
     Partial,
@@ -248,6 +255,7 @@ impl Placement {
             Self::Width => "width",
             Self::Consecutive => "consecutive",
             Self::Stride2 => "stride2",
+            Self::Named => "named",
             Self::Partial => "partial",
             Self::Differs => "differs",
             Self::Missing => "missing",
@@ -264,6 +272,8 @@ pub struct LiveLink {
     pub placement: Placement,
     /// The backup property of each element that was found, in element order.
     pub properties: Vec<u32>,
+    /// Whether the elements were found by firmware name rather than by position.
+    pub by_name: bool,
 }
 
 /// Where the memory-set values of one element of one record were found.
@@ -278,6 +288,9 @@ pub struct SetLink {
     pub array: Option<u32>,
     /// Whether that array is the property right after the live element.
     pub beside: bool,
+    /// Whether it was found by matching `BKID_APP_MR_<x>` to the live
+    /// element's `BKID_APP_<x>` name rather than by position or by value.
+    pub by_name: bool,
 }
 
 /// How the records of a settings file line up with a `Backup.bin` of the same
@@ -292,6 +305,18 @@ pub struct Bridge {
     pub set_links: Vec<SetLink>,
     /// How many properties the backup holds in [`BACKUP_SUBSYSTEM`].
     pub backup_properties: usize,
+    /// The number of elements of a memory-set array, from
+    /// [`MR_ELEMENT_COUNT_PROPERTY`] (element 0 plus one per memory set), if
+    /// the backup has that property. Falls back to the settings file's own
+    /// section count when it does not.
+    pub mr_elements: Option<usize>,
+}
+
+/// Set the records of `file` against the properties of `backup`, without
+/// firmware names. See [`bridge_with_names`] for the rule and the name-aware
+/// variant.
+pub fn bridge<D: AsRef<[u8]>>(file: &Camset, backup: &BackupFile<D>) -> Result<Bridge> {
+    bridge_with_names(file, backup, &|_| None)
 }
 
 /// Set the records of `file` against the properties of `backup`.
@@ -301,7 +326,17 @@ pub struct Bridge {
 /// `0x02cf`, and a memory set is element `s` of an array property, usually the
 /// one right after the live value. Values are compared, not assumed, so a
 /// backup from another camera or another day shows up as `Differs`.
-pub fn bridge<D: AsRef<[u8]>>(file: &Camset, backup: &BackupFile<D>) -> Result<Bridge> {
+///
+/// `names` looks up a property's firmware name, when one is installed: a live
+/// property is named `BKID_APP_<x>`, its memory-set array `BKID_APP_MR_<x>`,
+/// and element `i` of an array record `<stem><i>`. A name is only trusted when
+/// it resolves to exactly one property; otherwise the positional rule above
+/// decides, same as in [`bridge`].
+pub fn bridge_with_names<D: AsRef<[u8]>>(
+    file: &Camset,
+    backup: &BackupFile<D>,
+    names: &dyn Fn(u32) -> Option<String>,
+) -> Result<Bridge> {
     let props: BTreeMap<u16, Property> = backup
         .list_properties()?
         .into_iter()
@@ -313,6 +348,7 @@ pub fn bridge<D: AsRef<[u8]>>(file: &Camset, backup: &BackupFile<D>) -> Result<B
             .and_then(|o| n.checked_add(o))
             .and_then(|k| props.get(&k).map(|p| (k, p)))
     };
+    let name_of = |id: u16| names((BACKUP_SUBSYSTEM << 16) | u32::from(id));
 
     let mut live = Vec::new();
     for r in file.sections.first().into_iter().flatten() {
@@ -325,43 +361,64 @@ pub fn bridge<D: AsRef<[u8]>>(file: &Camset, backup: &BackupFile<D>) -> Result<B
                 .map(|(k, _)| k)
                 .collect()
         };
-        let (placement, indices) = if r.count == 1 {
+        let (placement, indices, by_name) = if r.count == 1 {
             match props.get(&r.id) {
-                None => (Placement::Missing, vec![]),
-                Some(p) if p.data == r.data => (Placement::Same, vec![r.id]),
-                Some(p) if same_number(&p.data, &r.data) => (Placement::Width, vec![r.id]),
-                Some(_) => (Placement::Differs, vec![]),
+                None => (Placement::Missing, vec![], false),
+                Some(p) if p.data == r.data => (Placement::Same, vec![r.id], false),
+                Some(p) if same_number(&p.data, &r.data) => (Placement::Width, vec![r.id], false),
+                Some(_) => (Placement::Differs, vec![], false),
             }
         } else {
             let (one, two) = (found(1), found(2));
+            // Element 0 of an array record sits at `r.id` itself; its name,
+            // minus the trailing "0", is every other element's name's stem.
+            let named =
+                name_of(r.id).as_deref().and_then(|n| n.strip_suffix('0')).and_then(|stem| {
+                    (0..elems.len())
+                        .map(|i| find_by_name(&props, names, &format!("{stem}{i}")))
+                        .collect::<Option<Vec<u16>>>()
+                });
             if one.len() == elems.len() {
-                (Placement::Consecutive, one)
+                (Placement::Consecutive, one, false)
             } else if two.len() == elems.len() {
-                (Placement::Stride2, two)
+                (Placement::Stride2, two, false)
+            } else if let Some(named) = named {
+                (Placement::Named, named, true)
             } else if !one.is_empty() || !two.is_empty() {
-                (Placement::Partial, if one.len() >= two.len() { one } else { two })
+                (Placement::Partial, if one.len() >= two.len() { one } else { two }, false)
             } else if props.contains_key(&r.id) {
-                (Placement::Differs, vec![])
+                (Placement::Differs, vec![], false)
             } else {
-                (Placement::Missing, vec![])
+                (Placement::Missing, vec![], false)
             }
         };
         let properties = indices.iter().map(|&k| (BACKUP_SUBSYSTEM << 16) | u32::from(k)).collect();
-        live.push(LiveLink { id: r.id, placement, properties });
+        live.push(LiveLink { id: r.id, placement, properties, by_name });
     }
 
-    let sets = file.sections.len().saturating_sub(1);
+    let mr_elements = backup
+        .get_property(MR_ELEMENT_COUNT_PROPERTY)
+        .ok()
+        .filter(|p| p.data.len() == 1)
+        .map(|p| usize::from(p.data[0]) + 1);
+    // Element 0 plus one per memory set; falls back to the file's own section
+    // count when the backup has no `MR_ELEMENT_COUNT_PROPERTY`.
+    let elements = mr_elements.unwrap_or(file.sections.len());
+    // Never beyond what the file actually holds or what the backup declares,
+    // so a disagreement cannot index either one out of bounds.
+    let sets = file.sections.len().saturating_sub(1).min(elements.saturating_sub(1));
     let mut set_links = Vec::new();
     if sets > 0 {
-        let width = |p: &Property| p.data.len() / (sets + 1);
+        let width = |p: &Property| p.data.len() / elements;
         let arrays: Vec<(u16, &Property)> = props
             .iter()
             .filter(|(_, p)| p.attr & attr::ARRAY_DATA != 0 && !p.data.is_empty())
-            .filter(|(_, p)| p.data.len() % (sets + 1) == 0)
+            .filter(|(_, p)| p.data.len() % elements == 0)
             .map(|(k, p)| (*k, p))
             .collect();
-        let by_set: Vec<BTreeMap<u16, &Record>> =
+        let mut by_set: Vec<BTreeMap<u16, &Record>> =
             file.sections[1..].iter().map(|s| s.iter().map(|r| (r.id, r)).collect()).collect();
+        by_set.truncate(sets);
         let holds = |p: &Property, id: u16, i: usize| {
             let w = width(p);
             (1..=sets).all(|s| {
@@ -385,31 +442,69 @@ pub fn bridge<D: AsRef<[u8]>>(file: &Camset, backup: &BackupFile<D>) -> Result<B
                 let next = index.and_then(|k| k.checked_add(1));
                 let beside = next.and_then(|k| props.get(&k)).is_some_and(|p| {
                     p.attr & attr::ARRAY_DATA != 0
-                        && p.data.len() % (sets + 1) == 0
+                        && p.data.len() % elements == 0
                         && holds(p, r.id, i)
                 });
-                let array = if beside {
-                    next
+                let (array, by_name) = if beside {
+                    (next, false)
+                } else if let Some(k) = index
+                    .and_then(name_of)
+                    .as_deref()
+                    .and_then(bkid_suffix)
+                    .and_then(|x| find_by_name(&props, names, &format!("BKID_APP_MR_{x}")))
+                    .filter(|&k| {
+                        props.get(&k).is_some_and(|p| {
+                            p.attr & attr::ARRAY_DATA != 0
+                                && !p.data.is_empty()
+                                && p.data.len() % elements == 0
+                        })
+                    })
+                {
+                    (Some(k), true)
                 } else if varies {
                     // Only values that differ between the sets single out one array.
                     let mut hits = arrays.iter().filter(|(_, p)| holds(p, r.id, i));
                     match (hits.next(), hits.next()) {
-                        (Some((k, _)), None) => Some(*k),
-                        _ => None,
+                        (Some((k, _)), None) => (Some(*k), false),
+                        _ => (None, false),
                     }
                 } else {
-                    None
+                    (None, false)
                 };
                 set_links.push(SetLink {
                     id: r.id,
                     element: i as u16,
                     array: array.map(|k| (BACKUP_SUBSYSTEM << 16) | u32::from(k)),
                     beside,
+                    by_name,
                 });
             }
         }
     }
-    Ok(Bridge { live, sets, set_links, backup_properties: props.len() })
+    Ok(Bridge { live, sets, set_links, backup_properties: props.len(), mr_elements })
+}
+
+/// The single property named `name` within [`BACKUP_SUBSYSTEM`], if there is
+/// exactly one.
+fn find_by_name(
+    props: &BTreeMap<u16, Property>,
+    names: &dyn Fn(u32) -> Option<String>,
+    name: &str,
+) -> Option<u16> {
+    let mut hits = props
+        .keys()
+        .copied()
+        .filter(|&k| names((BACKUP_SUBSYSTEM << 16) | u32::from(k)).as_deref() == Some(name));
+    match (hits.next(), hits.next()) {
+        (Some(k), None) => Some(k),
+        _ => None,
+    }
+}
+
+/// The part of a live property's name after the `BKID_APP_` prefix, for
+/// pairing it with its memory-set array's name `BKID_APP_MR_<x>`.
+fn bkid_suffix(name: &str) -> Option<&str> {
+    name.strip_prefix("BKID_APP_")
 }
 
 /// Element `i` of a record, if it has one.
@@ -505,29 +600,48 @@ mod tests {
         assert!(matches!(parse(&body), Err(Error::Checksum)));
     }
 
-    /// A revision-4 backup whose subsystem `0x02cf` holds `props` as
-    /// `(index, attr, value)`; every other index has no entry.
-    fn backup(props: &[(u16, u16, &[u8])]) -> Vec<u8> {
+    /// A revision-4 backup whose properties are `props`, given as full id
+    /// (`subsystem << 16 | index`), attribute and value; every other index of
+    /// a subsystem that appears has no entry.
+    #[allow(clippy::type_complexity)]
+    fn backup(props: &[(u32, u16, &[u8])]) -> Vec<u8> {
         const SUBSYSTEMS: usize = 0x2d0;
-        let count = usize::from(props.iter().map(|p| p.0).max().unwrap()) + 1;
+        let mut by_subsystem: BTreeMap<u16, Vec<(u16, u16, &[u8])>> = BTreeMap::new();
+        for &(id, attr, value) in props {
+            by_subsystem.entry((id >> 16) as u16).or_default().push((id as u16, attr, value));
+        }
+        let counts: Vec<(u16, u16)> = by_subsystem
+            .iter()
+            .map(|(&sub, entries)| (sub, entries.iter().map(|e| e.0).max().unwrap() + 1))
+            .collect();
+        let total: usize = counts.iter().map(|&(_, c)| usize::from(c)).sum();
         let table = 0x100 + SUBSYSTEMS * 6;
-        let data_offset = (table + count * 6).next_multiple_of(0x100);
+        let data_offset = (table + total * 6).next_multiple_of(0x100);
         let mut buf = vec![0u8; data_offset];
         buf[12..16].copy_from_slice(b"BK4\0");
         buf[16..20].copy_from_slice(&(SUBSYSTEMS as u32).to_le_bytes());
-        buf[20..24].copy_from_slice(&(count as u32).to_le_bytes());
+        buf[20..24].copy_from_slice(&(total as u32).to_le_bytes());
         buf[24..28].copy_from_slice(&(data_offset as u32).to_le_bytes());
-        let sub = 0x100 + 0x2cf * 6;
-        buf[sub..sub + 2].copy_from_slice(&(count as u16).to_le_bytes());
-        for i in 0..count {
-            let e = table + i * 6;
-            buf[e + 2..e + 6].copy_from_slice(&u32::MAX.to_le_bytes());
+
+        let mut bases = BTreeMap::new();
+        let mut base = 0u32;
+        for &(sub, count) in &counts {
+            let e = 0x100 + usize::from(sub) * 6;
+            buf[e..e + 2].copy_from_slice(&count.to_le_bytes());
+            buf[e + 2..e + 6].copy_from_slice(&base.to_le_bytes());
+            for i in 0..count {
+                let slot = table + (base as usize + usize::from(i)) * 6;
+                buf[slot + 2..slot + 6].copy_from_slice(&u32::MAX.to_le_bytes());
+            }
+            bases.insert(sub, base);
+            base += u32::from(count);
         }
-        for &(index, attr, value) in props {
-            let e = table + usize::from(index) * 6;
+        for &(id, attr, value) in props {
+            let (sub, index) = ((id >> 16) as u16, id as u16);
+            let slot = table + (bases[&sub] as usize + usize::from(index)) * 6;
             let ptr = ((value.len() as u32) << 24) | buf.len() as u32;
-            buf[e..e + 2].copy_from_slice(&attr.to_le_bytes());
-            buf[e + 2..e + 6].copy_from_slice(&ptr.to_le_bytes());
+            buf[slot..slot + 2].copy_from_slice(&attr.to_le_bytes());
+            buf[slot + 2..slot + 6].copy_from_slice(&ptr.to_le_bytes());
             buf.extend_from_slice(value);
         }
         let size = (buf.len() - data_offset) as u32;
@@ -544,6 +658,7 @@ mod tests {
     #[test]
     fn records_are_found_in_the_backup_with_their_memory_sets() {
         const ARRAY: u16 = attr::ARRAY_DATA;
+        const SUB: u32 = BACKUP_SUBSYSTEM << 16;
         let file = parse(&build(&[
             &[
                 (0x10, 1, &[5]),
@@ -558,45 +673,123 @@ mod tests {
         ]))
         .unwrap();
         let image = backup(&[
-            (0x10, 0, &[5]),
-            (0x11, ARRAY, &[5, 7, 8]),
-            (0x20, 0, &[2]),
-            (0x30, 0, &[1]),
-            (0x31, ARRAY, &[1, 4, 6]),
-            (0x32, 0, &[2]),
-            (0x33, ARRAY, &[2, 5, 7]),
-            (0x40, 0, &[3]),
-            (0x60, 0, &[1]),
-            (0x70, ARRAY, &[1, 3, 4]),
+            (SUB | 0x10, 0, &[5]),
+            (SUB | 0x11, ARRAY, &[5, 7, 8]),
+            (SUB | 0x20, 0, &[2]),
+            (SUB | 0x30, 0, &[1]),
+            (SUB | 0x31, ARRAY, &[1, 4, 6]),
+            (SUB | 0x32, 0, &[2]),
+            (SUB | 0x33, ARRAY, &[2, 5, 7]),
+            (SUB | 0x40, 0, &[3]),
+            (SUB | 0x60, 0, &[1]),
+            (SUB | 0x70, ARRAY, &[1, 3, 4]),
         ]);
         let b = bridge(&file, &BackupFile::new(&image).unwrap()).unwrap();
 
-        let placements: Vec<_> = b.live.iter().map(|l| (l.id, l.placement)).collect();
+        let placements: Vec<_> = b.live.iter().map(|l| (l.id, l.placement, l.by_name)).collect();
         assert_eq!(
             placements,
             [
-                (0x10, Placement::Same),
-                (0x20, Placement::Width),
-                (0x30, Placement::Stride2),
-                (0x40, Placement::Differs),
-                (0x50, Placement::Missing),
-                (0x60, Placement::Same),
+                (0x10, Placement::Same, false),
+                (0x20, Placement::Width, false),
+                (0x30, Placement::Stride2, false),
+                (0x40, Placement::Differs, false),
+                (0x50, Placement::Missing, false),
+                (0x60, Placement::Same, false),
             ]
         );
         assert_eq!(b.live[2].properties, [0x02cf_0030, 0x02cf_0032]);
         assert_eq!(b.sets, 2);
+        assert_eq!(b.mr_elements, None);
 
         let sets: Vec<_> =
-            b.set_links.iter().map(|s| (s.id, s.element, s.array, s.beside)).collect();
+            b.set_links.iter().map(|s| (s.id, s.element, s.array, s.beside, s.by_name)).collect();
         assert_eq!(
             sets,
             [
-                (0x10, 0, Some(0x02cf_0011), true),
-                (0x30, 0, Some(0x02cf_0031), true),
-                (0x30, 1, Some(0x02cf_0033), true),
-                (0x60, 0, Some(0x02cf_0070), false),
+                (0x10, 0, Some(0x02cf_0011), true, false),
+                (0x30, 0, Some(0x02cf_0031), true, false),
+                (0x30, 1, Some(0x02cf_0033), true, false),
+                (0x60, 0, Some(0x02cf_0070), false, false),
             ]
         );
+    }
+
+    #[test]
+    fn the_mr_element_count_property_is_used_and_can_disagree_with_the_file() {
+        const ARRAY: u16 = attr::ARRAY_DATA;
+        const SUB: u32 = BACKUP_SUBSYSTEM << 16;
+        // Two memory-set sections in the file, but the backup declares only
+        // one slot (0x00 -> 2 elements): the array property is sized for 2
+        // elements and the second file section must be ignored, not read
+        // past the end of that property's data.
+        let file =
+            parse(&build(&[&[(0x10, 1, &[5])], &[(0x10, 1, &[6])], &[(0x10, 1, &[9])]])).unwrap();
+        let image = backup(&[
+            (SUB | 0x10, 0, &[5]),
+            (SUB | 0x11, ARRAY, &[5, 6]),
+            (0x003e_000c, 0, &[0x01]),
+        ]);
+        let b = bridge(&file, &BackupFile::new(&image).unwrap()).unwrap();
+        assert_eq!(b.mr_elements, Some(2));
+        assert_eq!(b.sets, 1);
+        assert_eq!(
+            b.set_links.iter().map(|s| (s.id, s.array)).collect::<Vec<_>>(),
+            [(0x10, Some(0x02cf_0011))]
+        );
+    }
+
+    #[test]
+    fn a_name_locates_a_memory_set_array_the_positional_search_cannot() {
+        const ARRAY: u16 = attr::ARRAY_DATA;
+        const SUB: u32 = BACKUP_SUBSYSTEM << 16;
+        let file =
+            parse(&build(&[&[(0x10, 1, &[5])], &[(0x10, 1, &[6])], &[(0x10, 1, &[6])]])).unwrap();
+        // Two array properties hold the same values, so the value-based
+        // search alone cannot single one out; the name can.
+        let image = backup(&[
+            (SUB | 0x10, 0, &[5]),
+            (SUB | 0x50, ARRAY, &[5, 6, 6]),
+            (SUB | 0x51, ARRAY, &[5, 6, 6]),
+        ]);
+        let names = |id: u32| match id {
+            x if x == (SUB | 0x10) => Some("BKID_APP_FOO".to_string()),
+            x if x == (SUB | 0x50) => Some("BKID_APP_MR_FOO".to_string()),
+            _ => None,
+        };
+        let b = bridge_with_names(&file, &BackupFile::new(&image).unwrap(), &names).unwrap();
+        assert_eq!(b.set_links.len(), 1);
+        assert_eq!(b.set_links[0].array, Some(SUB | 0x50));
+        assert!(b.set_links[0].by_name);
+        assert!(!b.set_links[0].beside);
+
+        // Without names, the same backup cannot be resolved.
+        let plain = bridge(&file, &BackupFile::new(&image).unwrap()).unwrap();
+        assert_eq!(plain.set_links[0].array, None);
+    }
+
+    #[test]
+    fn a_name_locates_array_elements_outside_the_step_based_positions() {
+        const SUB: u32 = BACKUP_SUBSYSTEM << 16;
+        let file = parse(&build(&[&[(0x20, 1, &[1, 2, 3])]])).unwrap();
+        // Element 0 sits at 0x20 as the rule predicts, but 1 and 2 sit at
+        // addresses neither the stride-1 nor the stride-2 rule would try.
+        let image = backup(&[(SUB | 0x20, 0, &[1]), (SUB | 0x99, 0, &[2]), (SUB | 0x9a, 0, &[3])]);
+        let names = |id: u32| match id {
+            x if x == (SUB | 0x20) => Some("BKID_APP_BAR0".to_string()),
+            x if x == (SUB | 0x99) => Some("BKID_APP_BAR1".to_string()),
+            x if x == (SUB | 0x9a) => Some("BKID_APP_BAR2".to_string()),
+            _ => None,
+        };
+        let b = bridge_with_names(&file, &BackupFile::new(&image).unwrap(), &names).unwrap();
+        assert_eq!(b.live[0].placement, Placement::Named);
+        assert!(b.live[0].by_name);
+        assert_eq!(b.live[0].properties, [SUB | 0x20, SUB | 0x99, SUB | 0x9a]);
+
+        // Without names, position alone leaves it partial (only element 0).
+        let plain = bridge(&file, &BackupFile::new(&image).unwrap()).unwrap();
+        assert_eq!(plain.live[0].placement, Placement::Partial);
+        assert_eq!(plain.live[0].properties, [SUB | 0x20]);
     }
 
     #[test]

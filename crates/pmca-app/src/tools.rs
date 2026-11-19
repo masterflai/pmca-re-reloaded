@@ -354,13 +354,19 @@ fn write_camset_header(l: &Localizer, out: &mut String, file: &camset::Camset) {
 /// Locate every record of a settings file in a `Backup.bin` of the same camera.
 ///
 /// A tally first, then one line per live record and one per memory-set
-/// element, so a record number can be searched for.
+/// element, so a record number can be searched for. Where installed firmware
+/// names resolve a record unambiguously, they are used ahead of the
+/// positional rule; [`Placement::Named`] and the set links' `name` tag mark
+/// where that happened.
 fn camset_bridge_report(l: &Localizer, file: &camset::Camset, data: &[u8]) -> Result<String> {
     use camset::Placement;
     let image =
         backup::BackupFile::new(data).map_err(|e| invalid(l, "tools-backup-invalid", &e))?;
-    let bridge =
-        camset::bridge(file, &image).map_err(|e| invalid(l, "tools-backup-invalid", &e))?;
+    let firmware = format!("{}.{:02}", file.firmware[0], file.firmware[1]);
+    let names = crate::names::for_image(&image, Some(&firmware));
+    let name_fn = |id: u32| names.get(id).filter(|n| !n.conflict).map(|n| n.name);
+    let bridge = camset::bridge_with_names(file, &image, &name_fn)
+        .map_err(|e| invalid(l, "tools-backup-invalid", &e))?;
     let mut out = String::new();
     write_camset_header(l, &mut out, file);
     let model = pmca_platform::props::find("modelName")
@@ -391,19 +397,32 @@ fn camset_bridge_report(l: &Localizer, file: &camset::Camset, data: &[u8]) -> Re
     for (placement, n) in &placed {
         let _ = writeln!(out, "  {:<12} {n:>6}", placement.as_str());
     }
-    let set_tag = |s: &camset::SetLink| match (s.array, s.beside) {
-        (Some(_), true) => "beside",
-        (Some(_), false) => "elsewhere",
-        (None, _) => "unlocated",
+    let set_tag = |s: &camset::SetLink| match (s.array, s.by_name, s.beside) {
+        (Some(_), true, _) => "name",
+        (Some(_), false, true) => "beside",
+        (Some(_), false, false) => "elsewhere",
+        (None, ..) => "unlocated",
     };
     if bridge.sets > 0 {
+        let _ = writeln!(
+            out,
+            "\n{}",
+            match bridge.mr_elements {
+                Some(elements) =>
+                    l.tr_args("camset-bridge-mr-elements", &[("elements", &elements.to_string())],),
+                None => l.tr_args(
+                    "camset-bridge-mr-elements-file",
+                    &[("elements", &(bridge.sets + 1).to_string())],
+                ),
+            }
+        );
         let mut tally: BTreeMap<&str, usize> = BTreeMap::new();
         for link in &bridge.set_links {
             *tally.entry(set_tag(link)).or_default() += 1;
         }
         let _ = writeln!(
             out,
-            "\n{}",
+            "{}",
             l.tr_args(
                 "camset-bridge-sets",
                 &[
@@ -416,7 +435,13 @@ fn camset_bridge_report(l: &Localizer, file: &camset::Camset, data: &[u8]) -> Re
             let _ = writeln!(out, "  {tag:<12} {n:>6}");
         }
     }
-    let _ = writeln!(out, "\n{}\n", l.tr("camset-bridge-legend"));
+    let _ = writeln!(
+        out,
+        "\n{}\n{}\n{}\n",
+        l.tr("camset-bridge-legend"),
+        l.tr("camset-bridge-legend-named"),
+        l.tr("camset-bridge-legend-mr-name"),
+    );
 
     let shape: BTreeMap<u16, (u16, u16)> = file
         .sections
@@ -425,8 +450,6 @@ fn camset_bridge_report(l: &Localizer, file: &camset::Camset, data: &[u8]) -> Re
         .flatten()
         .map(|r| (r.id, (r.elem_size, r.count)))
         .collect();
-    let firmware = format!("{}.{:02}", file.firmware[0], file.firmware[1]);
-    let names = crate::names::for_image(&image, Some(&firmware));
     let named = |id: Option<u32>| {
         id.and_then(|id| names.get(id))
             .map_or_else(String::new, |n| format!("  {}", crate::names::render(&n)))

@@ -4,7 +4,7 @@
 //! camera a backup came from and renders a name the same way everywhere.
 
 use pmca_core::backup::BackupFile;
-use pmca_platform::names::{self, Named};
+use pmca_platform::names::{self, Named, ValueNamed};
 use serde::{Deserialize, Serialize};
 
 pub use pmca_platform::names::{CameraKey, NameTable, NameView, Scope, tables};
@@ -44,6 +44,47 @@ impl FwName {
 #[must_use]
 pub fn lookup(view: &NameView<'_>, id: u32) -> Option<FwName> {
     view.get(id).map(|n| FwName::of(&n))
+}
+
+/// The firmware's name for one stored value (menu option) of a property, as
+/// dumps and front-ends carry it.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+#[cfg_attr(test, derive(ts_rs::TS), ts(export))]
+pub struct FwValue {
+    /// The option's name, such as `VAL_16_9`.
+    pub name: String,
+    /// `fw-table`, `fw-log`, `camset`, `analysis` or `camera`.
+    pub evidence: String,
+    /// The table it came from, as `plugin/table`.
+    pub table: String,
+}
+
+impl FwValue {
+    /// The report form of a looked-up value name.
+    #[must_use]
+    pub fn of(named: &ValueNamed<'_>) -> Self {
+        Self {
+            name: named.name.clone(),
+            evidence: named.evidence.as_str().to_string(),
+            table: format!("{}/{}", named.table.plugin, named.table.id),
+        }
+    }
+}
+
+/// The name of the stored value `bytes` holds for property `id`, converting
+/// `bytes` as a little-endian unsigned integer of their own size (1, 2, 4 or
+/// 8 bytes); any other size never matches.
+#[must_use]
+pub fn value_name(view: &NameView<'_>, id: u32, bytes: &[u8]) -> Option<FwValue> {
+    let value: u64 = match bytes.len() {
+        1 => bytes[0].into(),
+        2 => u16::from_le_bytes(bytes.try_into().ok()?).into(),
+        4 => u32::from_le_bytes(bytes.try_into().ok()?).into(),
+        8 => u64::from_le_bytes(bytes.try_into().ok()?),
+        _ => return None,
+    };
+    view.value_name(id, value).map(|n| FwValue::of(&n))
 }
 
 /// One name for a property several cameras hold: the name they agree on, or
@@ -305,5 +346,25 @@ mod tests {
         assert_eq!(search(&all, "010704fd", Some(&a6000)).len(), 1);
         assert!(search(&all, "other", Some(&a6000)).is_empty());
         assert!(search(&all, "  ", None).is_empty());
+    }
+
+    #[test]
+    fn value_name_converts_bytes_as_little_endian_and_rejects_other_sizes() {
+        let rows = "0x00510014\tBKID_ASPECT\t\tfw-table\t\n=value\t0x00510014\t0\tVAL_OFF\tfw-table\n=value\t0x00510014\t0x03\tVAL_16_9\tcamera\n";
+        let t = table("a", &["ILCE-6000"], rows);
+        let camera = camera_key_of(Some("ILCE-6000"), None, None);
+        let tables = [t];
+        let view = NameView::new(&tables, &camera);
+
+        assert_eq!(value_name(&view, 0x0051_0014, &[0]).unwrap().name, "VAL_OFF");
+        let v = value_name(&view, 0x0051_0014, &[3]).unwrap();
+        assert_eq!(v.name, "VAL_16_9");
+        assert_eq!(v.evidence, "camera");
+        assert_eq!(v.table, "a/t");
+        // 0x0003 as little-endian u16.
+        assert_eq!(value_name(&view, 0x0051_0014, &[3, 0]).unwrap().name, "VAL_16_9");
+        assert!(value_name(&view, 0x0051_0014, &[3, 0, 0]).is_none());
+        assert!(value_name(&view, 0x0051_0014, &[9]).is_none());
+        assert!(value_name(&view, 0x0099_0000, &[0]).is_none());
     }
 }

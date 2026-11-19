@@ -28,6 +28,22 @@ fwName?: FwName,
  */
 fwNameFor?: Array<number>, 
 /**
+ * `Some(true)` when this is one of the per-slot arrays a memory set
+ * spreads a value across, by the rule in the module documentation.
+ */
+memorySet?: boolean, 
+/**
+ * `Some(true)` when reading the backup over USB changes this property by
+ * itself, regardless of what is asked for.
+ */
+usbRead?: boolean, 
+/**
+ * The original id each source held this property under, where the row
+ * was lined up by firmware name rather than id because the sources are
+ * different models. `None` for an id-aligned row.
+ */
+idsBySource?: Array<string | null>, 
+/**
  * The class, as named by [`Class::as_str`].
  */
 class: string, 

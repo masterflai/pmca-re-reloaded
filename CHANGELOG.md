@@ -8,6 +8,20 @@ All notable changes to this project are documented here. The format follows
 
 ### Added
 
+- Memory view: an array that holds one element per memory set is split into
+  its slots in the detail, element 0 being the working copy of the slot
+  loaded last. The number of slots comes from the camera's own count
+  (property `0x003e000c` plus one).
+- Name tables can carry the firmware's names for stored values (menu
+  options), as `=value` lines; the memory view shows them in place of the
+  number where a table has one.
+- Camera comparison: different models can be lined up by firmware name
+  instead of by id where installed tables name the properties (window and
+  `compare-backups --by-name`). Rows that are memory-set arrays, and the
+  value the USB read itself changes, are marked.
+- `print-camset --backup` takes the element count of the memory-set arrays
+  from the backup, and where installed tables name the properties it finds
+  memory-set arrays and array elements by name that their position misses.
 - `pmca-console wbi inspect|unpack|diff` reads Sony WBI1 warm-boot images
   offline: the memory sections with their addresses, sizes and SHA-256, every
   section unpacked into a new folder, or which sections differ between two
@@ -70,6 +84,9 @@ All notable changes to this project are documented here. The format follows
 
 ### Changed
 
+- Dumps and the memory view also withhold network, account and licence data
+  (Wi-Fi, FTP, SSH fingerprints, licences, IPTC, MAC addresses, device and
+  user names) wherever an installed name table identifies them.
 - The analysis is one menu entry with a choice of three: look at the memory,
   find a setting (search for it, or check a place already known), and
   compare cameras. The separate entries for the function analysis and the

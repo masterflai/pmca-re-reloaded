@@ -43,10 +43,12 @@ pub(crate) fn compare_backups_command(
     only_switches: bool,
     similar_distance: Option<usize>,
     auto_noise: bool,
+    align_by_name: bool,
 ) -> Result<(), Box<dyn std::error::Error>> {
     let options = CompareOptions {
         similar_distance: similar_distance.unwrap_or(DEFAULT_SIMILAR_DISTANCE),
         auto_noise,
+        align_by_name,
         ..CompareOptions::default()
     };
     let report = compare::compare_paths(l, files, &options)?;

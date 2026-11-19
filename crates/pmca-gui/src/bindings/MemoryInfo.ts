@@ -41,4 +41,8 @@ changed: number | null,
 /**
  * Whether that reading came from the same camera.
  */
-sameCamera: boolean | null, };
+sameCamera: boolean | null, 
+/**
+ * Elements per memory-set array (working copy plus slots), where the store says.
+ */
+memorySetSlots?: number, };

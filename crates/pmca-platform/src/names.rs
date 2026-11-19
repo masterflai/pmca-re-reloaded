@@ -10,6 +10,17 @@
 //! scoped by platform. On newer bodies the same name sits at a different index
 //! per model and firmware, so their tables are scoped by model and firmware or
 //! by the build string a `Backup.bin` carries at offset 0x40.
+//!
+//! A row may also name one stored value of a property (a menu option) rather
+//! than the property itself, e.g. firmware shows `0` as `VAL_OFF`. Such a row
+//! starts with `=value` instead of the id and reads
+//! `=value<TAB>id<TAB>value<TAB>name<TAB>evidence`, where `id` is a property
+//! already named by a row earlier or later in the same table, and `value` is
+//! decimal or `0x` hex. A value matches a property's stored bytes read as a
+//! little-endian unsigned integer of their own size (1, 2, 4 or 8 bytes);
+//! other sizes never match. The list position of a menu option is never the
+//! stored value, only an explicit row counts. Older files and plugins without
+//! such rows keep parsing exactly as before.
 
 use std::collections::BTreeMap;
 use std::sync::OnceLock;
@@ -19,6 +30,15 @@ pub const HEADER: &str = "#pmca-names/1";
 
 /// The most rows one table may hold.
 const MAX_ROWS: usize = 100_000;
+
+/// The most value-name rows one table may hold, over all its properties.
+const MAX_VALUE_ROWS: usize = 100_000;
+
+/// The most value names one property may list.
+const MAX_VALUES_PER_ID: usize = 4096;
+
+/// Marks a row that names one stored value of a property, not the property itself.
+const VALUE_ROW: &str = "=value";
 
 /// Where a name comes from, from weakest to strongest.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
@@ -66,6 +86,17 @@ pub struct NameEntry {
     pub evidence: Evidence,
     /// A remark, as written in the table.
     pub note: String,
+    /// Names for this property's stored values (menu options), by value.
+    pub values: BTreeMap<u64, ValueEntry>,
+}
+
+/// The firmware's name for one stored value of a property (a menu option).
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct ValueEntry {
+    /// The option's name, such as `VAL_16_9`.
+    pub name: String,
+    /// Where the pairing comes from.
+    pub evidence: Evidence,
 }
 
 /// Which cameras a table is for. Every list that is not empty has to match.
@@ -125,6 +156,19 @@ pub struct Named<'a> {
     pub table: &'a NameTable,
 }
 
+/// The name a camera gives one stored value (menu option) of a property.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct ValueNamed<'a> {
+    /// The option's name.
+    pub name: String,
+    /// Where the pairing comes from.
+    pub evidence: Evidence,
+    /// The entry of the table that answered.
+    pub entry: &'a ValueEntry,
+    /// The table it came from.
+    pub table: &'a NameTable,
+}
+
 /// Parse a table file.
 pub fn parse_table(text: &str) -> Result<BTreeMap<u32, NameEntry>, String> {
     let text = text.strip_prefix('\u{feff}').unwrap_or(text);
@@ -133,20 +177,27 @@ pub fn parse_table(text: &str) -> Result<BTreeMap<u32, NameEntry>, String> {
         return Err(format!("the first line must be `{HEADER}`"));
     }
     let mut out = BTreeMap::new();
+    // Value rows may name a property before its own name row is seen, so they
+    // are parsed once names are complete.
+    let mut value_rows = Vec::new();
     for (n, line) in lines.enumerate() {
         let row = n + 2;
         if line.trim().is_empty() || line.starts_with('#') {
             continue;
         }
+        let mut fields = line.split('\t');
+        let first = fields.next().unwrap_or_default().trim();
+        if first == VALUE_ROW {
+            if value_rows.len() >= MAX_VALUE_ROWS {
+                return Err(format!("more than {MAX_VALUE_ROWS} value rows"));
+            }
+            value_rows.push((row, fields.collect::<Vec<_>>()));
+            continue;
+        }
         if out.len() >= MAX_ROWS {
             return Err(format!("more than {MAX_ROWS} rows"));
         }
-        let mut fields = line.split('\t');
-        let id = fields
-            .next()
-            .and_then(|f| f.trim().strip_prefix("0x"))
-            .filter(|h| (1..=8).contains(&h.len()))
-            .and_then(|h| u32::from_str_radix(h, 16).ok())
+        let id = parse_id(first)
             .ok_or_else(|| format!("row {row}: the id must be hex like 0x003e0005"))?;
         let name = fields.next().unwrap_or_default().trim();
         if name.is_empty()
@@ -163,12 +214,64 @@ pub fn parse_table(text: &str) -> Result<BTreeMap<u32, NameEntry>, String> {
         if note.chars().count() > 200 || note.chars().any(char::is_control) {
             return Err(format!("row {row}: the note is too long or holds control characters"));
         }
-        let entry = NameEntry { name: name.to_string(), shape, evidence, note };
+        let entry =
+            NameEntry { name: name.to_string(), shape, evidence, note, values: BTreeMap::new() };
         if out.insert(id, entry).is_some() {
             return Err(format!("row {row}: id {id:#010x} is listed twice"));
         }
     }
+    for (row, fields) in value_rows {
+        let mut fields = fields.into_iter();
+        let id = fields
+            .next()
+            .map(str::trim)
+            .and_then(parse_id)
+            .ok_or_else(|| format!("row {row}: the id must be hex like 0x003e0005"))?;
+        let value = fields
+            .next()
+            .map(str::trim)
+            .and_then(parse_value)
+            .ok_or_else(|| format!("row {row}: the value must be decimal or 0x hex"))?;
+        let name = fields.next().unwrap_or_default().trim();
+        if name.is_empty()
+            || name.len() > 128
+            || !name.chars().all(|c| c.is_ascii_alphanumeric() || c == '_')
+        {
+            return Err(format!("row {row}: invalid value name"));
+        }
+        let evidence = Evidence::parse(fields.next().unwrap_or_default().trim())
+            .ok_or_else(|| format!("row {row}: unknown evidence"))?;
+        let entry = out
+            .get_mut(&id)
+            .ok_or_else(|| format!("row {row}: id {id:#010x} has no name row in this table"))?;
+        if entry.values.len() >= MAX_VALUES_PER_ID {
+            return Err(format!(
+                "row {row}: more than {MAX_VALUES_PER_ID} values for one property"
+            ));
+        }
+        if entry.values.insert(value, ValueEntry { name: name.to_string(), evidence }).is_some() {
+            return Err(format!("row {row}: id {id:#010x} value {value} is listed twice"));
+        }
+    }
     Ok(out)
+}
+
+/// `0x` and up to eight hex digits, as a property id.
+fn parse_id(text: &str) -> Option<u32> {
+    text.strip_prefix("0x")
+        .filter(|h| (1..=8).contains(&h.len()))
+        .and_then(|h| u32::from_str_radix(h, 16).ok())
+}
+
+/// Decimal or `0x` hex, as a property's stored value.
+fn parse_value(text: &str) -> Option<u64> {
+    if let Some(hex) = text.strip_prefix("0x") {
+        (1..=16).contains(&hex.len()).then(|| u64::from_str_radix(hex, 16).ok()).flatten()
+    } else {
+        (!text.is_empty() && text.chars().all(|c| c.is_ascii_digit()))
+            .then(|| text.parse().ok())
+            .flatten()
+    }
 }
 
 /// `""` for none, `"4"` for one element of four bytes, `"1x13"` for an array.
@@ -259,6 +362,19 @@ impl<'a> NameView<'a> {
             evidence = evidence.max(other.evidence);
         }
         Some(Named { name: names.join(" | "), evidence, conflict: names.len() > 1, entry, table })
+    }
+
+    /// The name of the stored `value` of property `id` on this camera.
+    ///
+    /// Takes the best-ranked table that names it. Unlike [`get`](Self::get),
+    /// tables that are equally well ranked but disagree are not merged into a
+    /// conflict: the first one wins.
+    #[must_use]
+    pub fn value_name(&self, id: u32, value: u64) -> Option<ValueNamed<'a>> {
+        self.ranked.iter().find_map(|(_, t)| {
+            let entry = t.entries.get(&id)?.values.get(&value)?;
+            Some(ValueNamed { name: entry.name.clone(), evidence: entry.evidence, entry, table: t })
+        })
     }
 
     /// Every property whose name contains `text`, ignoring case.
@@ -353,6 +469,38 @@ mod tests {
     }
 
     #[test]
+    fn value_rows_parse_decimal_and_hex_and_are_kept_on_their_property() {
+        let rows = parse_table(&format!(
+            "{HEADER}\n0x00510014\tBKID_ASPECT\t\tfw-table\t\n=value\t0x00510014\t0\tVAL_OFF\tfw-table\n=value\t0x00510014\t0x03\tVAL_16_9\tcamera\n"
+        ))
+        .unwrap();
+        let entry = &rows[&0x0051_0014];
+        assert_eq!(entry.values.len(), 2);
+        assert_eq!(entry.values[&0].name, "VAL_OFF");
+        assert_eq!(entry.values[&0].evidence, Evidence::FwTable);
+        assert_eq!(entry.values[&3].name, "VAL_16_9");
+        assert_eq!(entry.values[&3].evidence, Evidence::Camera);
+    }
+
+    #[test]
+    fn malformed_value_rows_are_refused_with_their_line() {
+        for (rows, expected) in [
+            ("0x1\tA\t\tfw-log\n=value\t0x2\t0\tX\tfw-log", "row 3: id 0x00000002 has no name row"),
+            ("0x1\tA\t\tfw-log\n=value\tZZ\t0\tX\tfw-log", "row 3: the id"),
+            ("0x1\tA\t\tfw-log\n=value\t0x1\tnope\tX\tfw-log", "row 3: the value"),
+            ("0x1\tA\t\tfw-log\n=value\t0x1\t0\tA B\tfw-log", "row 3: invalid value name"),
+            ("0x1\tA\t\tfw-log\n=value\t0x1\t0\tX\tguess", "row 3: unknown evidence"),
+            (
+                "0x1\tA\t\tfw-log\n=value\t0x1\t0\tX\tfw-log\n=value\t0x1\t0x0\tY\tcamera",
+                "row 4: id 0x00000001 value 0 is listed twice",
+            ),
+        ] {
+            let err = parse_table(&format!("{HEADER}\n{rows}")).unwrap_err();
+            assert!(err.starts_with(expected), "{rows:?}: {err}");
+        }
+    }
+
+    #[test]
     fn the_most_specific_table_wins_and_a_wrong_build_excludes() {
         let platform = Scope { platforms: vec!["CXD90014".into()], ..Scope::default() };
         let model = Scope {
@@ -393,5 +541,33 @@ mod tests {
         assert_eq!(same.evidence, Evidence::Camera);
         assert_eq!(view.find("first").len(), 1);
         assert_eq!(view.find("s").len(), 2);
+    }
+
+    #[test]
+    fn value_name_follows_the_same_ranking_as_names_and_does_not_merge_ties() {
+        let platform = Scope { platforms: vec!["CXD90014".into()], ..Scope::default() };
+        let model = Scope { models: vec!["ILCE-6000".into()], ..Scope::default() };
+        let tables = [
+            table(
+                "common",
+                platform,
+                "0x1\tASPECT\t\tfw-table\n=value\t0x1\t0\tCOMMON_OFF\tfw-table",
+            ),
+            table("a6000", model, "0x1\tASPECT\t\tcamera\n=value\t0x1\t0\tSPECIFIC_OFF\tcamera"),
+        ];
+        let view = NameView::new(&tables, &key("ILCE-6000", "CXD90014", None));
+        assert_eq!(view.value_name(1, 0).unwrap().name, "SPECIFIC_OFF");
+        assert!(view.value_name(1, 9).is_none());
+        assert!(
+            NameView::new(&tables, &key("DSC-RX1R", "CXD4132", None)).value_name(1, 0).is_none()
+        );
+
+        let scope = Scope { platforms: vec!["CXD90014".into()], ..Scope::default() };
+        let tied = [
+            table("a", scope.clone(), "0x1\tASPECT\t\tfw-log\n=value\t0x1\t0\tFIRST\tfw-log"),
+            table("b", scope, "0x1\tASPECT\t\tfw-table\n=value\t0x1\t0\tSECOND\tfw-table"),
+        ];
+        let tied_view = NameView::new(&tied, &key("ILCE-6000", "CXD90014", None));
+        assert_eq!(tied_view.value_name(1, 0).unwrap().name, "FIRST");
     }
 }

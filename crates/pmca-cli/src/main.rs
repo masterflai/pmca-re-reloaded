@@ -132,6 +132,10 @@ enum Command {
         /// Do not treat the drift between two dumps of one camera as noise.
         #[arg(long)]
         no_auto_noise: bool,
+        /// Line up different models by firmware name instead of id, where an
+        /// installed plugin names the properties.
+        #[arg(long)]
+        by_name: bool,
     },
     /// Print the contents of a `Usagelog.bin` downloaded with `usage-log`.
     ///
@@ -887,6 +891,7 @@ fn run(cmd: &Command, l: &Localizer) -> Result<(), Box<dyn std::error::Error>> {
                     serial: *with_serial,
                     photographer: *with_photographer,
                     copyright: *with_copyright,
+                    accounts: false,
                 },
             )?;
         }
@@ -900,6 +905,7 @@ fn run(cmd: &Command, l: &Localizer) -> Result<(), Box<dyn std::error::Error>> {
             only_switches,
             similar_distance,
             no_auto_noise,
+            by_name,
         } => {
             compare_backups_command(
                 l,
@@ -912,6 +918,7 @@ fn run(cmd: &Command, l: &Localizer) -> Result<(), Box<dyn std::error::Error>> {
                 *only_switches,
                 *similar_distance,
                 !*no_auto_noise,
+                *by_name,
             )?;
         }
         Command::PrintUsageLog { file } => {

@@ -70,13 +70,18 @@ pub struct Privacy {
     pub photographer: bool,
     /// Include the copyright fields.
     pub copyright: bool,
+    /// Include network, account and licence data: WiFi/FTP/SSH credentials,
+    /// licence and IPTC fields, MAC addresses, device and user names.
+    pub accounts: bool,
 }
 
 impl Privacy {
     /// Nothing identifying; what a dump carries unless asked otherwise.
-    pub const MASKED: Self = Self { serial: false, photographer: false, copyright: false };
+    pub const MASKED: Self =
+        Self { serial: false, photographer: false, copyright: false, accounts: false };
     /// Everything the camera holds.
-    pub const FULL: Self = Self { serial: true, photographer: true, copyright: true };
+    pub const FULL: Self =
+        Self { serial: true, photographer: true, copyright: true, accounts: true };
 
     /// A sentence for the file saying what it does and does not carry.
     fn describe(self) -> String {
@@ -84,6 +89,7 @@ impl Privacy {
             (!self.serial).then_some("serial number"),
             (!self.photographer).then_some("photographer"),
             (!self.copyright).then_some("copyright holder"),
+            (!self.accounts).then_some("network and account data"),
         ]
         .into_iter()
         .flatten()
@@ -94,6 +100,40 @@ impl Privacy {
             format!("Withheld: {}. Every other value as the camera holds it.", withheld.join(", "))
         }
     }
+}
+
+/// Whether a firmware name marks network, account or licence data: withheld
+/// unless [`Privacy::accounts`] asks for it, the same way the serial number
+/// and the owner fields are.
+///
+/// Most terms are matched as whole `_`-separated tokens, so `OWNERSHIP` does
+/// not trigger on `OWNER` the way `OWNER_NAME` does; the handful the firmware
+/// spells as one compound word are matched as substrings instead.
+#[must_use]
+pub fn is_sensitive_name(name: &str) -> bool {
+    const TOKENS: &[&str] = &[
+        "WIFI",
+        "WLAN",
+        "FTP",
+        "SSH",
+        "PASSWORD",
+        "PASSWD",
+        "SSID",
+        "LICENSE",
+        "LICENCE",
+        "IPTC",
+        "ACCOUNT",
+        "TOKEN",
+        "CREDENTIAL",
+        "FINGER",
+        "BLUETOOTH",
+        "PROXY",
+    ];
+    const SUBSTRINGS: &[&str] = &["MAC_ADDR", "IP_ADDR", "DEVICE_NAME", "USER_NAME", "OWNER"];
+
+    let upper = name.to_ascii_uppercase();
+    upper.split('_').any(|token| TOKENS.contains(&token))
+        || SUBSTRINGS.iter().any(|s| upper.contains(s))
 }
 
 /// What identifies the camera a dump came from.
@@ -287,6 +327,22 @@ pub struct CompareRow {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     #[cfg_attr(test, ts(optional))]
     pub fw_name_for: Option<Vec<usize>>,
+    /// `Some(true)` when this is one of the per-slot arrays a memory set
+    /// spreads a value across, by the rule in the module documentation.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[cfg_attr(test, ts(optional))]
+    pub memory_set: Option<bool>,
+    /// `Some(true)` when reading the backup over USB changes this property by
+    /// itself, regardless of what is asked for.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[cfg_attr(test, ts(optional))]
+    pub usb_read: Option<bool>,
+    /// The original id each source held this property under, where the row
+    /// was lined up by firmware name rather than id because the sources are
+    /// different models. `None` for an id-aligned row.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[cfg_attr(test, ts(optional))]
+    pub ids_by_source: Option<Vec<Option<String>>>,
     /// The class, as named by [`Class::as_str`].
     pub class: String,
     /// The common length, where every camera agrees on one.
@@ -398,6 +454,10 @@ pub struct CompareOptions {
     pub noise: BTreeSet<u32>,
     /// Also exclude whatever differs between two dumps of the same camera.
     pub auto_noise: bool,
+    /// Pair properties across sources of different models by their firmware
+    /// name rather than by id. Ignored where every source is the same model,
+    /// and for properties no source has a firmware name for.
+    pub align_by_name: bool,
 }
 
 impl Default for CompareOptions {
@@ -406,6 +466,7 @@ impl Default for CompareOptions {
             similar_distance: cmp::DEFAULT_SIMILAR_DISTANCE,
             noise: BTreeSet::new(),
             auto_noise: true,
+            align_by_name: false,
         }
     }
 }
@@ -625,9 +686,18 @@ fn dump_with_names(
     let properties = dump
         .entries
         .iter()
-        .map(|e| PropertyView {
-            fw_name: names::lookup(&fw_names, e.id),
-            ..property_view(e, privacy)
+        .map(|e| {
+            let mut view = PropertyView {
+                fw_name: names::lookup(&fw_names, e.id),
+                ..property_view(e, privacy)
+            };
+            if !privacy.accounts
+                && !view.redacted
+                && view.fw_name.as_ref().is_some_and(|fw| is_sensitive_name(&fw.name))
+            {
+                mask_sensitive(&mut view);
+            }
+            view
         })
         .collect();
     let build = Some(file.build()).filter(|b| !b.is_empty());
@@ -713,6 +783,35 @@ fn compare_with_names(
     tables: &[NameTable],
 ) -> CompareReport {
     let dumps: Vec<Dump> = files.iter().map(|(_, f)| f.to_dump()).collect();
+    let fw_names = SourceNames::new(files, tables);
+
+    let distinct_models =
+        files.iter().filter_map(|(_, f)| f.camera.model.as_deref()).collect::<BTreeSet<_>>().len();
+    let (dumps, alignment, remapped) = if options.align_by_name && distinct_models >= 2 {
+        let per_source: Vec<BTreeMap<u32, String>> = dumps
+            .iter()
+            .enumerate()
+            .map(|(i, d)| {
+                d.entries
+                    .iter()
+                    .filter_map(|e| {
+                        let fw = fw_names.get_one(i, e.id)?;
+                        (!fw.conflict).then_some((e.id, fw.name))
+                    })
+                    .collect()
+            })
+            .collect();
+        let (dumps, ids) = remap_by_name(dumps, &per_source);
+        let remapped: Vec<BTreeSet<u32>> =
+            per_source.iter().map(|m| m.keys().copied().collect()).collect();
+        (dumps, Some(ids), remapped)
+    } else {
+        (dumps, None, Vec::new())
+    };
+
+    // Taken from the first source's own view, before any alignment remaps
+    // ids: the property that counts the slots is named by id, not by name.
+    let slots = files.first().and_then(|(_, f)| memory_set_slot_count(f));
 
     let mut noise = options.noise.clone();
     let mut measured = options.auto_noise && add_measured_noise(files, &dumps, &mut noise);
@@ -723,13 +822,37 @@ fn compare_with_names(
         &cmp::Options { similar_distance: options.similar_distance, noise: noise.clone() },
     );
     let mut counts = comparison.counts();
-    let fw_names = SourceNames::new(files, tables);
     let mut rows: Vec<CompareRow> = comparison
         .rows
         .iter()
         .map(|r| {
-            let (fw_name, fw_name_for) = fw_names.get(r.id);
-            CompareRow { fw_name, fw_name_for, ..compare_row(r, 1) }
+            let aligned = alignment.as_ref().and_then(|a| a.get(&r.id));
+            let (fw_name, fw_name_for) = match aligned {
+                Some(ids) => fw_name_for_aligned(&fw_names, ids),
+                // A source whose property under this id moved to a named row names nothing here.
+                None if !remapped.is_empty() => {
+                    let ids: Vec<Option<u32>> =
+                        remapped.iter().map(|m| (!m.contains(&r.id)).then_some(r.id)).collect();
+                    fw_name_for_aligned(&fw_names, &ids)
+                }
+                None => fw_names.get(r.id),
+            };
+            let ids_by_source = aligned.map(|ids| {
+                ids.iter().map(|id| id.map(|id| format!("{id:#010x}"))).collect::<Vec<_>>()
+            });
+            let usb_read = is_usb_read(fw_name.as_ref());
+            let mut row = CompareRow {
+                memory_set: is_memory_set(r, slots),
+                usb_read,
+                fw_name,
+                fw_name_for,
+                ..compare_row(r, 1)
+            };
+            if let Some(first) = ids_by_source.iter().flatten().flatten().next() {
+                row.id = first.clone();
+            }
+            row.ids_by_source = ids_by_source;
+            row
         })
         .collect();
     let mut noise_ids: Vec<String> = noise.iter().map(|id| format!("{id:#010x}")).collect();
@@ -931,6 +1054,83 @@ impl<'a> SourceNames<'a> {
         let partial = !columns.is_empty() && columns.len() < self.views.len();
         (names::merge(each), partial.then_some(columns))
     }
+
+    /// What one source alone says about `id`, without merging with the others.
+    fn get_one(&self, source: usize, id: u32) -> Option<FwName> {
+        names::lookup(&self.views[source], id)
+            .or_else(|| self.stored[source].get(&id).map(|fw| (*fw).clone()))
+    }
+}
+
+/// [`SourceNames::get`], but for a row that was aligned by name: `ids` gives
+/// the original id each source held the property under, `None` where a source
+/// did not have it.
+fn fw_name_for_aligned(
+    fw_names: &SourceNames,
+    ids: &[Option<u32>],
+) -> (Option<FwName>, Option<Vec<usize>>) {
+    let mut columns = Vec::new();
+    let each: Vec<FwName> = ids
+        .iter()
+        .enumerate()
+        .filter_map(|(i, id)| {
+            let fw = fw_names.get_one(i, (*id)?)?;
+            columns.push(i + 1);
+            Some(fw)
+        })
+        .collect();
+    let partial = !columns.is_empty() && columns.len() < ids.len();
+    (names::merge(each), partial.then_some(columns))
+}
+
+/// Base of the synthetic id range used to line up properties by firmware name
+/// across different models. Far above any subsystem a real image declares,
+/// so a synthetic id cannot collide with one the image itself defines.
+const NAME_ALIGN_BASE: u32 = 0xf000_0000;
+
+/// Replace the id of every entry whose firmware name is known on its own
+/// source with a synthetic id shared by every source that has the same name,
+/// so the ordinary id-keyed comparison lines them up. Entries with no known
+/// name keep their own id, so they still align by id as before.
+///
+/// Returns the remapped dumps, and, for every synthetic id, the original id
+/// each source held it under (`None` where that source had none).
+fn remap_by_name(
+    dumps: Vec<Dump>,
+    names: &[BTreeMap<u32, String>],
+) -> (Vec<Dump>, BTreeMap<u32, Vec<Option<u32>>>) {
+    let mut synthetic: BTreeMap<&str, u32> = BTreeMap::new();
+    let mut next = NAME_ALIGN_BASE;
+    for map in names {
+        for name in map.values() {
+            synthetic.entry(name.as_str()).or_insert_with(|| {
+                let id = next;
+                next += 1;
+                id
+            });
+        }
+    }
+    let reverse: Vec<BTreeMap<&str, u32>> =
+        names.iter().map(|m| m.iter().map(|(&id, name)| (name.as_str(), id)).collect()).collect();
+    let ids_by_source: BTreeMap<u32, Vec<Option<u32>>> = synthetic
+        .iter()
+        .map(|(&name, &sid)| (sid, reverse.iter().map(|r| r.get(name).copied()).collect()))
+        .collect();
+    let dumps = dumps
+        .into_iter()
+        .zip(names)
+        .map(|(mut dump, map)| {
+            for entry in &mut dump.entries {
+                if let Some(&id) = map.get(&entry.id).and_then(|name| synthetic.get(name.as_str()))
+                {
+                    entry.id = id;
+                }
+            }
+            dump.entries.sort_unstable_by_key(|e| e.id);
+            dump
+        })
+        .collect();
+    (dumps, ids_by_source)
 }
 
 /// A translated name for a class, falling back to its stable name.
@@ -1040,6 +1240,48 @@ fn add_measured_noise(
     measured
 }
 
+/// Mask a property's value the way [`is_identifying`] values are withheld,
+/// for a value found sensitive only after the fact — its firmware name is
+/// not known until a name table is applied, which may happen after
+/// [`property_view`] has already written the value out.
+pub(crate) fn mask_sensitive(view: &mut PropertyView) {
+    view.hex = hex(&vec![0u8; view.size]);
+    view.reset = None;
+    view.touched = false;
+    view.redacted = true;
+}
+
+/// How many memory-set slots the dump declares, from the 1-byte property
+/// `0x003e000c` (`MR_ELEMENT_COUNT_PROPERTY` in `pmca_core::camset`) of its
+/// first image: the value plus one, element 0 being the working copy. `None`
+/// where the property is missing, is not a single byte, or names fewer than
+/// two slots — meaning no actual memory set, just the working copy.
+pub(crate) fn memory_set_slot_count(dump: &DumpFile) -> Option<usize> {
+    let p = dump.properties.iter().find(|p| p.id == "0x003e000c")?;
+    let bytes: Vec<&str> = p.hex.split_whitespace().collect();
+    let [byte] = bytes[..] else { return None };
+    let slots = usize::from(u8::from_str_radix(byte, 16).ok()?) + 1;
+    (slots >= 2).then_some(slots)
+}
+
+/// Whether a comparison row is one of the per-slot arrays a memory set
+/// spreads a value across: it carries the `ARRAY_DATA` attribute, and its
+/// size divides evenly by the slot count.
+fn is_memory_set(row: &cmp::Row, slots: Option<usize>) -> Option<bool> {
+    let slots = slots?;
+    let attr = row.attr?;
+    let size = row.size.filter(|s| *s > 0)?;
+    (attr & attr::ARRAY_DATA != 0 && size % slots == 0).then_some(true)
+}
+
+/// Whether reading the backup over USB changes this property by itself, by
+/// name alone: `BKID_APP_USB_CONNECTION_LATEST_SELECTED_AFTER_CONNECTION0`
+/// and anything else sharing that prefix.
+fn is_usb_read(fw_name: Option<&FwName>) -> Option<bool> {
+    const PREFIX: &str = "BKID_APP_USB_CONNECTION_LATEST_SELECTED_AFTER_CONNECTION";
+    fw_name.is_some_and(|fw| fw.name.split(" | ").any(|n| n.starts_with(PREFIX))).then_some(true)
+}
+
 fn property_view(entry: &DumpEntry, privacy: Privacy) -> PropertyView {
     let redacted = is_identifying(entry.id, entry.data.len(), privacy);
     let masked = vec![0u8; entry.data.len()];
@@ -1111,6 +1353,9 @@ fn compare_row(row: &cmp::Row, image: usize) -> CompareRow {
         name: row.size.and_then(|size| prop_name(row.id, size)),
         fw_name: None,
         fw_name_for: None,
+        memory_set: None,
+        usb_read: None,
+        ids_by_source: None,
         class: row.class.as_str().to_string(),
         size: row.size,
         attr: row.attr.map(|a| format!("{a:#04x}")),
@@ -1392,6 +1637,62 @@ mod tests {
         assert_eq!(fw.name, "BKID_A | BKID_C");
         assert!(fw.conflict);
         assert!(report.rows.iter().find(|r| r.id == FIRST).unwrap().fw_name_for.is_none());
+    }
+
+    #[test]
+    fn network_and_account_names_are_recognised() {
+        for name in [
+            "BKID_APP_WIFI_SSID",
+            "BKID_APP_FTP_SERVER_PASSWORD",
+            "PARENT_CHILD_SERVER_CAMERA_SSH_FINGER_PRINT_FIRST_HALF",
+            "BKID_MAC_ADDR",
+            "BKID_NET_SERVICE_DEVICE_NAME_VALID",
+            "BKID_APP_LICENSE_KEY",
+        ] {
+            assert!(is_sensitive_name(name), "{name}");
+        }
+        for name in ["BKID_APP_MENU_NTSC_PAL", "BKID_DISPLAY_EVF_DEVICE", "BKID_APP_SETTING_GRID"] {
+            assert!(!is_sensitive_name(name), "{name}");
+        }
+    }
+
+    fn named(name: &str) -> Option<FwName> {
+        Some(FwName {
+            name: name.to_string(),
+            evidence: "fw-log".to_string(),
+            conflict: false,
+            table: "p/t".to_string(),
+        })
+    }
+
+    #[test]
+    fn different_models_line_up_by_firmware_name() {
+        let mut a = named_dump(9, "BKID_APP_SAME");
+        a.camera.model = Some("ILCE-6000".to_string());
+        let mut b = dump_of([9, 9, 9, 9], 9);
+        b.camera.model = Some("DSC-RX1R".to_string());
+        let second = b.properties.iter_mut().find(|p| p.id == "0x00e70001").unwrap();
+        second.fw_name = named("BKID_APP_SAME");
+        second.hex = "09".to_string();
+        let files = [(PathBuf::from("a.json"), a), (PathBuf::from("b.json"), b)];
+        let options =
+            CompareOptions { auto_noise: false, align_by_name: true, ..CompareOptions::default() };
+        let report = compare_with_names(&files, &options, &[]);
+        let row = report
+            .rows
+            .iter()
+            .find(|r| r.fw_name.as_ref().is_some_and(|f| f.name == "BKID_APP_SAME"))
+            .unwrap();
+        assert_eq!(
+            row.ids_by_source.as_deref(),
+            Some(&[Some(FIRST.to_string()), Some("0x00e70001".to_string())][..])
+        );
+        assert_eq!(row.class, "identical");
+
+        let by_id = CompareOptions { align_by_name: false, ..options };
+        assert!(
+            compare_with_names(&files, &by_id, &[]).rows.iter().all(|r| r.ids_by_source.is_none())
+        );
     }
 
     #[test]

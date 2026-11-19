@@ -12,7 +12,7 @@ use crate::*;
 
 /// The three switches the view offers, as the dump layer wants them.
 fn privacy(serial: bool, photographer: bool, copyright: bool) -> pmca_app::compare::Privacy {
-    pmca_app::compare::Privacy { serial, photographer, copyright }
+    pmca_app::compare::Privacy { serial, photographer, copyright, accounts: false }
 }
 
 /// Read the connected camera and write a dump of it into `folder`.
@@ -130,6 +130,7 @@ pub(crate) async fn compare_run(
     paths: Vec<String>,
     similar_distance: usize,
     auto_noise: bool,
+    align_by_name: Option<bool>,
 ) -> Result<pmca_app::compare::CompareReport, CommandError> {
     in_background(move || {
         let state = app.state::<AppState>();
@@ -138,6 +139,7 @@ pub(crate) async fn compare_run(
         let options = pmca_app::compare::CompareOptions {
             similar_distance,
             auto_noise,
+            align_by_name: align_by_name.unwrap_or(false),
             ..pmca_app::compare::CompareOptions::default()
         };
         let report = pmca_app::compare::compare_paths(&localizer, &paths, &options)?;

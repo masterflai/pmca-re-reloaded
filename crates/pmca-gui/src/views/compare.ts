@@ -83,6 +83,8 @@ export function viewCompare(host: HTMLElement): void {
     className: "cmp-number",
   });
   const autoNoise = make("input", { type: "checkbox", checked: true });
+  const alignByName = make("input", { type: "checkbox" });
+  const alignRow = make("div", { className: "cmp-spaced" }, checkboxRow(alignByName, "compare-align-by-name", null));
   const keepImage = make("input", { type: "checkbox", checked: true });
   const withSerial = make("input", { type: "checkbox" });
   const withPhotographer = make("input", { type: "checkbox" });
@@ -207,6 +209,8 @@ export function viewCompare(host: HTMLElement): void {
     }
     runButton.disabled = entries.length < 2;
     addButton.disabled = source === null || entries.length >= MAX_SOURCES;
+    // Lining up by name only means something between different models.
+    alignRow.hidden = new Set(entries.map((entry) => entry.summary.camera.model).filter((m) => m)).size < 2;
   };
 
   /** Take a finished dump into the list and ready the form for the next one. */
@@ -328,6 +332,7 @@ export function viewCompare(host: HTMLElement): void {
         paths: entries.map((entry) => entry.path),
         similarDistance: Math.min(16, Math.max(0, distance.valueAsNumber || 0)),
         autoNoise: autoNoise.checked,
+        alignByName: !alignRow.hidden && alignByName.checked,
       });
       showDone(status, tr("msg-done"));
       drawResults();
@@ -373,6 +378,7 @@ export function viewCompare(host: HTMLElement): void {
       make("label", { className: "field-label", i18n: "compare-similar-distance" }),
       stepper(distance),
       make("div", { className: "cmp-spaced" }, checkboxRow(autoNoise, "compare-auto-noise", null)),
+      alignRow,
       tuningHelp(),
 
       make("div", { className: "cmp-spaced" }, runButton),
@@ -720,11 +726,21 @@ function grid(report: CompareReport, rows: CompareRow[], labels: string[]): HTML
       }
       name.append(line);
     }
+    for (const [on, key] of [
+      [row.memorySet, "compare-tag-memory-set"],
+      [row.usbRead, "compare-tag-usb-read"],
+    ] as const) {
+      if (on) name.append(make("div", {}, make("span", { className: "cmp-tag", i18n: key })));
+    }
+    const idCell = make("td", { className: "cmp-mono addr", textContent: row.id });
+    if (row.idsBySource !== undefined) {
+      idCell.title = row.idsBySource.map((id, i) => `${labels[i] ?? `#${i + 1}`}: ${id ?? "–"}`).join("\n");
+    }
     tbody.append(
       make(
         "tr",
         { className: `cmp-${row.class}` },
-        make("td", { className: "cmp-mono addr", textContent: row.id }),
+        idCell,
         make("td", { textContent: row.size !== null ? String(row.size) : "–" }),
         name,
         make("td", { textContent: tr(`compare-class-${row.class}`) }),

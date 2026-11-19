@@ -2132,6 +2132,14 @@ label.app-entry input[type="checkbox"] {
   font-weight: 600;
 }
 
+.cmp-tag {
+  font-size: 0.85em;
+  padding: 0 0.35em;
+  border: 1px solid var(--border);
+  border-radius: 0.3em;
+  color: var(--text-muted);
+}
+
 .memory-own {
   font-style: italic;
 }
