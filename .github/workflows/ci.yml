@@ -163,15 +163,18 @@ jobs:
         run: cargo audit --deny warnings
 
       # The Tauri shell is a separate workspace with its own lock file, and its
-      # dependencies ship in the installers just the same. Both ignored IDs come
-      # from Tauri's Linux-only gtk3 stack (glib 0.18, proc-macro-error via
-      # glib-macros) and have no fix while Tauri 2 targets gtk3.
+      # dependencies ship in the installers just the same. The first two ignored
+      # IDs come from Tauri's Linux-only gtk3 stack (glib 0.18, proc-macro-error
+      # via glib-macros) and have no fix while Tauri 2 targets gtk3. chrono
+      # (unmaintained) is only listed in the lock file through tauri-utils'
+      # serde_with; `cargo tree` finds no path that builds it.
       - name: cargo audit (src-tauri)
         run: >
           cargo audit --deny warnings
           --file crates/pmca-gui/src-tauri/Cargo.lock
           --ignore RUSTSEC-2024-0429
           --ignore RUSTSEC-2024-0370
+          --ignore RUSTSEC-2026-0543
 
       # The frontend's npm packages build the bundle that ships in every
       # installer, so a known vulnerability there matters as much as one in a

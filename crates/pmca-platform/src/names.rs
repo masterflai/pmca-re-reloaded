@@ -229,7 +229,7 @@ impl<'a> NameView<'a> {
     pub fn new(tables: &'a [NameTable], camera: &CameraKey) -> Self {
         let mut ranked: Vec<(u8, &NameTable)> =
             tables.iter().filter_map(|t| t.scope.rank(camera).map(|r| (r, t))).collect();
-        ranked.sort_by(|a, b| b.0.cmp(&a.0));
+        ranked.sort_by_key(|r| std::cmp::Reverse(r.0));
         Self { ranked }
     }
 
