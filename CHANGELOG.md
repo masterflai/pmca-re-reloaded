@@ -8,6 +8,10 @@ All notable changes to this project are documented here. The format follows
 
 ### Added
 
+- Service shell: `pull-verified <camera path> <file> <size> [sha256]` reads a
+  file or partition twice and saves it only when both reads have the expected
+  size and the same SHA-256; an existing file is never replaced. Not yet
+  tried against a camera. Contributed by fkr-0.
 - After an app installation, the camera details show how much of the
   camera's app storage is used and free, as the camera reports it (window
   and console).

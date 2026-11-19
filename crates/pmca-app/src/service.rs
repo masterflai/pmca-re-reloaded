@@ -555,6 +555,7 @@ impl ServiceSession {
             }
             ServiceRequest::PullVerified { remote, local, expected_bytes, expected_sha256 } => {
                 let verified = crate::service_verified::export_twice(
+                    l,
                     local,
                     *expected_bytes,
                     *expected_sha256,
@@ -566,8 +567,11 @@ impl ServiceSession {
                         &[("remote", remote), ("local", &local.display().to_string())],
                     ),
                     format!(
-                        "Verified twice: {} bytes; SHA-256: {}\n",
-                        verified.bytes, verified.sha256
+                        "{}\n",
+                        l.tr_args(
+                            "service-pulled-verified",
+                            &[("bytes", &verified.bytes.to_string()), ("sha", &verified.sha256)],
+                        )
                     ),
                 ))
             }

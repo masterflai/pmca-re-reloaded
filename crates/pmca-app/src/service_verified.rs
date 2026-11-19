@@ -10,6 +10,7 @@ use std::io::{self, Write};
 use std::path::{Path, PathBuf};
 use std::sync::atomic::{AtomicU64, Ordering};
 
+use pmca_i18n::Localizer;
 use sha2::{Digest, Sha256};
 
 use crate::{Error, Result};
@@ -82,24 +83,28 @@ impl Write for HashedWriter<'_> {
 ///
 /// Publication uses hard_link rather than rename: rename replaces an
 /// existing destination on Unix, while hard_link atomically fails if it
-/// already exists (including when it is a symlink). Filesystems without
-/// same-directory hard-link support fail closed instead of using a racy
-/// existence check and rename.
+/// already exists (including when it is a symlink). FAT and exFAT drives have
+/// no hard links; there the verified bytes are copied into a file created with
+/// `create_new`, which still never replaces anything.
 struct StagingFile {
     path: PathBuf,
     file: Option<File>,
 }
 
 impl StagingFile {
-    fn create(destination: &Path) -> Result<Self> {
+    fn create(l: &Localizer, destination: &Path) -> Result<Self> {
+        let staging_error =
+            || {
+                Error::Operation(l.tr_args(
+                    "service-verify-staging",
+                    &[("path", &destination.display().to_string())],
+                ))
+            };
         let parent = destination
             .parent()
             .filter(|path| !path.as_os_str().is_empty())
             .unwrap_or_else(|| Path::new("."));
-        let name = destination
-            .file_name()
-            .ok_or_else(|| Error::Operation("export destination needs a file name".into()))?
-            .to_string_lossy();
+        let name = destination.file_name().ok_or_else(staging_error)?.to_string_lossy();
         for _ in 0..32 {
             let sequence = NEXT_TEMP.fetch_add(1, Ordering::Relaxed);
             let path = parent.join(format!(".{name}.pmca-{}-{sequence}.tmp", std::process::id()));
@@ -118,17 +123,41 @@ impl StagingFile {
                 Err(error) => return Err(error.into()),
             }
         }
-        Err(Error::Operation("could not allocate a unique host staging file".into()))
+        Err(staging_error())
     }
 
-    fn publish(&mut self, destination: &Path) -> Result<()> {
+    fn publish(&mut self, l: &Localizer, destination: &Path) -> Result<()> {
         let file = self.file.take().expect("staging file available until publication");
         file.sync_all()?;
         // Windows cannot reliably unlink an open file. Close it before
         // publishing or cleaning up, on both success and failure.
         drop(file);
-        fs::hard_link(&self.path, destination)?;
-        Ok(())
+        let exists = || {
+            Error::Operation(
+                l.tr_args("service-verify-exists", &[("path", &destination.display().to_string())]),
+            )
+        };
+        match fs::hard_link(&self.path, destination) {
+            Ok(()) => Ok(()),
+            Err(error) if error.kind() == io::ErrorKind::AlreadyExists => Err(exists()),
+            Err(_) => {
+                let mut out = match File::options().write(true).create_new(true).open(destination) {
+                    Ok(out) => out,
+                    Err(error) if error.kind() == io::ErrorKind::AlreadyExists => {
+                        return Err(exists());
+                    }
+                    Err(error) => return Err(error.into()),
+                };
+                let copied =
+                    io::copy(&mut File::open(&self.path)?, &mut out).and_then(|_| out.sync_all());
+                if let Err(error) = copied {
+                    drop(out);
+                    let _ = fs::remove_file(destination);
+                    return Err(error.into());
+                }
+                Ok(())
+            }
+        }
     }
 }
 
@@ -146,26 +175,31 @@ impl Drop for StagingFile {
 /// into the supplied sink. An optional externally trusted hash prevents two
 /// consistently wrong camera reads from being accepted as the correct image.
 pub(crate) fn export_twice(
+    l: &Localizer,
     destination: &Path,
     expected_bytes: u64,
     expected_sha256: Option<[u8; 32]>,
     mut read_once: impl FnMut(&mut dyn Write) -> Result<()>,
 ) -> Result<VerifiedFile> {
     if !(1..=MAX_EXPORT_BYTES).contains(&expected_bytes) {
-        return Err(Error::Operation(format!(
-            "expected export size must be between 1 and {MAX_EXPORT_BYTES} bytes"
-        )));
+        return Err(Error::Operation(
+            l.tr_args("service-verify-size", &[("max", &MAX_EXPORT_BYTES.to_string())]),
+        ));
     }
+    let length_error = |got: u64| {
+        Error::Operation(l.tr_args(
+            "service-verify-length",
+            &[("expected", &expected_bytes.to_string()), ("got", &got.to_string())],
+        ))
+    };
 
-    let mut staging = StagingFile::create(destination)?;
+    let mut staging = StagingFile::create(l, destination)?;
     let mut first =
         HashedWriter::new(staging.file.as_mut().expect("staging file available"), expected_bytes);
     read_once(&mut first)?;
     let (first_len, first_hash) = first.finish();
     if first_len != expected_bytes {
-        return Err(Error::Operation(format!(
-            "first read length mismatch: expected {expected_bytes}, got {first_len}"
-        )));
+        return Err(length_error(first_len));
     }
 
     // A second USB read goes only into a bounded hash sink: no duplicate RAM
@@ -174,20 +208,38 @@ pub(crate) fn export_twice(
     let mut second = HashedWriter::new(&mut sink, expected_bytes);
     read_once(&mut second)?;
     let (second_len, second_hash) = second.finish();
-    if second_len != expected_bytes || second_hash != first_hash {
-        return Err(Error::Operation("camera readback length or SHA-256 mismatch".into()));
+    if second_len != expected_bytes {
+        return Err(length_error(second_len));
+    }
+    if second_hash != first_hash {
+        return Err(Error::Operation(l.tr("service-verify-mismatch")));
     }
     if expected_sha256.is_some_and(|expected| expected != first_hash) {
-        return Err(Error::Operation("camera data differs from expected SHA-256".into()));
+        return Err(Error::Operation(l.tr("service-verify-reference")));
     }
 
-    staging.publish(destination)?;
+    staging.publish(l, destination)?;
     Ok(VerifiedFile { bytes: first_len, sha256: hex(&first_hash) })
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    fn export_twice(
+        destination: &Path,
+        expected_bytes: u64,
+        expected_sha256: Option<[u8; 32]>,
+        read_once: impl FnMut(&mut dyn Write) -> Result<()>,
+    ) -> Result<VerifiedFile> {
+        super::export_twice(
+            &Localizer::new("en-US"),
+            destination,
+            expected_bytes,
+            expected_sha256,
+            read_once,
+        )
+    }
 
     struct TempDir(PathBuf);
 
