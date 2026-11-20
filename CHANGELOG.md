@@ -6,6 +6,12 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+### Fixed
+
+- Updater entry waits up to two minutes for on-camera confirmation and reboot,
+  with guidance about a possible black screen and resuming after a timeout.
+  A timeout alone does not establish that the camera is frozen.
+
 ### Added
 
 - Values that may be sensitive are recognised in one place and replaced by
