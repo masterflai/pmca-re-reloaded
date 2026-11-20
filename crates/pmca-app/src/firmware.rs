@@ -32,8 +32,8 @@ use crate::{Error, ProgressSink, Result};
 /// MTP, so the flow below does not have to be generic over the transport.
 pub type BoxedUpdater = SonyUpdaterCamera<Box<dyn SonyExtCmdTransport>>;
 
-/// How many times to poll for the camera returning in updater mode.
-const UPDATER_POLL_ATTEMPTS: usize = 60;
+/// Allow two minutes for on-camera confirmation and the subsequent reboot.
+const UPDATER_POLL_ATTEMPTS: usize = 240;
 
 /// Delay between updater-mode polls.
 const UPDATER_POLL_DELAY: Duration = Duration::from_millis(500);
@@ -367,13 +367,21 @@ pub fn enter_updater_mode(
     if discovery::mass_storage_needs_root() {
         return Err(Error::Usb(pmca_usb::Error::NeedsRoot));
     }
-    sink.emit(ProgressEvent::step(ProgressKind::Switching, l.tr("updater-switch-wait")));
+    sink.emit(ProgressEvent::step(
+        ProgressKind::Switching,
+        format!("{} {}", l.tr("updater-switch-wait"), l.tr("updater-switch-guidance")),
+    ));
     updater.switch_mode()?;
     // Release the rebooting device before polling for its updater-mode identity.
     drop(updater.into_transport());
 
-    let camera =
-        wait_for_updater_mode().ok_or_else(|| Error::Operation(l.tr("updater-switch-timeout")))?;
+    let camera = wait_for_updater_mode().ok_or_else(|| {
+        Error::Operation(format!(
+            "{} {}",
+            l.tr("updater-switch-timeout"),
+            l.tr("updater-timeout-guidance")
+        ))
+    })?;
     let mut updater = open_rebooted(&camera)?;
     // Re-check against the rebooted camera: that is the one about to be written.
     updater.check_guard(payload)?;
@@ -407,16 +415,69 @@ fn open_rebooted(camera: &DetectedCamera) -> Result<BoxedUpdater> {
 /// is no way to tell which one was just rebooted, and writing firmware to the
 /// wrong device is not recoverable.
 fn wait_for_updater_mode() -> Option<DetectedCamera> {
-    for _ in 0..UPDATER_POLL_ATTEMPTS {
-        std::thread::sleep(UPDATER_POLL_DELAY);
-        if let Ok(cameras) = discovery::list_cameras() {
+    poll_for_updater(
+        || {
+            let cameras = discovery::list_cameras().ok()?;
             let mut updaters = cameras.into_iter().filter(|c| c.mode == CameraMode::Updater);
-            if let Some(first) = updaters.next()
-                && updaters.next().is_none()
-            {
-                return Some(first);
-            }
+            let first = updaters.next()?;
+            updaters.next().is_none().then_some(first)
+        },
+        std::thread::sleep,
+    )
+}
+
+/// Keep the confirmation/reboot wait testable without USB or real sleeps.
+fn poll_for_updater<T>(
+    mut discover: impl FnMut() -> Option<T>,
+    mut wait: impl FnMut(Duration),
+) -> Option<T> {
+    for _ in 0..UPDATER_POLL_ATTEMPTS {
+        wait(UPDATER_POLL_DELAY);
+        if let Some(camera) = discover() {
+            return Some(camera);
         }
     }
     None
+}
+
+#[cfg(test)]
+mod updater_wait_tests {
+    use super::*;
+
+    #[test]
+    fn confirmation_and_reboot_can_take_longer_than_thirty_seconds() {
+        let mut elapsed = Duration::ZERO;
+        let mut polls = 0;
+        let found = poll_for_updater(
+            || {
+                polls += 1;
+                (polls == 81).then_some("updater")
+            },
+            |delay| elapsed += delay,
+        );
+        assert_eq!(found, Some("updater"));
+        assert!(elapsed > Duration::from_secs(30));
+    }
+
+    #[test]
+    fn a_missing_updater_has_a_bounded_wait() {
+        let mut elapsed = Duration::ZERO;
+        let found = poll_for_updater(|| None::<()>, |delay| elapsed += delay);
+        assert_eq!(found, None);
+        assert_eq!(elapsed, Duration::from_secs(120));
+    }
+
+    #[test]
+    fn an_updater_on_the_final_poll_is_accepted() {
+        let mut polls = 0;
+        let found = poll_for_updater(
+            || {
+                polls += 1;
+                (polls == UPDATER_POLL_ATTEMPTS).then_some(())
+            },
+            |_| {},
+        );
+        assert_eq!(found, Some(()));
+        assert_eq!(polls, UPDATER_POLL_ATTEMPTS);
+    }
 }
