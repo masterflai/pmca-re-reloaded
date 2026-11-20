@@ -6,6 +6,12 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+### Fixed
+
+- Updater entry waits up to two minutes for on-camera confirmation and reboot,
+  with guidance about a possible black screen and resuming after a timeout.
+  A timeout alone does not establish that the camera is frozen.
+
 ### Added
 
 - Memory view: an array that holds one element per memory set is split into
