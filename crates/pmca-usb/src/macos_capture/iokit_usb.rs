@@ -662,6 +662,7 @@ impl CapturedUsbInterface {
             let reopen = call!(device, USBDeviceOpenSeize());
             me.device_open = reopen == kIOReturnSuccess;
             note(format!("iokit-usb: reopen {}", ret_name(reopen)));
+            note(format!("iokit-usb: captured, drivers: {}", super::driver_tree(registry_id)));
 
             // The capture republishes the interfaces the kernel's drivers were
             // torn off; on an idle camera that is done at once, on one whose
@@ -671,6 +672,11 @@ impl CapturedUsbInterface {
                 match me.open_interface(interface_number) {
                     Ok(()) => break,
                     Err(e) if waiting.elapsed() >= INTERFACE_WAIT => {
+                        // Dropping `me` resets the device, so this is the last look at who holds it.
+                        note(format!(
+                            "iokit-usb: refused, drivers: {}",
+                            super::driver_tree(registry_id)
+                        ));
                         return Err(CaptureError::taken(e));
                     }
                     Err(_) => std::thread::sleep(INTERFACE_POLL),
