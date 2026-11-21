@@ -110,7 +110,14 @@ function welcomeMap(): HTMLElement {
   const map = make("div");
   let list: HTMLElement | null = null;
   let group: string | undefined;
-  for (const entry of document.querySelectorAll<HTMLElement>(".nav-rail .nav-section, .nav-rail .nav-item")) {
+  let pastSpacer = false;
+  for (const entry of document.querySelectorAll<HTMLElement>(
+    ".nav-rail .nav-section, .nav-rail .nav-item, .nav-rail .nav-spacer",
+  )) {
+    if (entry.classList.contains("nav-spacer")) {
+      pastSpacer = true;
+      continue;
+    }
     const label = entry.querySelector<HTMLElement>(".nav-label")?.dataset.i18n;
     if (!label) continue;
     if (entry.classList.contains("nav-section")) {
@@ -121,6 +128,16 @@ function welcomeMap(): HTMLElement {
     }
     const view = entry.dataset.view;
     if (!view || view === "welcome") continue;
+    // A page of its own between the groups is a main entry like them, not part of the rest below the spacer.
+    if (!entry.dataset.group && !pastSpacer) {
+      map.append(
+        make("h3", { className: "welcome-map-group", i18n: label }),
+        make("p", { className: "welcome-map-main", i18n: `welcome-where-${view}` }),
+      );
+      list = null;
+      group = undefined;
+      continue;
+    }
     if (!list || entry.dataset.group !== group) {
       group = entry.dataset.group;
       list = make("dl", { className: group ? "fields welcome-map" : "fields welcome-map welcome-map-rest" });

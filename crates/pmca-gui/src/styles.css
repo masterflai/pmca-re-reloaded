@@ -1400,6 +1400,10 @@ summary {
   color: var(--accent-text);
 }
 
+.welcome-map-main {
+  margin: 6px 0 0;
+}
+
 /* The read-only camera values sit directly above the tweak list. Without a gap
    the last value and the first checkbox read as one continuous list, so the
    block that holds them keeps a margin below itself. The `:not(:empty)` guard
