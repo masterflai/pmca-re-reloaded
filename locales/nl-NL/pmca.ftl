@@ -1331,6 +1331,7 @@ backup-safety-copy = Het vorige beeld is opgeslagen in { $path }.
 backup-other-camera = Deze back-up is van een andere camera ({ $model }). Een back-up kan alleen worden teruggeschreven naar de camera van herkomst; er is niets geschreven.
 backup-saved = De back-up is opgeslagen.
 backup-restored = De back-up is teruggeschreven.
+backup-restore-camera-kept = Terwijl de image werd geschreven, behield de camera zijn eigen waarde in { $count } eigenschappen (klokken en tellers): { $ids }. Al het andere is opgeslagen zoals verzonden.
 file-filter-backup = Back-upbeeld
 reference-from-report = Uit een gedeeld rapport
 reference-manual = Velden met de hand invoeren

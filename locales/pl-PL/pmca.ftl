@@ -1328,6 +1328,7 @@ backup-safety-copy = Poprzedni obraz zapisano w { $path }.
 backup-other-camera = Ta kopia zapasowa pochodzi z innego aparatu ({ $model }). Kopię zapasową można zapisać z powrotem tylko do aparatu, z którego pochodzi; nic nie zapisano.
 backup-saved = Kopia zapasowa została zapisana.
 backup-restored = Kopia zapasowa została zapisana z powrotem.
+backup-restore-camera-kept = Podczas zapisu obrazu aparat zachował własną wartość w { $count } właściwościach (zegary i liczniki): { $ids }. Wszystko inne zapisano tak, jak wysłano.
 file-filter-backup = Obraz kopii zapasowej
 reference-from-report = Z udostępnionego raportu
 reference-manual = Wprowadź pola ręcznie

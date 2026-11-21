@@ -1326,6 +1326,7 @@ backup-safety-copy = पिछली इमेज { $path } में सहे�
 backup-other-camera = यह बैकअप किसी दूसरे कैमरे ({ $model }) का है। बैकअप केवल उसी कैमरे में वापस लिखा जा सकता है जिससे वह आया है; कुछ नहीं लिखा गया।
 backup-saved = बैकअप सहेजा गया।
 backup-restored = बैकअप वापस लिखा गया।
+backup-restore-camera-kept = इमेज लिखे जाते समय कैमरे ने { $count } गुणों में अपना मान रखा (घड़ियाँ और काउंटर): { $ids }। बाकी सब कुछ भेजे गए अनुसार सहेजा गया।
 file-filter-backup = बैकअप इमेज
 reference-from-report = साझा रिपोर्ट से
 reference-manual = फ़ील्ड हाथ से दर्ज करें

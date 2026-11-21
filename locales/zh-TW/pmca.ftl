@@ -1340,6 +1340,7 @@ backup-safety-copy = 先前的映像已儲存到 { $path }。
 backup-other-camera = 此備份來自另一台相機（{ $model }）。備份只能寫回它所來自的相機；未寫入任何內容。
 backup-saved = 備份已儲存。
 backup-restored = 備份已寫回。
+backup-restore-camera-kept = 寫入映像時，相機在 { $count } 個屬性中保留了自己的值（時鐘與計數器）：{ $ids }。其餘內容皆依傳送內容儲存。
 file-filter-backup = 備份映像
 reference-from-report = 從共用報告
 reference-manual = 手動輸入欄位

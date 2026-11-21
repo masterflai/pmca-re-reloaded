@@ -1329,6 +1329,7 @@ backup-safety-copy = A imagem anterior foi salva em { $path }.
 backup-other-camera = Este backup é de outra câmera ({ $model }). Um backup só pode ser regravado na câmera de onde veio; nada foi gravado.
 backup-saved = O backup foi salvo.
 backup-restored = O backup foi regravado.
+backup-restore-camera-kept = Enquanto a imagem era gravada, a câmera manteve o próprio valor em { $count } propriedades (relógios e contadores): { $ids }. Todo o resto foi salvo como enviado.
 file-filter-backup = Imagem de backup
 reference-from-report = De um relatório compartilhado
 reference-manual = Inserir campos manualmente

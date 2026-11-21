@@ -1329,6 +1329,7 @@ backup-safety-copy = L'image précédente a été sauvegardée dans { $path }.
 backup-other-camera = Cette sauvegarde provient d'un autre appareil ({ $model }). Une sauvegarde ne peut être réécrite que sur l'appareil dont elle provient ; rien n'a été écrit.
 backup-saved = La sauvegarde a été enregistrée.
 backup-restored = La sauvegarde a été réécrite.
+backup-restore-camera-kept = Pendant l'écriture de l'image, l'appareil a conservé sa propre valeur dans { $count } propriétés (horloges et compteurs) : { $ids }. Tout le reste a été enregistré tel qu'envoyé.
 file-filter-backup = Image de sauvegarde
 reference-from-report = Depuis un rapport partagé
 reference-manual = Saisir les champs à la main

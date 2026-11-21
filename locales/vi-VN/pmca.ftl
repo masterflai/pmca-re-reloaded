@@ -1340,6 +1340,7 @@ backup-safety-copy = Ảnh trước đó đã được lưu vào { $path }.
 backup-other-camera = Bản sao lưu này từ một máy ảnh khác ({ $model }). Một bản sao lưu chỉ có thể ghi lại vào máy ảnh nơi nó xuất phát; không có gì được ghi.
 backup-saved = Đã lưu bản sao lưu.
 backup-restored = Đã ghi bản sao lưu trở lại.
+backup-restore-camera-kept = Trong khi ghi ảnh, máy ảnh giữ giá trị riêng của nó ở { $count } thuộc tính (đồng hồ và bộ đếm): { $ids }. Mọi thứ khác được lưu đúng như đã gửi.
 file-filter-backup = Ảnh sao lưu
 reference-from-report = Từ một báo cáo được chia sẻ
 reference-manual = Nhập các trường thủ công

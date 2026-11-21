@@ -1328,6 +1328,7 @@ backup-safety-copy = Předchozí obraz byl uložen do { $path }.
 backup-other-camera = Tato záloha je z jiného fotoaparátu ({ $model }). Zálohu lze zapsat zpět pouze do fotoaparátu, z něhož pochází; nic nebylo zapsáno.
 backup-saved = Záloha byla uložena.
 backup-restored = Záloha byla zapsána zpět.
+backup-restore-camera-kept = Během zápisu obrazu si fotoaparát ponechal vlastní hodnotu v { $count } vlastnostech (hodiny a čítače): { $ids }. Vše ostatní bylo uloženo tak, jak bylo odesláno.
 file-filter-backup = Obraz zálohy
 reference-from-report = Ze sdílené zprávy
 reference-manual = Zadat pole ručně

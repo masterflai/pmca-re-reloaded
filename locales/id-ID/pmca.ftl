@@ -1329,6 +1329,7 @@ backup-safety-copy = Citra sebelumnya disimpan ke { $path }.
 backup-other-camera = Cadangan ini berasal dari kamera lain ({ $model }). Cadangan hanya dapat ditulis kembali ke kamera asalnya; tidak ada yang ditulis.
 backup-saved = Cadangan telah disimpan.
 backup-restored = Cadangan telah ditulis kembali.
+backup-restore-camera-kept = Saat image ditulis, kamera mempertahankan nilainya sendiri di { $count } properti (jam dan penghitung): { $ids }. Semua yang lain disimpan seperti yang dikirim.
 file-filter-backup = Citra cadangan
 reference-from-report = Dari laporan yang dibagikan
 reference-manual = Masukkan bidang secara manual

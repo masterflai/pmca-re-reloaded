@@ -1328,6 +1328,7 @@ backup-safety-copy = Prethodna slika spremljena je u { $path }.
 backup-other-camera = Ova sigurnosna kopija je s drugog fotoaparata ({ $model }). Sigurnosna kopija može se zapisati natrag samo na fotoaparat s kojeg potječe; ništa nije zapisano.
 backup-saved = Sigurnosna kopija je spremljena.
 backup-restored = Sigurnosna kopija je zapisana natrag.
+backup-restore-camera-kept = Dok se slika zapisivala, fotoaparat je zadržao vlastitu vrijednost u { $count } svojstava (satovi i brojači): { $ids }. Sve ostalo spremljeno je kako je poslano.
 file-filter-backup = Slika sigurnosne kopije
 reference-from-report = Iz dijeljenog izvještaja
 reference-manual = Ručni unos polja

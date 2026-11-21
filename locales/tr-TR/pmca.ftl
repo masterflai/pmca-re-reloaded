@@ -1329,6 +1329,7 @@ backup-safety-copy = Önceki görüntü { $path } konumuna kaydedildi.
 backup-other-camera = Bu yedek başka bir kameradan ({ $model }). Bir yedek yalnızca geldiği kameraya geri yazılabilir; hiçbir şey yazılmadı.
 backup-saved = Yedek kaydedildi.
 backup-restored = Yedek geri yazıldı.
+backup-restore-camera-kept = Görüntü yazılırken kamera { $count } özellikte kendi değerini korudu (saatler ve sayaçlar): { $ids }. Geri kalan her şey gönderildiği gibi kaydedildi.
 file-filter-backup = Yedek görüntüsü
 reference-from-report = Paylaşılan bir rapordan
 reference-manual = Alanları elle girin

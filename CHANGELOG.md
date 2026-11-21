@@ -104,6 +104,15 @@ All notable changes to this project are documented here. The format follows
   per finding, why it cannot be offered (too large, protected by the camera,
   attributes unknown).
 
+### Fixed
+
+- Restoring a backup no longer fails when the camera's clock or counters
+  move on while the image is written (seen on an ILCE-7CR in movie mode).
+  The read-back may differ only in the values of a few properties that the
+  camera changed itself or keeps read-only; those are named, everything else
+  must match byte for byte, and a value that reads back as it was before the
+  write still counts as a failed write.
+
 ## [1.13.0] - 2026-11-15
 
 ### Added

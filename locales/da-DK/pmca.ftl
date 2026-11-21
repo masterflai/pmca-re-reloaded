@@ -1328,6 +1328,7 @@ backup-safety-copy = Det forrige billede blev gemt i { $path }.
 backup-other-camera = Denne sikkerhedskopi er fra et andet kamera ({ $model }). En sikkerhedskopi kan kun skrives tilbage til det kamera, den stammer fra; der blev ikke skrevet noget.
 backup-saved = Sikkerhedskopien er gemt.
 backup-restored = Sikkerhedskopien er skrevet tilbage.
+backup-restore-camera-kept = Mens billedet blev skrevet, beholdt kameraet sin egen værdi i { $count } egenskaber (ure og tællere): { $ids }. Alt andet blev gemt som sendt.
 file-filter-backup = Sikkerhedskopibillede
 reference-from-report = Fra en delt rapport
 reference-manual = Indtast felter manuelt

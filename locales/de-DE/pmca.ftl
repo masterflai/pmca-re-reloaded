@@ -1335,6 +1335,7 @@ backup-safety-copy = Das vorherige Abbild wurde unter { $path } gesichert.
 backup-other-camera = Diese Sicherung stammt von einer anderen Kamera ({ $model }). Eine Sicherung lässt sich nur auf die Herkunftskamera zurückschreiben; es wurde nichts geschrieben.
 backup-saved = Die Sicherung wurde gespeichert.
 backup-restored = Die Sicherung wurde zurückgeschrieben.
+backup-restore-camera-kept = Während das Abbild geschrieben wurde, hat die Kamera in { $count } Eigenschaften ihren eigenen Wert behalten (Uhren und Zähler): { $ids }. Alles andere wurde wie gesendet gespeichert.
 file-filter-backup = Sicherungsabbild
 reference-from-report = Aus einem geteilten Bericht
 reference-manual = Felder von Hand erfassen

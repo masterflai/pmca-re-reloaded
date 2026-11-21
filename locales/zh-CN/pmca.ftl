@@ -1321,6 +1321,7 @@ backup-safety-copy = 先前的映像已保存到 { $path }。
 backup-other-camera = 此备份来自另一台相机（{ $model }）。备份只能写回它所来自的相机；未写入任何内容。
 backup-saved = 备份已保存。
 backup-restored = 备份已写回。
+backup-restore-camera-kept = 写入映像时，相机在 { $count } 个属性中保留了自己的值（时钟和计数器）：{ $ids }。其余内容均按发送内容保存。
 file-filter-backup = 备份映像
 reference-from-report = 从共享报告
 reference-manual = 手动输入字段

@@ -242,6 +242,82 @@ impl BackupPatch {
 /// One attribute set back by [`restore_attributes`]: `(id, was, now)`.
 pub type AttributeChange = (u32, u16, u16);
 
+/// Most properties a whole-image write may read back differently and still
+/// count as stored.
+const MAX_KEPT: usize = 16;
+
+/// Every image in a buffer, each with the offset it starts at.
+type Images<'a> = Vec<(usize, BackupFile<&'a [u8]>)>;
+
+/// Every image in a buffer as `(offset, image)`: the first, then any further
+/// ones behind it.
+fn images(buf: &[u8]) -> Result<Images<'_>> {
+    let starts: Vec<usize> =
+        BackupFile::new(buf)?.further_images().into_iter().map(|(start, _)| start).collect();
+    let mut out = vec![(0, BackupFile::new(buf)?)];
+    for start in starts {
+        out.push((start, BackupFile::new(&buf[start..])?));
+    }
+    Ok(out)
+}
+
+/// The properties the camera kept its own value in while a whole image was
+/// written back, as `(image, id)` with the first image numbered 1.
+///
+/// `Some` when `read_back` holds `sent` everywhere except the first `skip`
+/// bytes of each image and the values of at most a few properties the camera
+/// keeps for itself: a clock or counter that moved on during the transfer, or
+/// a read-only value it does not take from outside. `None` when any other byte
+/// differs, an attribute differs, or a writable property reads back as it was
+/// in `before`, which is what a write that did not take looks like.
+pub fn camera_kept(
+    before: &[u8],
+    sent: &[u8],
+    read_back: &[u8],
+    skip: usize,
+) -> Result<Option<Vec<(usize, u32)>>> {
+    if sent.len() != read_back.len() {
+        return Ok(None);
+    }
+    let (sent_images, back_images) = (images(sent)?, images(read_back)?);
+    if sent_images.iter().map(|i| i.0).ne(back_images.iter().map(|i| i.0)) {
+        return Ok(None);
+    }
+    let before_images = images(before)?;
+    let mut allowed = Vec::new();
+    let mut kept = Vec::new();
+    for (n, ((start, s), (_, b))) in sent_images.iter().zip(&back_images).enumerate() {
+        allowed.push(*start..start + skip);
+        let prior = before_images.iter().find(|(o, _)| o == start).map(|(_, f)| f);
+        for (id, layout) in s.list_layouts()? {
+            let Ok(now) = b.get_property(id) else { return Ok(None) };
+            let was_sent = s.get_property(id)?;
+            if was_sent.data == now.data && was_sent.attr == now.attr {
+                continue;
+            }
+            if was_sent.attr != now.attr {
+                return Ok(None);
+            }
+            let moved_on =
+                prior.and_then(|p| p.get_property(id).ok()).is_none_or(|was| was.data != now.data);
+            if !moved_on && was_sent.attr & pmca_core::backup::attr::READ_ONLY == 0 {
+                return Ok(None);
+            }
+            kept.push((n + 1, id));
+            allowed.push(start + layout.slot_offset..start + layout.offset + layout.max_size);
+        }
+    }
+    if kept.len() > MAX_KEPT {
+        return Ok(None);
+    }
+    let stray = sent
+        .iter()
+        .zip(read_back)
+        .enumerate()
+        .any(|(i, (x, y))| x != y && !allowed.iter().any(|r| r.contains(&i)));
+    Ok((!stray).then_some(kept))
+}
+
 /// `current` with every property attribute set back to the one in `reference`.
 ///
 /// Returns the new image and the changes; the
@@ -376,6 +452,49 @@ mod tests {
         let patch = BackupPatch::new(sample_image()).unwrap();
         assert_eq!(patch.region(), "EU_CE3");
         assert!(!patch.is_dirty());
+    }
+
+    fn with_value(image: &[u8], id: u32, data: &[u8]) -> Vec<u8> {
+        let mut file = BackupFile::new(image.to_vec()).unwrap();
+        file.set_property(id, data).unwrap();
+        file.update_checksum();
+        file.into_inner()
+    }
+
+    #[test]
+    fn a_counter_that_moved_on_during_a_restore_is_the_cameras_own() {
+        let sent = sample_image();
+        let before = with_value(&sent, 0x0164_0001, &[5]);
+        let back = with_value(&sent, 0x0164_0001, &[6]);
+        assert_eq!(camera_kept(&before, &sent, &sent, 0x100).unwrap(), Some(vec![]));
+        assert_eq!(
+            camera_kept(&before, &sent, &back, 0x100).unwrap(),
+            Some(vec![(1, 0x0164_0001)])
+        );
+    }
+
+    #[test]
+    fn a_value_that_reads_back_as_before_was_not_written() {
+        let sent = sample_image();
+        let before = with_value(&sent, 0x003c_0374, &[13]);
+        assert_eq!(camera_kept(&before, &sent, &before, 0x100).unwrap(), None);
+        // A read-only value is one the camera does not take from outside.
+        let before = with_value(&sent, 0x0107_0148, &[1]);
+        assert_eq!(
+            camera_kept(&before, &sent, &before, 0x100).unwrap(),
+            Some(vec![(1, 0x0107_0148)])
+        );
+    }
+
+    #[test]
+    fn a_difference_outside_any_value_is_never_the_cameras_own() {
+        let sent = sample_image();
+        let mut back = sent.clone();
+        // The data region ends in bytes no property claims.
+        let last = back.len() - 1;
+        back[last] ^= 0xff;
+        fix_checksum(&mut back);
+        assert_eq!(camera_kept(&sent, &sent, &back, 0x100).unwrap(), None);
     }
 
     #[test]

@@ -1340,6 +1340,7 @@ backup-safety-copy = The previous image was saved to { $path }.
 backup-other-camera = This backup is from a different camera ({ $model }). A backup can only be written back to the camera it came from; nothing was written.
 backup-saved = The backup has been saved.
 backup-restored = The backup has been written back.
+backup-restore-camera-kept = While the image was written, the camera kept its own value in { $count } properties (clocks and counters): { $ids }. Everything else was stored as sent.
 file-filter-backup = Backup image
 reference-from-report = From a shared report
 reference-manual = Enter fields by hand

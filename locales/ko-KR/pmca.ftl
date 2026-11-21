@@ -1340,6 +1340,7 @@ backup-safety-copy = 이전 이미지를 { $path }에 저장했습니다.
 backup-other-camera = 이 백업은 다른 카메라({ $model })의 것입니다. 백업은 그 백업이 나온 카메라에만 다시 쓸 수 있습니다. 아무것도 쓰지 않았습니다.
 backup-saved = 백업을 저장했습니다.
 backup-restored = 백업을 다시 썼습니다.
+backup-restore-camera-kept = 이미지를 쓰는 동안 카메라가 { $count }개 속성에서 자체 값을 유지했습니다(시계 및 카운터): { $ids }. 나머지는 모두 보낸 그대로 저장되었습니다.
 file-filter-backup = 백업 이미지
 reference-from-report = 공유된 보고서에서
 reference-manual = 필드를 직접 입력

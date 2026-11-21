@@ -1329,6 +1329,7 @@ backup-safety-copy = La imagen anterior se guardó en { $path }.
 backup-other-camera = Esta copia es de otra cámara ({ $model }). Una copia solo puede volver a escribirse en la cámara de la que procede; no se escribió nada.
 backup-saved = La copia de seguridad se ha guardado.
 backup-restored = La copia de seguridad se ha vuelto a escribir.
+backup-restore-camera-kept = Mientras se escribía la imagen, la cámara mantuvo su propio valor en { $count } propiedades (relojes y contadores): { $ids }. Todo lo demás se guardó tal como se envió.
 file-filter-backup = Imagen de copia de seguridad
 reference-from-report = Desde un informe compartido
 reference-manual = Introducir campos a mano

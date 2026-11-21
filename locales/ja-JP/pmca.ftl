@@ -1327,6 +1327,7 @@ backup-safety-copy = 以前のイメージを { $path } に保存しました。
 backup-other-camera = このバックアップは別のカメラ（{ $model }）のものです。バックアップは取得元のカメラにのみ書き戻せます。何も書き込まれていません。
 backup-saved = バックアップを保存しました。
 backup-restored = バックアップを書き戻しました。
+backup-restore-camera-kept = イメージの書き込み中、カメラは { $count } 個のプロパティで自身の値を保持しました（時計とカウンター）：{ $ids }。それ以外はすべて送信どおりに保存されました。
 file-filter-backup = バックアップイメージ
 reference-from-report = 共有されたレポートから
 reference-manual = フィールドを手動で入力

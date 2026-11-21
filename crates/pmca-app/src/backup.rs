@@ -139,7 +139,32 @@ pub fn restore(
     if written.len() != image.len()
         || written[tweaks::VERIFY_SKIP..] != image[tweaks::VERIFY_SKIP..]
     {
-        return Err(Error::Operation(l.tr("tweaks-write-failed")));
+        // Clocks and counters run on during the transfer; only those may differ.
+        let kept = pmca_platform::camera_kept(
+            current_patch.original(),
+            &image,
+            &written,
+            tweaks::VERIFY_SKIP,
+        )
+        .map_err(|e| Error::Operation(e.to_string()))?
+        .ok_or_else(|| Error::Operation(l.tr("tweaks-write-failed")))?;
+        if !kept.is_empty() {
+            let ids: Vec<String> = kept
+                .iter()
+                .map(
+                    |&(n, id)| {
+                        if n == 1 { format!("{id:#010x}") } else { format!("{n}:{id:#010x}") }
+                    },
+                )
+                .collect();
+            sink.emit(ProgressEvent::step(
+                ProgressKind::Info,
+                l.tr_args(
+                    "backup-restore-camera-kept",
+                    &[("count", &kept.len().to_string()), ("ids", &ids.join(", "))],
+                ),
+            ));
+        }
     }
     cam.0.save_backup(0)?;
     drop(cam);
