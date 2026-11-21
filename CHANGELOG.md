@@ -6,12 +6,6 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
-### Fixed
-
-- Updater entry waits up to two minutes for on-camera confirmation and reboot,
-  with guidance about a possible black screen and resuming after a timeout.
-  A timeout alone does not establish that the camera is frozen.
-
 ### Added
 
 - Values that may be sensitive are recognised in one place and replaced by
@@ -190,6 +184,10 @@ All notable changes to this project are documented here. The format follows
   write still counts as a failed write.
 - The search for sources and projects now also finds repositories that are
   forks, such as dired/PMCA-HDMICam; GitHub leaves forks out unless asked.
+- Switching to updater mode waits up to two minutes instead of 30 seconds for
+  the confirmation on the camera and its restart. The message says the screen
+  may stay black meanwhile, and after a timeout, what to check before switching
+  the camera off. Contributed by fkr-0.
 
 ## [1.13.0] - 2026-11-15
 

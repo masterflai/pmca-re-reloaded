@@ -155,10 +155,6 @@ Everything is also available on the command line; `pmca-console --help` lists
 the commands, for example `pmca-console info`, `pmca-console install --apk <file>`
 or `pmca-console tweaks`.
 
-If the updater screen goes black after confirmation, keep the battery and USB
-cable connected while it re-enumerates. See [updater entry and timeout
-recovery](docs/updater-mode.md) before power-cycling a camera after a timeout.
-
 ## Supported devices
 
 What works depends on the camera's generation, not on this program:

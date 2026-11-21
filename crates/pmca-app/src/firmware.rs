@@ -367,21 +367,13 @@ pub fn enter_updater_mode(
     if discovery::mass_storage_needs_root() {
         return Err(Error::Usb(pmca_usb::Error::NeedsRoot));
     }
-    sink.emit(ProgressEvent::step(
-        ProgressKind::Switching,
-        format!("{} {}", l.tr("updater-switch-wait"), l.tr("updater-switch-guidance")),
-    ));
+    sink.emit(ProgressEvent::step(ProgressKind::Switching, l.tr("updater-switch-wait")));
     updater.switch_mode()?;
     // Release the rebooting device before polling for its updater-mode identity.
     drop(updater.into_transport());
 
-    let camera = wait_for_updater_mode().ok_or_else(|| {
-        Error::Operation(format!(
-            "{} {}",
-            l.tr("updater-switch-timeout"),
-            l.tr("updater-timeout-guidance")
-        ))
-    })?;
+    let camera =
+        wait_for_updater_mode().ok_or_else(|| Error::Operation(l.tr("updater-switch-timeout")))?;
     let mut updater = open_rebooted(&camera)?;
     // Re-check against the rebooted camera: that is the one about to be written.
     updater.check_guard(payload)?;
