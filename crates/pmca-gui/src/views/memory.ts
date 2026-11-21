@@ -8,6 +8,7 @@ import type {
   MemoryInfo,
   MemoryPage,
   MemoryRow,
+  MemorySlot,
   OwnName,
 } from "../dto";
 import {
@@ -25,7 +26,10 @@ import {
   told,
   withProgressTarget,
 } from "../dom";
+import { filePicker } from "../drop";
 import { tr, trFill } from "../i18n";
+import { hiddenValue, includeSwitch, revealSensitive, revealSwitch, sensitiveNotice, shownMark } from "../privacy";
+import { layoutMap, linksExplanation } from "./image-map";
 import { fetchNames, fwNameLabel, tablesText } from "./names";
 import { addReferenceEntry } from "./reference";
 
@@ -66,9 +70,8 @@ async function readCamera(status: HTMLElement): Promise<string | null> {
     invoke<DumpSummary>("compare_dump_camera", {
       folder,
       keepImage: false,
-      withSerial: false,
-      withPhotographer: false,
-      withCopyright: false,
+      // The file is written with them replaced; this session can still show them.
+      includeSensitive: false,
     }),
   );
   return summary.path;
@@ -79,15 +82,18 @@ export function viewMemory(host: HTMLElement, actions: MemoryActions): void {
   let chosenFile: string | null = null;
   const status = statusLine();
   const result = make("div");
-  const filePath = make("span", { className: "cmp-mono cmp-chosen" });
-  const browse = make("button", { i18n: "compare-browse" });
-  const filePanel = make("div", { className: "cmp-panel" }, make("div", { className: "row" }, browse, filePath));
   const open = make("button", { className: "primary", i18n: "btn-memory-open" });
+  const filePanel = make("div", { className: "cmp-panel" });
 
   const apply = (): void => {
     filePanel.hidden = source !== "file";
     open.disabled = source === null || (source === "file" && chosenFile === null);
   };
+  const picker = filePicker(status, "dump", [".json", ".bin"], "tools-drop-hint", (path) => {
+    chosenFile = path === "" ? null : path;
+    apply();
+  });
+  filePanel.append(picker.element);
 
   const radios = ([
     ["camera", "memory-source-camera", "memory-source-camera-hint"],
@@ -107,23 +113,10 @@ export function viewMemory(host: HTMLElement, actions: MemoryActions): void {
     );
   });
 
-  browse.addEventListener("click", async () => {
-    try {
-      const picked = await invoke<string | null>("pick_file", { kind: "dump" });
-      if (picked !== null) {
-        chosenFile = picked;
-        filePath.textContent = picked;
-        apply();
-      }
-    } catch (e) {
-      showError(status, e);
-    }
-  });
-
   /** Open `path`; with `after`, over the store on screen so changes show. */
   const show = async (path: string, after: boolean, fromCamera: boolean): Promise<void> => {
     showBusy(status, tr("msg-working"));
-    const info = await invoke<MemoryInfo>("memory_open", { path, after });
+    const info = await invoke<MemoryInfo>("memory_open", { path, after, reveal: revealSensitive() });
     if (fromCamera) showDone(status, trFill("compare-saved-to", { path }));
     else {
       clearStatusState(status);
@@ -173,6 +166,11 @@ function memoryResult(info: MemoryInfo, actions: MemoryActions, reopen: Reopen):
     .filter((part) => part)
     .join(" · ");
   const status = statusLine();
+  // Side information: a failure here removes the placeholder and leaves the page as it is.
+  const mapHost = make("div");
+  invoke<DumpSummary>("compare_inspect", { path: info.file })
+    .then((summary) => mapHost.replaceWith(layoutMap(summary, true)))
+    .catch(() => mapHost.remove());
 
   const head: Node[] = [
     make("h2", { textContent: title }),
@@ -194,6 +192,8 @@ function memoryResult(info: MemoryInfo, actions: MemoryActions, reopen: Reopen):
     head.push(make("p", { className: "memory-changed-note", textContent: trFill("memory-changed-count", { count: info.changed }) }));
     if (info.sameCamera === false) head.push(make("p", { className: "warning", i18n: "memory-other-camera" }));
   }
+  // Errors of the list's own buttons show under the list, not up at the source.
+  const listStatus = statusLine();
 
   const reread = make("button", { i18n: "btn-memory-reread" });
   reread.addEventListener("click", async () => {
@@ -258,26 +258,30 @@ function memoryResult(info: MemoryInfo, actions: MemoryActions, reopen: Reopen):
       const openAll = list.length === 1 || total <= AUTO_OPEN;
       groups.replaceChildren(...list.map((g) => groupNode(g, query, mode, rowActions, openAll)));
     } catch (e) {
-      showError(status, e);
+      showError(listStatus, e);
     }
   };
 
   const csv = make("button", { i18n: "btn-memory-csv" });
+  const csvInclude = includeSwitch();
   csv.addEventListener("click", async () => {
     try {
-      const path = await invoke<string | null>("memory_export_csv", { query: query() });
-      if (path !== null) showDone(status, trFill("compare-saved-to", { path }));
+      const path = await invoke<string | null>("memory_export_csv", {
+        query: query(),
+        includeSensitive: csvInclude.checked(),
+      });
+      if (path !== null) showDone(listStatus, trFill("compare-saved-to", { path }));
     } catch (e) {
-      showError(status, e);
+      showError(listStatus, e);
     }
   });
   const exportNames = make("button", { i18n: "btn-memory-export-names" });
   exportNames.addEventListener("click", async () => {
     try {
       const path = await invoke<string | null>("memory_export_names");
-      if (path !== null) showDone(status, trFill("compare-saved-to", { path }));
+      if (path !== null) showDone(listStatus, trFill("compare-saved-to", { path }));
     } catch (e) {
-      showError(status, e);
+      showError(listStatus, e);
     }
   });
   clearOwn.addEventListener("click", async () => {
@@ -287,10 +291,10 @@ function memoryResult(info: MemoryInfo, actions: MemoryActions, reopen: Reopen):
       const count = await invoke<number>("memory_clear_own");
       ownCount = 0;
       showOwn();
-      showDone(status, trFill("memory-own-cleared", { count }));
+      showDone(listStatus, trFill("memory-own-cleared", { count }));
       await reload();
     } catch (e) {
-      showError(status, e);
+      showError(listStatus, e);
     }
   });
 
@@ -316,18 +320,34 @@ function memoryResult(info: MemoryInfo, actions: MemoryActions, reopen: Reopen):
   if (info.changed !== null) filters.push(filter(onlyChanged, "memory-only-changed"));
   if (info.further > 0) filters.push(filter(further, "memory-further"));
 
+  const privacy: Node[] = [sensitiveNotice()];
+  if (info.sensitive > 0) {
+    privacy.push(
+      make("p", { className: "hint", textContent: trFill("sensitive-count", { count: info.sensitive }) }),
+      revealSwitch(async () => {
+        try {
+          await invoke("memory_reveal", { on: revealSensitive() });
+          await reload();
+        } catch (e) {
+          showError(listStatus, e);
+        }
+      }),
+    );
+  }
+
   return [
+    card(...head, make("div", { className: "row memory-actions" }, reread, reopenFile), status),
+    card(mapHost, linksExplanation()),
     card(
-      ...head,
-      make("div", { className: "row memory-actions" }, reread, reopenFile, csv, exportNames, clearOwn),
-      status,
-    ),
-    card(
+      ...privacy,
       make("label", { className: "field-label", i18n: "memory-search" }),
       search,
       make("label", { className: "field-label", i18n: "memory-display" }),
       display,
       make("div", { className: "row memory-filters" }, ...filters),
+      make("div", { className: "row memory-actions" }, csv, exportNames, clearOwn),
+      csvInclude.element,
+      listStatus,
       count,
       groups,
     ),
@@ -415,13 +435,26 @@ function rowNodes(row: MemoryRow, mode: Display, actions: RowActions): HTMLEleme
     name.replaceChildren(...nameNodes(row));
   };
   const bytes = bytesOf(row.value);
+  const valueText = (): string => render(mode, bytes, row) + (row.truncated ? " …" : "");
   const value = row.redacted
-    ? make("td", {}, make("span", { className: "memory-redacted-badge", i18n: "memory-redacted-short", title: tr("memory-redacted") }))
+    ? make("td", {}, hiddenValue(row.sensitive))
     : make("td", {
         className: "cmp-mono",
-        textContent: render(mode, bytes, row) + (row.truncated ? " …" : ""),
+        textContent: valueText(),
         title: row.value,
       });
+  const mark = (): void => {
+    if (!row.redacted && row.sensitive !== undefined) value.append(" ", shownMark(row.sensitive));
+  };
+  mark();
+  const setOwnValue = (label: string | null): void => {
+    if (label === null) delete row.ownValue;
+    else row.ownValue = label;
+    if (!row.redacted) {
+      value.textContent = valueText();
+      mark();
+    }
+  };
   const tr_ = make(
     "tr",
     { className: ["memory-row", row.touched ? "memory-touched" : "", row.changed ? "memory-changed" : ""].join(" ").trim() },
@@ -429,7 +462,7 @@ function rowNodes(row: MemoryRow, mode: Display, actions: RowActions): HTMLEleme
     name,
     make("td", { textContent: String(row.size) }),
     value,
-    make("td", { className: "hint", textContent: row.attrNames.map(attrText).join(", ") }),
+    make("td", { className: "hint", textContent: attrList(row.attrNames, false) }),
   );
   const detailCell = make("td", { colSpan: 5 });
   const detailRow = make("tr", { className: "memory-detail", hidden: true }, detailCell);
@@ -438,7 +471,7 @@ function rowNodes(row: MemoryRow, mode: Display, actions: RowActions): HTMLEleme
     if (detailRow.hidden || detailCell.childElementCount > 0) return;
     try {
       const detail = await invoke<MemoryDetail | null>("memory_detail", { id: row.id });
-      if (detail !== null) detailCell.append(...detailNodes(detail, actions, setOwn));
+      if (detail !== null) detailCell.append(...detailNodes(detail, actions, setOwn, setOwnValue));
     } catch (e) {
       const s = statusLine();
       detailCell.append(s);
@@ -454,14 +487,44 @@ function nameNodes(row: MemoryRow): Node[] {
   if (row.name) nodes.push(make("div", { textContent: row.name }));
   const fw = fwNameLabel(row.fwName);
   if (fw !== null) nodes.push(make("div", {}, fw));
-  if (row.own) {
+  if (row.own?.name) {
     nodes.push(make("div", { className: "memory-own", textContent: row.own.name, title: row.own.note }));
   }
+  if (row.memorySet) nodes.push(make("span", { className: "cmp-tag", i18n: "memory-tag-sets", title: tr("memory-slots-explain") }));
   return nodes;
 }
 
+/** The elements of a memory-set array, element 0 first, and which slots the working copy matches. */
+function slotNodes(slots: MemorySlot[]): Node[] {
+  const current = slots.find((s) => s.index === 0);
+  const matches = slots.filter((s) => s.index > 0 && s.hex === current?.hex).map((s) => s.index);
+  return [
+    make(
+      "table",
+      { className: "analysis-table" },
+      ...slots.map((slot) =>
+        make(
+          "tr",
+          {},
+          make("th", { textContent: slot.index === 0 ? tr("memory-slot-current") : trFill("memory-slot", { slot: slot.index }) }),
+          make("td", { className: "cmp-mono", textContent: slot.hex }),
+        ),
+      ),
+    ),
+    make("p", {
+      className: "hint",
+      textContent: matches.length > 0 ? trFill("memory-slots-working", { slots: matches.join(", ") }) : tr("memory-slots-working-none"),
+    }),
+  ];
+}
+
 /** Everything about one property, its own name to edit, and what to do next. */
-function detailNodes(d: MemoryDetail, actions: MemoryActions, setOwn: (own: OwnName | null) => void): Node[] {
+function detailNodes(
+  d: MemoryDetail,
+  actions: MemoryActions,
+  setOwn: (own: OwnName | null) => void,
+  setOwnValue: (label: string | null) => void,
+): Node[] {
   const bytes = bytesOf(d.hex);
   const status = statusLine();
   const facts: [string, string][] = [
@@ -469,7 +532,7 @@ function detailNodes(d: MemoryDetail, actions: MemoryActions, setOwn: (own: OwnN
   ];
   if (d.reset !== null && !d.row.redacted) facts.push([tr("memory-detail-factory"), d.reset]);
   if (d.before !== null && !d.row.redacted) facts.push([tr("memory-detail-before"), d.before]);
-  if (d.row.attrNames.length > 0) facts.push([tr("memory-col-attr"), d.row.attrNames.map(attrText).join(", ")]);
+  if (d.row.attrNames.length > 0) facts.push([tr("memory-col-attr"), attrList(d.row.attrNames, true)]);
   if (d.row.fwName) {
     const fw = d.row.fwName;
     const origin = fw.conflict ? tr("names-conflict") : tr(`names-evidence-${fw.evidence}`);
@@ -479,6 +542,7 @@ function detailNodes(d: MemoryDetail, actions: MemoryActions, setOwn: (own: OwnN
     const v = d.row.fwValue;
     facts.push([tr("memory-detail-fw-value"), `${v.name} · ${tr(`names-evidence-${v.evidence}`)} · ${v.table}`]);
   }
+  if (d.partner && !d.partner.memorySets) facts.push([tr("memory-detail-setting"), `${d.partner.id} · ${d.partner.hex}`]);
   const factTable = make(
     "table",
     { className: "analysis-table" },
@@ -503,18 +567,15 @@ function detailNodes(d: MemoryDetail, actions: MemoryActions, setOwn: (own: OwnN
   if (d.memorySets !== undefined) {
     nodes.push(
       make("h4", { i18n: "memory-slots-heading" }),
-      make(
-        "table",
-        { className: "analysis-table" },
-        ...d.memorySets.map((slot) =>
-          make(
-            "tr",
-            {},
-            make("th", { textContent: slot.index === 0 ? tr("memory-slot-current") : trFill("memory-slot", { slot: slot.index }) }),
-            make("td", { className: "cmp-mono", textContent: slot.hex }),
-          ),
-        ),
-      ),
+      make("p", { className: "hint", i18n: "memory-slots-explain" }),
+      ...slotNodes(d.memorySets),
+    );
+  }
+  if (d.partner?.memorySets) {
+    nodes.push(
+      make("h4", { textContent: trFill("memory-sets-of-setting", { id: d.partner.id }) }),
+      make("p", { className: "hint", i18n: "memory-slots-explain" }),
+      ...slotNodes(d.partner.memorySets),
     );
   }
 
@@ -541,7 +602,7 @@ function detailNodes(d: MemoryDetail, actions: MemoryActions, setOwn: (own: OwnN
         // The backend trims, and drops a name whose fields are both empty.
         const own: OwnName | null =
           name.trim() || note.trim()
-            ? { name: name.trim(), note: note.trim(), evidence: "camera" }
+            ? { name: name.trim(), note: note.trim(), evidence: "camera", values: d.row.own?.values ?? {} }
             : null;
         if (own === null) delete d.row.own;
         else d.row.own = own;
@@ -565,6 +626,32 @@ function detailNodes(d: MemoryDetail, actions: MemoryActions, setOwn: (own: OwnN
       make("div", { className: "row" }, save, remove),
     );
 
+    // A stored value read as a number can be named by what the camera showed for it;
+    // not one that may be sensitive, since the name goes into a plugin made to be shared.
+    if (!d.row.redacted && d.row.sensitive === undefined && [1, 2, 4, 8].includes(bytes.length)) {
+      const code = integer(bytes, false).toString();
+      const valueName = make("input", { type: "text", className: "path-input", value: d.row.ownValue ?? "" });
+      const saveValue = make("button", { i18n: "btn-memory-own-value-save" });
+      saveValue.addEventListener("click", async () => {
+        const label = valueName.value.trim();
+        try {
+          await invoke("memory_set_value", { id: d.row.id, label });
+          if (label === "") delete d.row.ownValue;
+          else d.row.ownValue = label;
+          setOwnValue(label === "" ? null : label);
+          showDone(status, tr(label === "" ? "memory-own-value-deleted" : "memory-own-value-saved"));
+        } catch (e) {
+          showError(status, e);
+        }
+      });
+      nodes.push(
+        make("label", { className: "field-label", textContent: trFill("memory-own-value", { code }) }),
+        make("p", { className: "hint", i18n: "memory-own-value-hint" }),
+        valueName,
+        make("div", { className: "row" }, saveValue),
+      );
+    }
+
     const check = make("button", { i18n: "btn-memory-check-elsewhere" });
     check.addEventListener("click", () => {
       const label = d.row.own?.name || d.row.name || d.row.fwName?.name || d.row.id;
@@ -581,9 +668,36 @@ function detailNodes(d: MemoryDetail, actions: MemoryActions, setOwn: (own: OwnN
 
 /** Attribute bits in words. */
 function attrText(name: string): string {
-  const key = name.startsWith("HAS_RESET") ? "has-reset" : name.toLowerCase().replace(/_/g, "-");
+  const key = name.toLowerCase().replace(/_/g, "-");
   const text = tr(`memory-attr-${key}`);
   return text === `memory-attr-${key}` ? name : text;
+}
+
+/** The four bits that each mean "a factory value follows". */
+const RESET_BITS: Record<string, string> = {
+  HAS_RESET_1: "0x04",
+  HAS_RESET_2: "0x10",
+  HAS_RESET_3: "0x20",
+  HAS_RESET_4: "0x40",
+};
+
+/**
+ * The attribute bits as one line: the factory-value bits named once, with the
+ * raw bits in `detail`. Arrays never carry a factory value, so there the bits
+ * keep their raw names.
+ */
+function attrList(names: string[], detail: boolean): string {
+  const resets = names.filter((n) => n in RESET_BITS);
+  const parts = names.filter((n) => !(n in RESET_BITS)).map(attrText);
+  if (resets.length > 0) {
+    if (names.includes("ARRAY_DATA")) {
+      parts.push(`${resets.join(", ")} (${tr("memory-attr-reset-array")})`);
+    } else {
+      const bits = detail ? ` (${resets.map((n) => RESET_BITS[n]).join(", ")})` : "";
+      parts.push(`${tr("memory-attr-has-reset")}${bits}`);
+    }
+  }
+  return parts.join(", ");
 }
 
 function bytesOf(hex: string): number[] {
@@ -650,6 +764,7 @@ function render(mode: Display, bytes: number[], row: MemoryRow, full = false): s
       return asBcd(cut) + more;
     case "auto":
       if (row.meaning) return meaningText(row.meaning);
+      if (row.ownValue) return row.ownValue;
       if (row.fwValue) return row.fwValue.name;
       if (looksLikeText(bytes)) return asText(bytes);
       if ([1, 2, 4].includes(bytes.length)) return asNumber(bytes, false);

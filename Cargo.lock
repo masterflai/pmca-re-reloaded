@@ -829,6 +829,13 @@ dependencies = [
 ]
 
 [[package]]
+name = "pmca-broker"
+version = "1.13.0"
+dependencies = [
+ "pmca-app",
+]
+
+[[package]]
 name = "pmca-cli"
 version = "1.13.0"
 dependencies = [

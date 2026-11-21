@@ -27,7 +27,6 @@ mod commands;
 mod remote;
 
 use commands::*;
-pub use remote::run_broker;
 
 /// A command's result, computed here or relayed as JSON from the macOS broker.
 ///
@@ -171,7 +170,7 @@ struct AppState {
     /// The last image comparison, kept so an export does not have to be sent
     /// back from the webview. Holds no camera session and is dropped when the
     /// view is left.
-    comparison: Mutex<Option<pmca_app::compare::CompareReport>>,
+    comparison: Mutex<Option<Comparison>>,
     /// The store the memory view shows, served a page at a time. Holds no
     /// camera session and is dropped when the analysis page is left.
     memory: Mutex<Option<pmca_app::memory::Memory>>,
@@ -583,16 +582,20 @@ pub fn run() {
             compare_dump,
             compare_dump_camera,
             compare_inspect,
+            compare_index,
             compare_pick_folder,
             compare_default_folder,
             compare_run,
             compare_export,
             compare_close,
+            privacy_catalog,
             memory_open,
+            memory_reveal,
             memory_groups,
             memory_page,
             memory_detail,
             memory_set_own,
+            memory_set_value,
             memory_clear_own,
             memory_export_csv,
             memory_export_names,

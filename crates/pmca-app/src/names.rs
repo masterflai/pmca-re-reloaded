@@ -73,18 +73,23 @@ impl FwValue {
 }
 
 /// The name of the stored value `bytes` holds for property `id`, converting
-/// `bytes` as a little-endian unsigned integer of their own size (1, 2, 4 or
-/// 8 bytes); any other size never matches.
+/// `bytes` as [`value_of`] does; any other size never matches.
 #[must_use]
 pub fn value_name(view: &NameView<'_>, id: u32, bytes: &[u8]) -> Option<FwValue> {
-    let value: u64 = match bytes.len() {
+    view.value_name(id, value_of(bytes)?).map(|n| FwValue::of(&n))
+}
+
+/// `bytes` as a little-endian unsigned integer of their own size (1, 2, 4 or 8
+/// bytes), the form name tables key stored values by.
+#[must_use]
+pub fn value_of(bytes: &[u8]) -> Option<u64> {
+    Some(match bytes.len() {
         1 => bytes[0].into(),
         2 => u16::from_le_bytes(bytes.try_into().ok()?).into(),
         4 => u32::from_le_bytes(bytes.try_into().ok()?).into(),
         8 => u64::from_le_bytes(bytes.try_into().ok()?),
         _ => return None,
-    };
-    view.value_name(id, value).map(|n| FwValue::of(&n))
+    })
 }
 
 /// One name for a property several cameras hold: the name they agree on, or

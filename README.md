@@ -460,6 +460,30 @@ program may affect your warranty. Whether studying a device's interface to make
 an independent program work with it is permitted depends on where you are; use
 the program at your own risk.
 
+## Sensitive data
+
+A camera's settings memory holds more than settings: the serial number, the
+owner's name, and whatever network and account data the camera keeps, such as
+WiFi names and passwords, FTP access or IPTC contact details.
+
+* **Dumps, comparisons and CSV exports replace these values** by zeros of the
+  same length and mark them, unless you tick *Include values that may be
+  sensitive* for that export (`--include-sensitive` on the command line).
+* **On screen they are hidden behind stars** until you switch on *Show values
+  that may be sensitive*; that choice lasts until the program is closed.
+* **The recognition cannot be exact.** Without the firmware's name for every
+  field there is no knowing for certain whether and where such a value is
+  stored. The program therefore replaces, as a precaution, the serial number
+  and owner fields by their known positions, everything an installed name
+  table calls network, account or owner data, and every value that reads as
+  text, which means some harmless texts are replaced too.
+* **Some files always hold everything:** the backup file (`Backup.bin`) and the
+  image kept beside a dump, the reset copies in your user profile, saved WiFi
+  and streaming settings, the usage log (it records memory card serial
+  numbers) and raw dumps from the service shell. Do not pass these on.
+
+`pmca-console privacy` prints the full list.
+
 ## Feedback
 
 Found a bug, or used the program with a camera model? Please open an

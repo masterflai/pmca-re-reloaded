@@ -2,12 +2,13 @@
 //!
 //! macOS hands a mass-storage camera only to root, and the capture that grants
 //! it belongs to the process that made it. The window runs as the user and so
-//! cannot hold such a camera itself. On first need it starts its own executable
-//! with administrator rights, through the system's password dialog, and keeps
-//! that copy as a broker for the rest of the run: service-mode sessions, the
-//! tweaks and the function analysis live there, and the window sends it one
-//! request at a time over a Unix socket in its private temporary folder. The
-//! broker ends when the connection does, so it never outlives the window.
+//! cannot hold such a camera itself. On first need it starts the small
+//! `pmca-broker` executable beside it as root through `sudo`, the way a camera
+//! was reached from a terminal, and keeps it for the rest of the run:
+//! service-mode sessions, the tweaks and the function analysis live there (see
+//! [`crate::elevated`]), and the window sends it one request at a time over a
+//! Unix socket in its private temporary folder. The broker ends when the
+//! connection does, so it never outlives the window.
 //!
 //! The protocol is JSON lines over any byte stream and is tested on every
 //! platform; only starting the broker is macOS-specific.
@@ -24,6 +25,70 @@ use crate::{Error, ProgressSink};
 /// First argument that turns the executable into the broker; the second is
 /// the window's socket.
 pub const BROKER_FLAG: &str = "--pmca-elevated-broker";
+
+/// The broker's executable, next to the window's.
+pub const BROKER_EXE: &str = "pmca-broker";
+
+/// Set for the broker executable when `sudo` runs it as its password helper:
+/// the question to ask.
+pub const ASKPASS_PROMPT: &str = "PMCA_ASKPASS_PROMPT";
+
+/// The dialog asking for the password. Prompt and title arrive as arguments,
+/// so neither can break out of the script.
+const ASKPASS_SCRIPT: [&str; 4] = [
+    "on run argv",
+    "display dialog (item 1 of argv) default answer \"\" with hidden answer with title (item 2 of argv) with icon caution",
+    "return text returned of result",
+    "end run",
+];
+
+/// When `sudo` runs this executable as its password helper: show the dialog,
+/// whose answer goes straight to `sudo`. Returns the exit code if that was
+/// asked for and the dialog could not be shown.
+#[cfg(unix)]
+pub fn run_askpass_if_requested() -> Option<i32> {
+    use std::os::unix::process::CommandExt;
+
+    let prompt = std::env::var_os(ASKPASS_PROMPT)?;
+    let error = std::process::Command::new("/usr/bin/osascript")
+        .args(askpass_args(&prompt, "PMCA-RE RELOADED"))
+        .exec();
+    eprintln!("osascript: {error}");
+    Some(1)
+}
+
+#[cfg_attr(not(unix), allow(dead_code))]
+fn askpass_args(prompt: &std::ffi::OsStr, title: &str) -> Vec<std::ffi::OsString> {
+    let mut args: Vec<std::ffi::OsString> = Vec::new();
+    for line in ASKPASS_SCRIPT {
+        args.push("-e".into());
+        args.push(line.into());
+    }
+    args.push(prompt.into());
+    args.push(title.into());
+    args
+}
+
+/// What `sudo` is asked to run: the broker as root, with the user's home.
+/// `sudo` itself sets `SUDO_UID`, which [`connect_to_window`] checks.
+#[cfg_attr(not(target_os = "macos"), allow(dead_code))]
+fn sudo_args(
+    home: &std::path::Path,
+    broker: &std::path::Path,
+    socket: &std::path::Path,
+) -> Vec<std::ffi::OsString> {
+    let mut home_var = std::ffi::OsString::from("HOME=");
+    home_var.push(home);
+    vec![
+        "-A".into(),
+        "--".into(),
+        "/usr/bin/env".into(),
+        home_var,
+        broker.into(),
+        BROKER_FLAG.into(),
+        socket.into(),
+    ]
+}
 
 /// A failure as the broker reported it, flattened to what a front-end shows.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
@@ -179,34 +244,34 @@ pub fn connect_to_window(
 pub struct Broker {
     client:
         Client<std::io::BufReader<std::os::unix::net::UnixStream>, std::os::unix::net::UnixStream>,
-    _osascript: std::process::Child,
+    _sudo: std::process::Child,
 }
 
 #[cfg(target_os = "macos")]
 impl Broker {
-    /// Start the broker through the system's password dialog and wait until it
-    /// has connected.
+    /// Start the broker through `sudo`, asking for the password in a dialog,
+    /// and wait until it has connected.
     pub fn start(l: &pmca_i18n::Localizer) -> crate::Result<Self> {
         use std::io::Read;
-        use std::os::unix::fs::MetadataExt;
         use std::os::unix::net::UnixListener;
 
-        let exe = std::env::current_exe()?;
+        let broker = std::env::current_exe()?.with_file_name(BROKER_EXE);
+        if !broker.is_file() {
+            let missing = format!("{} ({})", l.tr("macos-admin-failed"), broker.display());
+            return Err(Error::Operation(missing));
+        }
         let home = std::env::var_os("HOME")
             .map(PathBuf::from)
             .ok_or_else(|| std::io::Error::other("HOME is not set"))?;
-        let owner = std::fs::metadata(&home)?;
         let socket = std::env::temp_dir().join(format!("pmca-broker-{}.sock", std::process::id()));
         let _ = std::fs::remove_file(&socket);
         let listener = UnixListener::bind(&socket)?;
         listener.set_nonblocking(true)?;
 
-        let command: [std::ffi::OsString; 3] =
-            [exe.into(), BROKER_FLAG.into(), socket.clone().into()];
-        let args =
-            osascript_args(&home, owner.uid(), owner.gid(), &l.tr("macos-admin-prompt"), &command);
-        let mut osascript = std::process::Command::new("/usr/bin/osascript")
-            .args(args)
+        let mut sudo = std::process::Command::new("/usr/bin/sudo")
+            .args(sudo_args(&home, &broker, &socket))
+            .env("SUDO_ASKPASS", &broker)
+            .env(ASKPASS_PROMPT, l.tr("macos-admin-prompt"))
             .stdin(std::process::Stdio::null())
             .stdout(std::process::Stdio::null())
             .stderr(std::process::Stdio::piped())
@@ -216,14 +281,16 @@ impl Broker {
             match listener.accept() {
                 Ok((stream, _)) => break stream,
                 Err(e) if e.kind() == std::io::ErrorKind::WouldBlock => {
-                    if osascript.try_wait()?.is_some() {
+                    if sudo.try_wait()?.is_some() {
                         let _ = std::fs::remove_file(&socket);
                         let mut stderr = String::new();
-                        if let Some(mut pipe) = osascript.stderr.take() {
+                        if let Some(mut pipe) = sudo.stderr.take() {
                             let _ = pipe.read_to_string(&mut stderr);
                         }
-                        // A cancelled password dialog is AppleScript error -128.
-                        let message = if stderr.contains("-128") {
+                        // A cancelled dialog leaves `sudo` without a password.
+                        let message = if stderr.contains("no password was provided")
+                            || stderr.contains("a password is required")
+                        {
                             l.tr("macos-admin-declined")
                         } else {
                             format!("{} ({})", l.tr("macos-admin-failed"), stderr.trim())
@@ -241,7 +308,7 @@ impl Broker {
         let _ = std::fs::remove_file(&socket);
         stream.set_nonblocking(false)?;
         let reader = std::io::BufReader::new(stream.try_clone()?);
-        Ok(Self { client: Client::new(reader, stream), _osascript: osascript })
+        Ok(Self { client: Client::new(reader, stream), _sudo: sudo })
     }
 
     /// See [`Client::call`].
@@ -252,43 +319,6 @@ impl Broker {
     ) -> Result<Value, CallError> {
         self.client.call(request, sink)
     }
-}
-
-/// The AppleScript that runs a command as root. Every value arrives as an
-/// argument and is quoted by AppleScript itself, so none can break out of the
-/// shell command. The broker lives as long as the window, far longer than
-/// AppleScript's default timeout.
-const SCRIPT: [&str; 9] = [
-    "on run argv",
-    "set cmd to \"HOME=\" & quoted form of item 1 of argv & \" SUDO_UID=\" & quoted form of item 2 of argv & \" SUDO_GID=\" & quoted form of item 3 of argv",
-    "repeat with i from 5 to count of argv",
-    "set cmd to cmd & \" \" & quoted form of item i of argv",
-    "end repeat",
-    "with timeout of 31536000 seconds",
-    "do shell script cmd with prompt (item 4 of argv) with administrator privileges",
-    "end timeout",
-    "end run",
-];
-
-#[cfg_attr(not(target_os = "macos"), allow(dead_code))]
-fn osascript_args(
-    home: &std::path::Path,
-    uid: u32,
-    gid: u32,
-    prompt: &str,
-    command: &[std::ffi::OsString],
-) -> Vec<std::ffi::OsString> {
-    let mut args: Vec<std::ffi::OsString> = Vec::new();
-    for line in SCRIPT {
-        args.push("-e".into());
-        args.push(line.into());
-    }
-    args.push(home.into());
-    args.push(uid.to_string().into());
-    args.push(gid.to_string().into());
-    args.push(prompt.into());
-    args.extend(command.iter().cloned());
-    args
 }
 
 #[cfg(test)]
@@ -332,25 +362,35 @@ mod tests {
     }
 
     #[test]
-    fn every_value_is_an_argument_not_part_of_the_script() {
-        let command: [std::ffi::OsString; 3] =
-            ["/Applications/X.app/Contents/MacOS/x".into(), BROKER_FLAG.into(), "/tmp/s".into()];
-        let args = osascript_args(std::path::Path::new("/Users/ann"), 501, 20, "Allow?", &command);
-        let script: Vec<_> = args.iter().skip(1).step_by(2).take(SCRIPT.len()).collect();
-        assert!(script.iter().zip(SCRIPT).all(|(a, s)| *a == s));
-        let rest: Vec<_> = args[SCRIPT.len() * 2..].iter().map(|a| a.to_string_lossy()).collect();
+    fn sudo_runs_the_broker_with_the_home_and_nothing_through_a_shell() {
+        let args = sudo_args(
+            std::path::Path::new("/Users/ann o'neil"),
+            std::path::Path::new("/Applications/X.app/Contents/MacOS/pmca-broker"),
+            std::path::Path::new("/tmp/s"),
+        );
+        let args: Vec<_> = args.iter().map(|a| a.to_string_lossy()).collect();
         assert_eq!(
-            rest,
+            args,
             [
-                "/Users/ann",
-                "501",
-                "20",
-                "Allow?",
-                "/Applications/X.app/Contents/MacOS/x",
+                "-A",
+                "--",
+                "/usr/bin/env",
+                "HOME=/Users/ann o'neil",
+                "/Applications/X.app/Contents/MacOS/pmca-broker",
                 BROKER_FLAG,
                 "/tmp/s"
             ]
         );
+    }
+
+    #[test]
+    fn the_password_question_is_an_argument_not_part_of_the_script() {
+        let args = askpass_args(std::ffi::OsStr::new("\" & do shell script \"x"), "T");
+        let script: Vec<_> = args.iter().skip(1).step_by(2).take(ASKPASS_SCRIPT.len()).collect();
+        assert!(script.iter().zip(ASKPASS_SCRIPT).all(|(a, s)| *a == s));
+        let rest: Vec<_> =
+            args[ASKPASS_SCRIPT.len() * 2..].iter().map(|a| a.to_string_lossy()).collect();
+        assert_eq!(rest, ["\" & do shell script \"x", "T"]);
     }
 
     /// The whole exchange over a real socket pair: progress arrives before the

@@ -164,9 +164,10 @@ function chooser(show: (mode: Mode) => void): HTMLElement {
     return button;
   };
   const tag = (key: string): HTMLElement => make("span", { className: "analysis-tag", i18n: key });
-  const writeTag = writeTestsAllowed
-    ? make("span", { className: "analysis-tag" }, accessBadge("write"), " ", make("span", { i18n: "analysis-tag-write" }))
-    : tag("analysis-tag-write-locked");
+  // Its own line, as before; the badge sits outside the tag text, whose smaller type would shrink it.
+  const writeTags = writeTestsAllowed
+    ? [make("span", { className: "analysis-tile-write" }, accessBadge("write"), tag("analysis-tag-write"))]
+    : [tag("analysis-tag-write-locked")];
   return card(
     make("h2", { i18n: "analysis-choose-heading" }),
     make(
@@ -179,7 +180,7 @@ function chooser(show: (mode: Mode) => void): HTMLElement {
       tile("find", "analysis-tile-find", "analysis-tile-find-sub", [
         accessBadge("read"),
         tag("analysis-tag-camera"),
-        writeTag,
+        ...writeTags,
       ]),
       tile("compare", "analysis-tile-compare", "analysis-tile-compare-sub", [
         accessBadge("read"),
@@ -409,7 +410,7 @@ function analysisCrossCheck(
   render: AnalysisRender,
 ): Node[] {
   const nodes: Node[] = [
-    make("h3", {}, accessBadge("read"), " ", make("span", { i18n: "analysis-cross-heading" })),
+    make("h3", { i18n: "analysis-cross-heading" }),
     make("p", { i18n: "analysis-cross-intro" }),
   ];
   for (const check of state.crossChecks) nodes.push(crossCheckTable(check));
@@ -655,7 +656,7 @@ function analysisRunNodes(
       "new-label": p.newLabel,
     });
     nodes.push(
-      make("h3", {}, accessBadge("write"), " ", make("span", { i18n: "analysis-write-preview-heading" })),
+      make("h3", { i18n: "analysis-write-preview-heading" }),
       instructionBox(`${preview}\n${tr("analysis-own-hardware")}\n\n${tr("analysis-do-reconnect")}`, true),
     );
     const write = make("button", { className: "primary", i18n: "btn-analysis-write" });
@@ -680,7 +681,7 @@ function analysisRunNodes(
 
   if (writing && !state.restored) {
     nodes.push(
-      make("h3", {}, accessBadge("write"), " ", make("span", { i18n: "btn-analysis-restore" })),
+      make("h3", { i18n: "btn-analysis-restore" }),
       instructionBox(tr("analysis-do-reconnect"), true),
     );
     const restore = make("button", { className: "primary", i18n: "btn-analysis-restore" });

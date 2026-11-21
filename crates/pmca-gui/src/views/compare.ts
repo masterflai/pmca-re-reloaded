@@ -15,7 +15,10 @@ import {
   told,
   withProgressTarget,
 } from "../dom";
+import { filePicker } from "../drop";
 import { tr, trFill } from "../i18n";
+import { hiddenValue, includeSwitch, revealSensitive, revealSwitch, sensitiveNotice, shownMark } from "../privacy";
+import { compareMap, layoutMap, type ByteRange } from "./image-map";
 import { fwNameLabel } from "./names";
 
 /** The most dumps one comparison takes; mirrors `MAX_SOURCES` in `pmca-app`. */
@@ -74,6 +77,8 @@ export function viewCompare(host: HTMLElement): void {
   const progress = make("span", { className: "cmp-progress" });
   const results = make("div");
   const visible = new Set<Cls>(CLASS_ORDER.filter((cls) => DEFAULT_VISIBLE[cls]));
+  /** The part of the data region the table is limited to; null for all of it. */
+  let range: ByteRange | null = null;
 
   const distance = make("input", {
     type: "number",
@@ -86,14 +91,10 @@ export function viewCompare(host: HTMLElement): void {
   const alignByName = make("input", { type: "checkbox" });
   const alignRow = make("div", { className: "cmp-spaced" }, checkboxRow(alignByName, "compare-align-by-name", null));
   const keepImage = make("input", { type: "checkbox", checked: true });
-  const withSerial = make("input", { type: "checkbox" });
-  const withPhotographer = make("input", { type: "checkbox" });
-  const withCopyright = make("input", { type: "checkbox" });
+  const dumpInclude = includeSwitch();
   const runButton = make("button", { className: "primary", i18n: "compare-run" });
   const addButton = make("button", { className: "primary", i18n: "compare-add-button" });
   const labelField = make("input", { type: "text", className: "path-input" });
-  const filePath = make("span", { className: "cmp-mono cmp-chosen" });
-  const browse = make("button", { i18n: "compare-browse" });
   const folderPath = make("span", { className: "cmp-mono cmp-chosen" });
   const folderButton = make("button", { i18n: "compare-folder-change" });
   const countField = make("input", {
@@ -105,19 +106,8 @@ export function viewCompare(host: HTMLElement): void {
   });
 
   /** Only what the chosen way needs is on screen; the rest is put away. */
-  const filePanel = make(
-    "div",
-    { className: "cmp-panel" },
-    make("div", { className: "row" }, browse, filePath),
-  );
-  const privacyPanel = make(
-    "div",
-    { className: "cmp-panel" },
-    checkboxRow(withSerial, "compare-with-serial", null),
-    checkboxRow(withPhotographer, "compare-with-photographer", null),
-    checkboxRow(withCopyright, "compare-with-copyright", null),
-    make("p", { className: "hint", i18n: "compare-privacy-hint" }),
-  );
+  const filePanel = make("div", { className: "cmp-panel" });
+  const privacyPanel = make("div", { className: "cmp-panel" }, dumpInclude.element, sensitiveNotice());
   const keepPanel = make(
     "div",
     { className: "cmp-panel" },
@@ -141,7 +131,6 @@ export function viewCompare(host: HTMLElement): void {
     folderPanel.hidden = source !== "camera" && source !== "image";
     panels.hidden = source === null;
     if (source !== "image" && source !== "dump") chosenFile = null;
-    filePath.textContent = chosenFile ?? "";
   };
 
   const sourceInputs: HTMLInputElement[] = [];
@@ -155,6 +144,20 @@ export function viewCompare(host: HTMLElement): void {
       if (!radio.checked) return;
       source = value;
       chosenFile = null;
+      // A fresh picker per choice: it claims dropped files for the kind this choice takes.
+      if (value === "image" || value === "dump") {
+        const image = value === "image";
+        const picker = filePicker(
+          status,
+          image ? "backup" : "dump",
+          image ? [".bin"] : [".json", ".bin"],
+          image ? "backup-drop-hint" : "tools-drop-hint",
+          (path) => {
+            chosenFile = path === "" ? null : path;
+          },
+        );
+        filePanel.replaceChildren(picker.element);
+      }
       applySource();
       refresh();
     });
@@ -172,22 +175,16 @@ export function viewCompare(host: HTMLElement): void {
     );
   });
 
-  browse.addEventListener("click", async () => {
-    try {
-      const kind = source === "image" ? "backup" : "dump";
-      const picked = await invoke<string | null>("pick_file", { kind });
-      if (picked !== null) {
-        chosenFile = picked;
-        filePath.textContent = picked;
-      }
-    } catch (e) {
-      showError(status, e);
-    }
-  });
+  const onPick = (picked: ByteRange | null): void => {
+    range = picked;
+    drawResults();
+  };
 
   const drawResults = (): void => {
     results.replaceChildren(
-      ...(report === null ? [] : renderReport(report, entries, visible, drawResults, status)),
+      ...(report === null
+        ? []
+        : renderReport(report, entries, visible, drawResults, status, range, onPick, rerun)),
     );
   };
 
@@ -285,11 +282,7 @@ export function viewCompare(host: HTMLElement): void {
       }
       const target = await folderFor();
       if (target === null) return;
-      const privacy = {
-        withSerial: withSerial.checked,
-        withPhotographer: withPhotographer.checked,
-        withCopyright: withCopyright.checked,
-      };
+      const privacy = { includeSensitive: dumpInclude.checked() };
       const summary =
         source === "camera"
           ? await withProgressTarget(status, () =>
@@ -320,20 +313,37 @@ export function viewCompare(host: HTMLElement): void {
     }
   });
 
+  /** Run the comparison over the collected dumps, shown the way this session shows values. */
+  const compareNow = async (): Promise<void> => {
+    report = await invoke<CompareReport>("compare_run", {
+      paths: entries.map((entry) => entry.path),
+      similarDistance: Math.min(16, Math.max(0, distance.valueAsNumber || 0)),
+      autoNoise: autoNoise.checked,
+      alignByName: !alignRow.hidden && alignByName.checked,
+      reveal: revealSensitive(),
+    });
+  };
+  const rerun = async (): Promise<void> => {
+    showBusy(status, tr("msg-working"));
+    try {
+      await compareNow();
+      showDone(status, tr("msg-done"));
+      drawResults();
+    } catch (e) {
+      showError(status, e);
+    }
+  };
+
   runButton.addEventListener("click", async () => {
     if (entries.length < 2) {
       showErrorKey(status, "compare-needs-two");
       return;
     }
     runButton.disabled = true;
+    range = null;
     showBusy(status, tr("msg-working"));
     try {
-      report = await invoke<CompareReport>("compare_run", {
-        paths: entries.map((entry) => entry.path),
-        similarDistance: Math.min(16, Math.max(0, distance.valueAsNumber || 0)),
-        autoNoise: autoNoise.checked,
-        alignByName: !alignRow.hidden && alignByName.checked,
-      });
+      await compareNow();
       showDone(status, tr("msg-done"));
       drawResults();
     } catch (e) {
@@ -537,6 +547,7 @@ function layoutFields(summary: DumpSummary): HTMLElement {
   const block = make(
     "div",
     {},
+    layoutMap(summary),
     fieldList([
       ["compare-free-header", bytes(free.header)],
       ["compare-free-subsystem-table", bytes(free.subsystemTable)],
@@ -597,8 +608,16 @@ function renderReport(
   visible: Set<Cls>,
   onToggle: () => void,
   status: HTMLElement,
+  range: ByteRange | null,
+  onPick: (range: ByteRange | null) => void,
+  rerun: () => Promise<void>,
 ): Node[] {
-  const rows = report.rows.filter((row) => visible.has(row.class as Cls));
+  const rows = report.rows.filter(
+    (row) =>
+      visible.has(row.class as Cls) &&
+      (range === null ||
+        (row.offset !== undefined && row.offset >= range.start && row.offset < range.end)),
+  );
   const shown = rows.slice(0, MAX_ROWS);
   const labels = entries.map((entry) => entry.label);
 
@@ -609,6 +628,9 @@ function renderReport(
     chipRow(report, visible, onToggle),
     make("p", { textContent: `${tr("compare-compared")}: ${report.total}` }),
   ];
+  if (report.map !== undefined) {
+    nodes.push(compareMap(report.map, labels[0] ?? "#1", range, onPick, visible));
+  }
   if (report.noiseIds.length > 0) {
     nodes.push(
       make("p", {
@@ -620,11 +642,14 @@ function renderReport(
     );
   }
   nodes.push(findingsHelp());
+  if (report.rows.some((row) => row.sensitive !== undefined || row.redacted)) {
+    nodes.push(sensitiveNotice(), revealSwitch(rerun));
+  }
   if (report.rows.some((row) => row.id.includes(":"))) {
     nodes.push(make("p", { className: "hint", i18n: "compare-further-image-note" }));
   }
   if (shown.length === 0) {
-    nodes.push(make("p", { i18n: "compare-no-rows" }));
+    nodes.push(make("p", { i18n: range === null ? "compare-no-rows" : "map-compare-nothing" }));
   } else {
     nodes.push(grid(report, shown, labels));
     if (shown.length < rows.length) {
@@ -744,23 +769,23 @@ function grid(report: CompareReport, rows: CompareRow[], labels: string[]): HTML
         make("td", { textContent: row.size !== null ? String(row.size) : "–" }),
         name,
         make("td", { textContent: tr(`compare-class-${row.class}`) }),
-        ...row.values.map((value) => valueCell(value)),
+        ...row.values.map((value) => valueCell(value, row)),
       ),
     );
   }
   return make("table", { className: "cmp-grid" }, make("thead", {}, head), tbody);
 }
 
-function valueCell(value: string | null): HTMLElement {
+function valueCell(value: string | null, row: CompareRow): HTMLElement {
   if (value === null) return make("td", { className: "cmp-mono", textContent: "–" });
-  if (value.length > 24) {
-    return make("td", {
-      className: "cmp-mono",
-      textContent: `${value.slice(0, 24)} …`,
-      title: value,
-    });
-  }
-  return make("td", { className: "cmp-mono", textContent: value });
+  // A replaced value is zeros of the right length: no value, so none is shown.
+  if (row.redacted) return make("td", {}, hiddenValue(row.sensitive));
+  const cell =
+    value.length > 24
+      ? make("td", { className: "cmp-mono", textContent: `${value.slice(0, 24)} …`, title: value })
+      : make("td", { className: "cmp-mono", textContent: value });
+  if (row.sensitive !== undefined) cell.append(" ", shownMark(row.sensitive));
+  return cell;
 }
 
 /**
@@ -777,6 +802,7 @@ function exportSection(report: CompareReport, visible: Set<Cls>, status: HTMLEle
   const onlyNamed = make("input", { type: "checkbox" });
   const onlyFwNamed = make("input", { type: "checkbox" });
   const onlySwitches = make("input", { type: "checkbox" });
+  const include = includeSwitch();
   const button = make("button", { className: "primary", i18n: "compare-export" });
 
   button.addEventListener("click", async () => {
@@ -796,6 +822,7 @@ function exportSection(report: CompareReport, visible: Set<Cls>, status: HTMLEle
         onlyNamed: onlyNamed.checked,
         onlyFwNamed: onlyFwNamed.checked,
         onlySwitches: onlySwitches.checked,
+        includeSensitive: include.checked(),
       });
       showDone(status, trFill("compare-saved", { count, path }));
     } catch (e) {
@@ -822,6 +849,7 @@ function exportSection(report: CompareReport, visible: Set<Cls>, status: HTMLEle
       ? [checkboxRow(onlyFwNamed, "compare-only-fw-named", "compare-only-fw-named-hint")]
       : []),
     checkboxRow(onlySwitches, "compare-only-switches", "compare-only-switches-hint"),
+    include.element,
     make("div", { className: "row" }, button),
   );
 }

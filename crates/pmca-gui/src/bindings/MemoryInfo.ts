@@ -45,4 +45,17 @@ sameCamera: boolean | null,
 /**
  * Elements per memory-set array (working copy plus slots), where the store says.
  */
-memorySetSlots?: number, };
+memorySetSlots?: number, 
+/**
+ * How many values may be sensitive, in every image.
+ */
+sensitive: number, 
+/**
+ * How many of them are replaced on screen; values the file itself had
+ * replaced stay so even when the others are shown.
+ */
+redacted: number, 
+/**
+ * Whether the values that may be sensitive are shown as they are.
+ */
+revealed: boolean, };

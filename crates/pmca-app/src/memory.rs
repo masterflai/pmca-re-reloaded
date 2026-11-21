@@ -4,6 +4,9 @@
 //! one filtered page of a group at a time, because a store holds over ten
 //! thousand properties. A second reading of the same camera can be laid over
 //! the first, so every value that changed in between is marked.
+//!
+//! Values that may be sensitive are shown replaced until the user asks to see
+//! them ([`Memory::reveal`]); until then they never leave the backend.
 
 use std::collections::{BTreeMap, HashMap};
 use std::path::Path;
@@ -13,8 +16,9 @@ use serde::{Deserialize, Serialize};
 
 use crate::Result;
 use crate::compare::{self, DumpCamera, DumpFile, Privacy, PropertyView};
-use crate::names::{self, FwName, FwValue, NameTable, NameTableInfo, NameView};
+use crate::names::{self, FwName, FwValue, NameTableInfo, NameView};
 use crate::own_names::OwnName;
+use crate::sensitive::Kind;
 
 /// The most value bytes a row carries; the detail and the dump have them all.
 const VALUE_BYTES: usize = 64;
@@ -22,29 +26,72 @@ const VALUE_BYTES: usize = 64;
 /// The most rows one page holds.
 const MAX_PAGE: usize = 1000;
 
+type Values = HashMap<String, String>;
+
 /// A store as the view holds it, with the reading before it if one was laid under.
 pub struct Memory {
-    /// The store on screen.
+    /// The store on screen: values that may be sensitive replaced, unless
+    /// [`Self::reveal`] asked for them.
     pub dump: DumpFile,
-    before: Option<HashMap<String, String>>,
+    /// The same store the other way round.
+    other: DumpFile,
+    before: Option<Values>,
+    before_other: Option<Values>,
     same_camera: Option<bool>,
+    slot_count: Option<usize>,
+    revealed: bool,
 }
 
 impl Memory {
-    /// A store on its own.
+    /// A store on its own, read in full and shown with sensitive values replaced.
     #[must_use]
-    pub fn new(dump: DumpFile) -> Self {
-        Self { dump, before: None, same_camera: None }
+    pub fn new(mut full: DumpFile) -> Self {
+        // Marks without replacing; a dump read in full has been through it already.
+        full.apply(Privacy::Full);
+        Self {
+            slot_count: compare::memory_set_slot_count(&full),
+            dump: full.masked(),
+            other: full,
+            before: None,
+            before_other: None,
+            same_camera: None,
+            revealed: false,
+        }
     }
 
-    /// A newer reading, with `previous` kept to mark what changed.
+    /// A newer reading, with `previous` kept to mark what changed. Shown the
+    /// way `previous` was.
     #[must_use]
-    pub fn after(dump: DumpFile, previous: &Self) -> Self {
-        let before =
-            rows(&previous.dump).map(|(image, p)| (row_id(image, p), p.hex.clone())).collect();
-        let same = !dump.camera.camera_id.is_empty()
-            && dump.camera.camera_id == previous.dump.camera.camera_id;
-        Self { dump, before: Some(before), same_camera: Some(same) }
+    pub fn after(full: DumpFile, previous: &Self) -> Self {
+        let values =
+            |d: &DumpFile| rows(d).map(|(image, p)| (row_id(image, p), p.hex.clone())).collect();
+        let same = !full.camera.camera_id.is_empty()
+            && full.camera.camera_id == previous.dump.camera.camera_id;
+        let mut memory = Self::new(full);
+        memory.before = Some(values(previous.view(false)));
+        memory.before_other = Some(values(previous.view(true)));
+        memory.same_camera = Some(same);
+        memory.reveal(previous.revealed);
+        memory
+    }
+
+    fn view(&self, revealed: bool) -> &DumpFile {
+        if revealed == self.revealed { &self.dump } else { &self.other }
+    }
+
+    /// Show the values that may be sensitive as they are, or replaced again.
+    pub fn reveal(&mut self, on: bool) {
+        if on != self.revealed {
+            std::mem::swap(&mut self.dump, &mut self.other);
+            std::mem::swap(&mut self.before, &mut self.before_other);
+            self.revealed = on;
+        }
+    }
+
+    /// Whether the values that may be sensitive are shown as they are.
+    #[must_use]
+    pub fn revealed(&self) -> bool {
+        self.revealed
     }
 
     fn before_of(&self, id: &str) -> Option<&String> {
@@ -119,6 +166,12 @@ pub struct MemoryRow {
     #[serde(skip_serializing_if = "Option::is_none")]
     #[cfg_attr(test, ts(optional))]
     pub fw_value: Option<FwValue>,
+    /// What the user noted the camera showed for this stored value.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    #[cfg_attr(test, ts(optional))]
+    pub own_value: Option<String>,
+    /// Whether the value is an array with one element per memory set.
+    pub memory_set: bool,
     /// Length of the value.
     pub size: usize,
     /// Attribute bitfield, as hex.
@@ -137,6 +190,10 @@ pub struct MemoryRow {
     pub empty: bool,
     /// Whether the value was withheld.
     pub redacted: bool,
+    /// Why the value may be sensitive, where it may be.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    #[cfg_attr(test, ts(optional))]
+    pub sensitive: Option<Kind>,
     /// Whether the value changed since the reading before.
     pub changed: bool,
 }
@@ -190,6 +247,26 @@ pub struct MemoryDetail {
     #[serde(skip_serializing_if = "Option::is_none")]
     #[cfg_attr(test, ts(optional))]
     pub memory_sets: Option<Vec<MemorySlot>>,
+    /// For a setting, the array right behind it that keeps its memory sets; for
+    /// such an array, the setting right in front of it.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    #[cfg_attr(test, ts(optional))]
+    pub partner: Option<MemoryPartner>,
+}
+
+/// The property that pairs with another as setting and memory-set array.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize)]
+#[serde(rename_all = "camelCase")]
+#[cfg_attr(test, derive(ts_rs::TS), ts(export))]
+pub struct MemoryPartner {
+    /// Its id.
+    pub id: String,
+    /// Its value, as spaced hex.
+    pub hex: String,
+    /// Its slots, when it is the memory-set array.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    #[cfg_attr(test, ts(optional))]
+    pub memory_sets: Option<Vec<MemorySlot>>,
 }
 
 /// One element of a memory-set array.
@@ -230,28 +307,20 @@ pub struct MemoryInfo {
     #[serde(skip_serializing_if = "Option::is_none")]
     #[cfg_attr(test, ts(optional))]
     pub memory_set_slots: Option<usize>,
+    /// How many values may be sensitive, in every image.
+    pub sensitive: usize,
+    /// How many of them are replaced on screen; values the file itself had
+    /// replaced stay so even when the others are shown.
+    pub redacted: usize,
+    /// Whether the values that may be sensitive are shown as they are.
+    pub revealed: bool,
 }
 
-/// Read a dump or a `Backup.bin` and name what the installed tables know.
+/// Read a dump or a `Backup.bin` in full and name what the installed tables know.
+///
+/// The values that may be sensitive are replaced only on screen, by [`Memory`].
 pub fn open(l: &Localizer, path: &Path) -> Result<DumpFile> {
-    let mut dump = compare::read_dump(l, path, Privacy::MASKED)?;
-    fill_names(&mut dump, names::tables());
-    Ok(dump)
-}
-
-/// Name the properties a dump made without the installed tables left unnamed.
-fn fill_names(dump: &mut DumpFile, tables: &[NameTable]) {
-    let view = NameView::new(tables, &camera_key(&dump.camera));
-    for p in &mut dump.properties {
-        if p.fw_name.is_none() {
-            p.fw_name = parse_id(&p.id).and_then(|id| names::lookup(&view, id));
-            if !p.redacted
-                && p.fw_name.as_ref().is_some_and(|f| compare::is_sensitive_name(&f.name))
-            {
-                compare::mask_sensitive(p);
-            }
-        }
-    }
+    compare::read_dump(l, path, Privacy::Full)
 }
 
 fn camera_key(camera: &DumpCamera) -> names::CameraKey {
@@ -301,7 +370,10 @@ pub fn info(memory: &Memory, own: &BTreeMap<String, OwnName>, path: &Path) -> Me
             .as_ref()
             .map(|_| rows(dump).filter(|(i, p)| memory.changed(&row_id(*i, p), &p.hex)).count()),
         same_camera: memory.same_camera,
-        memory_set_slots: compare::memory_set_slot_count(dump),
+        memory_set_slots: memory.slot_count,
+        sensitive: dump.all_properties().filter(|p| p.sensitive.is_some()).count(),
+        redacted: dump.all_properties().filter(|p| p.redacted).count(),
+        revealed: memory.revealed,
     }
 }
 
@@ -350,11 +422,18 @@ fn row(
     let id = row_id(image, p);
     let bytes: Vec<&str> = p.hex.split_whitespace().collect();
     let data: Vec<u8> = bytes.iter().filter_map(|b| u8::from_str_radix(b, 16).ok()).collect();
+    let own = if image == 1 { own.get(&p.id).cloned() } else { None };
+    let own_value = own
+        .as_ref()
+        .filter(|_| !p.redacted)
+        .and_then(|o| o.values.get(&names::value_of(&data)?.to_string()).cloned());
     MemoryRow {
         group: group_of(image, p),
         name: p.name.clone(),
         fw_name: p.fw_name.clone(),
-        own: if image == 1 { own.get(&p.id).cloned() } else { None },
+        own,
+        own_value,
+        memory_set: image == 1 && memory.slot_count.is_some_and(|n| slots(p, n).is_some()),
         meaning: p
             .name
             .as_deref()
@@ -374,6 +453,7 @@ fn row(
         writable: p.writable,
         empty: p.empty,
         redacted: p.redacted,
+        sensitive: p.sensitive,
         changed: memory.changed(&id, &p.hex),
         id,
     }
@@ -450,18 +530,43 @@ fn labels(dump: &DumpFile) -> HashMap<String, String> {
 #[must_use]
 pub fn detail(memory: &Memory, own: &BTreeMap<String, OwnName>, id: &str) -> Option<MemoryDetail> {
     let (image, p) = rows(&memory.dump).find(|(i, p)| row_id(*i, p) == id)?;
+    let count = if image == 1 { memory.slot_count } else { None };
+    let memory_sets = count.and_then(|n| slots(p, n));
     Some(MemoryDetail {
         row: row(memory, own, image, p),
         hex: p.hex.clone(),
         reset: p.reset.clone(),
-        before: memory.before_of(id).filter(|old| **old != p.hex).cloned(),
+        before: memory.before_of(id).filter(|old| **old != p.hex && !p.redacted).cloned(),
         offset: p.offset.clone(),
         max_size: p.max_size,
-        memory_sets: if image == 1 {
-            compare::memory_set_slot_count(&memory.dump).and_then(|n| slots(p, n))
-        } else {
-            None
-        },
+        partner: count.and_then(|n| partner(&memory.dump, p, n, memory_sets.is_some())),
+        memory_sets,
+    })
+}
+
+/// The memory-set array right behind a setting, or the setting right in front
+/// of such an array, where the sizes say they belong together.
+fn partner(
+    dump: &DumpFile,
+    p: &PropertyView,
+    count: usize,
+    is_sets: bool,
+) -> Option<MemoryPartner> {
+    let id = parse_id(&p.id)?;
+    let other_id = if is_sets { id.checked_sub(1)? } else { id.checked_add(1)? };
+    let other = dump.properties.iter().find(|q| parse_id(&q.id) == Some(other_id))?;
+    if p.redacted || other.redacted {
+        return None;
+    }
+    let (setting, sets) = if is_sets { (other, p) } else { (p, other) };
+    let sets_slots = slots(sets, count)?;
+    if setting.size == 0 || setting.size * count != sets.size || slots(setting, count).is_some() {
+        return None;
+    }
+    Some(MemoryPartner {
+        id: other.id.clone(),
+        hex: other.hex.clone(),
+        memory_sets: (!is_sets).then_some(sets_slots),
     })
 }
 
@@ -507,9 +612,12 @@ pub fn csv(memory: &Memory, own: &BTreeMap<String, OwnName>, query: &MemoryQuery
             own.map(|o| o.note.clone()).unwrap_or_default(),
             r.size.to_string(),
             r.attr_names.join(" "),
-            // Withheld at reading; the zeros the dump keeps in its place are no value.
+            // Withheld; the zeros the dump keeps in its place are no value.
             if r.redacted {
-                "withheld".to_string()
+                r.sensitive.map_or_else(
+                    || "withheld".to_string(),
+                    |k| format!("withheld ({})", k.as_str()),
+                )
             } else {
                 full.as_ref().map(|d| d.hex.clone()).unwrap_or_default()
             },
@@ -527,7 +635,8 @@ pub fn csv(memory: &Memory, own: &BTreeMap<String, OwnName>, query: &MemoryQuery
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::compare::{DumpLayout, FreeSpaceView};
+    use crate::compare::{DumpLayout, FreeSpaceView, fill_names};
+    use crate::names::NameTable;
 
     fn property(id: &str, name: Option<&str>, hex: &str, touched: bool) -> PropertyView {
         PropertyView {
@@ -546,6 +655,7 @@ mod tests {
             writable: true,
             empty: hex.split_whitespace().all(|b| b == "00"),
             redacted: false,
+            sensitive: None,
         }
     }
 
@@ -628,6 +738,7 @@ mod tests {
                 name: "Mine".to_string(),
                 note: String::new(),
                 evidence: "camera".to_string(),
+                values: BTreeMap::new(),
             },
         )]
         .into_iter()
@@ -668,7 +779,7 @@ mod tests {
     }
 
     #[test]
-    fn a_value_named_as_network_data_is_withheld_once_named() {
+    fn a_value_named_as_network_data_is_withheld_until_asked_for() {
         let mut d = dump("01");
         let table = NameTable {
             plugin: "p".to_string(),
@@ -681,9 +792,42 @@ mod tests {
             .unwrap(),
         };
         fill_names(&mut d, &[table]);
-        assert!(d.properties[1].redacted);
-        assert_eq!(d.properties[1].hex, "00");
-        assert!(!d.properties[2].redacted);
+        let mut m = Memory::new(d);
+        let own = BTreeMap::new();
+        let row = |m: &Memory| page(m, &own, &query("0x00020000")).rows[0].clone();
+        assert!(row(&m).redacted);
+        assert_eq!(row(&m).value, "00");
+        assert_eq!(row(&m).sensitive, Some(Kind::NetworkName));
+        assert!(!page(&m, &own, &query("0x00020001")).rows[0].redacted);
+        assert!(csv(&m, &own, &query("0x00020000")).contains("withheld (networkName)"));
+
+        m.reveal(true);
+        assert!(!row(&m).redacted);
+        assert_eq!(row(&m).value, "03");
+        assert_eq!(row(&m).sensitive, Some(Kind::NetworkName));
+        assert!(info(&m, &own, Path::new("x")).revealed);
+        m.reveal(false);
+        assert!(row(&m).redacted);
+    }
+
+    #[test]
+    fn text_values_are_withheld_and_a_later_reading_keeps_the_choice() {
+        let mut d = dump("01");
+        d.properties.push(property("0x01000001", None, "48 6f 6d 65 00 00", false));
+        let mut first = Memory::new(d.clone());
+        let own = BTreeMap::new();
+        let found = page(&first, &own, &query("0x01000001")).rows[0].clone();
+        assert!(found.redacted);
+        assert_eq!(found.sensitive, Some(Kind::Text));
+        assert_eq!(info(&first, &own, Path::new("x")).sensitive, 1);
+
+        first.reveal(true);
+        d.properties[4].hex = "57 6f 72 6b 00 00".to_string();
+        let second = Memory::after(d, &first);
+        assert!(second.revealed());
+        let detail = detail(&second, &own, "0x01000001").unwrap();
+        assert_eq!(detail.before.as_deref(), Some("48 6f 6d 65 00 00"));
+        assert!(detail.row.changed);
     }
 
     #[test]
@@ -702,5 +846,40 @@ mod tests {
             [(0, "0a 00"), (1, "0b 00"), (2, "0c 00")]
         );
         assert!(detail(&m, &own, "0x00020000").unwrap().memory_sets.is_none());
+    }
+
+    #[test]
+    fn a_setting_and_its_memory_sets_point_at_each_other_and_values_carry_own_names() {
+        let mut d = dump("01");
+        d.properties.push(property("0x003e000c", None, "02", false));
+        d.properties.push(property("0x02cf0018", None, "1a", false));
+        let mut array = property("0x02cf0019", None, "1f 1a 1a", false);
+        array.attr = "0x80".to_string();
+        d.properties.push(array);
+        let m = Memory::new(d);
+        let own: BTreeMap<String, OwnName> = [(
+            "0x02cf0018".to_string(),
+            OwnName {
+                name: String::new(),
+                note: String::new(),
+                evidence: "camera".to_string(),
+                values: [("26".to_string(), "26".to_string())].into_iter().collect(),
+            },
+        )]
+        .into_iter()
+        .collect();
+        let setting = detail(&m, &own, "0x02cf0018").unwrap();
+        assert_eq!(setting.row.own_value.as_deref(), Some("26"));
+        assert!(!setting.row.memory_set);
+        let partner = setting.partner.unwrap();
+        assert_eq!(partner.id, "0x02cf0019");
+        assert_eq!(partner.memory_sets.unwrap().len(), 3);
+        let sets = detail(&m, &own, "0x02cf0019").unwrap();
+        assert!(sets.row.memory_set);
+        let back = sets.partner.unwrap();
+        assert_eq!(
+            (back.id.as_str(), back.hex.as_str(), back.memory_sets),
+            ("0x02cf0018", "1a", None)
+        );
     }
 }

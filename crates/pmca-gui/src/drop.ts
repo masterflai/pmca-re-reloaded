@@ -110,6 +110,7 @@ export function filePicker(
   kind: string,
   suffixes: string[],
   hintKey: string,
+  onChange?: (path: string) => void,
 ): FilePicker {
   let chosen = "";
   const zone = make("div", { className: "dropzone file-picker" });
@@ -125,6 +126,7 @@ export function filePicker(
     shown.hidden = path === "";
     remove.hidden = path === "";
     zone.classList.remove("active");
+    onChange?.(path);
   };
   const browse = browseButton(
     status,

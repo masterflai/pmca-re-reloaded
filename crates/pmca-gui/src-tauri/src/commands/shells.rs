@@ -65,18 +65,13 @@ pub(crate) async fn service_run(
 }
 
 /// Run `line` on the session in `slot`, ending it on `exit`.
+#[cfg_attr(target_os = "macos", allow(dead_code))]
 pub(crate) fn run_service_line(
     slot: &mut Option<pmca_app::service::ServiceSession>,
     localizer: &Localizer,
     line: &str,
 ) -> Result<Option<pmca_app::service::ServiceOutcome>, CommandError> {
-    let session = slot.as_mut().ok_or_else(|| service_not_connected(localizer))?;
-    let outcome = session.run_line(localizer, line)?;
-    // `exit` is a command like any other, and the session it ends is this one.
-    if outcome.as_ref().is_some_and(|o| o.finished) {
-        slot.take();
-    }
-    Ok(outcome)
+    pmca_app::elevated::run_service_line(slot, localizer, line).map_err(CommandError::from)
 }
 
 /// Leave service mode.
@@ -175,12 +170,7 @@ pub(crate) async fn service_write_terminal(
 
 /// The error for a command sent with no session open.
 pub(crate) fn service_not_connected(localizer: &Localizer) -> CommandError {
-    CommandError {
-        code: "no-service-session".into(),
-        message: localizer.tr("service-not-connected"),
-        detail: None,
-        recovery: None,
-    }
+    pmca_app::elevated::service_not_connected(localizer).into()
 }
 
 /// The updater shell's command reference.
@@ -272,28 +262,19 @@ pub(crate) async fn updater_run(
 }
 
 /// Run `line` on the updater session in `slot`, ending it on `exit`.
+#[cfg_attr(target_os = "macos", allow(dead_code))]
 pub(crate) fn run_updater_line(
     slot: &mut Option<pmca_app::updater::UpdaterSession>,
     localizer: &Localizer,
     line: &str,
 ) -> Result<Option<pmca_app::updater::UpdaterOutcome>, CommandError> {
-    let session = slot.as_mut().ok_or_else(|| updater_not_connected(localizer))?;
-    let outcome = session.run_line(localizer, line)?;
-    // `exit` is a command like any other, and the session it ends is this one.
-    if outcome.as_ref().is_some_and(|o| o.finished) {
-        slot.take();
-    }
-    Ok(outcome)
+    pmca_app::elevated::run_updater_line(slot, localizer, line).map_err(CommandError::from)
 }
 
 /// The error for an updater command sent with no session open.
+#[cfg(target_os = "macos")]
 fn updater_not_connected(localizer: &Localizer) -> CommandError {
-    CommandError {
-        code: "no-updater-session".into(),
-        message: localizer.tr("service-not-connected"),
-        detail: None,
-        recovery: None,
-    }
+    pmca_app::elevated::updater_not_connected(localizer).into()
 }
 
 /// End the updater session, letting the firmware write finalise.

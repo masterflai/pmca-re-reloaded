@@ -20,6 +20,9 @@ const FILE: &str = "own-names.json";
 const MAX_NAME: usize = 128;
 const MAX_NOTE: usize = 200;
 
+/// The most value names one property keeps, as a name table allows.
+const MAX_VALUES: usize = 4096;
+
 /// One property's own name.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
@@ -33,6 +36,9 @@ pub struct OwnName {
     /// `camera` when given by hand, `analysis` when a function analysis found it.
     #[serde(default = "by_hand")]
     pub evidence: String,
+    /// What the user saw on the camera for a stored value, by the value in decimal.
+    #[serde(default)]
+    pub values: BTreeMap<String, String>,
 }
 
 fn by_hand() -> String {
@@ -71,26 +77,59 @@ pub fn for_model(model: &str) -> BTreeMap<String, OwnName> {
     load().models.remove(model).unwrap_or_default()
 }
 
-/// Set or, with both fields empty, remove the own name of one property.
+/// Set or, with both fields empty, remove the own name of one property. Value
+/// names stay; the entry goes only when nothing is left.
 pub fn set(l: &Localizer, model: &str, id: &str, name: &str, note: &str) -> Result<()> {
     let id = canonical_id(id).ok_or_else(|| Error::Operation(l.tr("own-name-invalid")))?;
     let (name, note) = (name.trim(), note.trim());
-    let bad = |s: &str, max: usize| s.chars().count() > max || s.chars().any(char::is_control);
     if model.trim().is_empty() || bad(name, MAX_NAME) || bad(note, MAX_NOTE) {
         return Err(Error::Operation(l.tr("own-name-invalid")));
     }
     let mut store = load();
     let names = store.models.entry(model.to_string()).or_default();
-    if name.is_empty() && note.is_empty() {
-        names.remove(&id);
-    } else {
+    let values = names.remove(&id).map(|o| o.values).unwrap_or_default();
+    if !(name.is_empty() && note.is_empty() && values.is_empty()) {
         names.insert(
             id,
-            OwnName { name: name.to_string(), note: note.to_string(), evidence: by_hand() },
+            OwnName { name: name.to_string(), note: note.to_string(), evidence: by_hand(), values },
         );
     }
     store.models.retain(|_, names| !names.is_empty());
     save(&store)
+}
+
+/// Name what the camera showed for the stored `value` of one property, or with
+/// an empty `label` forget that name.
+pub fn set_value(l: &Localizer, model: &str, id: &str, value: u64, label: &str) -> Result<()> {
+    let id = canonical_id(id).ok_or_else(|| Error::Operation(l.tr("own-name-invalid")))?;
+    let label = label.trim();
+    if model.trim().is_empty() || bad(label, MAX_NAME) {
+        return Err(Error::Operation(l.tr("own-name-invalid")));
+    }
+    let mut store = load();
+    let names = store.models.entry(model.to_string()).or_default();
+    let entry = names.entry(id.clone()).or_insert_with(|| OwnName {
+        name: String::new(),
+        note: String::new(),
+        evidence: by_hand(),
+        values: BTreeMap::new(),
+    });
+    if label.is_empty() {
+        entry.values.remove(&value.to_string());
+    } else if entry.values.len() < MAX_VALUES || entry.values.contains_key(&value.to_string()) {
+        entry.values.insert(value.to_string(), label.to_string());
+    } else {
+        return Err(Error::Operation(l.tr("own-name-invalid")));
+    }
+    if entry.name.is_empty() && entry.note.is_empty() && entry.values.is_empty() {
+        names.remove(&id);
+    }
+    store.models.retain(|_, names| !names.is_empty());
+    save(&store)
+}
+
+fn bad(s: &str, max: usize) -> bool {
+    s.chars().count() > max || s.chars().any(char::is_control)
 }
 
 /// Remove every own name of one model; how many there were.
@@ -116,6 +155,7 @@ pub fn remember_finding(model: &str, id: u32, setting: &str, day: &str) -> Resul
             name,
             note: format!("function analysis {day}"),
             evidence: "analysis".to_string(),
+            values: BTreeMap::new(),
         },
     );
     save(&store)?;
@@ -124,17 +164,7 @@ pub fn remember_finding(model: &str, id: u32, setting: &str, day: &str) -> Resul
 
 /// Write the own names of one model as a name-table plugin to `out`.
 pub fn export(l: &Localizer, model: &str, out: &Path) -> Result<PluginInfo> {
-    let names = for_model(model);
-    let mut table = format!("{}\n", pmca_platform::names::HEADER);
-    for (id, own) in &names {
-        let name = table_name(&own.name);
-        if name.is_empty() {
-            continue;
-        }
-        let note: String =
-            own.note.chars().map(|c| if c.is_control() { ' ' } else { c }).take(MAX_NOTE).collect();
-        table.push_str(&format!("{id}\t{name}\t\t{}\t{note}\n", own.evidence));
-    }
+    let table = table(&for_model(model));
     if table.lines().count() < 2 {
         return Err(Error::Operation(l.tr("own-names-none")));
     }
@@ -157,6 +187,31 @@ pub fn export(l: &Localizer, model: &str, out: &Path) -> Result<PluginInfo> {
         ("names/own.tsv".to_string(), table.into_bytes()),
     ];
     crate::plugins::pack_files(l, files, out)
+}
+
+/// The own names as the text of a name table.
+fn table(names: &BTreeMap<String, OwnName>) -> String {
+    let mut table = format!("{}\n", pmca_platform::names::HEADER);
+    for (id, own) in names {
+        let mut name = table_name(&own.name);
+        if name.is_empty() && !own.values.is_empty() {
+            // A value row needs a name row; this one says only where the values sit.
+            name = format!("ID_{}", id.trim_start_matches("0x"));
+        }
+        if name.is_empty() {
+            continue;
+        }
+        let note: String =
+            own.note.chars().map(|c| if c.is_control() { ' ' } else { c }).take(MAX_NOTE).collect();
+        table.push_str(&format!("{id}\t{name}\t\t{}\t{note}\n", own.evidence));
+        for (value, label) in &own.values {
+            let label = table_name(label);
+            if !label.is_empty() {
+                table.push_str(&format!("=value\t{id}\t{value}\t{label}\tcamera\n"));
+            }
+        }
+    }
+    table
 }
 
 /// `0x` and eight lowercase hex digits, from any spelling of a first-image id.
@@ -201,5 +256,26 @@ mod tests {
         assert_eq!(table_name(" PAL/NTSC switch "), "PAL_NTSC_switch");
         assert_eq!(plugin_id("DSC-RX1R"), "own-names-dsc-rx1r");
         assert_eq!(plugin_id("ILCE--7CR "), "own-names-ilce-7cr");
+    }
+
+    #[test]
+    fn value_names_seen_on_the_camera_export_as_value_rows() {
+        let own = |name: &str, values: &[(&str, &str)]| OwnName {
+            name: name.to_string(),
+            note: String::new(),
+            evidence: by_hand(),
+            values: values.iter().map(|(v, l)| (v.to_string(), l.to_string())).collect(),
+        };
+        let names = BTreeMap::from([
+            ("0x02cf0018".to_string(), own("Audio level", &[("10", "10"), ("20", "20")])),
+            ("0x02cf0479".to_string(), own("", &[("1", "Manual"), ("2", "Sunny Weather")])),
+        ]);
+        let text = table(&names);
+        assert!(text.contains("0x02cf0479\tID_02cf0479\t"));
+        assert!(text.contains("=value\t0x02cf0479\t2\tSunny_Weather\tcamera"));
+        let parsed = pmca_platform::names::parse_table(&text).unwrap();
+        assert_eq!(parsed[&0x02cf_0018].name, "Audio_level");
+        assert_eq!(parsed[&0x02cf_0018].values[&20].name, "20");
+        assert_eq!(parsed[&0x02cf_0479].values[&1].name, "Manual");
     }
 }

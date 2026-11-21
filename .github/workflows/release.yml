@@ -174,6 +174,19 @@ jobs:
         working-directory: crates/pmca-gui
         run: npm ci
 
+      # tauri-build requires the broker sidecar per arch; lipo joins them for the universal bundle.
+      - name: Build the macOS broker sidecar
+        if: matrix.label == 'macos'
+        shell: bash
+        run: |
+          bin=crates/pmca-gui/src-tauri/binaries
+          mkdir -p "$bin"
+          for t in aarch64-apple-darwin x86_64-apple-darwin; do
+            cargo build --release --locked -p pmca-broker --target "$t"
+            cp "target/$t/release/pmca-broker" "$bin/pmca-broker-$t"
+          done
+          lipo -create -output "$bin/pmca-broker-universal-apple-darwin" "$bin/pmca-broker-aarch64-apple-darwin" "$bin/pmca-broker-x86_64-apple-darwin"
+
       # `tauri build` runs the frontend build itself through
       # `beforeBuildCommand` and adds the `custom-protocol` feature.
       #

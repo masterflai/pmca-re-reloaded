@@ -15,6 +15,7 @@ members = [
     "crates/pmca-market",
     "crates/pmca-platform",
     "crates/pmca-app",
+    "crates/pmca-broker",
     "crates/pmca-cli",
     "crates/pmca-plugin-sdk",
 ]

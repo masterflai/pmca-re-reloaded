@@ -8,6 +8,49 @@ All notable changes to this project are documented here. The format follows
 
 ### Added
 
+- Values that may be sensitive are recognised in one place and replaced by
+  default wherever a camera's settings leave the program: serial number,
+  photographer and copyright, passwords and keys, network and device names,
+  addresses, accounts and licences, IPTC, Bluetooth pairing, location, and,
+  as a safety net, every value that reads as text where the program does not
+  know the field as harmless. Without the firmware's name for every field
+  this cannot be exact, so some harmless texts are replaced too; the window
+  and `pmca-console privacy` say so and list what is covered, and which files
+  always hold everything (backup file, reset copies, network settings, usage
+  log, raw dumps).
+- Memory view and camera comparison hide these values behind stars, with the
+  reason on hover, until *Show values that may be sensitive* is switched on
+  for the session. Dumps, the comparison export and the CSV export carry them
+  only with *Include values that may be sensitive*. A dump records why a value
+  may be sensitive (`sensitive`), whether it was replaced or not.
+- The backup page says that a backup file always holds everything.
+
+- Backup, memory view and camera comparison show the settings image drawn to
+  scale: the whole file with any further images, and the first image split
+  into header, tables, reserve and data region, with the largest unclaimed
+  runs marked. Every stretch names its address range and size on hover.
+  A magnifier under each bar enlarges the spot under the pointer (click holds
+  it, the mouse wheel zooms) and names the value lying there: id, name, size
+  and its first bytes. On the backup and memory pages the drawing starts
+  folded away.
+- Memory view and camera comparison: a dump or backup image can be dropped
+  onto the file box, as on the other pages.
+- Camera comparison: a map of the first camera's data region in 1,024 columns,
+  each coloured by the most notable finding that begins in it. Clicking a
+  column, or dragging across several, limits the table to the values there.
+  Comparison rows and exports carry the value's offset in the first image.
+  The map shows the findings switched on above it, in their colours and with
+  a legend; a single differing value is drawn wide enough to be seen.
+- Memory view: a short explanation of how a record in the settings file on the
+  memory card, a property in the settings memory and a name in the firmware
+  share one number, and how memory sets are laid out.
+- Memory view: a stored value can be given the name the camera shows for it
+  (for example Manual or +2). These value names stay on the computer, appear
+  in place of the number, and go into the plugin when own names are saved as
+  one. Memory-set arrays are marked in the list; a setting's detail shows its
+  memory sets from the array right behind it, and the array's detail names the
+  setting in front. The working copy (element 0) is explained and compared
+  with the stored sets.
 - Memory view: an array that holds one element per memory set is split into
   its slots in the detail, element 0 being the working copy of the slot
   loaded last. The number of slots comes from the camera's own count
@@ -84,6 +127,29 @@ All notable changes to this project are documented here. The format follows
 
 ### Changed
 
+- `dump-backup`: `--include-sensitive` replaces `--with-serial`,
+  `--with-photographer` and `--with-copyright` (still accepted, now meaning
+  everything); `compare-backups` takes `--include-sensitive` too. Values
+  recognised as sensitive only by a name table were missed before on cameras
+  without one, and in the images behind the first.
+- App backups go into a folder named by model and a short digest instead of
+  the serial number.
+- Own value names cannot be given to values that may be sensitive, since they
+  go into a plugin made to be shared.
+- The read/write badge now stands only beside the button that acts, no longer
+  also in the card heading, and has the same size everywhere.
+- Memory view: the result is split into three cards: where the values come
+  from, how the file is laid out, and the values with their search, filters
+  and exports.
+- macOS: the work that needs administrator rights (tweaks, service shell,
+  function analysis, firmware, reading a camera in mass-storage mode) now runs
+  in `pmca-broker`, a small helper program inside the app, started through
+  `sudo`. The password is asked for in a dialog of its own. The isolated tests
+  that reached the camera's mass-storage connection on macOS 26 ran this way;
+  whether the app now gets there too is still being tested.
+- macOS: when the camera's mass-storage connection cannot be taken, the error
+  details now also name the drivers holding it right after the capture and at
+  the moment it was refused.
 - Dumps and the memory view also withhold network, account and licence data
   (Wi-Fi, FTP, SSH fingerprints, licences, IPTC, MAC addresses, device and
   user names) wherever an installed name table identifies them.
@@ -106,6 +172,10 @@ All notable changes to this project are documented here. The format follows
 
 ### Fixed
 
+- Memory view: a property with several factory-value bits no longer reads
+  "has a factory value, has a factory value"; the detail lists the bits. On
+  arrays, which never carry a factory value, the bits keep their raw names
+  and are marked as unexplained.
 - Restoring a backup no longer fails when the camera's clock or counters
   move on while the image is written (seen on an ILCE-7CR in movie mode).
   The read-back may differ only in the values of a few properties that the

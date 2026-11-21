@@ -7,12 +7,28 @@
 //! a real image holds thousands of properties, and sending the whole result
 //! into the webview only to send it back for an export would move several
 //! megabytes through the IPC channel for no gain.
+//!
+//! Values that may be sensitive ([`pmca_app::sensitive`]) reach the webview
+//! only when the user asked to see them, and an export carries them only when
+//! the user asked for that too.
 
 use crate::*;
 
-/// The three switches the view offers, as the dump layer wants them.
-fn privacy(serial: bool, photographer: bool, copyright: bool) -> pmca_app::compare::Privacy {
-    pmca_app::compare::Privacy { serial, photographer, copyright, accounts: false }
+use pmca_app::compare::Privacy;
+
+/// A comparison as it was asked for, so an export can repeat it the other way.
+pub(crate) struct Comparison {
+    paths: Vec<PathBuf>,
+    options: pmca_app::compare::CompareOptions,
+    report: pmca_app::compare::CompareReport,
+}
+
+/// The catalogue of values that may be sensitive, in the user's language.
+#[tauri::command(async)]
+pub(crate) fn privacy_catalog(
+    state: State<'_, AppState>,
+) -> Result<pmca_app::sensitive::Catalog, CommandError> {
+    Ok(pmca_app::sensitive::catalog(&state.localizer()?))
 }
 
 /// Read the connected camera and write a dump of it into `folder`.
@@ -24,9 +40,7 @@ fn privacy(serial: bool, photographer: bool, copyright: bool) -> pmca_app::compa
 pub(crate) async fn compare_dump_camera(
     app: AppHandle,
     folder: String,
-    with_serial: bool,
-    with_photographer: bool,
-    with_copyright: bool,
+    include_sensitive: bool,
     keep_image: bool,
 ) -> Result<pmca_app::compare::DumpSummary, CommandError> {
     with_camera(app, move |app, state| {
@@ -38,9 +52,7 @@ pub(crate) async fn compare_dump_camera(
                 state,
                 remote::Request::CompareDumpCamera {
                     folder: folder.clone(),
-                    with_serial,
-                    with_photographer,
-                    with_copyright,
+                    include_sensitive,
                     keep_image,
                 },
             )?;
@@ -54,7 +66,7 @@ pub(crate) async fn compare_dump_camera(
                 &l,
                 &mut progress(app),
                 &folder,
-                privacy(with_serial, with_photographer, with_copyright),
+                Privacy::including(include_sensitive),
                 keep_image,
             )?)
         }
@@ -76,9 +88,28 @@ pub(crate) async fn compare_inspect(
         let state = app.state::<AppState>();
         let localizer = state.localizer()?;
         let path = PathBuf::from(path);
-        let dump =
-            pmca_app::compare::read_dump(&localizer, &path, pmca_app::compare::Privacy::MASKED)?;
+        let dump = pmca_app::compare::read_dump(&localizer, &path, Privacy::Mask)?;
         Ok(dump.summary(&path, None))
+    })
+    .await
+}
+
+/// Where every value of a dump or backup image lies, for pointing at a map.
+///
+/// Read once per map so pointing needs no round trip per pixel. Values that
+/// may be sensitive come along only with `reveal`.
+#[tauri::command]
+pub(crate) async fn compare_index(
+    app: AppHandle,
+    path: String,
+    reveal: Option<bool>,
+) -> Result<Vec<pmca_app::compare::IndexImage>, CommandError> {
+    in_background(move || {
+        let state = app.state::<AppState>();
+        let localizer = state.localizer()?;
+        let privacy = Privacy::including(reveal.unwrap_or(false));
+        let dump = pmca_app::compare::read_dump(&localizer, &PathBuf::from(path), privacy)?;
+        Ok(pmca_app::compare::image_index(&dump))
     })
     .await
 }
@@ -106,9 +137,7 @@ pub(crate) async fn compare_dump(
     app: AppHandle,
     input: String,
     folder: String,
-    with_serial: bool,
-    with_photographer: bool,
-    with_copyright: bool,
+    include_sensitive: bool,
 ) -> Result<pmca_app::compare::DumpSummary, CommandError> {
     in_background(move || {
         let state = app.state::<AppState>();
@@ -117,13 +146,16 @@ pub(crate) async fn compare_dump(
             &localizer,
             &PathBuf::from(input),
             &PathBuf::from(folder),
-            privacy(with_serial, with_photographer, with_copyright),
+            Privacy::including(include_sensitive),
         )?)
     })
     .await
 }
 
 /// Compare two or more dumps or images and keep the result for an export.
+///
+/// With `reveal`, values that may be sensitive are compared and shown as the
+/// files hold them; otherwise they are replaced in every source first.
 #[tauri::command]
 pub(crate) async fn compare_run(
     app: AppHandle,
@@ -131,6 +163,7 @@ pub(crate) async fn compare_run(
     similar_distance: usize,
     auto_noise: bool,
     align_by_name: Option<bool>,
+    reveal: Option<bool>,
 ) -> Result<pmca_app::compare::CompareReport, CommandError> {
     in_background(move || {
         let state = app.state::<AppState>();
@@ -140,10 +173,12 @@ pub(crate) async fn compare_run(
             similar_distance,
             auto_noise,
             align_by_name: align_by_name.unwrap_or(false),
+            privacy: Privacy::including(reveal.unwrap_or(false)),
             ..pmca_app::compare::CompareOptions::default()
         };
         let report = pmca_app::compare::compare_paths(&localizer, &paths, &options)?;
-        *state.comparison.lock().map_err(CommandError::internal)? = Some(report.clone());
+        *state.comparison.lock().map_err(CommandError::internal)? =
+            Some(Comparison { paths, options, report: report.clone() });
         Ok(report)
     })
     .await
@@ -151,6 +186,11 @@ pub(crate) async fn compare_run(
 
 /// Write the comparison that was last run out as JSON, keeping only the rows
 /// the filter asks for. Returns how many rows were written.
+///
+/// The values that may be sensitive go in only with `include_sensitive`; when
+/// that differs from what the screen shows, the comparison is run again the
+/// other way, since replacing a value changes how its row compares.
+#[allow(clippy::too_many_arguments)]
 #[tauri::command]
 pub(crate) async fn compare_export(
     app: AppHandle,
@@ -160,16 +200,27 @@ pub(crate) async fn compare_export(
     only_named: bool,
     only_fw_named: bool,
     only_switches: bool,
+    include_sensitive: Option<bool>,
 ) -> Result<usize, CommandError> {
     in_background(move || {
         let state = app.state::<AppState>();
         let localizer = state.localizer()?;
-        let report = state
-            .comparison
-            .lock()
-            .map_err(CommandError::internal)?
-            .clone()
-            .ok_or_else(|| CommandError::localized(localizer.tr("compare-needs-two")))?;
+        let wanted = Privacy::including(include_sensitive.unwrap_or(false));
+        let report = {
+            let guard = state.comparison.lock().map_err(CommandError::internal)?;
+            let last = guard
+                .as_ref()
+                .ok_or_else(|| CommandError::localized(localizer.tr("compare-needs-two")))?;
+            if last.options.privacy == wanted {
+                last.report.clone()
+            } else {
+                let options = pmca_app::compare::CompareOptions {
+                    privacy: wanted,
+                    ..last.options.clone()
+                };
+                pmca_app::compare::compare_paths(&localizer, &last.paths, &options)?
+            }
+        };
         let filter = pmca_app::compare::Filter {
             classes: classes.into_iter().collect(),
             only_writable,
@@ -195,12 +246,14 @@ pub(crate) fn compare_close(state: State<'_, AppState>) -> Result<(), CommandErr
 /// Read a dump or a backup image for the memory view and say what it holds.
 ///
 /// With `after`, the store already open is kept underneath, so every value
-/// that changed between the two readings is marked.
+/// that changed between the two readings is marked. Values that may be
+/// sensitive are shown only with `reveal`.
 #[tauri::command]
 pub(crate) async fn memory_open(
     app: AppHandle,
     path: String,
     after: bool,
+    reveal: Option<bool>,
 ) -> Result<pmca_app::memory::MemoryInfo, CommandError> {
     in_background(move || {
         let state = app.state::<AppState>();
@@ -208,15 +261,22 @@ pub(crate) async fn memory_open(
         let path = PathBuf::from(path);
         let dump = pmca_app::memory::open(&localizer, &path)?;
         let mut slot = state.memory.lock().map_err(CommandError::internal)?;
-        let memory = match slot.as_ref() {
+        let mut memory = match slot.as_ref() {
             Some(previous) if after => pmca_app::memory::Memory::after(dump, previous),
             _ => pmca_app::memory::Memory::new(dump),
         };
+        memory.reveal(reveal.unwrap_or(false));
         let info = pmca_app::memory::info(&memory, &own_names(&memory), &path);
         *slot = Some(memory);
         Ok(info)
     })
     .await
+}
+
+/// Show the values that may be sensitive as they are, or replaced again.
+#[tauri::command(async)]
+pub(crate) fn memory_reveal(state: State<'_, AppState>, on: bool) -> Result<(), CommandError> {
+    with_memory_mut(&state, |m| m.reveal(on))
 }
 
 /// The own names for the camera the memory view shows.
@@ -233,6 +293,16 @@ fn with_memory<T>(
 ) -> Result<T, CommandError> {
     let guard = state.memory.lock().map_err(CommandError::internal)?;
     let memory = guard.as_ref().ok_or_else(|| CommandError::internal("no store is open"))?;
+    Ok(f(memory))
+}
+
+/// Run `f` on the store the memory view holds, able to change how it is shown.
+fn with_memory_mut<T>(
+    state: &AppState,
+    f: impl FnOnce(&mut pmca_app::memory::Memory) -> T,
+) -> Result<T, CommandError> {
+    let mut guard = state.memory.lock().map_err(CommandError::internal)?;
+    let memory = guard.as_mut().ok_or_else(|| CommandError::internal("no store is open"))?;
     Ok(f(memory))
 }
 
@@ -277,6 +347,33 @@ pub(crate) fn memory_set_own(
     Ok(pmca_app::own_names::set(&localizer, &model, &id, &name, &note)?)
 }
 
+/// Name what the camera showed for a property's current value; an empty label forgets it.
+///
+/// Refused for a value that may be sensitive: the name would go into a plugin
+/// that is made to be shared, and with it the value it names.
+#[tauri::command(async)]
+pub(crate) fn memory_set_value(
+    state: State<'_, AppState>,
+    id: String,
+    label: String,
+) -> Result<(), CommandError> {
+    let localizer = state.localizer()?;
+    let invalid = || CommandError::localized(localizer.tr("own-name-invalid"));
+    let (model, value) = with_memory(&state, |m| {
+        let p = m
+            .dump
+            .properties
+            .iter()
+            .find(|p| p.id == id)
+            .filter(|p| !p.redacted && p.sensitive.is_none())?;
+        let bytes: Vec<u8> =
+            p.hex.split_whitespace().filter_map(|b| u8::from_str_radix(b, 16).ok()).collect();
+        Some((m.dump.camera.model.clone()?, pmca_app::names::value_of(&bytes)?))
+    })?
+    .ok_or_else(invalid)?;
+    Ok(pmca_app::own_names::set_value(&localizer, &model, &id, value, &label)?)
+}
+
 /// Remove every own name of the shown camera's model; how many there were.
 #[tauri::command(async)]
 pub(crate) fn memory_clear_own(state: State<'_, AppState>) -> Result<usize, CommandError> {
@@ -286,15 +383,24 @@ pub(crate) fn memory_clear_own(state: State<'_, AppState>) -> Result<usize, Comm
 
 /// Save the rows the query keeps as CSV, to a path the user picks. The path, or
 /// `None` when the dialog was dismissed.
+///
+/// Values that may be sensitive go in only with `include_sensitive`, whatever
+/// the screen shows.
 #[tauri::command(async)]
 pub(crate) fn memory_export_csv(
     app: AppHandle,
     window: Window,
     query: pmca_app::memory::MemoryQuery,
+    include_sensitive: Option<bool>,
 ) -> Result<Option<String>, CommandError> {
     let state = app.state::<AppState>();
-    let (csv, stem) =
-        with_memory(&state, |m| (pmca_app::memory::csv(m, &own_names(m), &query), m.dump.stem()))?;
+    let (csv, stem) = with_memory_mut(&state, |m| {
+        let shown = m.revealed();
+        m.reveal(include_sensitive.unwrap_or(false));
+        let out = (pmca_app::memory::csv(m, &own_names(m), &query), m.dump.stem());
+        m.reveal(shown);
+        out
+    })?;
     let picked = app
         .dialog()
         .file()

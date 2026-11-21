@@ -2,6 +2,7 @@
 import type { FwName } from "./FwName";
 import type { FwValue } from "./FwValue";
 import type { OwnName } from "./OwnName";
+import type { SensitiveKind } from "./SensitiveKind";
 
 /**
  * One property as the view shows it.
@@ -35,6 +36,14 @@ meaning?: string,
  * The firmware's name for the stored value, where an installed table has one.
  */
 fwValue?: FwValue, 
+/**
+ * What the user noted the camera showed for this stored value.
+ */
+ownValue?: string, 
+/**
+ * Whether the value is an array with one element per memory set.
+ */
+memorySet: boolean, 
 /**
  * Length of the value.
  */
@@ -71,6 +80,10 @@ empty: boolean,
  * Whether the value was withheld.
  */
 redacted: boolean, 
+/**
+ * Why the value may be sensitive, where it may be.
+ */
+sensitive?: SensitiveKind, 
 /**
  * Whether the value changed since the reading before.
  */

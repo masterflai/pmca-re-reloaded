@@ -15,4 +15,8 @@ note: string,
 /**
  * `camera` when given by hand, `analysis` when a function analysis found it.
  */
-evidence: string, };
+evidence: string, 
+/**
+ * What the user saw on the camera for a stored value, by the value in decimal.
+ */
+values: { [key in string]?: string }, };

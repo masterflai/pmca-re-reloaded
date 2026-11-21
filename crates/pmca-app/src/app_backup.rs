@@ -258,10 +258,18 @@ fn write_atomically(path: &Path, data: &[u8]) -> std::io::Result<()> {
     std::fs::rename(&part, path)
 }
 
-/// `<model>-<serial>`, reduced to characters every file system accepts.
+/// `<model>-<digest>`, reduced to characters every file system accepts.
+///
+/// The digest tells two bodies of one model apart without putting the serial
+/// number into a folder name that turns up in listings and screenshots.
 fn folder_name(model: &str, serial: Option<&str>) -> String {
+    use sha2::{Digest, Sha256};
     match serial {
-        Some(serial) if !serial.is_empty() => safe_name(&format!("{model}-{serial}")),
+        Some(serial) if !serial.is_empty() => {
+            let digest = Sha256::digest(serial.as_bytes());
+            let short: String = digest.iter().take(4).map(|b| format!("{b:02x}")).collect();
+            safe_name(&format!("{model}-{short}"))
+        }
         _ => safe_name(model),
     }
 }
@@ -372,7 +380,10 @@ mod tests {
 
     #[test]
     fn folder_names_are_safe() {
-        assert_eq!(folder_name("DSC-RX1RM2", Some("0a1b")), "DSC-RX1RM2-0a1b");
+        let named = folder_name("DSC-RX1RM2", Some("0a1b"));
+        assert!(named.starts_with("DSC-RX1RM2-") && !named.contains("0a1b"), "{named}");
+        assert_eq!(named, folder_name("DSC-RX1RM2", Some("0a1b")));
+        assert_ne!(named, folder_name("DSC-RX1RM2", Some("0a1c")));
         assert_eq!(folder_name("ILCE 6000/x", None), "ILCE_6000_x");
         assert_eq!(folder_name("ILCE-6000", Some("")), "ILCE-6000");
     }

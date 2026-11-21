@@ -1,0 +1,15 @@
+[package]
+name = "pmca-broker"
+description = "macOS helper of the PMCA-RE RELOADED window: does the camera work that needs root."
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+publish = false
+
+[[bin]]
+name = "pmca-broker"
+path = "src/main.rs"
+
+[dependencies]
+pmca-app = { path = "../pmca-app" }

@@ -313,6 +313,16 @@ jobs:
           npm ci
           npm run build
 
+      # tauri-build requires the broker sidecar file on macOS (tauri.macos.conf.json).
+      - name: Build the macOS broker sidecar
+        if: runner.os == 'macOS'
+        shell: bash
+        run: |
+          host=$(rustc -vV | sed -n 's/^host: //p')
+          cargo build --locked -p pmca-broker
+          mkdir -p crates/pmca-gui/src-tauri/binaries
+          cp target/debug/pmca-broker "crates/pmca-gui/src-tauri/binaries/pmca-broker-$host"
+
       # No bundle here — packaging belongs to the release workflow. This job
       # exists so that a macOS-only or Windows-only compile error surfaces on
       # the commit that caused it instead of at release time.

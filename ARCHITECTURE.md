@@ -65,6 +65,7 @@ The arrows point from user to dependency. Three rules keep this shape:
 | `pmca-i18n` | Loads the 27 Fluent catalogues compiled into the binary, plus per-user corrections. |
 | `pmca-cli` | `pmca-console`: argument parsing (`main.rs`) and one module per group of subcommands (`commands/`). |
 | `pmca-gui` | Tauri application: `src/` is the window (TypeScript, no framework; shared helpers beside `main.ts`, one module per page in `views/`), `src-tauri/` the backend that exposes `pmca-app` as commands (`commands/`, one module per page). |
+| `pmca-broker` | macOS only: the small helper the window starts as root through `sudo` for work on the mass-storage connection. It answers the requests defined in `pmca_app::elevated` and ships inside the app bundle. |
 
 ## 3. How a camera operation runs
 

@@ -5,6 +5,8 @@
 # Rust
 /target
 /crates/pmca-gui/src-tauri/target
+# macOS broker sidecar, copied here by the build (see tauri.macos.conf.json).
+/crates/pmca-gui/src-tauri/binaries/
 
 # Fuzzing: build output, the growing corpus and crash inputs. A crash input
 # worth keeping becomes a unit test in the crate concerned.

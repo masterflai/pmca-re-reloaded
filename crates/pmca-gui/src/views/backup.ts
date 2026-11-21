@@ -3,6 +3,7 @@
 import { invoke } from "@tauri-apps/api/core";
 import type { BackupRestoreOutcome } from "../bindings/BackupRestoreOutcome";
 import type { BackupSaveOutcome } from "../bindings/BackupSaveOutcome";
+import type { DumpSummary } from "../bindings/DumpSummary";
 import {
   accessBadge,
   card,
@@ -19,6 +20,8 @@ import {
 } from "../dom";
 import { filePicker } from "../drop";
 import { tr, trFill } from "../i18n";
+import { sensitiveNotice } from "../privacy";
+import { layoutMap } from "./image-map";
 
 export function viewBackup(host: HTMLElement): void {
   host.append(
@@ -39,9 +42,11 @@ export function viewBackup(host: HTMLElement): void {
 /** Save the whole backup image to a file the user picks. */
 function createCard(): HTMLElement {
   const status = statusLine();
+  const mapHost = make("div");
   const button = make("button", { className: "primary", i18n: "btn-backup-save" });
   button.addEventListener("click", async () => {
     button.disabled = true;
+    mapHost.replaceChildren();
     try {
       showBusy(status, connectingText());
       const outcome = await withProgressTarget(status, () =>
@@ -52,6 +57,10 @@ function createCard(): HTMLElement {
         status.textContent = "";
       } else {
         showDone(status, trFill("backup-saved-at", { bytes: outcome.bytes, path: outcome.path }));
+        // The map is extra: a file that cannot be read here leaves the saved backup as it is.
+        invoke<DumpSummary>("compare_inspect", { path: outcome.path })
+          .then((summary) => mapHost.replaceChildren(layoutMap(summary, true)))
+          .catch(() => {});
       }
     } catch (e) {
       showError(status, e);
@@ -62,8 +71,11 @@ function createCard(): HTMLElement {
   return card(
     make("h3", { i18n: "backup-create-heading" }),
     make("p", { i18n: "backup-create-intro" }),
+    make("p", { className: "warning", i18n: "sensitive-backup-complete" }),
+    sensitiveNotice(),
     make("div", { className: "row" }, accessBadge("read"), button),
     status,
+    mapHost,
   );
 }
 
@@ -107,7 +119,7 @@ function restoreCard(): HTMLElement {
     }
   });
   return card(
-    make("h3", {}, accessBadge("write"), " ", make("span", { i18n: "backup-restore-heading" })),
+    make("h3", { i18n: "backup-restore-heading" }),
     make("p", { i18n: "backup-restore-intro" }),
     make("p", { className: "warning", i18n: "backup-restore-warning" }),
     file.element,

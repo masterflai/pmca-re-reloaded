@@ -30,6 +30,21 @@ pub(crate) fn dump_backup_command(
     Ok(())
 }
 
+/// Print the catalogue of values that may be sensitive.
+pub(crate) fn privacy_command(l: &Localizer) {
+    let catalog = pmca_app::sensitive::catalog(l);
+    for line in &catalog.intro {
+        println!("{line}\n");
+    }
+    for kind in &catalog.kinds {
+        println!("- {}: {}", kind.label, kind.detail);
+    }
+    println!("\n{}", catalog.complete_heading);
+    for line in &catalog.complete {
+        println!("- {line}");
+    }
+}
+
 /// Compare two or more dumps and print the result.
 #[allow(clippy::too_many_arguments)]
 pub(crate) fn compare_backups_command(
@@ -44,11 +59,13 @@ pub(crate) fn compare_backups_command(
     similar_distance: Option<usize>,
     auto_noise: bool,
     align_by_name: bool,
+    privacy: Privacy,
 ) -> Result<(), Box<dyn std::error::Error>> {
     let options = CompareOptions {
         similar_distance: similar_distance.unwrap_or(DEFAULT_SIMILAR_DISTANCE),
         auto_noise,
         align_by_name,
+        privacy,
         ..CompareOptions::default()
     };
     let report = compare::compare_paths(l, files, &options)?;

@@ -367,7 +367,7 @@ async function startWriteTest(
 function referenceWritePanel(state: ReferenceState, status: HTMLElement, render: RefRender): Node[] {
   const w = state.write!;
   const nodes: Node[] = [
-    make("h3", {}, accessBadge("write"), " ", make("span", { i18n: "reference-write-heading" })),
+    make("h3", { i18n: "reference-write-heading" }),
     make("p", {
       textContent: trFill("reference-write-done", {
         setting: w.label,

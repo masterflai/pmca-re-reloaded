@@ -1600,7 +1600,8 @@ label.app-entry input[type="checkbox"] {
   flex: none;
   min-width: 7.5em;
   padding: 1px 6px;
-  font-size: 0.75em;
+  /* rem, not em: the same size in a heading, a list and beside a button. */
+  font-size: 0.75rem;
   font-weight: 700;
   letter-spacing: 0.04em;
   text-align: center;
@@ -1622,10 +1623,6 @@ label.app-entry input[type="checkbox"] {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-}
-
-.write-action .access-badge {
-  min-width: 0;
 }
 
 .write-action:has(> button[hidden]) {
@@ -2071,6 +2068,13 @@ label.app-entry input[type="checkbox"] {
   color: var(--text-muted);
 }
 
+.analysis-tile-write {
+  display: flex;
+  flex-basis: 100%;
+  align-items: center;
+  gap: 6px;
+}
+
 .content button.analysis-back {
   margin-bottom: 8px;
 }
@@ -2199,6 +2203,21 @@ label.app-entry input[type="checkbox"] {
   font-weight: 600;
 }
 
+.sensitive-tag {
+  color: var(--warning);
+  border-color: currentColor;
+}
+
+.sensitive-notice summary {
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.sensitive-notice ul {
+  margin: 0.25rem 0 0.5rem;
+  padding-left: 1.25rem;
+}
+
 .memory-dump {
   max-height: 16rem;
   overflow: auto;
@@ -2210,3 +2229,117 @@ label.app-entry input[type="checkbox"] {
   padding-top: 0.75rem;
   border-top: 1px solid var(--border);
 }
+
+/* Byte maps (views/image-map.ts): bars, columns and the links explanation. */
+.imgmap { margin-block: 0.75rem; }
+.imgmap h3 { margin-block: 0.5rem 0.25rem; }
+.imgmap svg {
+  display: block;
+  width: 100%;
+  height: 28px;
+  border: 1px solid var(--control-border);
+  border-radius: 4px;
+  background: var(--control);
+}
+.imgmap svg.imgmap-columns { height: 40px; cursor: crosshair; }
+.imgmap svg.imgmap-zoomable { cursor: zoom-in; }
+.imgmap svg.imgmap-zoomable.imgmap-pinned { cursor: zoom-out; }
+.imgmap-lens-box { margin-top: 4px; }
+.imgmap svg.imgmap-lens { height: 40px; }
+line.imgmap-cursor { stroke: var(--accent-text); stroke-width: 2px; vector-effect: non-scaling-stroke; }
+polygon.imgmap-cursor-tip { fill: var(--accent-text); }
+rect.imgmap-window {
+  fill: none;
+  stroke: var(--text);
+  stroke-width: 1.5px;
+  stroke-dasharray: 3 2;
+  vector-effect: non-scaling-stroke;
+  pointer-events: none;
+}
+
+rect.imgmap-header { fill: var(--accent); }
+rect.imgmap-subsystem { fill: color-mix(in srgb, var(--accent) 70%, transparent); }
+rect.imgmap-property { fill: color-mix(in srgb, var(--accent) 45%, transparent); }
+rect.imgmap-reserve { fill: var(--warning); }
+rect.imgmap-data { fill: color-mix(in srgb, var(--success) 55%, transparent); }
+rect.imgmap-gap { fill: var(--danger); }
+rect.imgmap-image { fill: color-mix(in srgb, var(--accent) 35%, transparent); }
+rect.imgmap-further { fill: color-mix(in srgb, var(--cmp-structural) 45%, transparent); }
+rect.imgmap-padding { fill: var(--border); }
+
+rect.imgmap-bg { fill: var(--control); }
+rect.imgmap-cls-different { fill: var(--danger); }
+rect.imgmap-cls-structural { fill: var(--cmp-structural); }
+rect.imgmap-cls-similar { fill: var(--warning); }
+rect.imgmap-cls-absent { fill: var(--accent); }
+rect.imgmap-cls-noise { fill: color-mix(in srgb, var(--text-muted) 50%, transparent); }
+rect.imgmap-cls-identical { fill: var(--text-muted); }
+rect.imgmap-cls-empty { fill: var(--border); }
+
+rect.imgmap-selection {
+  fill: color-mix(in srgb, var(--accent) 20%, transparent);
+  stroke: var(--accent);
+  stroke-width: 2px;
+  vector-effect: non-scaling-stroke;
+}
+
+.imgmap-legend {
+  list-style: none;
+  margin: 0.5rem 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem 1rem;
+  font-size: 0.85rem;
+}
+.imgmap-swatch {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  border-radius: 3px;
+  margin-inline-end: 4px;
+  vertical-align: -1px;
+}
+.imgmap-swatch.imgmap-header { background: var(--accent); }
+.imgmap-swatch.imgmap-subsystem { background: color-mix(in srgb, var(--accent) 70%, transparent); }
+.imgmap-swatch.imgmap-property { background: color-mix(in srgb, var(--accent) 45%, transparent); }
+.imgmap-swatch.imgmap-reserve { background: var(--warning); }
+.imgmap-swatch.imgmap-data { background: color-mix(in srgb, var(--success) 55%, transparent); }
+.imgmap-swatch.imgmap-gap { background: var(--danger); }
+.imgmap-swatch.imgmap-further { background: color-mix(in srgb, var(--cmp-structural) 45%, transparent); }
+
+.imgmap-links { margin-block: 0.75rem; }
+.links-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: stretch;
+  gap: 0.5rem;
+  margin-block: 0.5rem;
+}
+.links-box {
+  flex: 1 1 12rem;
+  border: 1px solid var(--control-border);
+  border-radius: 8px;
+  padding: 0.5rem 0.75rem;
+}
+.links-box strong { display: block; margin-bottom: 0.25rem; }
+.links-arrow {
+  align-self: center;
+  font-size: 1.4rem;
+  color: var(--text-muted);
+}
+.links-sets { margin-block: 0.5rem; }
+.links-cells {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-block: 0.25rem;
+}
+.links-cell {
+  min-width: 2rem;
+  padding: 0 0.25rem;
+  text-align: center;
+  border: 1px solid var(--control-border);
+  border-radius: 4px;
+}
+.links-cell-work { border-color: var(--accent); }

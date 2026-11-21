@@ -73,24 +73,19 @@ enum Command {
     /// Write the whole contents of a `Backup.bin` file out as JSON.
     ///
     /// The same properties `print-backup` lists, in a form that can be
-    /// compared with `compare-backups` or kept as a record. Values that name a
-    /// person or a body are withheld unless asked for, because these files are
-    /// meant to be shared.
+    /// compared with `compare-backups` or kept as a record. Values that may be
+    /// sensitive are replaced unless asked for, because these files are meant
+    /// to be shared; `privacy` lists what that covers.
     DumpBackup {
         /// The `Backup.bin` image to read.
         file: PathBuf,
         /// Where to write the JSON dump.
         #[arg(long)]
         out: PathBuf,
-        /// Include the camera's serial number in the dump.
-        #[arg(long)]
-        with_serial: bool,
-        /// Include the photographer fields in the dump.
-        #[arg(long)]
-        with_photographer: bool,
-        /// Include the copyright fields in the dump.
-        #[arg(long)]
-        with_copyright: bool,
+        /// Keep values that may be sensitive: serial number, owner, network
+        /// and account data, other text.
+        #[arg(long, aliases = ["with-serial", "with-photographer", "with-copyright"])]
+        include_sensitive: bool,
     },
     /// Compare the settings stores of two or more cameras.
     ///
@@ -136,7 +131,14 @@ enum Command {
         /// installed plugin names the properties.
         #[arg(long)]
         by_name: bool,
+        /// Compare and write values that may be sensitive as the files hold
+        /// them, instead of replaced.
+        #[arg(long)]
+        include_sensitive: bool,
     },
+    /// List the values that may be sensitive, which every dump and export
+    /// replaces unless asked otherwise, and the files that always hold them.
+    Privacy,
     /// Print the contents of a `Usagelog.bin` downloaded with `usage-log`.
     ///
     /// Sony does not document what the event numbers mean, so they are shown
@@ -830,6 +832,7 @@ fn uses_camera(cmd: &Command) -> bool {
         | Command::Apk2spk { .. }
         | Command::Spk2apk { .. }
         | Command::Wbi { .. }
+        | Command::Privacy
         | Command::PrintBackup { .. }
         | Command::DumpBackup { .. }
         | Command::CompareBackups { .. }
@@ -882,17 +885,12 @@ fn run(cmd: &Command, l: &Localizer) -> Result<(), Box<dyn std::error::Error>> {
         Command::PrintBackup { file } => {
             tool_command(l, ToolRequest::PrintBackup { input: file.clone() })?;
         }
-        Command::DumpBackup { file, out, with_serial, with_photographer, with_copyright } => {
+        Command::DumpBackup { file, out, include_sensitive } => {
             dump_backup_command(
                 l,
                 file,
                 out,
-                pmca_app::compare::Privacy {
-                    serial: *with_serial,
-                    photographer: *with_photographer,
-                    copyright: *with_copyright,
-                    accounts: false,
-                },
+                pmca_app::compare::Privacy::including(*include_sensitive),
             )?;
         }
         Command::CompareBackups {
@@ -906,6 +904,7 @@ fn run(cmd: &Command, l: &Localizer) -> Result<(), Box<dyn std::error::Error>> {
             similar_distance,
             no_auto_noise,
             by_name,
+            include_sensitive,
         } => {
             compare_backups_command(
                 l,
@@ -919,8 +918,10 @@ fn run(cmd: &Command, l: &Localizer) -> Result<(), Box<dyn std::error::Error>> {
                 *similar_distance,
                 !*no_auto_noise,
                 *by_name,
+                pmca_app::compare::Privacy::including(*include_sensitive),
             )?;
         }
+        Command::Privacy => privacy_command(l),
         Command::PrintUsageLog { file } => {
             tool_command(l, ToolRequest::PrintUsageLog { input: file.clone() })?;
         }

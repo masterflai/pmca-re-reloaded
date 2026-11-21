@@ -9,11 +9,13 @@
 //!
 //! # Privacy
 //!
-//! A complete dump contains everything the camera stores, and that includes
-//! its serial number. These files exist to be exchanged — that is the whole
-//! point of comparing two bodies — so by default the serial number property is
-//! written out as zeros of the right length and marked `redacted`. The length
-//! is kept so the structural picture stays honest; only the value goes.
+//! A complete dump contains everything the camera stores: its serial number,
+//! the owner's name, and whatever network and account data it keeps. These
+//! files exist to be exchanged — that is the whole point of comparing two
+//! bodies — so by default every value [`crate::sensitive`] flags is written out
+//! as zeros of the right length and marked `redacted`, with the reason in
+//! `sensitive`. The length is kept so the structural picture stays honest;
+//! only the value goes. [`Privacy::Full`] keeps the values and only marks them.
 //!
 //! The camera is still identified well enough to tell two dumps of the *same*
 //! body apart from two different ones: [`DumpCamera::camera_id`] is a short
@@ -21,6 +23,7 @@
 
 use std::collections::{BTreeMap, BTreeSet};
 use std::path::{Path, PathBuf};
+use std::sync::Mutex;
 
 use pmca_core::backup::{BackupFile, attr};
 use pmca_i18n::Localizer;
@@ -32,6 +35,7 @@ use sha2::{Digest, Sha256};
 use crate::analysis::report::{hex, timestamp};
 use crate::dto::{ProgressEvent, ProgressKind};
 use crate::names::{self, FwName, NameTable, NameView};
+use crate::sensitive::{self, Kind};
 use crate::{Error, ProgressSink, Result};
 
 /// Re-exported so a front-end that does not depend on the platform crate — the
@@ -55,85 +59,42 @@ pub const MAX_SOURCES: usize = 8;
 /// and no reader wants them all.
 const MAX_GAPS: usize = 32;
 
-/// Which identifying values a dump carries.
+/// Whether a dump, a comparison or an export carries the values
+/// [`crate::sensitive`] flags.
 ///
-/// Every field means *include*, and every one is off by default. These files
-/// exist to be exchanged, so what identifies a person or a body has to be
-/// asked for rather than merely not prevented. The photographer and copyright
-/// strings are the camera's own owner fields: a dump of a camera that has
-/// been filled in carries somebody's name unless this says otherwise.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
-pub struct Privacy {
-    /// Include the camera's serial number.
-    pub serial: bool,
-    /// Include the photographer fields.
-    pub photographer: bool,
-    /// Include the copyright fields.
-    pub copyright: bool,
-    /// Include network, account and licence data: WiFi/FTP/SSH credentials,
-    /// licence and IPTC fields, MAC addresses, device and user names.
-    pub accounts: bool,
+/// [`Mask`](Self::Mask) is the default everywhere. These files exist to be
+/// exchanged, so what may identify a person or a body, or open a network, has
+/// to be asked for rather than merely not prevented.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Default, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub enum Privacy {
+    /// Replace flagged values by zeros of the same length, marked `redacted`.
+    #[default]
+    Mask,
+    /// Keep every value; flagged ones are only marked.
+    Full,
 }
 
 impl Privacy {
-    /// Nothing identifying; what a dump carries unless asked otherwise.
-    pub const MASKED: Self =
-        Self { serial: false, photographer: false, copyright: false, accounts: false };
-    /// Everything the camera holds.
-    pub const FULL: Self =
-        Self { serial: true, photographer: true, copyright: true, accounts: true };
+    /// [`Full`](Self::Full) when the user asked for everything.
+    #[must_use]
+    pub const fn including(sensitive: bool) -> Self {
+        if sensitive { Self::Full } else { Self::Mask }
+    }
 
     /// A sentence for the file saying what it does and does not carry.
     fn describe(self) -> String {
-        let withheld: Vec<&str> = [
-            (!self.serial).then_some("serial number"),
-            (!self.photographer).then_some("photographer"),
-            (!self.copyright).then_some("copyright holder"),
-            (!self.accounts).then_some("network and account data"),
-        ]
-        .into_iter()
-        .flatten()
-        .collect();
-        if withheld.is_empty() {
-            "Complete, identifying fields included. Treat this file as personal data.".to_string()
-        } else {
-            format!("Withheld: {}. Every other value as the camera holds it.", withheld.join(", "))
+        match self {
+            Self::Mask => "Values that may be sensitive (serial number, owner, network, account \
+                and other text values) are replaced by zeros and marked redacted. Without the \
+                firmware's name for every field this cannot be exact, so some harmless values \
+                are replaced as well. The full list: pmca-console privacy."
+                .to_string(),
+            Self::Full => "Complete: values that may be sensitive are included and only marked. \
+                Treat this file as personal data."
+                .to_string(),
         }
     }
-}
-
-/// Whether a firmware name marks network, account or licence data: withheld
-/// unless [`Privacy::accounts`] asks for it, the same way the serial number
-/// and the owner fields are.
-///
-/// Most terms are matched as whole `_`-separated tokens, so `OWNERSHIP` does
-/// not trigger on `OWNER` the way `OWNER_NAME` does; the handful the firmware
-/// spells as one compound word are matched as substrings instead.
-#[must_use]
-pub fn is_sensitive_name(name: &str) -> bool {
-    const TOKENS: &[&str] = &[
-        "WIFI",
-        "WLAN",
-        "FTP",
-        "SSH",
-        "PASSWORD",
-        "PASSWD",
-        "SSID",
-        "LICENSE",
-        "LICENCE",
-        "IPTC",
-        "ACCOUNT",
-        "TOKEN",
-        "CREDENTIAL",
-        "FINGER",
-        "BLUETOOTH",
-        "PROXY",
-    ];
-    const SUBSTRINGS: &[&str] = &["MAC_ADDR", "IP_ADDR", "DEVICE_NAME", "USER_NAME", "OWNER"];
-
-    let upper = name.to_ascii_uppercase();
-    upper.split('_').any(|token| TOKENS.contains(&token))
-        || SUBSTRINGS.iter().any(|s| upper.contains(s))
 }
 
 /// What identifies the camera a dump came from.
@@ -264,6 +225,11 @@ pub struct PropertyView {
     pub empty: bool,
     /// Whether the value was withheld; see the module documentation.
     pub redacted: bool,
+    /// Why the value may be sensitive, where it may be; whether it was
+    /// withheld says `redacted`.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[cfg_attr(test, ts(optional))]
+    pub sensitive: Option<Kind>,
 }
 
 /// A camera's whole settings store.
@@ -343,6 +309,12 @@ pub struct CompareRow {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     #[cfg_attr(test, ts(optional))]
     pub ids_by_source: Option<Vec<Option<String>>>,
+    /// Where the first source holds the value, as an offset into its image.
+    /// `None` for rows of images behind the first, and for rows the first
+    /// source does not hold.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[cfg_attr(test, ts(optional))]
+    pub offset: Option<usize>,
     /// The class, as named by [`Class::as_str`].
     pub class: String,
     /// The common length, where every camera agrees on one.
@@ -363,6 +335,13 @@ pub struct CompareRow {
     pub shape: String,
     /// The value on each camera, `null` where it has no such property.
     pub values: Vec<Option<String>>,
+    /// Why a value of this row may be sensitive, where one may be.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[cfg_attr(test, ts(optional))]
+    pub sensitive: Option<Kind>,
+    /// Whether a source had the value replaced; its zeros are no value then.
+    #[serde(default)]
+    pub redacted: bool,
 }
 
 impl CompareRow {
@@ -415,6 +394,28 @@ pub struct CompareReport {
     pub rows: Vec<CompareRow>,
     /// What was left out, in plain words.
     pub privacy: String,
+    /// Where the findings sit in the first source's data region, by column.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[cfg_attr(test, ts(optional))]
+    pub map: Option<CompareMap>,
+}
+
+/// How many columns the comparison map divides the data region into.
+const MAP_COLUMNS: usize = 1024;
+
+/// Where the findings of a comparison sit in the data region of the first source.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+#[cfg_attr(test, derive(ts_rs::TS), ts(export))]
+pub struct CompareMap {
+    /// First byte of the data region.
+    pub data_start: usize,
+    /// First byte after the data region.
+    pub data_end: usize,
+    /// Bytes each column covers.
+    pub column_bytes: usize,
+    /// For each column, how many rows of each class begin in it.
+    pub columns: Vec<BTreeMap<String, usize>>,
 }
 
 /// Which rows an export keeps.
@@ -458,6 +459,8 @@ pub struct CompareOptions {
     /// name rather than by id. Ignored where every source is the same model,
     /// and for properties no source has a firmware name for.
     pub align_by_name: bool,
+    /// Whether values that may be sensitive are compared and shown as they are.
+    pub privacy: Privacy,
 }
 
 impl Default for CompareOptions {
@@ -467,8 +470,91 @@ impl Default for CompareOptions {
             noise: BTreeSet::new(),
             auto_noise: true,
             align_by_name: false,
+            privacy: Privacy::Mask,
         }
     }
+}
+
+/// Where one image sits in a `Backup.bin`.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+#[cfg_attr(test, derive(ts_rs::TS), ts(export))]
+pub struct ImageSpan {
+    /// First byte of the image in the file.
+    pub start: usize,
+    /// Meaningful bytes in the image.
+    pub size: usize,
+}
+
+/// How many value bytes an index entry carries; enough to recognise a value at a glance.
+const INDEX_VALUE_BYTES: usize = 8;
+
+/// Where one value lies, so a map can say what the pointer is on.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+#[cfg_attr(test, derive(ts_rs::TS), ts(export))]
+pub struct IndexEntry {
+    /// First byte of the value in its image.
+    pub offset: usize,
+    /// Bytes reserved for the value.
+    pub size: usize,
+    /// Composite id, as hex.
+    pub id: String,
+    /// The toolkit's or the firmware's name, where one is known.
+    pub name: Option<String>,
+    /// The first bytes of the value as spaced hex; empty when withheld.
+    pub value: String,
+    /// Whether the value was withheld.
+    pub redacted: bool,
+}
+
+/// The values of one image, by ascending offset.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+#[cfg_attr(test, derive(ts_rs::TS), ts(export))]
+pub struct IndexImage {
+    /// Where the image starts in the file.
+    pub start: usize,
+    /// Its values, sorted by offset.
+    pub entries: Vec<IndexEntry>,
+}
+
+/// Every image of a dump with where its values lie.
+#[must_use]
+pub fn image_index(dump: &DumpFile) -> Vec<IndexImage> {
+    let entries = |properties: &[PropertyView]| {
+        let mut out: Vec<IndexEntry> = properties
+            .iter()
+            .filter_map(|p| {
+                Some(IndexEntry {
+                    offset: parse_hex_u32(&p.offset)? as usize,
+                    size: p.size.max(p.max_size),
+                    id: p.id.clone(),
+                    name: p.name.clone().or_else(|| p.fw_name.as_ref().map(|f| f.name.clone())),
+                    value: if p.redacted {
+                        String::new()
+                    } else {
+                        p.hex
+                            .split_whitespace()
+                            .take(INDEX_VALUE_BYTES)
+                            .collect::<Vec<_>>()
+                            .join(" ")
+                    },
+                    redacted: p.redacted,
+                })
+            })
+            .collect();
+        out.sort_by_key(|e| e.offset);
+        out
+    };
+    std::iter::once(IndexImage { start: 0, entries: entries(&dump.properties) })
+        .chain(dump.further_images.iter().filter_map(|f| {
+            Some(IndexImage {
+                start: parse_hex_u32(&f.offset)? as usize,
+                entries: entries(&f.properties),
+            })
+        }))
+        .collect()
 }
 
 /// What a front-end shows after a dump was written.
@@ -492,6 +578,9 @@ pub struct DumpSummary {
     pub redacted: usize,
     /// Where the backup image was kept, when the user asked to keep it.
     pub image_path: Option<String>,
+    /// Where the images behind the first sit in the file.
+    #[serde(default)]
+    pub further_images: Vec<ImageSpan>,
     /// What was left out, in plain words.
     pub privacy: String,
 }
@@ -505,8 +594,18 @@ impl DumpFile {
             camera: self.camera.clone(),
             layout: self.layout.clone(),
             properties: self.properties.len(),
-            redacted: self.properties.iter().filter(|p| p.redacted).count(),
+            redacted: self.all_properties().filter(|p| p.redacted).count(),
             image_path: image_path.map(|p| p.display().to_string()),
+            further_images: self
+                .further_images
+                .iter()
+                .filter_map(|f| {
+                    Some(ImageSpan {
+                        start: parse_hex_u32(&f.offset)? as usize,
+                        size: f.layout.image_size,
+                    })
+                })
+                .collect(),
             privacy: self.privacy.clone(),
         }
     }
@@ -524,6 +623,43 @@ impl DumpFile {
         let model = self.camera.model.as_deref().unwrap_or("camera");
         let day = self.taken.split('T').next().unwrap_or(&self.taken);
         format!("{}-{}-{}", keep(model), keep(&self.camera.region), keep(day))
+    }
+
+    /// Every property of every image, the first image first.
+    pub fn all_properties(&self) -> impl Iterator<Item = &PropertyView> {
+        self.properties.iter().chain(self.further_images.iter().flat_map(|f| f.properties.iter()))
+    }
+
+    fn all_properties_mut(&mut self) -> impl Iterator<Item = &mut PropertyView> {
+        self.properties
+            .iter_mut()
+            .chain(self.further_images.iter_mut().flat_map(|f| f.properties.iter_mut()))
+    }
+
+    /// Mark every value that may be sensitive and, unless `privacy` is
+    /// [`Privacy::Full`], replace it.
+    ///
+    /// A value replaced already, in a file written that way, stays replaced:
+    /// there is nothing left to show.
+    pub fn apply(&mut self, privacy: Privacy) {
+        for p in self.all_properties_mut() {
+            if p.sensitive.is_none() && !p.redacted {
+                p.sensitive = classify_view(p);
+            }
+            if privacy == Privacy::Mask && p.sensitive.is_some() && !p.redacted {
+                mask(p);
+            }
+        }
+        let replaced = self.all_properties().any(|p| p.redacted);
+        self.privacy = Privacy::including(privacy == Privacy::Full && !replaced).describe();
+    }
+
+    /// This dump with every value that may be sensitive replaced.
+    #[must_use]
+    pub fn masked(&self) -> Self {
+        let mut dump = self.clone();
+        dump.apply(Privacy::Mask);
+        dump
     }
 }
 
@@ -545,6 +681,24 @@ pub fn dump_image_file(
     let path = folder.join(format!("{}.json", unique_stem(folder, &dump.stem())));
     save(&dump, &path)?;
     Ok(dump.summary(&path, None))
+}
+
+/// The last camera read in full, with the dump written for it.
+///
+/// The memory view opens that dump, which has the sensitive values replaced
+/// unless asked otherwise; kept here, they can still be shown on request
+/// without a second read of the camera, and without ever being on disk.
+static LAST_READ: Mutex<Option<(PathBuf, DumpFile)>> = Mutex::new(None);
+
+fn remember(path: &Path, full: DumpFile) {
+    if let Ok(mut slot) = LAST_READ.lock() {
+        *slot = Some((path.to_path_buf(), full));
+    }
+}
+
+fn remembered(path: &Path) -> Option<DumpFile> {
+    let slot = LAST_READ.lock().ok()?;
+    slot.as_ref().filter(|(p, _)| p == path).map(|(_, d)| d.clone())
 }
 
 /// Read the connected camera and write a dump of it into `folder`.
@@ -571,17 +725,20 @@ pub fn dump_camera(
     let provisional = scratch.join(format!("camera-backup-{}.bin", stamp()));
     std::fs::write(&provisional, &image)?;
 
-    let dump = dump_image(l, &image, privacy, firmware).inspect_err(|_| {
+    let full = dump_image(l, &image, Privacy::Full, firmware).inspect_err(|_| {
         sink.emit(ProgressEvent::step(
             ProgressKind::Info,
             l.tr_arg("compare-image-kept", "path", &provisional.display().to_string()),
         ));
     })?;
+    let mut dump = full.clone();
+    dump.apply(privacy);
 
     std::fs::create_dir_all(folder)?;
     let stem = unique_stem(folder, &dump.stem());
     let json_path = folder.join(format!("{stem}.json"));
     save(&dump, &json_path)?;
+    remember(&json_path, full);
 
     let image_path = if keep_image {
         let kept = folder.join(format!("{stem}.bin"));
@@ -672,7 +829,7 @@ fn dump_with_names(
                 properties: dump
                     .entries
                     .iter()
-                    .map(|e| PropertyView { writable: false, ..property_view(e, privacy) })
+                    .map(|e| PropertyView { writable: false, ..property_view(e) })
                     .collect(),
             })
         })
@@ -686,22 +843,10 @@ fn dump_with_names(
     let properties = dump
         .entries
         .iter()
-        .map(|e| {
-            let mut view = PropertyView {
-                fw_name: names::lookup(&fw_names, e.id),
-                ..property_view(e, privacy)
-            };
-            if !privacy.accounts
-                && !view.redacted
-                && view.fw_name.as_ref().is_some_and(|fw| is_sensitive_name(&fw.name))
-            {
-                mask_sensitive(&mut view);
-            }
-            view
-        })
+        .map(|e| PropertyView { fw_name: names::lookup(&fw_names, e.id), ..property_view(e) })
         .collect();
     let build = Some(file.build()).filter(|b| !b.is_empty());
-    Ok(DumpFile {
+    let mut dump_file = DumpFile {
         schema: DUMP_SCHEMA.to_string(),
         tool: format!("PMCA-RE RELOADED {}", env!("CARGO_PKG_VERSION")),
         taken: timestamp(),
@@ -716,28 +861,56 @@ fn dump_with_names(
         layout: layout_view(&dump),
         properties,
         further_images,
-        privacy: privacy.describe(),
-    })
+        privacy: String::new(),
+    };
+    dump_file.apply(privacy);
+    Ok(dump_file)
 }
 
 /// Read a dump from a file, which may be either a saved JSON dump or a raw
 /// `Backup.bin` image.
 ///
 /// Accepting both means the comparison can be run straight away on images that
-/// were saved before this feature existed.
+/// were saved before this feature existed. Either way the installed name
+/// tables name what the file left unnamed before `privacy` is applied, so a
+/// value a table calls sensitive is caught however the file was made.
 pub fn read_dump(l: &Localizer, path: &Path, privacy: Privacy) -> Result<DumpFile> {
+    if privacy == Privacy::Full
+        && let Some(full) = remembered(path)
+    {
+        return Ok(full);
+    }
     let data = std::fs::read(path)?;
     if looks_like_json(&data) {
-        let file: DumpFile = serde_json::from_slice(&data).map_err(|e| {
+        let mut file: DumpFile = serde_json::from_slice(&data).map_err(|e| {
             Error::Operation(l.tr_arg("compare-invalid-dump", "detail", &e.to_string()))
         })?;
         if file.schema != DUMP_SCHEMA {
             return Err(Error::Operation(l.tr_arg("compare-wrong-schema", "schema", &file.schema)));
         }
+        fill_names(&mut file, names::tables());
+        file.apply(privacy);
         Ok(file)
     } else {
         // A raw image on its own: no camera was asked, so no firmware version.
         dump_image(l, &data, privacy, None)
+    }
+}
+
+/// Name the properties of the first image a dump made without the installed
+/// tables left unnamed.
+pub(crate) fn fill_names(dump: &mut DumpFile, tables: &[NameTable]) {
+    let camera = &dump.camera;
+    let key = names::camera_key_of(
+        camera.model.as_deref(),
+        camera.firmware.as_deref(),
+        camera.build.as_deref(),
+    );
+    let view = NameView::new(tables, &key);
+    for p in &mut dump.properties {
+        if p.fw_name.is_none() {
+            p.fw_name = parse_hex_u32(&p.id).and_then(|id| names::lookup(&view, id));
+        }
     }
 }
 
@@ -765,7 +938,7 @@ pub fn compare_paths(
     }
     let files = paths
         .iter()
-        .map(|p| read_dump(l, p, Privacy::MASKED).map(|d| (p.clone(), d)))
+        .map(|p| read_dump(l, p, options.privacy).map(|d| (p.clone(), d)))
         .collect::<Result<Vec<_>>>()?;
     Ok(compare_dumps(&files, options))
 }
@@ -822,6 +995,16 @@ fn compare_with_names(
         &cmp::Options { similar_distance: options.similar_distance, noise: noise.clone() },
     );
     let mut counts = comparison.counts();
+    let first_offsets: BTreeMap<u32, usize> = files
+        .first()
+        .map(|(_, f)| {
+            f.properties
+                .iter()
+                .filter_map(|p| Some((parse_hex_u32(&p.id)?, parse_hex_u32(&p.offset)? as usize)))
+                .collect()
+        })
+        .unwrap_or_default();
+    let first_flags: Vec<_> = files.iter().map(|(_, f)| flags_of(&f.properties)).collect();
     let mut rows: Vec<CompareRow> = comparison
         .rows
         .iter()
@@ -841,17 +1024,24 @@ fn compare_with_names(
                 ids.iter().map(|id| id.map(|id| format!("{id:#010x}"))).collect::<Vec<_>>()
             });
             let usb_read = is_usb_read(fw_name.as_ref());
+            let source0 = match aligned {
+                Some(ids) => ids.first().copied().flatten(),
+                None => Some(r.id),
+            };
             let mut row = CompareRow {
                 memory_set: is_memory_set(r, slots),
                 usb_read,
                 fw_name,
                 fw_name_for,
+                offset: source0.and_then(|id| first_offsets.get(&id).copied()),
                 ..compare_row(r, 1)
             };
             if let Some(first) = ids_by_source.iter().flatten().flatten().next() {
                 row.id = first.clone();
             }
             row.ids_by_source = ids_by_source;
+            let ids = aligned.cloned().unwrap_or_else(|| vec![Some(r.id); files.len()]);
+            mark_sensitive(&mut row, &first_flags, &ids);
             row
         })
         .collect();
@@ -876,9 +1066,21 @@ fn compare_with_names(
         for (class, n) in comparison.counts() {
             *counts.entry(class).or_default() += n;
         }
-        rows.extend(comparison.rows.iter().map(|r| compare_row(r, image)));
+        let flags: Vec<_> = files
+            .iter()
+            .map(|(_, f)| {
+                f.further_images.get(image - 2).map(|i| flags_of(&i.properties)).unwrap_or_default()
+            })
+            .collect();
+        rows.extend(comparison.rows.iter().map(|r| {
+            let mut row = compare_row(r, image);
+            mark_sensitive(&mut row, &flags, &vec![Some(r.id); files.len()]);
+            row
+        }));
         noise_ids.extend(noise.iter().map(|id| format!("{image}:{id:#010x}")));
     }
+
+    let map = compare_map(files, &rows);
 
     CompareReport {
         schema: COMPARE_SCHEMA.to_string(),
@@ -901,8 +1103,57 @@ fn compare_with_names(
         included: Class::all().iter().map(|c| c.as_str().to_string()).collect(),
         rows,
         counts: counts.into_iter().map(|(class, n)| (class.as_str().to_string(), n)).collect(),
-        privacy: "Serial numbers are withheld unless a source dump was made with them.".to_string(),
+        privacy: Privacy::including(
+            options.privacy == Privacy::Full
+                && !files.iter().any(|(_, f)| f.all_properties().any(|p| p.redacted)),
+        )
+        .describe(),
+        map,
     }
+}
+
+/// Per property id of one image: why it may be sensitive, and whether it was replaced.
+type Flags = BTreeMap<u32, (Option<Kind>, bool)>;
+
+fn flags_of(properties: &[PropertyView]) -> Flags {
+    properties
+        .iter()
+        .filter_map(|p| Some((parse_hex_u32(&p.id)?, (p.sensitive, p.redacted))))
+        .collect()
+}
+
+/// Mark a row sensitive or replaced when any source's property behind it is.
+fn mark_sensitive(row: &mut CompareRow, flags: &[Flags], ids: &[Option<u32>]) {
+    for (source, id) in flags.iter().zip(ids) {
+        if let Some((kind, redacted)) = id.and_then(|id| source.get(&id)) {
+            row.sensitive = row.sensitive.or(*kind);
+            row.redacted |= *redacted;
+        }
+    }
+}
+
+/// Bucket the rows of the first image into columns over the first source's data region.
+///
+/// Rows whose offset falls outside that region are left out of the map.
+fn compare_map(files: &[(PathBuf, DumpFile)], rows: &[CompareRow]) -> Option<CompareMap> {
+    let (_, first) = files.first()?;
+    let data_start = parse_hex_u32(&first.layout.data_offset)? as usize;
+    let data_end = first.layout.image_size;
+    if data_end <= data_start {
+        return None;
+    }
+    let span = data_end - data_start;
+    let column_bytes = span.div_ceil(MAP_COLUMNS).max(1);
+    let mut columns: Vec<BTreeMap<String, usize>> =
+        vec![BTreeMap::new(); span.div_ceil(column_bytes)];
+    for row in rows {
+        let Some(offset) = row.offset else { continue };
+        if !(data_start..data_end).contains(&offset) {
+            continue;
+        }
+        *columns[(offset - data_start) / column_bytes].entry(row.class.clone()).or_default() += 1;
+    }
+    Some(CompareMap { data_start, data_end, column_bytes, columns })
 }
 
 impl CompareReport {
@@ -914,6 +1165,8 @@ impl CompareReport {
     #[must_use]
     pub fn filtered(&self, filter: &Filter) -> Self {
         let mut out = self.clone();
+        // The map counts every row, so it cannot describe a narrowed report.
+        out.map = None;
         out.included = Class::all()
             .iter()
             .map(|c| c.as_str().to_string())
@@ -1240,11 +1493,15 @@ fn add_measured_noise(
     measured
 }
 
-/// Mask a property's value the way [`is_identifying`] values are withheld,
-/// for a value found sensitive only after the fact — its firmware name is
-/// not known until a name table is applied, which may happen after
-/// [`property_view`] has already written the value out.
-pub(crate) fn mask_sensitive(view: &mut PropertyView) {
+/// Why a property may be sensitive, from its id, its value and its firmware name.
+fn classify_view(view: &PropertyView) -> Option<Kind> {
+    let id = parse_hex_u32(&view.id)?;
+    let data = parse_hex_bytes(&view.hex);
+    sensitive::classify(id, &data, view.fw_name.as_ref().map(|f| f.name.as_str()))
+}
+
+/// Replace a value by zeros of its length, and everything that would hint at it.
+fn mask(view: &mut PropertyView) {
     view.hex = hex(&vec![0u8; view.size]);
     view.reset = None;
     view.touched = false;
@@ -1282,10 +1539,7 @@ fn is_usb_read(fw_name: Option<&FwName>) -> Option<bool> {
     fw_name.is_some_and(|fw| fw.name.split(" | ").any(|n| n.starts_with(PREFIX))).then_some(true)
 }
 
-fn property_view(entry: &DumpEntry, privacy: Privacy) -> PropertyView {
-    let redacted = is_identifying(entry.id, entry.data.len(), privacy);
-    let masked = vec![0u8; entry.data.len()];
-    let data = if redacted { &masked } else { &entry.data };
+fn property_view(entry: &DumpEntry) -> PropertyView {
     PropertyView {
         id: format!("{:#010x}", entry.id),
         subsystem: format!("{:#06x}", entry.id >> 16),
@@ -1296,12 +1550,13 @@ fn property_view(entry: &DumpEntry, privacy: Privacy) -> PropertyView {
         max_size: entry.max_size,
         attr: format!("{:#04x}", entry.attr),
         attr_names: attr::names(entry.attr).iter().map(|s| (*s).to_string()).collect(),
-        hex: hex(data),
-        reset: if redacted { None } else { entry.reset.as_deref().map(hex) },
-        touched: !redacted && entry.touched(),
+        hex: hex(&entry.data),
+        reset: entry.reset.as_deref().map(hex),
+        touched: entry.touched(),
         writable: entry.writable(),
         empty: entry.looks_empty(),
-        redacted,
+        redacted: false,
+        sensitive: None,
     }
 }
 
@@ -1356,6 +1611,7 @@ fn compare_row(row: &cmp::Row, image: usize) -> CompareRow {
         memory_set: None,
         usb_read: None,
         ids_by_source: None,
+        offset: None,
         class: row.class.as_str().to_string(),
         size: row.size,
         attr: row.attr.map(|a| format!("{a:#04x}")),
@@ -1369,6 +1625,8 @@ fn compare_row(row: &cmp::Row, image: usize) -> CompareRow {
         writable: row.writable && !further,
         shape: if further { Shape::Plain } else { row.shape }.as_str().to_string(),
         values: row.values.iter().map(|v| v.as_deref().map(hex)).collect(),
+        sensitive: None,
+        redacted: false,
     }
 }
 
@@ -1378,22 +1636,6 @@ fn prop_name(id: u32, size: usize) -> Option<String> {
         .iter()
         .find(|p| p.part_size == size && p.ids().any(|i| i == id))
         .map(|p| p.name.to_string())
-}
-
-/// Whether this property names a person or a body and was not asked for.
-///
-/// The photographer and copyright strings live under several ids, because the
-/// newer bodies moved them; all of them are covered by the one switch.
-fn is_identifying(id: u32, size: usize, privacy: Privacy) -> bool {
-    let withheld = |name: &str| match name {
-        "serialNumber" => !privacy.serial,
-        "photographer1" | "photographer2" | "photographer1Alt" => !privacy.photographer,
-        "copyright1" | "copyright2" | "copyright1Alt" => !privacy.copyright,
-        _ => false,
-    };
-    props::PROPERTIES
-        .iter()
-        .any(|p| withheld(p.name) && p.part_size == size && p.ids().any(|i| i == id))
 }
 
 /// A value that matches itself across dumps of one camera and says nothing
@@ -1487,7 +1729,7 @@ mod tests {
     const FIRST: &str = "0x00e70000";
 
     fn dump_of(serial: [u8; 4], other: u8) -> DumpFile {
-        dump_image(&localizer(), &image(serial, other), Privacy::MASKED, None).unwrap()
+        dump_image(&localizer(), &image(serial, other), Privacy::Mask, None).unwrap()
     }
 
     #[test]
@@ -1514,7 +1756,65 @@ mod tests {
         assert!(serial.redacted);
         assert_eq!(serial.size, 4);
         assert_eq!(serial.hex, "00 00 00 00");
+        assert_eq!(serial.sensitive, Some(Kind::Serial));
         assert!(!serde_json::to_string(&file).unwrap().contains("01 02 03 04"));
+    }
+
+    #[test]
+    fn a_full_dump_keeps_the_serial_number_and_marks_it() {
+        let file = dump_image(&localizer(), &image([1, 2, 3, 4], 9), Privacy::Full, None).unwrap();
+        let serial = file.properties.iter().find(|p| p.id == "0x00e70003").unwrap();
+        assert!(!serial.redacted);
+        assert_eq!(serial.hex, "01 02 03 04");
+        assert_eq!(serial.sensitive, Some(Kind::Serial));
+        assert!(file.privacy.starts_with("Complete"));
+
+        // Masking it later gives the same as masking it at once.
+        let masked = file.masked();
+        assert_eq!(masked.properties, dump_of([1, 2, 3, 4], 9).properties);
+        assert!(masked.privacy.starts_with("Values that may be sensitive"));
+    }
+
+    #[test]
+    fn a_full_dump_read_back_masked_loses_its_sensitive_values() {
+        let dir = std::env::temp_dir().join(format!("pmca-sensitive-{}", stamp()));
+        std::fs::create_dir_all(&dir).unwrap();
+        let path = dir.join("full.json");
+        let full = dump_image(&localizer(), &image([1, 2, 3, 4], 9), Privacy::Full, None).unwrap();
+        save(&full, &path).unwrap();
+        let masked = read_dump(&localizer(), &path, Privacy::Mask).unwrap();
+        assert!(masked.properties.iter().find(|p| p.id == "0x00e70003").unwrap().redacted);
+        let again = read_dump(&localizer(), &path, Privacy::Full).unwrap();
+        assert_eq!(again.properties, full.properties);
+        std::fs::remove_dir_all(&dir).unwrap();
+    }
+
+    #[test]
+    fn a_masked_comparison_marks_the_row_and_a_full_one_shows_the_values() {
+        let full =
+            |serial| dump_image(&localizer(), &image(serial, 9), Privacy::Full, None).unwrap();
+        let files = [
+            (PathBuf::from("a.json"), full([1, 2, 3, 4])),
+            (PathBuf::from("b.json"), full([9, 9, 9, 9])),
+        ];
+        let options = CompareOptions {
+            auto_noise: false,
+            privacy: Privacy::Full,
+            ..CompareOptions::default()
+        };
+        let report = compare_with_names(&files, &options, &[]);
+        let row = report.rows.iter().find(|r| r.id == "0x00e70003").unwrap();
+        assert_eq!(row.sensitive, Some(Kind::Serial));
+        assert!(!row.redacted);
+        assert_eq!(row.class, "different");
+        assert!(report.privacy.starts_with("Complete"));
+
+        let masked: Vec<_> = files.iter().map(|(p, d)| (p.clone(), d.masked())).collect();
+        let report =
+            compare_with_names(&masked, &CompareOptions { privacy: Privacy::Mask, ..options }, &[]);
+        let row = report.rows.iter().find(|r| r.id == "0x00e70003").unwrap();
+        assert!(row.redacted);
+        assert_eq!(row.values, vec![Some("00 00 00 00".into()), Some("00 00 00 00".into())]);
     }
 
     #[test]
@@ -1576,7 +1876,7 @@ mod tests {
 
     #[test]
     fn a_second_image_is_dumped_but_never_writable() {
-        let file = dump_image(&localizer(), &two_images(9, 5), Privacy::MASKED, None).unwrap();
+        let file = dump_image(&localizer(), &two_images(9, 5), Privacy::Mask, None).unwrap();
         assert_eq!(file.further_images.len(), 1);
         let further = &file.further_images[0];
         assert_eq!(further.offset, "0x00001000");
@@ -1590,7 +1890,7 @@ mod tests {
     #[test]
     fn second_image_rows_carry_their_image_number() {
         let read = |first, second| {
-            dump_image(&localizer(), &two_images(first, second), Privacy::MASKED, None).unwrap()
+            dump_image(&localizer(), &two_images(first, second), Privacy::Mask, None).unwrap()
         };
         let a = (PathBuf::from("a.json"), read(9, 5));
         let b = (PathBuf::from("b.json"), read(9, 6));
@@ -1639,23 +1939,6 @@ mod tests {
         assert!(report.rows.iter().find(|r| r.id == FIRST).unwrap().fw_name_for.is_none());
     }
 
-    #[test]
-    fn network_and_account_names_are_recognised() {
-        for name in [
-            "BKID_APP_WIFI_SSID",
-            "BKID_APP_FTP_SERVER_PASSWORD",
-            "PARENT_CHILD_SERVER_CAMERA_SSH_FINGER_PRINT_FIRST_HALF",
-            "BKID_MAC_ADDR",
-            "BKID_NET_SERVICE_DEVICE_NAME_VALID",
-            "BKID_APP_LICENSE_KEY",
-        ] {
-            assert!(is_sensitive_name(name), "{name}");
-        }
-        for name in ["BKID_APP_MENU_NTSC_PAL", "BKID_DISPLAY_EVF_DEVICE", "BKID_APP_SETTING_GRID"] {
-            assert!(!is_sensitive_name(name), "{name}");
-        }
-    }
-
     fn named(name: &str) -> Option<FwName> {
         Some(FwName {
             name: name.to_string(),
@@ -1697,9 +1980,8 @@ mod tests {
 
     #[test]
     fn a_dump_without_names_leaves_the_field_out() {
-        let file =
-            dump_with_names(&localizer(), &image([1, 2, 3, 4], 9), Privacy::MASKED, None, &[])
-                .unwrap();
+        let file = dump_with_names(&localizer(), &image([1, 2, 3, 4], 9), Privacy::Mask, None, &[])
+            .unwrap();
         assert!(file.properties.iter().all(|p| p.fw_name.is_none()));
         assert!(!serde_json::to_string(&file).unwrap().contains("fwName"));
     }
@@ -1725,6 +2007,44 @@ mod tests {
         assert_eq!(narrowed.included, vec!["similar".to_string()]);
         assert!(narrowed.rows.iter().all(|r| r.class == "similar"));
         assert!(narrowed.rows.len() < report.rows.len());
+    }
+
+    #[test]
+    fn a_difference_is_counted_in_the_column_of_its_offset() {
+        let a = (PathBuf::from("a.json"), dump_of([1, 2, 3, 4], 9));
+        let b = (PathBuf::from("b.json"), dump_of([1, 2, 3, 4], 8));
+        let options =
+            CompareOptions { auto_noise: false, similar_distance: 0, ..CompareOptions::default() };
+        let report = compare_dumps(&[a, b], &options);
+        let row = report.rows.iter().find(|r| r.id == FIRST).unwrap();
+        assert_eq!(row.class, "different");
+        assert_eq!(row.offset, Some(0x700));
+        let map = report.map.as_ref().unwrap();
+        let column = (0x700 - map.data_start) / map.column_bytes;
+        assert_eq!(map.columns[column].get("different"), Some(&1));
+        let total: usize = map.columns.iter().filter_map(|c| c.get("different")).sum();
+        assert_eq!(total, 1);
+    }
+
+    #[test]
+    fn the_index_finds_a_value_by_its_offset() {
+        let index = image_index(&dump_of([1, 2, 3, 4], 9));
+        let first = &index[0];
+        assert_eq!(first.start, 0);
+        assert!(first.entries.windows(2).all(|w| w[0].offset <= w[1].offset));
+        let entry = first.entries.iter().find(|e| e.offset == 0x700).unwrap();
+        assert_eq!(entry.id, FIRST);
+        assert!(!entry.value.is_empty());
+    }
+
+    #[test]
+    fn a_filtered_report_drops_the_map() {
+        let a = (PathBuf::from("a.json"), dump_of([1, 2, 3, 4], 9));
+        let b = (PathBuf::from("b.json"), dump_of([1, 2, 3, 4], 8));
+        let options = CompareOptions { auto_noise: false, ..CompareOptions::default() };
+        let report = compare_dumps(&[a, b], &options);
+        assert!(report.map.is_some());
+        assert!(report.filtered(&Filter::default()).map.is_none());
     }
 
     #[test]

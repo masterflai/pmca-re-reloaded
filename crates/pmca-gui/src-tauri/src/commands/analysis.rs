@@ -26,37 +26,17 @@ fn require_write_tests(app: &AppHandle) -> Result<(), CommandError> {
 }
 
 /// A step of the analysis, as both the window and the macOS broker run it.
-pub(crate) type Step<'a> = Box<
-    dyn FnOnce(
-            &mut pmca_app::analysis::AnalysisRun,
-            &Localizer,
-            &mut dyn pmca_app::ProgressSink,
-        ) -> Result<(), CommandError>
-        + 'a,
->;
+pub(crate) type Step<'a> = pmca_app::elevated::Step<'a>;
 
-/// Run `step` on the analysis in `slot`, then save its report once there is
-/// something to report, and return where the run stands.
+/// Run a step of the analysis in `slot`; see [`pmca_app::elevated::analysis_step`].
+#[cfg_attr(target_os = "macos", allow(dead_code))]
 pub(crate) fn analysis_step(
     slot: &mut Option<pmca_app::analysis::AnalysisRun>,
     localizer: &Localizer,
     sink: &mut dyn pmca_app::ProgressSink,
     step: Step<'_>,
 ) -> Result<pmca_app::analysis::RunState, CommandError> {
-    let run = slot
-        .as_mut()
-        .ok_or_else(|| CommandError::localized(localizer.tr("analysis-write-not-allowed")))?;
-    let result = step(run, localizer, sink);
-    // Saved after failures too: a report that stops half-way still says where.
-    if run.taken() > 0 {
-        let _ = run.save_report();
-    }
-    if let Some((model, id, setting)) = run.finding() {
-        let day = run.report().started.get(..10).unwrap_or_default().to_string();
-        let _ = pmca_app::own_names::remember_finding(&model, id, &setting, &day);
-    }
-    result?;
-    Ok(run.state(localizer))
+    pmca_app::elevated::analysis_step(slot, localizer, sink, step).map_err(CommandError::from)
 }
 
 /// [`analysis_step`] on the window's own run.
@@ -143,6 +123,7 @@ pub(crate) async fn analysis_start(
 }
 
 /// Start a run in `slot`, unless the one there still has a value to restore.
+#[cfg_attr(target_os = "macos", allow(dead_code))]
 pub(crate) fn start_run(
     slot: &mut Option<pmca_app::analysis::AnalysisRun>,
     localizer: &Localizer,
@@ -150,11 +131,8 @@ pub(crate) fn start_run(
     values: &[String],
     write_test: bool,
 ) -> Result<pmca_app::analysis::RunState, CommandError> {
-    if slot.as_ref().is_some_and(|run| run.needs_restore()) {
-        return Err(CommandError::localized(localizer.tr("analysis-pending")));
-    }
-    let run = pmca_app::analysis::AnalysisRun::new(localizer, setting, values, write_test)?;
-    Ok(slot.insert(run).state(localizer))
+    pmca_app::elevated::start_run(slot, localizer, setting, values, write_test)
+        .map_err(CommandError::from)
 }
 
 /// Read the complete backup once, in a service session of its own.
@@ -324,15 +302,12 @@ pub(crate) async fn analysis_discard(app: AppHandle) -> Result<(), CommandError>
 }
 
 /// Empty `slot`, unless its run still has a value to restore.
+#[cfg_attr(target_os = "macos", allow(dead_code))]
 pub(crate) fn discard_run(
     slot: &mut Option<pmca_app::analysis::AnalysisRun>,
     localizer: &Localizer,
 ) -> Result<(), CommandError> {
-    if slot.as_ref().is_some_and(|run| run.needs_restore()) {
-        return Err(CommandError::localized(localizer.tr("analysis-pending")));
-    }
-    slot.take();
-    Ok(())
+    pmca_app::elevated::discard_run(slot, localizer).map_err(CommandError::from)
 }
 
 /// Whether an earlier write test left a value that was never restored.
@@ -375,27 +350,17 @@ pub(crate) async fn analysis_restore_pending(app: AppHandle) -> Result<Reply<usi
 use pmca_app::analysis::{ReferenceCheck, ReferenceEntry, ReferenceState};
 
 /// A step of the reference check, as both the window and the macOS broker run it.
-pub(crate) type ReferenceStep<'a> = Box<
-    dyn FnOnce(
-            &mut ReferenceCheck,
-            &Localizer,
-            &mut dyn pmca_app::ProgressSink,
-        ) -> Result<(), CommandError>
-        + 'a,
->;
+pub(crate) type ReferenceStep<'a> = pmca_app::elevated::ReferenceStep<'a>;
 
 /// Run `step` on the reference check in `slot` and return where it stands.
+#[cfg_attr(target_os = "macos", allow(dead_code))]
 pub(crate) fn reference_step(
     slot: &mut Option<ReferenceCheck>,
     localizer: &Localizer,
     sink: &mut dyn pmca_app::ProgressSink,
     step: ReferenceStep<'_>,
 ) -> Result<ReferenceState, CommandError> {
-    let run = slot
-        .as_mut()
-        .ok_or_else(|| CommandError::localized(localizer.tr("reference-not-started")))?;
-    step(run, localizer, sink)?;
-    Ok(run.state())
+    pmca_app::elevated::reference_step(slot, localizer, sink, step).map_err(CommandError::from)
 }
 
 /// [`reference_step`] on the window's own check.
@@ -428,28 +393,22 @@ fn reference_camera_step(
 }
 
 /// Start a check in `slot`, unless the one there still has a value to restore.
+#[cfg_attr(target_os = "macos", allow(dead_code))]
 pub(crate) fn start_reference(
     slot: &mut Option<ReferenceCheck>,
     localizer: &Localizer,
     entries: Vec<ReferenceEntry>,
 ) -> Result<ReferenceState, CommandError> {
-    if slot.as_ref().is_some_and(|run| run.needs_restore()) {
-        return Err(CommandError::localized(localizer.tr("reference-pending")));
-    }
-    let run = ReferenceCheck::new(localizer, entries)?;
-    Ok(slot.insert(run).state())
+    pmca_app::elevated::start_reference(slot, localizer, entries).map_err(CommandError::from)
 }
 
 /// Empty `slot`, unless its check still has a value to restore.
+#[cfg_attr(target_os = "macos", allow(dead_code))]
 pub(crate) fn discard_reference(
     slot: &mut Option<ReferenceCheck>,
     localizer: &Localizer,
 ) -> Result<(), CommandError> {
-    if slot.as_ref().is_some_and(|run| run.needs_restore()) {
-        return Err(CommandError::localized(localizer.tr("reference-pending")));
-    }
-    slot.take();
-    Ok(())
+    pmca_app::elevated::discard_reference(slot, localizer).map_err(CommandError::from)
 }
 
 /// Build findings from a shared analysis report the user picks. Local only.
