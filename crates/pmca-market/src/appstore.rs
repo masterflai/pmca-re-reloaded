@@ -749,8 +749,9 @@ mod net {
     }
 
     fn search_topic(topic: &str) -> Result<Vec<RepoInfo>> {
+        // GitHub leaves forks out of a search unless asked; many camera apps are forks.
         let url = format!(
-            "{API_BASE}/search/repositories?q=topic:{topic}&sort=stars&order=desc&per_page={SEARCH_PAGE}"
+            "{API_BASE}/search/repositories?q=topic:{topic}+fork:true&sort=stars&order=desc&per_page={SEARCH_PAGE}"
         );
         parse_repo_search(&fetch(&url, MAX_METADATA_SIZE)?)
     }

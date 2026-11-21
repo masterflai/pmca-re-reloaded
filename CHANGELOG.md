@@ -182,6 +182,8 @@ All notable changes to this project are documented here. The format follows
   camera changed itself or keeps read-only; those are named, everything else
   must match byte for byte, and a value that reads back as it was before the
   write still counts as a failed write.
+- The search for sources and projects now also finds repositories that are
+  forks, such as dired/PMCA-HDMICam; GitHub leaves forks out unless asked.
 
 ## [1.13.0] - 2026-11-15
 
