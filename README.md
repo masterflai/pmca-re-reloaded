@@ -40,6 +40,10 @@
 
 <p align="center">
   <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="docs/images/memory-dark.png">
+    <img src="docs/images/memory-light.png" width="49%" alt="Memory view: a settings dump opened after the camera was read again, showing only the four values that changed since the reading before, one of them with the own name Auto Pwr OFF Temp. and the stored value High">
+  </picture>
+  <picture>
     <source media="(prefers-color-scheme: dark)" srcset="docs/images/compare-dark.png">
     <img src="docs/images/compare-light.png" width="49%" alt="Camera comparison: the settings memory of two cameras side by side, each property marked as the same, nearly the same, different, stored at a different length or missing">
   </picture>
@@ -81,7 +85,7 @@ in Rust, and it needs neither Python nor extra driver tools.
 <p align="center">
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="docs/images/demo-dark.gif">
-    <img src="docs/images/demo-light.gif" width="720" alt="Short demo: reading the camera info, loading the app list from several sources, installing three apps, opening a finished function analysis, comparing the settings memory of two cameras, and folding the navigation down to icons">
+    <img src="docs/images/demo-light.gif" width="720" alt="Short demo: reading the camera info, loading the app list from several sources, installing three apps, opening a finished function analysis, choosing among the three analyses, looking at the memory after a second reading, comparing the settings memory of two cameras, and folding the navigation down to icons">
   </picture>
 </p>
 
@@ -115,6 +119,14 @@ back over service mode.*
 **Settings memory** — read and change settings the camera has but does not show
 in its menu, such as the video recording limit, all menu languages or the
 PAL/NTSC video system. Each change is backed up, verified and reversible.
+
+**Analysis** — one menu entry with three choices: look at the memory, find a
+setting, or compare cameras.
+
+**Memory view** — read the camera, or open a saved dump or backup image, and
+browse its whole settings memory by group, with the firmware's names where a
+plugin brings them and names of your own. The settings image is drawn to scale
+with a magnifier, and after a second reading only what changed can be shown.
 
 **Function analysis** *(experimental)* — find out in which value of the
 settings memory one of the camera's own menu settings is stored, and compare

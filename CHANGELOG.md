@@ -4,6 +4,13 @@ All notable changes to this project are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and the project uses
 [Semantic Versioning](https://semver.org/).
 
+## [Unreleased]
+
+### Fixed
+
+- Memory view and camera comparison: counts read correctly when there is only
+  one, as in "Values: 1" instead of "1 values".
+
 ## [1.14.0] - 2026-11-21
 
 ### Added
