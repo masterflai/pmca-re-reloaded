@@ -214,10 +214,8 @@ pub(crate) async fn compare_export(
             if last.options.privacy == wanted {
                 last.report.clone()
             } else {
-                let options = pmca_app::compare::CompareOptions {
-                    privacy: wanted,
-                    ..last.options.clone()
-                };
+                let options =
+                    pmca_app::compare::CompareOptions { privacy: wanted, ..last.options.clone() };
                 pmca_app::compare::compare_paths(&localizer, &last.paths, &options)?
             }
         };

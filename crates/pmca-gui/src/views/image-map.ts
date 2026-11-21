@@ -187,7 +187,7 @@ function bar(total: number, segments: Segment[], label: string, lookup: Lookup):
     frame.style.display = "";
     const value = lookup(Math.floor(p));
     const seg = segmentAt(segments, p);
-    const here = value ?? (seg === undefined ? "–" : describeSegment(seg).replace("\n", " · "));
+    const here = value ?? (seg === undefined ? "–" : describeSegment(seg).split("\n").join(" · "));
     info.textContent = `${hex(Math.floor(p))} · ${here} · ×${zoom}`;
     lensBox.hidden = false;
   };

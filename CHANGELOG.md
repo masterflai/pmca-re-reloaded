@@ -4,7 +4,7 @@ All notable changes to this project are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and the project uses
 [Semantic Versioning](https://semver.org/).
 
-## [Unreleased]
+## [1.14.0] - 2026-11-21
 
 ### Added
 
@@ -1038,6 +1038,8 @@ and Linux.
 - **Device list** in the app with the functions each known model supports,
   plus community reports for further models.
 
+[1.14.0]: https://github.com/masterflai/pmca-re-reloaded/compare/v1.13.0...v1.14.0
+[1.13.0]: https://github.com/masterflai/pmca-re-reloaded/compare/v1.12.0...v1.13.0
 [1.12.0]: https://github.com/masterflai/pmca-re-reloaded/compare/v1.11.0...v1.12.0
 [1.11.0]: https://github.com/masterflai/pmca-re-reloaded/compare/v1.10.0...v1.11.0
 [1.1.0]: https://github.com/masterflai/pmca-re-reloaded/compare/v1.0.0...v1.1.0
