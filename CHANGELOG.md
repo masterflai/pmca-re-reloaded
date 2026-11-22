@@ -6,6 +6,12 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+## [1.14.1] - 2026-11-22
+
+A maintenance release with updated dependencies and a few fixes. Mac users:
+when something fails, please add the line from `macos-usb.txt` (see below)
+to your report.
+
 ### Added
 
 - macOS: each attempt to reach service mode writes one line to
@@ -1082,6 +1088,7 @@ and Linux.
 - **Device list** in the app with the functions each known model supports,
   plus community reports for further models.
 
+[1.14.1]: https://github.com/masterflai/pmca-re-reloaded/compare/v1.14.0...v1.14.1
 [1.14.0]: https://github.com/masterflai/pmca-re-reloaded/compare/v1.13.0...v1.14.0
 [1.13.0]: https://github.com/masterflai/pmca-re-reloaded/compare/v1.12.0...v1.13.0
 [1.12.0]: https://github.com/masterflai/pmca-re-reloaded/compare/v1.11.0...v1.12.0
