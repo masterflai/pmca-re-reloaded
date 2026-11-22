@@ -6,6 +6,14 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+### Added
+
+- macOS: each attempt to reach service mode writes one line to
+  `~/Library/Application Support/PMCA-RE-RELOADED/macos-usb.txt`, naming the
+  way the program reached the camera and whether the camera answered. It
+  replaces the previous line and holds no camera identifiers; include it when
+  reporting a macOS problem.
+
 ### Fixed
 
 - macOS: a camera connected over MTP is not switched to service mode there;

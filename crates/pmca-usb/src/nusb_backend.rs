@@ -453,6 +453,24 @@ const MACOS_DISK_SETTLE: Duration = Duration::from_secs(1);
 #[cfg(target_os = "macos")]
 const MACOS_HOST_WRITE_PIECE: usize = 512;
 
+/// How the last mass-storage claim on macOS reached the camera.
+#[cfg(target_os = "macos")]
+static MACOS_ACCESS: std::sync::Mutex<Option<String>> = std::sync::Mutex::new(None);
+
+#[cfg(target_os = "macos")]
+fn record_macos_access(line: String) {
+    if let Ok(mut slot) = MACOS_ACCESS.lock() {
+        *slot = Some(line);
+    }
+}
+
+/// One line saying how the last mass-storage claim on macOS reached the
+/// camera, such as `macOS 26.7.2: IOUSBHost, round 3 of 3`; `None` before any.
+#[cfg(target_os = "macos")]
+pub fn macos_access() -> Option<String> {
+    MACOS_ACCESS.lock().ok()?.clone()
+}
+
 /// What happened during a capture, for the error message if it fails.
 #[cfg(target_os = "macos")]
 struct CaptureTrace {
@@ -523,7 +541,19 @@ fn claim_captured(
         }
         let last = round == MACOS_CAPTURE_ROUNDS;
         match capture_round(&info, interface_number, class, last, &mut holders, &mut note) {
-            Ok(link) => return Ok(link),
+            Ok(link) => {
+                let way = match &link {
+                    Link::UsbLib(_) => "IOUSBLib",
+                    Link::Host(_) => "IOUSBHost",
+                    Link::Borrowed { .. } => "nusb after capture",
+                    Link::Nusb(_) => "nusb",
+                };
+                record_macos_access(format!(
+                    "macOS {}: {way}, round {round} of {MACOS_CAPTURE_ROUNDS}",
+                    crate::macos_capture::os_version()
+                ));
+                return Ok(link);
+            }
             Err(e) => note(e),
         }
     }

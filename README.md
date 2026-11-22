@@ -219,6 +219,14 @@ Version 1.14.0 has been tried on macOS 26.7.2: the tweaks work with the USB
 connection set to Mass Storage, and with Auto when "Mass Storage (MSC)" is
 chosen.
 
+When something fails on a Mac, please add the line from
+`~/Library/Application Support/PMCA-RE-RELOADED/macos-usb.txt` to your
+report. Each attempt to reach service mode replaces it with one line naming
+the way the program reached the camera and whether the camera answered. In
+Finder, choose *Go → Go to Folder…* (Shift-Command-G) and paste the path, or
+run `cat ~/Library/Application\ Support/PMCA-RE-RELOADED/macos-usb.txt` in
+Terminal.
+
 **Caution:** firmware updates and the updater shell have not yet been tried
 on a Mac with a camera. An update that breaks off can leave the camera unable
 to start. Until a successful update on a Mac has been reported, update the

@@ -353,7 +353,9 @@ fn enter_service_mode(
             #[cfg(target_os = "macos")]
             {
                 let started = auth.request_start();
-                if let Err(e) = auth.authenticate() {
+                let authenticated = auth.authenticate();
+                write_macos_access(&authenticated);
+                if let Err(e) = authenticated {
                     // Whether the start request got through the capture explains the rest.
                     return Err(match started {
                         Err(start) => pmca_usb::Error::Transfer(format!(
@@ -409,6 +411,26 @@ fn open_when_started<T>(
         }
     }
     Ok(result?)
+}
+
+/// File in the user's data folder naming the macOS capture path of the last
+/// service-mode attempt, for testers to copy into a report.
+#[cfg(target_os = "macos")]
+const MACOS_ACCESS_FILE: &str = "macos-usb.txt";
+
+/// Write which macOS capture path reached the camera and whether the camera
+/// then answered, replacing the line of the previous attempt.
+#[cfg(target_os = "macos")]
+fn write_macos_access(authenticated: &pmca_usb::Result<()>) {
+    let Some(dir) = pmca_i18n::catalog::user_data_dir() else { return };
+    let path = pmca_usb::nusb_backend::macos_access().unwrap_or_else(|| "no capture".into());
+    let answer = match authenticated {
+        Ok(()) => "authentication ok".to_owned(),
+        Err(e) => format!("authentication failed: {e}"),
+    };
+    let line = format!("PMCA-RE RELOADED {}; {path}; {answer}\n", env!("CARGO_PKG_VERSION"));
+    let _ = std::fs::create_dir_all(&dir);
+    let _ = std::fs::write(dir.join(MACOS_ACCESS_FILE), line);
 }
 
 /// Wait for the camera to come back in service mode, assigning WinUSB to it
