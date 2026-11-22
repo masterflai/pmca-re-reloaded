@@ -14,6 +14,13 @@ All notable changes to this project are documented here. The format follows
   replaces the previous line and holds no camera identifiers; include it when
   reporting a macOS problem.
 
+### Changed
+
+- Dependencies updated within their compatible versions, among them Tauri
+  2.12.7 (wry 0.57.3, tao 0.37.3), `nusb` 0.2.9, `zip` 9.8.1, `reqwest`
+  0.13.5 and `rustls-webpki` 0.103.17; on the web side `@tauri-apps/api`,
+  `@tauri-apps/cli` and `vite`.
+
 ### Fixed
 
 - macOS: a camera connected over MTP is not switched to service mode there;

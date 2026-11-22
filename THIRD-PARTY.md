@@ -13,46 +13,46 @@ repeated here.
 
 Generated: 2026-11-22
 
-* Packages: **553**
-* With a copyright notice recovered from their sources: **400**
+* Packages: **563**
+* With a copyright notice recovered from their sources: **406**
 * Workspaces read: pmca (CLI, core, USB, market), pmca-gui (Tauri desktop shell)
 
 ## Licences in use
 
 | Licence (SPDX) | Packages |
 | --- | ---: |
-| `MIT OR Apache-2.0` | 269 |
-| `MIT` | 113 |
-| `Apache-2.0 OR MIT` | 45 |
-| `MIT/Apache-2.0` | 21 |
+| `MIT OR Apache-2.0` | 260 |
+| `MIT` | 119 |
+| `Apache-2.0 OR MIT` | 50 |
+| `MIT/Apache-2.0` | 20 |
 | `Zlib OR Apache-2.0 OR MIT` | 18 |
 | `Unicode-3.0` | 18 |
-| `Unlicense OR MIT` | 10 |
+| `Unlicense OR MIT` | 15 |
 | `Apache-2.0 WITH LLVM-exception OR Apache-2.0 OR MIT` | 10 |
-| `MPL-2.0` | 5 |
+| `MPL-2.0` | 7 |
 | `Apache-2.0` | 4 |
 | `Apache-2.0/MIT` | 4 |
 | `Zlib` | 3 |
-| `Apache-2.0 OR ISC OR MIT` | 3 |
-| `ISC` | 3 |
 | `BSD-3-Clause` | 3 |
+| `ISC` | 3 |
+| `Apache-2.0 OR ISC OR MIT` | 3 |
 | `MIT OR Apache-2.0 OR Zlib` | 2 |
 | `Unlicense/MIT` | 2 |
 | `MIT OR Apache-2.0 OR LGPL-2.1-or-later` | 2 |
-| `CDLA-Permissive-2.0` | 2 |
+| `MIT OR Zlib OR Apache-2.0` | 2 |
 | `BSD-3-Clause OR MIT OR Apache-2.0` | 2 |
+| `CC0-1.0 OR MIT-0 OR Apache-2.0` | 2 |
 | `BSD-2-Clause` | 2 |
+| `CDLA-Permissive-2.0` | 2 |
 | `BSD-3-Clause/MIT` | 1 |
 | `BSD-3-Clause AND MIT` | 1 |
 | `BSD-2-Clause OR MIT OR Apache-2.0` | 1 |
 | `Apache-2.0 WITH LLVM-exception` | 1 |
-| `MIT OR Zlib OR Apache-2.0` | 1 |
 | `Apache-2.0 OR GPL-2.0-only` | 1 |
 | `Apache-2.0 AND MIT` | 1 |
 | `Apache-2.0 AND ISC` | 1 |
 | `Apache-2.0 / MIT` | 1 |
 | `0BSD OR MIT OR Apache-2.0` | 1 |
-| `CC0-1.0 OR MIT-0 OR Apache-2.0` | 1 |
 | `(MIT OR Apache-2.0) AND Unicode-3.0` | 1 |
 
 A slash or `OR` means the package offers a choice; this project relies on the
@@ -72,7 +72,7 @@ in executable form must tell the recipients where its source is available
 
   > Copyright (C) Jonas Schievink <jonasschievink@gmail.com>
 
-### aes 0.9.2
+### aes 0.9.4
 
 * Licence: `MIT OR Apache-2.0`
 * Source: https://github.com/RustCrypto/block-ciphers
@@ -179,13 +179,6 @@ in executable form must tell the recipients where its source is available
 
   > Copyright (c) 2015 Alice Maz
 
-### base64 0.22.1
-
-* Licence: `MIT OR Apache-2.0`
-* Source: https://github.com/marshallpierce/rust-base64
-
-  > Copyright (c) 2015 Alice Maz
-
 ### base64 0.23.1
 
 * Licence: `MIT OR Apache-2.0`
@@ -193,10 +186,24 @@ in executable form must tell the recipients where its source is available
 
   > Copyright (c) 2025 Alice Maz, Marshall Pierce
 
+### bit-set 0.11.1
+
+* Licence: `Apache-2.0 OR MIT`
+* Source: https://github.com/contain-rs/bit-vec
+
+  > Copyright (c) 2023 The Rust Project Developers
+
 ### bit-set 0.8.0
 
 * Licence: `Apache-2.0 OR MIT`
 * Source: https://github.com/contain-rs/bit-set
+
+  > Copyright (c) 2023 The Rust Project Developers
+
+### bit-vec 0.10.2
+
+* Licence: `Apache-2.0 OR MIT`
+* Source: https://github.com/contain-rs/bit-vec
 
   > Copyright (c) 2023 The Rust Project Developers
 
@@ -214,7 +221,7 @@ in executable form must tell the recipients where its source is available
 
   > Copyright (c) 2014 The Rust Project Developers
 
-### bitflags 2.13.1
+### bitflags 2.13.2
 
 * Licence: `MIT OR Apache-2.0`
 * Source: https://github.com/bitflags/bitflags
@@ -247,7 +254,7 @@ in executable form must tell the recipients where its source is available
 * Licence: `MIT`
 * Source: https://github.com/madsmtm/objc2
 
-### brotli 9.0.0
+### brotli 9.1.3
 
 * Licence: `BSD-3-Clause AND MIT`
 * Source: https://github.com/dropbox/rust-brotli
@@ -255,7 +262,7 @@ in executable form must tell the recipients where its source is available
   > Copyright (c) 2016 Dropbox, Inc.
   > Copyright (c) 2009, 2010, 2013-2016 by the Brotli Authors.
 
-### brotli-decompressor 6.0.1
+### brotli-decompressor 6.3.2
 
 * Licence: `BSD-3-Clause/MIT`
 * Source: https://github.com/dropbox/rust-brotli-decompressor
@@ -269,7 +276,7 @@ in executable form must tell the recipients where its source is available
 
   > Copyright (c) 2016 The roaring-rs developers.
 
-### bumpalo 3.20.3
+### bumpalo 3.20.4
 
 * Licence: `MIT OR Apache-2.0`
 * Source: https://github.com/fitzgen/bumpalo
@@ -290,7 +297,7 @@ in executable form must tell the recipients where its source is available
 
   > Copyright (c) 2015 Andrew Gallant
 
-### bytes 1.12.1
+### bytes 1.12.2
 
 * Licence: `MIT`
 * Source: https://github.com/tokio-rs/bytes
@@ -307,7 +314,7 @@ in executable form must tell the recipients where its source is available
 * Licence: `MIT`
 * Source: https://github.com/gtk-rs/gtk-rs-core
 
-### camino 1.2.5
+### camino 1.2.6
 
 * Licence: `MIT OR Apache-2.0`
 * Source: https://github.com/camino-rs/camino
@@ -337,7 +344,7 @@ in executable form must tell the recipients where its source is available
   > Copyright (c) 2018-2022 RustCrypto Developers
   > Copyright (c) 2018 Artyom Pavlov
 
-### cc 1.4.2
+### cc 1.11.3
 
 * Licence: `MIT OR Apache-2.0`
 * Source: https://github.com/rust-lang/cc-rs
@@ -370,7 +377,7 @@ in executable form must tell the recipients where its source is available
 
   > Copyright (c) 2019 Embark Studios
 
-### cfg-if 1.0.4
+### cfg-if 1.0.5
 
 * Licence: `MIT OR Apache-2.0`
 * Source: https://github.com/rust-lang/cfg-if
@@ -391,32 +398,36 @@ in executable form must tell the recipients where its source is available
 
   > Copyright (c) 2016-2025 RustCrypto Developers
 
-### clap 4.6.6
+### clap 4.6.9
 
 * Licence: `MIT OR Apache-2.0`
 * Source: https://github.com/clap-rs/clap
 
+  > Copyright Individual contributors
   > Copyright (c) Individual contributors
 
-### clap_builder 4.6.6
+### clap_builder 4.6.7
 
 * Licence: `MIT OR Apache-2.0`
 * Source: https://github.com/clap-rs/clap
 
+  > Copyright Individual contributors
   > Copyright (c) Individual contributors
 
-### clap_derive 4.6.4
+### clap_derive 4.6.9
 
 * Licence: `MIT OR Apache-2.0`
 * Source: https://github.com/clap-rs/clap
 
+  > Copyright Individual contributors
   > Copyright (c) Individual contributors
 
-### clap_lex 1.1.0
+### clap_lex 1.1.2
 
 * Licence: `MIT OR Apache-2.0`
 * Source: https://github.com/clap-rs/clap
 
+  > Copyright Individual contributors
   > Copyright (c) Individual contributors
 
 ### cmov 0.5.4
@@ -433,19 +444,24 @@ in executable form must tell the recipients where its source is available
 
   > Copyright (c) Individual contributors
 
-### combine 4.6.7
+### combine 4.6.9
 
 * Licence: `MIT`
 * Source: https://github.com/Marwes/combine
 
   > Copyright (c) 2015 Markus Westerlind
 
-### const-oid 0.10.2
+### const-oid 0.10.3
 
 * Licence: `Apache-2.0 OR MIT`
 * Source: https://github.com/RustCrypto/formats
 
   > Copyright (c) 2020-2026 The RustCrypto Project Developers
+
+### constant_time_eq 0.6.1
+
+* Licence: `CC0-1.0 OR MIT-0 OR Apache-2.0`
+* Source: https://codeberg.org/cesarb/constant_time_eq
 
 ### cookie 0.18.2
 
@@ -506,21 +522,21 @@ in executable form must tell the recipients where its source is available
 
   > Copyright (c) 2020-2025 The RustCrypto Project Developers
 
-### cpufeatures 0.3.0
+### cpufeatures 0.3.1
 
 * Licence: `MIT OR Apache-2.0`
 * Source: https://github.com/RustCrypto/utils
 
-  > Copyright (c) 2020-2025 The RustCrypto Project Developers
+  > Copyright (c) 2020-2026 The RustCrypto Project Developers
 
-### crc32fast 1.5.0
+### crc32fast 1.5.5
 
 * Licence: `MIT OR Apache-2.0`
 * Source: https://github.com/srijs/rust-crc32fast
 
   > Copyright (c) 2018 Sam Rijs, Alex Crichton and contributors
 
-### crossbeam-channel 0.5.16
+### crossbeam-channel 0.5.17
 
 * Licence: `MIT OR Apache-2.0`
 * Source: https://github.com/crossbeam-rs/crossbeam
@@ -528,7 +544,7 @@ in executable form must tell the recipients where its source is available
   > Copyright (c) 2019 The Crossbeam Project Developers
   > Copyright (c) 2009 The Go Authors. All rights reserved.
 
-### crossbeam-utils 0.8.22
+### crossbeam-utils 0.8.23
 
 * Licence: `MIT OR Apache-2.0`
 * Source: https://github.com/crossbeam-rs/crossbeam
@@ -554,38 +570,43 @@ in executable form must tell the recipients where its source is available
 * Licence: `MPL-2.0`
 * Source: https://github.com/servo/rust-cssparser
 
+### cssparser 0.38.0
+
+* Licence: `MPL-2.0`
+* Source: https://github.com/servo/rust-cssparser
+
 ### cssparser-macros 0.7.1
 
 * Licence: `MPL-2.0`
 * Source: https://github.com/servo/rust-cssparser
 
-### ctor 1.0.13
+### ctor 1.0.14
 
 * Licence: `Apache-2.0 OR MIT`
 * Source: https://github.com/mmastrac/linktime
 
-### ctutils 0.4.5
+### ctutils 0.4.8
 
 * Licence: `Apache-2.0 OR MIT`
 * Source: https://github.com/RustCrypto/utils
 
   > Copyright (c) 2025-2026 The RustCrypto Project Developers
 
-### darling 0.23.0
+### darling 0.24.1
 
 * Licence: `MIT`
 * Source: https://github.com/TedDriggs/darling
 
   > Copyright (c) 2017 Ted Driggs
 
-### darling_core 0.23.0
+### darling_core 0.24.1
 
 * Licence: `MIT`
 * Source: https://github.com/TedDriggs/darling
 
   > Copyright (c) 2017 Ted Driggs
 
-### darling_macro 0.23.0
+### darling_macro 0.24.1
 
 * Licence: `MIT`
 * Source: https://github.com/TedDriggs/darling
@@ -600,26 +621,7 @@ in executable form must tell the recipients where its source is available
   > Copyright 2014-2018 David Henningsson <diwic@ubuntu.com> and other contributors
   > Copyright (c) 2014-2018 David Henningsson <diwic@ubuntu.com> and other contributors
 
-### defmt 1.1.1
-
-* Licence: `MIT OR Apache-2.0`
-* Source: https://github.com/knurling-rs/defmt
-
-  > Copyright (c) Ferrous Systems
-
-### defmt-macros 1.1.1
-
-* Licence: `MIT OR Apache-2.0`
-* Source: https://github.com/knurling-rs/defmt
-
-  > Copyright (c) Ferrous Systems
-
-### defmt-parser 1.0.0
-
-* Licence: `MIT OR Apache-2.0`
-* Source: https://github.com/knurling-rs/defmt
-
-### deranged 0.5.8
+### deranged 0.5.9
 
 * Licence: `MIT OR Apache-2.0`
 * Source: https://github.com/jhpratt/deranged
@@ -704,6 +706,13 @@ in executable form must tell the recipients where its source is available
 
   > Copyright (c) 2023 Mykola Humanov
 
+### dom_query 0.29.0
+
+* Licence: `MIT`
+* Source: https://github.com/niklak/dom_query
+
+  > Copyright (c) 2023 Mykola Humanov
+
 ### dpi 0.1.2
 
 * Licence: `Apache-2.0 AND MIT`
@@ -745,26 +754,26 @@ in executable form must tell the recipients where its source is available
 
   > Copyright (c) 2020 Nikolai Vazquez
 
-### embed-resource 3.0.11
+### embed-resource 3.0.12
 
 * Licence: `MIT`
 * Source: https://github.com/nabijaczleweli/rust-embed-resource
 
   > Copyright (c) 2017 nabijaczleweli
 
-### equivalent 1.0.2
+### equivalent 1.0.3
 
 * Licence: `Apache-2.0 OR MIT`
 * Source: https://github.com/indexmap-rs/equivalent
 
   > Copyright (c) 2016--2023
 
-### erased-serde 0.4.10
+### erased-serde 0.4.11
 
 * Licence: `MIT OR Apache-2.0`
 * Source: https://github.com/dtolnay/erased-serde
 
-### errno 0.3.14
+### errno 0.3.15
 
 * Licence: `MIT OR Apache-2.0`
 * Source: https://github.com/lambda-fairy/rust-errno
@@ -788,21 +797,21 @@ in executable form must tell the recipients where its source is available
 
   > Copyright (c) 2016-2021 Diggory Blake, and other contributors.
 
-### filetime 0.2.29
+### filetime 0.2.30
 
 * Licence: `MIT/Apache-2.0`
 * Source: https://github.com/alexcrichton/filetime
 
   > Copyright (c) 2014 Alex Crichton
 
-### find-msvc-tools 0.1.10
+### find-msvc-tools 0.1.15
 
 * Licence: `MIT OR Apache-2.0`
 * Source: https://github.com/rust-lang/cc-rs
 
   > Copyright (c) 2014 Alex Crichton
 
-### flate2 1.1.9
+### flate2 1.1.11
 
 * Licence: `MIT OR Apache-2.0`
 * Source: https://github.com/rust-lang/flate2-rs
@@ -1080,7 +1089,7 @@ in executable form must tell the recipients where its source is available
 
   > Copyright (c) 2016 Amanieu d'Antras
 
-### hashbrown 0.17.1
+### hashbrown 0.17.2
 
 * Licence: `MIT OR Apache-2.0`
 * Source: https://github.com/rust-lang/hashbrown
@@ -1123,6 +1132,13 @@ in executable form must tell the recipients where its source is available
 
   > Copyright (c) 2014 The html5ever Project Developers
 
+### html5ever 0.40.1
+
+* Licence: `MIT OR Apache-2.0`
+* Source: https://github.com/servo/html5ever
+
+  > Copyright (c) 2014 The html5ever Project Developers
+
 ### http 1.5.0
 
 * Licence: `MIT OR Apache-2.0`
@@ -1138,7 +1154,7 @@ in executable form must tell the recipients where its source is available
 
   > Copyright (c) 2019-2026 Sean McArthur & Hyper Contributors
 
-### http-body-util 0.1.4
+### http-body-util 0.1.5
 
 * Licence: `MIT`
 * Source: https://github.com/hyperium/http-body
@@ -1152,14 +1168,14 @@ in executable form must tell the recipients where its source is available
 
   > Copyright (c) 2015-2025 Sean McArthur
 
-### hybrid-array 0.4.14
+### hybrid-array 0.4.15
 
 * Licence: `MIT OR Apache-2.0`
 * Source: https://github.com/RustCrypto/hybrid-array
 
   > Copyright (c) 2022-2026 The RustCrypto Project Developers
 
-### hyper 1.11.0
+### hyper 1.12.0
 
 * Licence: `MIT`
 * Source: https://github.com/hyperium/hyper
@@ -1174,7 +1190,7 @@ in executable form must tell the recipients where its source is available
   > Copyright (c) 2016, Joseph Birr-Pixton <jpixton@gmail.com>
   > Copyright (c) 2016 Joseph Birr-Pixton <jpixton@gmail.com>
 
-### hyper-util 0.1.20
+### hyper-util 0.1.21
 
 * Licence: `MIT`
 * Source: https://github.com/hyperium/hyper-util
@@ -1197,56 +1213,56 @@ in executable form must tell the recipients where its source is available
   > Copyright 2020 Andrew Straw
   > Copyright (c) 2020 Andrew D. Straw
 
-### ico 0.5.0
+### ico 0.6.0
 
 * Licence: `MIT`
 * Source: https://github.com/mdsteele/rust-ico
 
   > Copyright (c) 2018 Matthew D. Steele
 
-### icu_collections 2.2.0
+### icu_collections 2.4.0
 
 * Licence: `Unicode-3.0`
 * Source: https://github.com/unicode-org/icu4x
 
   > Copyright © 2020-2024 Unicode, Inc.
 
-### icu_locale_core 2.2.0
+### icu_locale_core 2.4.0
 
 * Licence: `Unicode-3.0`
 * Source: https://github.com/unicode-org/icu4x
 
   > Copyright © 2020-2024 Unicode, Inc.
 
-### icu_normalizer 2.2.0
+### icu_normalizer 2.4.0
 
 * Licence: `Unicode-3.0`
 * Source: https://github.com/unicode-org/icu4x
 
   > Copyright © 2020-2024 Unicode, Inc.
 
-### icu_normalizer_data 2.2.0
+### icu_normalizer_data 2.4.0
 
 * Licence: `Unicode-3.0`
 * Source: https://github.com/unicode-org/icu4x
 
   > Copyright © 2020-2024 Unicode, Inc.
 
-### icu_properties 2.2.0
+### icu_properties 2.4.0
 
 * Licence: `Unicode-3.0`
 * Source: https://github.com/unicode-org/icu4x
 
   > Copyright © 2020-2024 Unicode, Inc.
 
-### icu_properties_data 2.2.0
+### icu_properties_data 2.4.0
 
 * Licence: `Unicode-3.0`
 * Source: https://github.com/unicode-org/icu4x
 
   > Copyright © 2020-2024 Unicode, Inc.
 
-### icu_provider 2.2.0
+### icu_provider 2.4.0
 
 * Licence: `Unicode-3.0`
 * Source: https://github.com/unicode-org/icu4x
@@ -1279,7 +1295,7 @@ in executable form must tell the recipients where its source is available
 
   > Copyright (c) 2016--2017
 
-### indexmap 2.14.0
+### indexmap 2.14.2
 
 * Licence: `Apache-2.0 OR MIT`
 * Source: https://github.com/indexmap-rs/indexmap
@@ -1293,7 +1309,7 @@ in executable form must tell the recipients where its source is available
 
   > Copyright (c) 2019 Bojan
 
-### inout 0.2.2
+### inout 0.2.6
 
 * Licence: `MIT OR Apache-2.0`
 * Source: https://github.com/RustCrypto/utils
@@ -1320,7 +1336,7 @@ in executable form must tell the recipients where its source is available
 
   > Copyright (c) 2017-2018 Junji Takakura
 
-### ipnet 2.12.1
+### ipnet 2.12.2
 
 * Licence: `MIT OR Apache-2.0`
 * Source: https://github.com/krisprice/ipnet
@@ -1334,7 +1350,7 @@ in executable form must tell the recipients where its source is available
 
   > Copyright (c) Individual contributors
 
-### itoa 1.0.18
+### itoa 1.0.19
 
 * Licence: `MIT OR Apache-2.0`
 * Source: https://github.com/dtolnay/itoa
@@ -1354,28 +1370,56 @@ in executable form must tell the recipients where its source is available
 
   > Copyright (c) 2013-2017, The Gtk-rs Project Developers.
 
-### jiff 0.2.35
+### jiff 0.2.46
 
 * Licence: `Unlicense OR MIT`
 * Source: https://github.com/BurntSushi/jiff
 
   > Copyright (c) 2015 Andrew Gallant
 
-### jiff-core 0.1.0
+### jiff 1.0.2
 
 * Licence: `Unlicense OR MIT`
 * Source: https://github.com/BurntSushi/jiff
 
   > Copyright (c) 2015 Andrew Gallant
 
-### jiff-static 0.2.35
+### jiff-core 0.1.8
 
 * Licence: `Unlicense OR MIT`
 * Source: https://github.com/BurntSushi/jiff
 
   > Copyright (c) 2015 Andrew Gallant
 
-### jiff-tzdb 0.1.8
+### jiff-core 1.0.1
+
+* Licence: `Unlicense OR MIT`
+* Source: https://github.com/BurntSushi/jiff
+
+  > Copyright (c) 2015 Andrew Gallant
+
+### jiff-static 0.2.46
+
+* Licence: `Unlicense OR MIT`
+* Source: https://github.com/BurntSushi/jiff
+
+  > Copyright (c) 2015 Andrew Gallant
+
+### jiff-static 1.0.2
+
+* Licence: `Unlicense OR MIT`
+* Source: https://github.com/BurntSushi/jiff
+
+  > Copyright (c) 2015 Andrew Gallant
+
+### jiff-tzdb 0.1.10
+
+* Licence: `Unlicense OR MIT`
+* Source: https://github.com/BurntSushi/jiff
+
+  > Copyright (c) 2015 Andrew Gallant
+
+### jiff-tzdb 1.0.0
 
 * Licence: `Unlicense OR MIT`
 * Source: https://github.com/BurntSushi/jiff
@@ -1383,6 +1427,13 @@ in executable form must tell the recipients where its source is available
   > Copyright (c) 2015 Andrew Gallant
 
 ### jiff-tzdb-platform 0.1.3
+
+* Licence: `Unlicense OR MIT`
+* Source: https://github.com/BurntSushi/jiff
+
+  > Copyright (c) 2015 Andrew Gallant
+
+### jiff-tzdb-platform 1.0.0
 
 * Licence: `Unlicense OR MIT`
 * Source: https://github.com/BurntSushi/jiff
@@ -1425,7 +1476,7 @@ in executable form must tell the recipients where its source is available
 * Licence: `MIT OR Apache-2.0`
 * Source: https://github.com/jni-rs/jni-sys
 
-### js-sys 0.3.104
+### js-sys 0.3.107
 
 * Licence: `MIT OR Apache-2.0`
 * Source: https://github.com/wasm-bindgen/wasm-bindgen/tree/master/crates/js-sys
@@ -1447,7 +1498,7 @@ in executable form must tell the recipients where its source is available
   > Copyright 2024 Chance Dinkins
   > Copyright (c) 2022 Chance Dinkins
 
-### kamadak-exif 0.6.1
+### kamadak-exif 0.6.2
 
 * Licence: `BSD-2-Clause`
 * Source: https://github.com/kamadak/exif-rs
@@ -1477,7 +1528,7 @@ in executable form must tell the recipients where its source is available
 
 * Licence: `Apache-2.0 OR MIT`
 
-### libc 0.2.189
+### libc 0.2.191
 
 * Licence: `MIT OR Apache-2.0`
 * Source: https://github.com/rust-lang/libc
@@ -1514,19 +1565,24 @@ in executable form must tell the recipients where its source is available
   > Copyright © 2017-2018 Arm Limited
   > Copyright notices are retained in src/* files where relevant.
 
-### libredox 0.1.19
+### libredox 0.1.25
 
 * Licence: `MIT`
 * Source: https://gitlab.redox-os.org/redox-os/libredox.git
 
   > Copyright (c) 2023 4lDO2
 
+### link-section 0.19.4
+
+* Licence: `Apache-2.0 OR MIT`
+* Source: https://github.com/mmastrac/linktime
+
 ### linux-raw-sys 0.12.1
 
 * Licence: `Apache-2.0 WITH LLVM-exception OR Apache-2.0 OR MIT`
 * Source: https://github.com/sunfishcode/linux-raw-sys
 
-### litemap 0.8.2
+### litemap 0.8.3
 
 * Licence: `Unicode-3.0`
 * Source: https://github.com/unicode-org/icu4x
@@ -1540,7 +1596,7 @@ in executable form must tell the recipients where its source is available
 
   > Copyright (c) 2016 The Rust Project Developers
 
-### log 0.4.33
+### log 0.4.35
 
 * Licence: `MIT OR Apache-2.0`
 * Source: https://github.com/rust-lang/log
@@ -1555,6 +1611,13 @@ in executable form must tell the recipients where its source is available
   > Copyright (c) 2019 Nick Fitzgerald, 2021 Yuki Okushi
 
 ### markup5ever 0.39.0
+
+* Licence: `MIT OR Apache-2.0`
+* Source: https://github.com/servo/html5ever
+
+  > Copyright (c) 2014 The html5ever Project Developers
+
+### markup5ever 0.40.0
 
 * Licence: `MIT OR Apache-2.0`
 * Source: https://github.com/servo/html5ever
@@ -1585,7 +1648,7 @@ in executable form must tell the recipients where its source is available
 
   > Copyright (c) 2017 Gilad Naaman
 
-### mime 0.3.17
+### mime 0.3.18
 
 * Licence: `MIT OR Apache-2.0`
 * Source: https://github.com/hyperium/mime
@@ -1619,7 +1682,18 @@ in executable form must tell the recipients where its source is available
   > Copyright (c) 2017-2024 oyvindln
   > Copyright (c) 2020 Frommi
 
-### mio 1.2.2
+### miniz_oxide 0.9.1
+
+* Licence: `MIT OR Zlib OR Apache-2.0`
+* Source: https://github.com/Frommi/miniz_oxide/tree/master/miniz_oxide
+
+  > Copyright 2013-2014 RAD Game Tools and Valve Software
+  > Copyright 2010-2014 Rich Geldreich and Tenacious Software LLC
+  > Copyright (c) 2017 Frommi
+  > Copyright (c) 2017-2024 oyvindln
+  > Copyright (c) 2020 Frommi
+
+### mio 1.2.5
 
 * Licence: `MIT`
 * Source: https://github.com/tokio-rs/mio
@@ -1662,7 +1736,7 @@ in executable form must tell the recipients where its source is available
 
   > Copyright (c) 2015 Jonathan Reem
 
-### nix 0.31.3
+### nix 0.32.0
 
 * Licence: `MIT`
 * Source: https://github.com/nix-rust/nix
@@ -1711,12 +1785,12 @@ in executable form must tell the recipients where its source is available
 
   > Copyright (c) 2014 The Rust Project Developers
 
-### nusb 0.2.7
+### nusb 0.2.9
 
 * Licence: `Apache-2.0 OR MIT`
 * Source: https://github.com/kevinmehall/nusb
 
-### objc2 0.6.4
+### objc2 0.6.5
 
 * Licence: `MIT`
 * Source: https://github.com/madsmtm/objc2
@@ -1875,7 +1949,21 @@ in executable form must tell the recipients where its source is available
 
   > Copyright (c) 2014-2022 Steven Fackler, Yuki Okushi
 
+### phf 0.14.0
+
+* Licence: `MIT`
+* Source: https://github.com/rust-phf/rust-phf
+
+  > Copyright (c) 2014-2022 Steven Fackler, Yuki Okushi
+
 ### phf_codegen 0.13.1
+
+* Licence: `MIT`
+* Source: https://github.com/rust-phf/rust-phf
+
+  > Copyright (c) 2014-2022 Steven Fackler, Yuki Okushi
+
+### phf_codegen 0.14.0
 
 * Licence: `MIT`
 * Source: https://github.com/rust-phf/rust-phf
@@ -1889,7 +1977,21 @@ in executable form must tell the recipients where its source is available
 
   > Copyright (c) 2014-2022 Steven Fackler, Yuki Okushi
 
+### phf_generator 0.14.0
+
+* Licence: `MIT`
+* Source: https://github.com/rust-phf/rust-phf
+
+  > Copyright (c) 2014-2022 Steven Fackler, Yuki Okushi
+
 ### phf_macros 0.13.1
+
+* Licence: `MIT`
+* Source: https://github.com/rust-phf/rust-phf
+
+  > Copyright (c) 2014-2022 Steven Fackler, Yuki Okushi
+
+### phf_macros 0.14.0
 
 * Licence: `MIT`
 * Source: https://github.com/rust-phf/rust-phf
@@ -1903,31 +2005,31 @@ in executable form must tell the recipients where its source is available
 
   > Copyright (c) 2014-2022 Steven Fackler, Yuki Okushi
 
-### pin-project-lite 0.2.17
+### phf_shared 0.14.0
+
+* Licence: `MIT`
+* Source: https://github.com/rust-phf/rust-phf
+
+  > Copyright (c) 2014-2022 Steven Fackler, Yuki Okushi
+
+### pin-project-lite 0.2.18
 
 * Licence: `Apache-2.0 OR MIT`
 * Source: https://github.com/taiki-e/pin-project-lite
 
-### pkg-config 0.3.33
+### pkg-config 0.3.34
 
 * Licence: `MIT OR Apache-2.0`
 * Source: https://github.com/rust-lang/pkg-config-rs
 
   > Copyright (c) 2014 Alex Crichton
 
-### plist 1.10.0
+### plist 1.10.4
 
 * Licence: `MIT`
 * Source: https://github.com/ebarnard/rust-plist/
 
   > Copyright (c) 2015 Edward Barnard
-
-### png 0.17.16
-
-* Licence: `MIT OR Apache-2.0`
-* Source: https://github.com/image-rs/image-png
-
-  > Copyright (c) 2015 nwin
 
 ### png 0.18.1
 
@@ -1941,19 +2043,19 @@ in executable form must tell the recipients where its source is available
 * Licence: `Apache-2.0 OR MIT`
 * Source: https://github.com/taiki-e/portable-atomic
 
-### portable-atomic-util 0.2.7
+### portable-atomic-util 0.2.8
 
 * Licence: `Apache-2.0 OR MIT`
 * Source: https://github.com/taiki-e/portable-atomic-util
 
-### potential_utf 0.1.5
+### potential_utf 0.1.6
 
 * Licence: `Unicode-3.0`
 * Source: https://github.com/unicode-org/icu4x
 
   > Copyright © 2020-2024 Unicode, Inc.
 
-### powerfmt 0.2.0
+### powerfmt 0.2.1
 
 * Licence: `MIT OR Apache-2.0`
 * Source: https://github.com/jhpratt/powerfmt
@@ -2004,7 +2106,7 @@ in executable form must tell the recipients where its source is available
 * Licence: `MIT OR Apache-2.0`
 * Source: https://github.com/dtolnay/proc-macro2
 
-### quick-xml 0.41.0
+### quick-xml 0.42.0
 
 * Licence: `MIT`
 * Source: https://github.com/tafia/quick-xml
@@ -2041,45 +2143,45 @@ in executable form must tell the recipients where its source is available
 
   > Copyright (c) 2017 Redox OS Developers
 
-### redox_users 0.5.2
+### redox_users 0.5.3
 
 * Licence: `MIT`
 * Source: https://gitlab.redox-os.org/redox-os/users
 
   > Copyright (c) 2017 Jose Narvaez
 
-### ref-cast 1.0.26
+### ref-cast 1.0.27
 
 * Licence: `MIT OR Apache-2.0`
 * Source: https://github.com/dtolnay/ref-cast
 
-### ref-cast-impl 1.0.26
+### ref-cast-impl 1.0.27
 
 * Licence: `MIT OR Apache-2.0`
 * Source: https://github.com/dtolnay/ref-cast
 
-### regex 1.13.1
+### regex 1.13.2
 
 * Licence: `MIT OR Apache-2.0`
 * Source: https://github.com/rust-lang/regex
 
   > Copyright (c) 2014 The Rust Project Developers
 
-### regex-automata 0.4.18
+### regex-automata 0.4.19
 
 * Licence: `MIT OR Apache-2.0`
 * Source: https://github.com/rust-lang/regex
 
   > Copyright (c) 2014 The Rust Project Developers
 
-### regex-syntax 0.8.11
+### regex-syntax 0.8.12
 
 * Licence: `MIT OR Apache-2.0`
 * Source: https://github.com/rust-lang/regex
 
   > Copyright (c) 2014 The Rust Project Developers
 
-### reqwest 0.13.4
+### reqwest 0.13.5
 
 * Licence: `MIT OR Apache-2.0`
 * Source: https://github.com/seanmonstar/reqwest
@@ -2087,7 +2189,7 @@ in executable form must tell the recipients where its source is available
   > Copyright 2016 Sean McArthur
   > Copyright (c) 2016-2026 Sean McArthur
 
-### rfd 0.16.0
+### rfd 0.17.2
 
 * Licence: `MIT`
 * Source: https://github.com/PolyMeilex/rfd
@@ -2103,21 +2205,21 @@ in executable form must tell the recipients where its source is available
   > Copyright 2015 The Chromium Authors. All rights reserved.
   > Copyright 2015-2025 Brian Smith.
 
-### rust-embed 8.12.0
+### rust-embed 8.14.0
 
 * Licence: `MIT`
 * Source: https://pyrossh.dev/repos/rust-embed
 
   > Copyright (c) 2018 pyros2097
 
-### rust-embed-impl 8.12.0
+### rust-embed-impl 8.14.0
 
 * Licence: `MIT`
 * Source: https://pyrossh.dev/repos/rust-embed
 
   > Copyright (c) 2018 pyros2097
 
-### rust-embed-utils 8.12.0
+### rust-embed-utils 8.14.0
 
 * Licence: `MIT`
 * Source: https://pyrossh.dev/repos/rust-embed
@@ -2157,7 +2259,7 @@ in executable form must tell the recipients where its source is available
   > Copyright (c) 2016, Joseph Birr-Pixton <jpixton@gmail.com>
   > Copyright (c) 2016 Joseph Birr-Pixton <jpixton@gmail.com>
 
-### rustls-pki-types 1.15.1
+### rustls-pki-types 1.16.0
 
 * Licence: `MIT OR Apache-2.0`
 * Source: https://github.com/rustls/pki-types
@@ -2177,7 +2279,7 @@ in executable form must tell the recipients where its source is available
 * Licence: `MIT OR Apache-2.0`
 * Source: https://github.com/rustls/rustls-platform-verifier
 
-### rustls-webpki 0.103.16
+### rustls-webpki 0.103.17
 
 * Licence: `ISC`
 * Source: https://github.com/rustls/webpki
@@ -2217,7 +2319,7 @@ in executable form must tell the recipients where its source is available
 
   > Copyright (c) 2019 Graham Esau
 
-### schemars 1.2.2
+### schemars 1.2.3
 
 * Licence: `MIT`
 * Source: https://github.com/GREsau/schemars
@@ -2253,6 +2355,11 @@ in executable form must tell the recipients where its source is available
   > Copyright (c) 2015 Steven Fackler
 
 ### selectors 0.38.0
+
+* Licence: `MPL-2.0`
+* Source: https://github.com/servo/stylo
+
+### selectors 0.41.0
 
 * Licence: `MPL-2.0`
 * Source: https://github.com/servo/stylo
@@ -2294,7 +2401,7 @@ in executable form must tell the recipients where its source is available
 * Licence: `MIT OR Apache-2.0`
 * Source: https://github.com/serde-rs/serde
 
-### serde_json 1.0.151
+### serde_json 1.0.154
 
 * Licence: `MIT OR Apache-2.0`
 * Source: https://github.com/serde-rs/json
@@ -2311,21 +2418,22 @@ in executable form must tell the recipients where its source is available
 
   > Copyright (c) Individual contributors
 
-### serde_spanned 1.1.1
+### serde_spanned 1.1.3
 
 * Licence: `MIT OR Apache-2.0`
 * Source: https://github.com/toml-rs/toml
 
+  > Copyright Individual contributors
   > Copyright (c) Individual contributors
 
-### serde_with 3.22.0
+### serde_with 3.25.0
 
 * Licence: `MIT OR Apache-2.0`
 * Source: https://github.com/jonasbb/serde_with/
 
   > Copyright (c) 2015
 
-### serde_with_macros 3.22.0
+### serde_with_macros 3.25.0
 
 * Licence: `MIT OR Apache-2.0`
 * Source: https://github.com/jonasbb/serde_with/
@@ -2356,6 +2464,11 @@ in executable form must tell the recipients where its source is available
 * Licence: `MIT OR Apache-2.0`
 * Source: https://github.com/servo/stylo
 
+### servo_arc 0.5.0
+
+* Licence: `MIT OR Apache-2.0`
+* Source: https://github.com/servo/stylo
+
 ### sha1 0.11.0
 
 * Licence: `MIT OR Apache-2.0`
@@ -2375,7 +2488,7 @@ in executable form must tell the recipients where its source is available
   > Copyright (c) 2009-2013 Mozilla Foundation
   > Copyright (c) 2016 Artyom Pavlov
 
-### sha2 0.11.0
+### sha2 0.11.1
 
 * Licence: `MIT OR Apache-2.0`
 * Source: https://github.com/RustCrypto/hashes
@@ -2417,9 +2530,9 @@ in executable form must tell the recipients where its source is available
 * Licence: `MIT OR Apache-2.0`
 * Source: https://github.com/rusticstuff/simdutf8
 
-### siphasher 1.0.3
+### siphasher 1.0.4
 
-* Licence: `MIT/Apache-2.0`
+* Licence: `MIT OR Apache-2.0`
 * Source: https://github.com/jedisct1/rust-siphash
 
   > Copyright 2012-2016 The Rust Project Developers.
@@ -2432,10 +2545,10 @@ in executable form must tell the recipients where its source is available
 
   > Copyright (c) 2019 Carl Lerche
 
-### smallvec 1.15.2
+### smallvec 1.16.6
 
 * Licence: `MIT OR Apache-2.0`
-* Source: https://github.com/servo/rust-smallvec
+* Source: https://github.com/smallvec/smallvec
 
   > Copyright (c) 2018 The Servo Project Developers
 
@@ -2481,7 +2594,28 @@ in executable form must tell the recipients where its source is available
 
   > Copyright (c) 2017 Robert Grosse
 
+### static_vcruntime 3.0.0
+
+* Licence: `MIT OR Apache-2.0 OR Zlib`
+* Source: https://github.com/ChrisDenton/static_vcruntime
+
+  > Copyright (c) 2021 Chris Denton.
+
+### string_cache 0.11.0
+
+* Licence: `MIT OR Apache-2.0`
+* Source: https://github.com/servo/string-cache
+
+  > Copyright (c) 2012-2013 Mozilla Foundation
+
 ### string_cache 0.9.0
+
+* Licence: `MIT OR Apache-2.0`
+* Source: https://github.com/servo/string-cache
+
+  > Copyright (c) 2012-2013 Mozilla Foundation
+
+### string_cache_codegen 0.11.2
 
 * Licence: `MIT OR Apache-2.0`
 * Source: https://github.com/servo/string-cache
@@ -2538,7 +2672,7 @@ in executable form must tell the recipients where its source is available
 * Licence: `MIT OR Apache-2.0`
 * Source: https://github.com/dtolnay/syn
 
-### syn 3.0.3
+### syn 3.0.10
 
 * Licence: `MIT OR Apache-2.0`
 * Source: https://github.com/dtolnay/syn
@@ -2548,7 +2682,7 @@ in executable form must tell the recipients where its source is available
 * Licence: `Apache-2.0`
 * Source: https://github.com/Actyx/sync_wrapper
 
-### synstructure 0.13.2
+### synstructure 0.14.0
 
 * Licence: `MIT`
 * Source: https://github.com/mystor/synstructure
@@ -2574,7 +2708,7 @@ in executable form must tell the recipients where its source is available
 * Licence: `MIT OR Apache-2.0`
 * Source: https://github.com/gdesmott/system-deps
 
-### tao 0.37.1
+### tao 0.37.3
 
 * Licence: `Apache-2.0`
 * Source: https://github.com/tauri-apps/tao
@@ -2598,47 +2732,47 @@ in executable form must tell the recipients where its source is available
 * Licence: `Apache-2.0 WITH LLVM-exception`
 * Source: https://github.com/bytecodealliance/target-lexicon
 
-### tauri 2.12.3
+### tauri 2.12.7
 
 * Licence: `Apache-2.0 OR MIT`
 * Source: https://github.com/tauri-apps/tauri
 
   > Copyright (c) 2017 - Present Tauri Apps Contributors
 
-### tauri-build 2.7.2
+### tauri-build 2.7.6
 
 * Licence: `Apache-2.0 OR MIT`
 * Source: https://github.com/tauri-apps/tauri
 
   > Copyright (c) 2017 - Present Tauri Apps Contributors
 
-### tauri-codegen 2.7.2
+### tauri-codegen 2.7.6
 
 * Licence: `Apache-2.0 OR MIT`
 * Source: https://github.com/tauri-apps/tauri
 
   > Copyright (c) 2017 - Present Tauri Apps Contributors
 
-### tauri-macros 2.7.2
+### tauri-macros 2.7.6
 
 * Licence: `Apache-2.0 OR MIT`
 * Source: https://github.com/tauri-apps/tauri
 
   > Copyright (c) 2017 - Present Tauri Apps Contributors
 
-### tauri-plugin 2.7.1
+### tauri-plugin 2.7.4
 
 * Licence: `Apache-2.0 OR MIT`
 * Source: https://github.com/tauri-apps/tauri
 
-### tauri-plugin-dialog 2.8.2
+### tauri-plugin-dialog 2.8.4
 
 * Licence: `Apache-2.0 OR MIT`
 * Source: https://github.com/tauri-apps/plugins-workspace
 
   > Copyright (c) 2017 - Present Tauri Apps Contributors
 
-### tauri-plugin-fs 2.7.0
+### tauri-plugin-fs 2.7.1
 
 * Licence: `Apache-2.0 OR MIT`
 * Source: https://github.com/tauri-apps/plugins-workspace
@@ -2652,28 +2786,28 @@ in executable form must tell the recipients where its source is available
 
   > Copyright (c) 2017 - Present Tauri Apps Contributors
 
-### tauri-runtime 2.12.1
+### tauri-runtime 2.12.4
 
 * Licence: `Apache-2.0 OR MIT`
 * Source: https://github.com/tauri-apps/tauri
 
   > Copyright (c) 2017 - Present Tauri Apps Contributors
 
-### tauri-runtime-wry 2.12.1
+### tauri-runtime-wry 2.12.5
 
 * Licence: `Apache-2.0 OR MIT`
 * Source: https://github.com/tauri-apps/tauri
 
   > Copyright (c) 2017 - Present Tauri Apps Contributors
 
-### tauri-utils 2.10.1
+### tauri-utils 2.10.4
 
 * Licence: `Apache-2.0 OR MIT`
 * Source: https://github.com/tauri-apps/tauri
 
   > Copyright (c) 2017 - Present Tauri Apps Contributors
 
-### tauri-winres 0.3.6
+### tauri-winres 0.3.7
 
 * Licence: `MIT`
 * Source: https://github.com/tauri-apps/winres
@@ -2707,7 +2841,7 @@ in executable form must tell the recipients where its source is available
 * Licence: `MIT OR Apache-2.0`
 * Source: https://github.com/dtolnay/thiserror
 
-### thiserror 2.0.20
+### thiserror 2.0.21
 
 * Licence: `MIT OR Apache-2.0`
 * Source: https://github.com/dtolnay/thiserror
@@ -2717,7 +2851,7 @@ in executable form must tell the recipients where its source is available
 * Licence: `MIT OR Apache-2.0`
 * Source: https://github.com/dtolnay/thiserror
 
-### thiserror-impl 2.0.20
+### thiserror-impl 2.0.21
 
 * Licence: `MIT OR Apache-2.0`
 * Source: https://github.com/dtolnay/thiserror
@@ -2743,27 +2877,19 @@ in executable form must tell the recipients where its source is available
 
   > Copyright (c) Jacob Pratt et al.
 
-### tinystr 0.8.3
+### tinystr 0.8.5
 
 * Licence: `Unicode-3.0`
 * Source: https://github.com/unicode-org/icu4x
 
   > Copyright © 2020-2024 Unicode, Inc.
 
-### tinyvec 1.12.0
+### tinyvec 1.13.3
 
 * Licence: `Zlib OR Apache-2.0 OR MIT`
 * Source: https://github.com/Lokathor/tinyvec
 
   > Copyright (c) 2019 Daniel "Lokathor" Gee.
-
-### tinyvec_macros 0.1.1
-
-* Licence: `MIT OR Apache-2.0 OR Zlib`
-* Source: https://github.com/Soveu/tinyvec_macros
-
-  > Copyright 2020 Tomasz "Soveu" Marx
-  > Copyright (c) 2020 Soveu
 
 ### tokio 1.54.1
 
@@ -2780,7 +2906,7 @@ in executable form must tell the recipients where its source is available
   > Copyright 2017 quininer kel
   > Copyright (c) 2017 quininer kel
 
-### tokio-util 0.7.19
+### tokio-util 0.7.20
 
 * Licence: `MIT`
 * Source: https://github.com/tokio-rs/tokio
@@ -2794,11 +2920,12 @@ in executable form must tell the recipients where its source is available
 
   > Copyright (c) Individual contributors
 
-### toml 1.1.4+spec-1.1.0
+### toml 1.2.2+spec-1.1.0
 
 * Licence: `MIT OR Apache-2.0`
 * Source: https://github.com/toml-rs/toml
 
+  > Copyright Individual contributors
   > Copyright (c) Individual contributors
 
 ### toml_datetime 0.6.3
@@ -2808,11 +2935,12 @@ in executable form must tell the recipients where its source is available
 
   > Copyright (c) 2014 Alex Crichton
 
-### toml_datetime 1.1.1+spec-1.1.0
+### toml_datetime 1.1.3+spec-1.1.0
 
 * Licence: `MIT OR Apache-2.0`
 * Source: https://github.com/toml-rs/toml
 
+  > Copyright Individual contributors
   > Copyright (c) Individual contributors
 
 ### toml_edit 0.19.15
@@ -2829,25 +2957,28 @@ in executable form must tell the recipients where its source is available
 
   > Copyright (c) Individual contributors
 
-### toml_edit 0.25.13+spec-1.1.0
+### toml_edit 0.25.20+spec-1.1.0
 
 * Licence: `MIT OR Apache-2.0`
 * Source: https://github.com/toml-rs/toml
 
+  > Copyright Individual contributors
   > Copyright (c) Individual contributors
 
-### toml_parser 1.1.3+spec-1.1.0
+### toml_parser 1.1.6+spec-1.1.0
 
 * Licence: `MIT OR Apache-2.0`
 * Source: https://github.com/toml-rs/toml
 
+  > Copyright Individual contributors
   > Copyright (c) Individual contributors
 
-### toml_writer 1.1.2+spec-1.1.0
+### toml_writer 1.2.0+spec-1.1.0
 
 * Licence: `MIT OR Apache-2.0`
 * Source: https://github.com/toml-rs/toml
 
+  > Copyright Individual contributors
   > Copyright (c) Individual contributors
 
 ### tower 0.5.3
@@ -2954,14 +3085,14 @@ in executable form must tell the recipients where its source is available
 * Licence: `MIT OR Apache-2.0`
 * Source: https://github.com/zbraniecki/unic-locale
 
-### unicase 2.9.0
+### unicase 2.10.0
 
 * Licence: `MIT OR Apache-2.0`
 * Source: https://github.com/seanmonstar/unicase
 
   > Copyright (c) 2014-2026 Sean McArthur
 
-### unicode-ident 1.0.24
+### unicode-ident 1.0.27
 
 * Licence: `(MIT OR Apache-2.0) AND Unicode-3.0`
 * Source: https://github.com/dtolnay/unicode-ident
@@ -2975,7 +3106,7 @@ in executable form must tell the recipients where its source is available
 
   > Copyright (c) 2015 The Rust Project Developers
 
-### unicode-width 0.2.2
+### unicode-width 0.2.3
 
 * Licence: `MIT OR Apache-2.0`
 * Source: https://github.com/unicode-rs/unicode-width
@@ -2987,14 +3118,14 @@ in executable form must tell the recipients where its source is available
 * Licence: `ISC`
 * Source: https://github.com/briansmith/untrusted
 
-### ureq 3.4.0
+### ureq 3.5.2
 
 * Licence: `MIT OR Apache-2.0`
 * Source: https://github.com/algesten/ureq
 
   > Copyright (c) 2019 Martin Algesten
 
-### ureq-proto 0.6.1
+### ureq-proto 0.7.1
 
 * Licence: `MIT OR Apache-2.0`
 * Source: https://github.com/algesten/ureq-proto
@@ -3015,7 +3146,14 @@ in executable form must tell the recipients where its source is available
 
   > Copyright (c) 2021 the Deno authors
 
-### utf8_iter 1.0.4
+### utf_types 1.0.0
+
+* Licence: `Apache-2.0 OR MIT`
+* Source: https://github.com/hsivonen/utf_types
+
+  > Copyright Mozilla Foundation
+
+### utf8_iter 1.1.0
 
 * Licence: `Apache-2.0 OR MIT`
 * Source: https://github.com/hsivonen/utf8_iter
@@ -3034,7 +3172,7 @@ in executable form must tell the recipients where its source is available
 
   > Copyright (c) 2016 Joe Wilm
 
-### uuid 1.24.0
+### uuid 1.29.3
 
 * Licence: `Apache-2.0 OR MIT`
 * Source: https://github.com/uuid-rs/uuid
@@ -3070,14 +3208,14 @@ in executable form must tell the recipients where its source is available
 
   > Copyright (c) 2019 nabijaczleweli
 
-### walkdir 2.5.0
+### walkdir 2.5.1
 
 * Licence: `Unlicense/MIT`
 * Source: https://github.com/BurntSushi/walkdir
 
   > Copyright (c) 2015 Andrew Gallant
 
-### want 0.3.1
+### want 0.3.2
 
 * Licence: `MIT`
 * Source: https://github.com/seanmonstar/want
@@ -3094,42 +3232,42 @@ in executable form must tell the recipients where its source is available
 * Licence: `Apache-2.0 WITH LLVM-exception OR Apache-2.0 OR MIT`
 * Source: https://github.com/bytecodealliance/wasi-rs
 
-### wasm-bindgen 0.2.127
+### wasm-bindgen 0.2.130
 
 * Licence: `MIT OR Apache-2.0`
 * Source: https://github.com/wasm-bindgen/wasm-bindgen
 
   > Copyright (c) 2014 Alex Crichton
 
-### wasm-bindgen-futures 0.4.77
+### wasm-bindgen-futures 0.4.80
 
 * Licence: `MIT OR Apache-2.0`
 * Source: https://github.com/wasm-bindgen/wasm-bindgen/tree/master/crates/futures
 
   > Copyright (c) 2014 Alex Crichton
 
-### wasm-bindgen-macro 0.2.127
+### wasm-bindgen-macro 0.2.130
 
 * Licence: `MIT OR Apache-2.0`
 * Source: https://github.com/wasm-bindgen/wasm-bindgen/tree/master/crates/macro
 
   > Copyright (c) 2014 Alex Crichton
 
-### wasm-bindgen-macro-support 0.2.127
+### wasm-bindgen-macro-support 0.2.130
 
 * Licence: `MIT OR Apache-2.0`
-* Source: https://github.com/wasm-bindgen/wasm-bindgen/tree/master/crates/macro-support
+* Source: https://github.com/wasm-bindgen/wasm-bindgen/tree/main/crates/macro-support
 
   > Copyright (c) 2014 Alex Crichton
 
-### wasm-bindgen-shared 0.2.127
+### wasm-bindgen-shared 0.2.130
 
 * Licence: `MIT OR Apache-2.0`
 * Source: https://github.com/wasm-bindgen/wasm-bindgen/tree/master/crates/shared
 
   > Copyright (c) 2014 Alex Crichton
 
-### wasm-encoder 0.262.0
+### wasm-encoder 0.263.0
 
 * Licence: `Apache-2.0 WITH LLVM-exception OR Apache-2.0 OR MIT`
 * Source: https://github.com/bytecodealliance/wasm-tools/tree/main/crates/wasm-encoder
@@ -3164,17 +3302,17 @@ in executable form must tell the recipients where its source is available
 * Licence: `Apache-2.0 WITH LLVM-exception OR Apache-2.0 OR MIT`
 * Source: https://github.com/bytecodealliance/wasm-tools/tree/main/crates/wasmparser
 
-### wasmparser 0.262.0
+### wasmparser 0.263.0
 
 * Licence: `Apache-2.0 WITH LLVM-exception OR Apache-2.0 OR MIT`
 * Source: https://github.com/bytecodealliance/wasm-tools/tree/main/crates/wasmparser
 
-### wast 262.0.0
+### wast 263.0.0
 
 * Licence: `Apache-2.0 WITH LLVM-exception OR Apache-2.0 OR MIT`
 * Source: https://github.com/bytecodealliance/wasm-tools/tree/main/crates/wast
 
-### wat 1.262.0
+### wat 1.263.0
 
 * Licence: `Apache-2.0 WITH LLVM-exception OR Apache-2.0 OR MIT`
 * Source: https://github.com/bytecodealliance/wasm-tools/tree/main/crates/wat
@@ -3186,7 +3324,14 @@ in executable form must tell the recipients where its source is available
 
   > Copyright (c) 2014 The html5ever Project Developers
 
-### web-sys 0.3.104
+### web_atoms 0.3.0
+
+* Licence: `MIT OR Apache-2.0`
+* Source: https://github.com/servo/html5ever
+
+  > Copyright (c) 2014 The html5ever Project Developers
+
+### web-sys 0.3.107
 
 * Licence: `MIT OR Apache-2.0`
 * Source: https://github.com/wasm-bindgen/wasm-bindgen/tree/master/crates/web-sys
@@ -3222,7 +3367,7 @@ in executable form must tell the recipients where its source is available
 * Licence: `CDLA-Permissive-2.0`
 * Source: https://github.com/rustls/webpki-roots
 
-### webpki-roots 1.0.10
+### webpki-roots 1.0.12
 
 * Licence: `CDLA-Permissive-2.0`
 * Source: https://github.com/rustls/webpki-roots
@@ -3294,13 +3439,6 @@ in executable form must tell the recipients where its source is available
 
   > Copyright (c) Microsoft Corporation.
 
-### windows_aarch64_gnullvm 0.53.1
-
-* Licence: `MIT OR Apache-2.0`
-* Source: https://github.com/microsoft/windows-rs
-
-  > Copyright (c) Microsoft Corporation.
-
 ### windows_aarch64_msvc 0.42.2
 
 * Licence: `MIT OR Apache-2.0`
@@ -3309,13 +3447,6 @@ in executable form must tell the recipients where its source is available
   > Copyright (c) Microsoft Corporation.
 
 ### windows_aarch64_msvc 0.52.6
-
-* Licence: `MIT OR Apache-2.0`
-* Source: https://github.com/microsoft/windows-rs
-
-  > Copyright (c) Microsoft Corporation.
-
-### windows_aarch64_msvc 0.53.1
 
 * Licence: `MIT OR Apache-2.0`
 * Source: https://github.com/microsoft/windows-rs
@@ -3336,21 +3467,7 @@ in executable form must tell the recipients where its source is available
 
   > Copyright (c) Microsoft Corporation.
 
-### windows_i686_gnu 0.53.1
-
-* Licence: `MIT OR Apache-2.0`
-* Source: https://github.com/microsoft/windows-rs
-
-  > Copyright (c) Microsoft Corporation.
-
 ### windows_i686_gnullvm 0.52.6
-
-* Licence: `MIT OR Apache-2.0`
-* Source: https://github.com/microsoft/windows-rs
-
-  > Copyright (c) Microsoft Corporation.
-
-### windows_i686_gnullvm 0.53.1
 
 * Licence: `MIT OR Apache-2.0`
 * Source: https://github.com/microsoft/windows-rs
@@ -3371,13 +3488,6 @@ in executable form must tell the recipients where its source is available
 
   > Copyright (c) Microsoft Corporation.
 
-### windows_i686_msvc 0.53.1
-
-* Licence: `MIT OR Apache-2.0`
-* Source: https://github.com/microsoft/windows-rs
-
-  > Copyright (c) Microsoft Corporation.
-
 ### windows_x86_64_gnu 0.42.2
 
 * Licence: `MIT OR Apache-2.0`
@@ -3386,13 +3496,6 @@ in executable form must tell the recipients where its source is available
   > Copyright (c) Microsoft Corporation.
 
 ### windows_x86_64_gnu 0.52.6
-
-* Licence: `MIT OR Apache-2.0`
-* Source: https://github.com/microsoft/windows-rs
-
-  > Copyright (c) Microsoft Corporation.
-
-### windows_x86_64_gnu 0.53.1
 
 * Licence: `MIT OR Apache-2.0`
 * Source: https://github.com/microsoft/windows-rs
@@ -3413,13 +3516,6 @@ in executable form must tell the recipients where its source is available
 
   > Copyright (c) Microsoft Corporation.
 
-### windows_x86_64_gnullvm 0.53.1
-
-* Licence: `MIT OR Apache-2.0`
-* Source: https://github.com/microsoft/windows-rs
-
-  > Copyright (c) Microsoft Corporation.
-
 ### windows_x86_64_msvc 0.42.2
 
 * Licence: `MIT OR Apache-2.0`
@@ -3428,13 +3524,6 @@ in executable form must tell the recipients where its source is available
   > Copyright (c) Microsoft Corporation.
 
 ### windows_x86_64_msvc 0.52.6
-
-* Licence: `MIT OR Apache-2.0`
-* Source: https://github.com/microsoft/windows-rs
-
-  > Copyright (c) Microsoft Corporation.
-
-### windows_x86_64_msvc 0.53.1
 
 * Licence: `MIT OR Apache-2.0`
 * Source: https://github.com/microsoft/windows-rs
@@ -3525,20 +3614,6 @@ in executable form must tell the recipients where its source is available
 
   > Copyright (c) Microsoft Corporation.
 
-### windows-sys 0.59.0
-
-* Licence: `MIT OR Apache-2.0`
-* Source: https://github.com/microsoft/windows-rs
-
-  > Copyright (c) Microsoft Corporation.
-
-### windows-sys 0.60.2
-
-* Licence: `MIT OR Apache-2.0`
-* Source: https://github.com/microsoft/windows-rs
-
-  > Copyright (c) Microsoft Corporation.
-
 ### windows-sys 0.61.2
 
 * Licence: `MIT OR Apache-2.0`
@@ -3554,13 +3629,6 @@ in executable form must tell the recipients where its source is available
   > Copyright (c) Microsoft Corporation.
 
 ### windows-targets 0.52.6
-
-* Licence: `MIT OR Apache-2.0`
-* Source: https://github.com/microsoft/windows-rs
-
-  > Copyright (c) Microsoft Corporation.
-
-### windows-targets 0.53.5
 
 * Licence: `MIT OR Apache-2.0`
 * Source: https://github.com/microsoft/windows-rs
@@ -3586,12 +3654,12 @@ in executable form must tell the recipients where its source is available
 * Licence: `MIT`
 * Source: https://github.com/winnow-rs/winnow
 
-### winnow 1.0.4
+### winnow 1.0.5
 
 * Licence: `MIT`
 * Source: https://github.com/winnow-rs/winnow
 
-### winreg 0.55.0
+### winreg 0.56.0
 
 * Licence: `MIT`
 * Source: https://github.com/gentoo90/winreg-rs
@@ -3610,14 +3678,14 @@ in executable form must tell the recipients where its source is available
 * Licence: `Apache-2.0 WITH LLVM-exception OR Apache-2.0 OR MIT`
 * Source: https://github.com/bytecodealliance/wit-bindgen
 
-### writeable 0.6.3
+### writeable 0.6.4
 
 * Licence: `Unicode-3.0`
 * Source: https://github.com/unicode-org/icu4x
 
   > Copyright © 2020-2024 Unicode, Inc.
 
-### wry 0.57.0
+### wry 0.57.3
 
 * Licence: `Apache-2.0 OR MIT`
 * Source: https://github.com/tauri-apps/wry
@@ -3641,14 +3709,14 @@ in executable form must tell the recipients where its source is available
 
   > Copyright (c) 2015 Steven Allen
 
-### yoke 0.8.3
+### yoke 0.8.4
 
 * Licence: `Unicode-3.0`
 * Source: https://github.com/unicode-org/icu4x
 
   > Copyright © 2020-2024 Unicode, Inc.
 
-### yoke-derive 0.8.2
+### yoke-derive 0.8.4
 
 * Licence: `Unicode-3.0`
 * Source: https://github.com/unicode-org/icu4x
@@ -3662,49 +3730,56 @@ in executable form must tell the recipients where its source is available
 
   > Copyright © 2020-2024 Unicode, Inc.
 
-### zerofrom-derive 0.1.7
+### zerofrom-derive 0.1.8
 
 * Licence: `Unicode-3.0`
 * Source: https://github.com/unicode-org/icu4x
 
   > Copyright © 2020-2024 Unicode, Inc.
 
-### zeroize 1.9.0
+### zeroize 1.9.2
 
 * Licence: `Apache-2.0 OR MIT`
 * Source: https://github.com/RustCrypto/utils
 
   > Copyright (c) 2018-2026 The RustCrypto Project Developers
 
-### zerotrie 0.2.4
+### zeroize_derive 1.5.0
+
+* Licence: `Apache-2.0 OR MIT`
+* Source: https://github.com/RustCrypto/utils
+
+  > Copyright (c) 2019-2026 The RustCrypto Project Developers
+
+### zerotrie 0.2.5
 
 * Licence: `Unicode-3.0`
 * Source: https://github.com/unicode-org/icu4x
 
   > Copyright © 2020-2024 Unicode, Inc.
 
-### zerovec 0.11.6
+### zerovec 0.11.9
 
 * Licence: `Unicode-3.0`
 * Source: https://github.com/unicode-org/icu4x
 
   > Copyright © 2020-2024 Unicode, Inc.
 
-### zerovec-derive 0.11.3
+### zerovec-derive 0.11.7
 
 * Licence: `Unicode-3.0`
 * Source: https://github.com/unicode-org/icu4x
 
   > Copyright © 2020-2024 Unicode, Inc.
 
-### zip 9.1.3
+### zip 9.8.1
 
 * Licence: `MIT`
 * Source: https://github.com/zip-rs/zip2
 
   > Copyright (c) 2014 Mathijs van de Nes
 
-### zlib-rs 0.6.7
+### zlib-rs 0.6.8
 
 * Licence: `Zlib`
 * Source: https://github.com/trifectatechfoundation/zlib-rs
@@ -3714,7 +3789,7 @@ in executable form must tell the recipients where its source is available
 * Licence: `MIT`
 * Source: https://github.com/dtolnay/zmij
 
-### zopfli 0.8.3
+### zopfli 0.8.4
 
 * Licence: `Apache-2.0`
 * Source: https://github.com/zopfli-rs/zopfli
