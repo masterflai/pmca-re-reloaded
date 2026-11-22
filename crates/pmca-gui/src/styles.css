@@ -1400,8 +1400,10 @@ summary {
   color: var(--accent-text);
 }
 
+/* A main entry's text starts where the descriptions in the lists do: first column plus gap. */
 .welcome-map-main {
   margin: 6px 0 0;
+  padding-left: calc(13rem + 16px);
 }
 
 /* The read-only camera values sit directly above the tweak list. Without a gap

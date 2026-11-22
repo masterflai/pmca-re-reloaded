@@ -8,10 +8,27 @@ All notable changes to this project are documented here. The format follows
 
 ### Fixed
 
+- macOS: a camera connected over MTP is not switched to service mode there;
+  instead of a failed attempt, the program now says to set the camera's USB
+  connection to mass storage, or to choose "Mass Storage (MSC)" when the
+  camera asks in "Auto". The USB advice no longer tells Mac users to choose
+  MTP.
+- Welcome page: the description of the Analysis entry starts in the same
+  column as the others.
 - Memory view and camera comparison: counts read correctly when there is only
   one, as in "Values: 1" instead of "1 values".
 
+### Removed
+
+- The macOS diagnostic programs `pmca-macos-probe` and `pmca-libusb-probe`
+  and the workflows that built them; the macOS build works without them now.
+
 ## [1.14.0] - 2026-11-21
+
+The macOS build of this release was tested on real cameras under
+macOS 26.7.2 by [christianbur](https://github.com/christianbur) and
+[chris-ko99](https://github.com/chris-ko99). Thank you both for the many
+diagnostic runs that led there.
 
 ### Added
 

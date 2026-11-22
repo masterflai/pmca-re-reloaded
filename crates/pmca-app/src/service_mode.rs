@@ -313,6 +313,10 @@ fn enter_service_mode(
     };
 
     let camera = match camera.mode {
+        // macOS keeps the MTP camera from switching to mass storage; the user has to choose it on the camera.
+        #[cfg(target_os = "macos")]
+        CameraMode::Mtp => return Err(Error::Operation(l.tr("service-macos-mtp"))),
+        #[cfg(not(target_os = "macos"))]
         CameraMode::Mtp => {
             sink.emit(ProgressEvent::step(ProgressKind::Switching, l.tr("mode-switching")));
             discovery::switch_to_mass_storage(&camera)?;

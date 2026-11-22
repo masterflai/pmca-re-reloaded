@@ -202,24 +202,22 @@ runtime, which Windows 11 has and Windows 10 may not. Settings and edited
 translations are kept in your user profile.
 
 **macOS** — The `.app` in the `.dmg` runs from any folder. Close applications
-that might access the camera (Photos, cloud sync tools) before connecting it,
-and set the camera's USB connection to MTP. Tweaks, the service shell, the
-function analysis, firmware updates and the updater shell go through the
-camera's mass-storage connection, which macOS hands to a program only when it
-runs with administrator rights. The app asks
-for your password once per run and does the rest itself; on the command line
-use `sudo`, for example `sudo ./pmca-console serviceshell`. With the USB
-connection set to Auto or Mass Storage, reading the camera information asks
-for the password too. The camera's card
-leaves Finder while this runs and comes back afterwards, so eject it there
-first if files on it are open.
+that might access the camera (Photos, cloud sync tools) before connecting it.
+Tweaks, the service shell, the function analysis, the camera comparison,
+firmware updates and the updater shell go through the camera's mass-storage
+connection, which macOS hands to a program only when it runs with
+administrator rights. The app asks for your password once per run and does
+the rest itself; on the command line use `sudo`, for example
+`sudo ./pmca-console serviceshell`. For these, set the camera's USB connection
+to Mass Storage, or to Auto and choose "Mass Storage (MSC)" when the camera
+asks: from MTP the camera cannot be switched to service mode on a Mac. Reading
+the camera information also works over MTP, without the password. The
+camera's card leaves Finder while this runs and comes back afterwards, so
+eject it there first if files on it are open.
 
-**macOS 26:** for now only reading the camera information works, with the
-camera's USB connection set to MTP. The service menu cannot be reached yet:
-the tweaks, the service shell, the function analysis, firmware updates and the
-updater shell all need the camera's mass-storage connection, and macOS 26 no
-longer hands it to a program, even with administrator rights. This is being
-investigated.
+Version 1.14.0 has been tried on macOS 26.7.2: the tweaks work with the USB
+connection set to Mass Storage, and with Auto when "Mass Storage (MSC)" is
+chosen.
 
 **Caution:** firmware updates and the updater shell have not yet been tried
 on a Mac with a camera. An update that breaks off can leave the camera unable
@@ -233,8 +231,9 @@ for Sony's vendor id and stops the desktop from claiming the camera.
 The Linux build of version 1.2.0 has been tried on a Sony α6000 (ILCE-6000,
 firmware 3.21) with *USB Connection* set to *Auto*: reading the camera
 information, reading and changing the settings memory and installing apps all
-worked. The macOS build has been tried only in
-part so far. Reports are welcome — see [Feedback](#feedback).
+worked. On macOS, version 1.14.0 has been tried on macOS 26.7.2 (see above);
+firmware updates there are still untested. Reports are welcome — see
+[Feedback](#feedback).
 
 ### Updating
 
@@ -579,6 +578,11 @@ Thanks to ma1co and the contributors to
 [device documentation](https://openmemories.readthedocs.io/devices.html); to the
 people at [nex-hack](https://web.archive.org/web/20201027234246/http://www.personal-view.com/faqs/sony-hack/hack-development)
 (archived).
+
+Thanks to [christianbur](https://github.com/christianbur) and
+[chris-ko99](https://github.com/chris-ko99) for testing the macOS build on real
+cameras, through many rounds of diagnostic runs, until it worked on
+macOS 26.7.2.
 
 The code was written with the help of AI (GitHub Copilot) and reviewed and
 tested by the author. If you recognise code here that you hold rights to,

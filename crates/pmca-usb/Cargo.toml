@@ -78,7 +78,3 @@ required-features = ["hardware"]
 [[example]]
 name = "probe_senser_charger"
 required-features = ["hardware"]
-
-[[example]]
-name = "macos_probe"
-required-features = ["hardware"]
