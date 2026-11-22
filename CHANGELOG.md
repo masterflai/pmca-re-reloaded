@@ -23,6 +23,11 @@ All notable changes to this project are documented here. The format follows
 - The macOS diagnostic programs `pmca-macos-probe` and `pmca-libusb-probe`
   and the workflows that built them; the macOS build works without them now.
 
+### Security
+
+- The desktop app uses `url` 2.5.9, which fixes a stack overflow on nested
+  `blob:` URLs (RUSTSEC-2026-0592).
+
 ## [1.14.0] - 2026-11-21
 
 The macOS build of this release was tested on real cameras under

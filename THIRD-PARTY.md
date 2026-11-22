@@ -11,7 +11,7 @@ this file is for. It ships alongside `LICENSE.txt` in every release archive.
 The licence of this project itself is in [LICENSE.txt](LICENSE.txt) and is not
 repeated here.
 
-Generated: 2026-11-19
+Generated: 2026-11-22
 
 * Packages: **553**
 * With a copyright notice recovered from their sources: **400**
@@ -877,7 +877,7 @@ in executable form must tell the recipients where its source is available
 
   > Copyright (c) 2017 The foreign-types Developers
 
-### form_urlencoded 1.2.2
+### form_urlencoded 1.2.3
 
 * Licence: `MIT OR Apache-2.0`
 * Source: https://github.com/servo/rust-url
@@ -3001,7 +3001,7 @@ in executable form must tell the recipients where its source is available
 
   > Copyright 2022 Martin Algesten
 
-### url 2.5.8
+### url 2.5.9
 
 * Licence: `MIT OR Apache-2.0`
 * Source: https://github.com/servo/rust-url
