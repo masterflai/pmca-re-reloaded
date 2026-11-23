@@ -463,7 +463,7 @@ in executable form must tell the recipients where its source is available
 * Licence: `CC0-1.0 OR MIT-0 OR Apache-2.0`
 * Source: https://codeberg.org/cesarb/constant_time_eq
 
-### cookie 0.18.2
+### cookie 0.18.3
 
 * Licence: `MIT OR Apache-2.0`
 * Source: https://github.com/SergioBenitez/cookie-rs
