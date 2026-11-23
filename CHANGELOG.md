@@ -11,6 +11,10 @@ All notable changes to this project are documented here. The format follows
 - The GUI window reopens at the size and position it had when it was last
   closed.
 
+### Security
+
+- `cookie` updated to 0.18.3 in the GUI (RUSTSEC-2026-0594).
+
 ## [1.14.1] - 2026-11-22
 
 A maintenance release with updated dependencies and a few fixes. Mac users:
