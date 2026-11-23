@@ -6,6 +6,11 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+### Changed
+
+- The GUI window reopens at the size and position it had when it was last
+  closed.
+
 ## [1.14.1] - 2026-11-22
 
 A maintenance release with updated dependencies and a few fixes. Mac users:

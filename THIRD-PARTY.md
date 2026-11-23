@@ -11,10 +11,10 @@ this file is for. It ships alongside `LICENSE.txt` in every release archive.
 The licence of this project itself is in [LICENSE.txt](LICENSE.txt) and is not
 repeated here.
 
-Generated: 2026-11-22
+Generated: 2026-11-23
 
-* Packages: **563**
-* With a copyright notice recovered from their sources: **406**
+* Packages: **564**
+* With a copyright notice recovered from their sources: **407**
 * Workspaces read: pmca (CLI, core, USB, market), pmca-gui (Tauri desktop shell)
 
 ## Licences in use
@@ -23,7 +23,7 @@ Generated: 2026-11-22
 | --- | ---: |
 | `MIT OR Apache-2.0` | 260 |
 | `MIT` | 119 |
-| `Apache-2.0 OR MIT` | 50 |
+| `Apache-2.0 OR MIT` | 51 |
 | `MIT/Apache-2.0` | 20 |
 | `Zlib OR Apache-2.0 OR MIT` | 18 |
 | `Unicode-3.0` | 18 |
@@ -2780,6 +2780,13 @@ in executable form must tell the recipients where its source is available
   > Copyright (c) 2017 - Present Tauri Apps Contributors
 
 ### tauri-plugin-updater 2.14.1
+
+* Licence: `Apache-2.0 OR MIT`
+* Source: https://github.com/tauri-apps/plugins-workspace
+
+  > Copyright (c) 2017 - Present Tauri Apps Contributors
+
+### tauri-plugin-window-state 2.5.0
 
 * Licence: `Apache-2.0 OR MIT`
 * Source: https://github.com/tauri-apps/plugins-workspace

@@ -22,6 +22,7 @@ use pmca_app::{ApkSource, InstallRequest, InstallSeries};
 use pmca_i18n::Localizer;
 use tauri::{AppHandle, Emitter, Manager, State, Window};
 use tauri_plugin_dialog::{DialogExt, MessageDialogButtons, MessageDialogKind};
+use tauri_plugin_window_state::AppHandleExt;
 
 mod commands;
 mod remote;
@@ -387,6 +388,7 @@ pub fn run() {
     tauri::Builder::default()
         .plugin(tauri_plugin_dialog::init())
         .plugin(tauri_plugin_updater::Builder::new().build())
+        .plugin(tauri_plugin_window_state::Builder::default().build())
         .setup(|app| {
             let handle = app.handle();
             let manifest = Path::new(env!("CARGO_MANIFEST_DIR"));
@@ -425,6 +427,10 @@ pub fn run() {
             tauri::WindowEvent::CloseRequested { .. } => {
                 let state = window.state::<AppState>();
                 if let Some(pending) = state.exit_install() {
+                    // The Windows installer ends the process before the plugin's own save.
+                    let _ = window
+                        .app_handle()
+                        .save_window_state(tauri_plugin_window_state::StateFlags::all());
                     #[cfg(target_os = "macos")]
                     if let Ok(mut broker) = state.broker.lock() {
                         broker.take();

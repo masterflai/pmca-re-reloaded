@@ -37,6 +37,7 @@ tauri-plugin-dialog = "2"
 # Default features already use rustls (not native-tls/OpenSSL), matching the
 # rest of the project; the pubkey in tauri.conf verifies every downloaded update.
 tauri-plugin-updater = "2"
+tauri-plugin-window-state = "2"
 
 [features]
 # Keeps `cargo test` usable without a webview present.
