@@ -40,17 +40,9 @@ const JAPAN_UNSUPPORTED: [usize; 2] = [7, 8];
 
 /// The language in each slot as a BCP 47 code; `None` where not yet established.
 ///
-/// Measured on a DSC-RX1RM2 by writing six bit masks and reading its menu. The
-/// first run (19.-21.10.2026) only resolved 25 of the 35 slots and, read as a
-/// simple count, undercounted the camera's own displayable total (also 33, not
-/// 25 — found 23.11.2026 by a plain ALLLANG recount, no masks). A repeat of the
-/// bit-mask arithmetic on the same photographed menus (23.11.2026) found the
-/// encoding itself exact — mask k lights up exactly the slots whose index has
-/// bit k set, slot 0 excepted — and resolved seven more slots (22, 24, 26, 28,
-/// 29, 30, 31) that the first pass had missed from incomplete reading, not from
-/// a flaw in the method: they agree with all 25 already-known slots without a
-/// single conflict. Slots 32-34 hold three more languages the camera also
-/// shows (one of them French (Canada)) that neither run resolved to a slot.
+/// Measured on a DSC-RX1RM2 by writing six bit masks and reading its menu; the
+/// camera shows 33 of the 35. Slots 32-34 hold languages it also shows (one is
+/// French (Canada)) but that are not yet mapped to a slot.
 /// Cross-checked against the CEC, CE3 and J1 tables.
 pub const LANGUAGE_CODES: [Option<&str>; LANGUAGE_COUNT] = [
     Some("en"),
@@ -293,9 +285,8 @@ mod tests {
 
     #[test]
     fn the_tables_name_what_the_rx1r2_showed() {
-        // Photographed on the camera: CEC lists 17 languages (+ Ukrainian, resolved
-        // 23.11.2026 from slot 30); CE3 the same without Russian but with Romanian,
-        // Croatian and Bulgarian (slots 22, 26, 28, resolved the same day).
+        // Photographed on the camera: CEC lists 18 languages; CE3 lacks Russian and
+        // Ukrainian but adds Romanian, Croatian and Bulgarian.
         let cec = [
             "en", "fr", "de", "es", "it", "pt", "nl", "ru", "hu", "cs", "pl", "sv", "no", "tr",
             "el", "fi", "da", "uk",
