@@ -144,7 +144,7 @@ pub(super) fn rescan_devices() {
 /// Right after leaving service mode the camera is between two product ids, so
 /// the node of the mode it returns in keeps WinUSB with its package gone; as a
 /// mass-storage device it then shows "check the connected device". Measured on
-/// a DSC-RX1R. Service-mode nodes are skipped: WinUSB is what they need anyway.
+/// a DSC-RX1RM2. Service-mode nodes are skipped: WinUSB is what they need anyway.
 fn orphaned(mut visit: impl FnMut(HDEVINFO, &SP_DEVINFO_DATA)) -> usize {
     let enumerator = wide("USB");
     // SAFETY: `enumerator` outlives the call. Without `DIGCF_PRESENT` the set
