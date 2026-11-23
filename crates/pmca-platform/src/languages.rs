@@ -34,14 +34,23 @@ pub const REGION_JAPAN: &str = "J1";
 /// close to the same thing.
 ///
 /// They are simplified and traditional Chinese: the reference discussion
-/// suspected it, and [`LANGUAGE_CODES`], measured on an RX1R, confirms it.
+/// suspected it, and [`LANGUAGE_CODES`], measured on an RX1R II, confirms it.
 /// The reboot itself has not been seen here on a Japanese body.
 const JAPAN_UNSUPPORTED: [usize; 2] = [7, 8];
 
 /// The language in each slot as a BCP 47 code; `None` where not yet established.
 ///
-/// Measured on a DSC-RX1R by writing six bit masks and reading its menu. Its
-/// firmware shows 25 languages; the open slots hold ones it cannot display.
+/// Measured on a DSC-RX1RM2 by writing six bit masks and reading its menu. The
+/// first run (19.-21.10.2026) only resolved 25 of the 35 slots and, read as a
+/// simple count, undercounted the camera's own displayable total (also 33, not
+/// 25 — found 23.11.2026 by a plain ALLLANG recount, no masks). A repeat of the
+/// bit-mask arithmetic on the same photographed menus (23.11.2026) found the
+/// encoding itself exact — mask k lights up exactly the slots whose index has
+/// bit k set, slot 0 excepted — and resolved seven more slots (22, 24, 26, 28,
+/// 29, 30, 31) that the first pass had missed from incomplete reading, not from
+/// a flaw in the method: they agree with all 25 already-known slots without a
+/// single conflict. Slots 32-34 hold three more languages the camera also
+/// shows (one of them French (Canada)) that neither run resolved to a slot.
 /// Cross-checked against the CEC, CE3 and J1 tables.
 pub const LANGUAGE_CODES: [Option<&str>; LANGUAGE_COUNT] = [
     Some("en"),
@@ -66,16 +75,16 @@ pub const LANGUAGE_CODES: [Option<&str>; LANGUAGE_COUNT] = [
     Some("no"),
     Some("tr"),
     Some("el"),
-    None,
+    Some("ro"),
     Some("ms"),
-    None,
+    Some("id"),
     Some("fi"),
-    None,
+    Some("hr"),
     Some("da"),
-    None,
-    None,
-    None,
-    None,
+    Some("bg"),
+    Some("vi"),
+    Some("uk"),
+    Some("pt-BR"),
     None,
     None,
     None,
@@ -275,7 +284,7 @@ mod tests {
     #[test]
     fn the_measured_codes_are_distinct() {
         let known: Vec<&str> = LANGUAGE_CODES.iter().flatten().copied().collect();
-        assert_eq!(known.len(), 25);
+        assert_eq!(known.len(), 32);
         let mut sorted = known.clone();
         sorted.sort_unstable();
         sorted.dedup();
@@ -283,15 +292,20 @@ mod tests {
     }
 
     #[test]
-    fn the_tables_name_what_the_rx1r_showed() {
-        // Photographed on the camera: CEC lists 17 languages, CE3 the same without Russian.
+    fn the_tables_name_what_the_rx1r2_showed() {
+        // Photographed on the camera: CEC lists 17 languages (+ Ukrainian, resolved
+        // 23.11.2026 from slot 30); CE3 the same without Russian but with Romanian,
+        // Croatian and Bulgarian (slots 22, 26, 28, resolved the same day).
         let cec = [
             "en", "fr", "de", "es", "it", "pt", "nl", "ru", "hu", "cs", "pl", "sv", "no", "tr",
-            "el", "fi", "da",
+            "el", "fi", "da", "uk",
         ];
-        assert_eq!(enabled_languages(&default_languages("CEC").unwrap()), (cec.to_vec(), 1));
-        let ce3: Vec<&str> = cec.into_iter().filter(|c| *c != "ru").collect();
-        assert_eq!(enabled_languages(&default_languages("CE3").unwrap()), (ce3, 3));
+        assert_eq!(enabled_languages(&default_languages("CEC").unwrap()), (cec.to_vec(), 0));
+        let ce3 = [
+            "en", "fr", "de", "es", "it", "pt", "nl", "hu", "cs", "pl", "sv", "no", "tr", "el",
+            "ro", "fi", "hr", "da", "bg",
+        ];
+        assert_eq!(enabled_languages(&default_languages("CE3").unwrap()), (ce3.to_vec(), 0));
         assert_eq!(enabled_languages(&default_languages(REGION_JAPAN).unwrap()), (vec!["ja"], 0));
     }
 
