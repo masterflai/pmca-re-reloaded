@@ -6,6 +6,12 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+### Fixed
+
+- A dropdown's open list, such as the Apps page's source filter, showed
+  unreadable text in dark mode; the window now tells the browser which
+  colour scheme is active so its native controls match.
+
 ## [1.15.0] - 2026-11-24
 
 ### Added
