@@ -13,7 +13,7 @@ repeated here.
 
 Generated: 2026-11-24
 
-* Packages: **568**
+* Packages: **564**
 * With a copyright notice recovered from their sources: **407**
 * Workspaces read: pmca (CLI, core, USB, market), pmca-gui (Tauri desktop shell)
 
@@ -24,7 +24,7 @@ Generated: 2026-11-24
 | `MIT OR Apache-2.0` | 260 |
 | `MIT` | 119 |
 | `Apache-2.0 OR MIT` | 51 |
-| `MIT/Apache-2.0` | 24 |
+| `MIT/Apache-2.0` | 20 |
 | `Unicode-3.0` | 18 |
 | `Zlib OR Apache-2.0 OR MIT` | 18 |
 | `Unlicense OR MIT` | 15 |
@@ -3279,17 +3279,7 @@ in executable form must tell the recipients where its source is available
 * Licence: `Apache-2.0 WITH LLVM-exception OR Apache-2.0 OR MIT`
 * Source: https://github.com/bytecodealliance/wasm-tools/tree/main/crates/wasm-encoder
 
-### wasmi 2.0.2
-
-* Licence: `MIT/Apache-2.0`
-* Source: https://github.com/wasmi-labs/wasmi
-
 ### wasmi 2.0.3
-
-* Licence: `MIT/Apache-2.0`
-* Source: https://github.com/wasmi-labs/wasmi
-
-### wasmi_collections 2.0.2
 
 * Licence: `MIT/Apache-2.0`
 * Source: https://github.com/wasmi-labs/wasmi
@@ -3299,17 +3289,7 @@ in executable form must tell the recipients where its source is available
 * Licence: `MIT/Apache-2.0`
 * Source: https://github.com/wasmi-labs/wasmi
 
-### wasmi_core 2.0.2
-
-* Licence: `MIT/Apache-2.0`
-* Source: https://github.com/wasmi-labs/wasmi
-
 ### wasmi_core 2.0.3
-
-* Licence: `MIT/Apache-2.0`
-* Source: https://github.com/wasmi-labs/wasmi
-
-### wasmi_ir 2.0.2
 
 * Licence: `MIT/Apache-2.0`
 * Source: https://github.com/wasmi-labs/wasmi
