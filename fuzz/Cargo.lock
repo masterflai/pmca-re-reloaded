@@ -464,7 +464,7 @@ checksum = "04744f49eae99ab78e0d5c0b603ab218f515ea8cfe5a456d7629ad883a3b6e7d"
 
 [[package]]
 name = "pmca-apk"
-version = "1.14.1"
+version = "1.15.0"
 dependencies = [
  "num-bigint",
  "sha1",
@@ -475,7 +475,7 @@ dependencies = [
 
 [[package]]
 name = "pmca-core"
-version = "1.14.1"
+version = "1.15.0"
 dependencies = [
  "aes",
  "cipher",
@@ -499,7 +499,7 @@ dependencies = [
 
 [[package]]
 name = "pmca-i18n"
-version = "1.14.1"
+version = "1.15.0"
 dependencies = [
  "fluent",
  "fluent-langneg",
@@ -510,7 +510,7 @@ dependencies = [
 
 [[package]]
 name = "pmca-platform"
-version = "1.14.1"
+version = "1.15.0"
 dependencies = [
  "pmca-core",
  "thiserror",

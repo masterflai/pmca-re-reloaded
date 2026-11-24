@@ -11,9 +11,9 @@ this file is for. It ships alongside `LICENSE.txt` in every release archive.
 The licence of this project itself is in [LICENSE.txt](LICENSE.txt) and is not
 repeated here.
 
-Generated: 2026-11-23
+Generated: 2026-11-24
 
-* Packages: **564**
+* Packages: **568**
 * With a copyright notice recovered from their sources: **407**
 * Workspaces read: pmca (CLI, core, USB, market), pmca-gui (Tauri desktop shell)
 
@@ -24,36 +24,36 @@ Generated: 2026-11-23
 | `MIT OR Apache-2.0` | 260 |
 | `MIT` | 119 |
 | `Apache-2.0 OR MIT` | 51 |
-| `MIT/Apache-2.0` | 20 |
-| `Zlib OR Apache-2.0 OR MIT` | 18 |
+| `MIT/Apache-2.0` | 24 |
 | `Unicode-3.0` | 18 |
+| `Zlib OR Apache-2.0 OR MIT` | 18 |
 | `Unlicense OR MIT` | 15 |
 | `Apache-2.0 WITH LLVM-exception OR Apache-2.0 OR MIT` | 10 |
 | `MPL-2.0` | 7 |
-| `Apache-2.0` | 4 |
 | `Apache-2.0/MIT` | 4 |
-| `Zlib` | 3 |
-| `BSD-3-Clause` | 3 |
+| `Apache-2.0` | 4 |
 | `ISC` | 3 |
+| `Zlib` | 3 |
 | `Apache-2.0 OR ISC OR MIT` | 3 |
+| `BSD-3-Clause` | 3 |
 | `MIT OR Apache-2.0 OR Zlib` | 2 |
 | `Unlicense/MIT` | 2 |
+| `BSD-3-Clause OR MIT OR Apache-2.0` | 2 |
 | `MIT OR Apache-2.0 OR LGPL-2.1-or-later` | 2 |
 | `MIT OR Zlib OR Apache-2.0` | 2 |
-| `BSD-3-Clause OR MIT OR Apache-2.0` | 2 |
+| `CDLA-Permissive-2.0` | 2 |
 | `CC0-1.0 OR MIT-0 OR Apache-2.0` | 2 |
 | `BSD-2-Clause` | 2 |
-| `CDLA-Permissive-2.0` | 2 |
-| `BSD-3-Clause/MIT` | 1 |
-| `BSD-3-Clause AND MIT` | 1 |
-| `BSD-2-Clause OR MIT OR Apache-2.0` | 1 |
-| `Apache-2.0 WITH LLVM-exception` | 1 |
 | `Apache-2.0 OR GPL-2.0-only` | 1 |
-| `Apache-2.0 AND MIT` | 1 |
-| `Apache-2.0 AND ISC` | 1 |
-| `Apache-2.0 / MIT` | 1 |
+| `BSD-3-Clause AND MIT` | 1 |
 | `0BSD OR MIT OR Apache-2.0` | 1 |
 | `(MIT OR Apache-2.0) AND Unicode-3.0` | 1 |
+| `Apache-2.0 WITH LLVM-exception` | 1 |
+| `Apache-2.0 / MIT` | 1 |
+| `BSD-2-Clause OR MIT OR Apache-2.0` | 1 |
+| `Apache-2.0 AND MIT` | 1 |
+| `BSD-3-Clause/MIT` | 1 |
+| `Apache-2.0 AND ISC` | 1 |
 
 A slash or `OR` means the package offers a choice; this project relies on the
 permissive option in every such case. The only copyleft licence present is
@@ -186,6 +186,20 @@ in executable form must tell the recipients where its source is available
 
   > Copyright (c) 2025 Alice Maz, Marshall Pierce
 
+### bitflags 1.3.2
+
+* Licence: `MIT/Apache-2.0`
+* Source: https://github.com/bitflags/bitflags
+
+  > Copyright (c) 2014 The Rust Project Developers
+
+### bitflags 2.13.2
+
+* Licence: `MIT OR Apache-2.0`
+* Source: https://github.com/bitflags/bitflags
+
+  > Copyright (c) 2014 The Rust Project Developers
+
 ### bit-set 0.11.1
 
 * Licence: `Apache-2.0 OR MIT`
@@ -214,19 +228,10 @@ in executable form must tell the recipients where its source is available
 
   > Copyright (c) 2023 The Rust Project Developers
 
-### bitflags 1.3.2
+### block2 0.6.2
 
-* Licence: `MIT/Apache-2.0`
-* Source: https://github.com/bitflags/bitflags
-
-  > Copyright (c) 2014 The Rust Project Developers
-
-### bitflags 2.13.2
-
-* Licence: `MIT OR Apache-2.0`
-* Source: https://github.com/bitflags/bitflags
-
-  > Copyright (c) 2014 The Rust Project Developers
+* Licence: `MIT`
+* Source: https://github.com/madsmtm/objc2
 
 ### block-buffer 0.10.4
 
@@ -248,11 +253,6 @@ in executable form must tell the recipients where its source is available
 * Source: https://github.com/RustCrypto/utils
 
   > Copyright (c) 2018-2025 The RustCrypto Project Developers
-
-### block2 0.6.2
-
-* Licence: `MIT`
-* Source: https://github.com/madsmtm/objc2
 
 ### brotli 9.1.3
 
@@ -451,17 +451,17 @@ in executable form must tell the recipients where its source is available
 
   > Copyright (c) 2015 Markus Westerlind
 
+### constant_time_eq 0.6.1
+
+* Licence: `CC0-1.0 OR MIT-0 OR Apache-2.0`
+* Source: https://codeberg.org/cesarb/constant_time_eq
+
 ### const-oid 0.10.3
 
 * Licence: `Apache-2.0 OR MIT`
 * Source: https://github.com/RustCrypto/formats
 
   > Copyright (c) 2020-2026 The RustCrypto Project Developers
-
-### constant_time_eq 0.6.1
-
-* Licence: `CC0-1.0 OR MIT-0 OR Apache-2.0`
-* Source: https://codeberg.org/cesarb/constant_time_eq
 
 ### cookie 0.18.3
 
@@ -1065,12 +1065,12 @@ in executable form must tell the recipients where its source is available
 * Licence: `MIT`
 * Source: https://github.com/gtk-rs/gtk3-rs
 
-### gtk-sys 0.18.2
+### gtk3-macros 0.18.2
 
 * Licence: `MIT`
 * Source: https://github.com/gtk-rs/gtk3-rs
 
-### gtk3-macros 0.18.2
+### gtk-sys 0.18.2
 
 * Licence: `MIT`
 * Source: https://github.com/gtk-rs/gtk3-rs
@@ -1147,6 +1147,13 @@ in executable form must tell the recipients where its source is available
   > Copyright 2017 http-rs authors
   > Copyright (c) 2017 http-rs authors
 
+### httparse 1.10.1
+
+* Licence: `MIT OR Apache-2.0`
+* Source: https://github.com/seanmonstar/httparse
+
+  > Copyright (c) 2015-2025 Sean McArthur
+
 ### http-body 1.1.0
 
 * Licence: `MIT`
@@ -1160,13 +1167,6 @@ in executable form must tell the recipients where its source is available
 * Source: https://github.com/hyperium/http-body
 
   > Copyright (c) 2019-2026 Sean McArthur & Hyper Contributors
-
-### httparse 1.10.1
-
-* Licence: `MIT OR Apache-2.0`
-* Source: https://github.com/seanmonstar/httparse
-
-  > Copyright (c) 2015-2025 Sean McArthur
 
 ### hybrid-array 0.4.15
 
@@ -1476,13 +1476,6 @@ in executable form must tell the recipients where its source is available
 * Licence: `MIT OR Apache-2.0`
 * Source: https://github.com/jni-rs/jni-sys
 
-### js-sys 0.3.107
-
-* Licence: `MIT OR Apache-2.0`
-* Source: https://github.com/wasm-bindgen/wasm-bindgen/tree/master/crates/js-sys
-
-  > Copyright (c) 2014 Alex Crichton
-
 ### json-patch 4.2.0
 
 * Licence: `MIT/Apache-2.0`
@@ -1497,6 +1490,13 @@ in executable form must tell the recipients where its source is available
 
   > Copyright 2024 Chance Dinkins
   > Copyright (c) 2022 Chance Dinkins
+
+### js-sys 0.3.107
+
+* Licence: `MIT OR Apache-2.0`
+* Source: https://github.com/wasm-bindgen/wasm-bindgen/tree/master/crates/js-sys
+
+  > Copyright (c) 2014 Alex Crichton
 
 ### kamadak-exif 0.6.2
 
@@ -2070,6 +2070,11 @@ in executable form must tell the recipients where its source is available
 
   > Copyright (c) 2017 Emilio Cobos Álvarez
 
+### proc-macro2 1.0.107
+
+* Licence: `MIT OR Apache-2.0`
+* Source: https://github.com/dtolnay/proc-macro2
+
 ### proc-macro-crate 1.3.1
 
 * Licence: `MIT OR Apache-2.0`
@@ -2101,11 +2106,6 @@ in executable form must tell the recipients where its source is available
   > Copyright 2019-2020 CreepySkeleton <creepy-skeleton@yandex.ru>
   > Copyright (c) 2019-2020 CreepySkeleton
 
-### proc-macro2 1.0.107
-
-* Licence: `MIT OR Apache-2.0`
-* Source: https://github.com/dtolnay/proc-macro2
-
 ### quick-xml 0.42.0
 
 * Licence: `MIT`
@@ -2117,16 +2117,6 @@ in executable form must tell the recipients where its source is available
 
 * Licence: `MIT OR Apache-2.0`
 * Source: https://github.com/dtolnay/quote
-
-### r-efi 5.3.0
-
-* Licence: `MIT OR Apache-2.0 OR LGPL-2.1-or-later`
-* Source: https://github.com/r-efi/r-efi
-
-### r-efi 6.0.0
-
-* Licence: `MIT OR Apache-2.0 OR LGPL-2.1-or-later`
-* Source: https://github.com/r-efi/r-efi
 
 ### raw-window-handle 0.6.2
 
@@ -2159,6 +2149,16 @@ in executable form must tell the recipients where its source is available
 
 * Licence: `MIT OR Apache-2.0`
 * Source: https://github.com/dtolnay/ref-cast
+
+### r-efi 5.3.0
+
+* Licence: `MIT OR Apache-2.0 OR LGPL-2.1-or-later`
+* Source: https://github.com/r-efi/r-efi
+
+### r-efi 6.0.0
+
+* Licence: `MIT OR Apache-2.0 OR LGPL-2.1-or-later`
+* Source: https://github.com/r-efi/r-efi
 
 ### regex 1.13.2
 
@@ -2205,6 +2205,18 @@ in executable form must tell the recipients where its source is available
   > Copyright 2015 The Chromium Authors. All rights reserved.
   > Copyright 2015-2025 Brian Smith.
 
+### rustc_version 0.4.1
+
+* Licence: `MIT OR Apache-2.0`
+* Source: https://github.com/djc/rustc-version-rs
+
+  > Copyright (c) 2016 The Rust Project Developers
+
+### rustc-hash 2.1.3
+
+* Licence: `Apache-2.0 OR MIT`
+* Source: https://github.com/rust-lang/rustc-hash
+
 ### rust-embed 8.14.0
 
 * Licence: `MIT`
@@ -2225,18 +2237,6 @@ in executable form must tell the recipients where its source is available
 * Source: https://pyrossh.dev/repos/rust-embed
 
   > Copyright (c) 2018 pyros2097
-
-### rustc_version 0.4.1
-
-* Licence: `MIT OR Apache-2.0`
-* Source: https://github.com/djc/rustc-version-rs
-
-  > Copyright (c) 2016 The Rust Project Developers
-
-### rustc-hash 2.1.3
-
-* Licence: `Apache-2.0 OR MIT`
-* Source: https://github.com/rust-lang/rustc-hash
 
 ### rustix 1.1.6
 
@@ -3055,15 +3055,6 @@ in executable form must tell the recipients where its source is available
 * Licence: `MIT`
 * Source: https://github.com/Aleph-Alpha/ts-rs
 
-### type-map 0.5.1
-
-* Licence: `MIT/Apache-2.0`
-* Source: https://github.com/kardeiz/type-map
-
-  > Copyright 2017-NOW Actix Team
-  > Copyright (c) 2022 Jacob Brown
-  > Copyright (c) 2017-NOW Actix Team
-
 ### typed-path 0.13.0
 
 * Licence: `MIT OR Apache-2.0`
@@ -3074,6 +3065,15 @@ in executable form must tell the recipients where its source is available
 * Licence: `MIT OR Apache-2.0`
 * Source: https://github.com/dtolnay/typeid
 
+### type-map 0.5.1
+
+* Licence: `MIT/Apache-2.0`
+* Source: https://github.com/kardeiz/type-map
+
+  > Copyright 2017-NOW Actix Team
+  > Copyright (c) 2022 Jacob Brown
+  > Copyright (c) 2017-NOW Actix Team
+
 ### typenum 1.20.1
 
 * Licence: `MIT OR Apache-2.0`
@@ -3081,6 +3081,13 @@ in executable form must tell the recipients where its source is available
 
   > Copyright 2014 Paho Lurie-Gregg
   > Copyright (c) 2014 Paho Lurie-Gregg
+
+### unicase 2.10.0
+
+* Licence: `MIT OR Apache-2.0`
+* Source: https://github.com/seanmonstar/unicase
+
+  > Copyright (c) 2014-2026 Sean McArthur
 
 ### unic-langid 0.9.6
 
@@ -3091,13 +3098,6 @@ in executable form must tell the recipients where its source is available
 
 * Licence: `MIT OR Apache-2.0`
 * Source: https://github.com/zbraniecki/unic-locale
-
-### unicase 2.10.0
-
-* Licence: `MIT OR Apache-2.0`
-* Source: https://github.com/seanmonstar/unicase
-
-  > Copyright (c) 2014-2026 Sean McArthur
 
 ### unicode-ident 1.0.27
 
@@ -3167,17 +3167,17 @@ in executable form must tell the recipients where its source is available
 
   > Copyright Mozilla Foundation
 
-### utf8-zero 0.8.1
-
-* Licence: `MIT OR Apache-2.0`
-* Source: https://github.com/algesten/utf8-zero
-
 ### utf8parse 0.2.2
 
 * Licence: `Apache-2.0 OR MIT`
 * Source: https://github.com/alacritty/vte
 
   > Copyright (c) 2016 Joe Wilm
+
+### utf8-zero 0.8.1
+
+* Licence: `MIT OR Apache-2.0`
+* Source: https://github.com/algesten/utf8-zero
 
 ### uuid 1.29.3
 
@@ -3279,12 +3279,12 @@ in executable form must tell the recipients where its source is available
 * Licence: `Apache-2.0 WITH LLVM-exception OR Apache-2.0 OR MIT`
 * Source: https://github.com/bytecodealliance/wasm-tools/tree/main/crates/wasm-encoder
 
-### wasm-streams 0.5.0
-
-* Licence: `MIT OR Apache-2.0`
-* Source: https://github.com/MattiasBuelens/wasm-streams/
-
 ### wasmi 2.0.2
+
+* Licence: `MIT/Apache-2.0`
+* Source: https://github.com/wasmi-labs/wasmi
+
+### wasmi 2.0.3
 
 * Licence: `MIT/Apache-2.0`
 * Source: https://github.com/wasmi-labs/wasmi
@@ -3294,12 +3294,27 @@ in executable form must tell the recipients where its source is available
 * Licence: `MIT/Apache-2.0`
 * Source: https://github.com/wasmi-labs/wasmi
 
+### wasmi_collections 2.0.3
+
+* Licence: `MIT/Apache-2.0`
+* Source: https://github.com/wasmi-labs/wasmi
+
 ### wasmi_core 2.0.2
 
 * Licence: `MIT/Apache-2.0`
 * Source: https://github.com/wasmi-labs/wasmi
 
+### wasmi_core 2.0.3
+
+* Licence: `MIT/Apache-2.0`
+* Source: https://github.com/wasmi-labs/wasmi
+
 ### wasmi_ir 2.0.2
+
+* Licence: `MIT/Apache-2.0`
+* Source: https://github.com/wasmi-labs/wasmi
+
+### wasmi_ir 2.0.3
 
 * Licence: `MIT/Apache-2.0`
 * Source: https://github.com/wasmi-labs/wasmi
@@ -3313,6 +3328,11 @@ in executable form must tell the recipients where its source is available
 
 * Licence: `Apache-2.0 WITH LLVM-exception OR Apache-2.0 OR MIT`
 * Source: https://github.com/bytecodealliance/wasm-tools/tree/main/crates/wasmparser
+
+### wasm-streams 0.5.0
+
+* Licence: `MIT OR Apache-2.0`
+* Source: https://github.com/MattiasBuelens/wasm-streams/
 
 ### wast 263.0.0
 
@@ -3337,21 +3357,6 @@ in executable form must tell the recipients where its source is available
 * Source: https://github.com/servo/html5ever
 
   > Copyright (c) 2014 The html5ever Project Developers
-
-### web-sys 0.3.107
-
-* Licence: `MIT OR Apache-2.0`
-* Source: https://github.com/wasm-bindgen/wasm-bindgen/tree/master/crates/web-sys
-
-  > Copyright (c) 2014 Alex Crichton
-
-### web-time 1.1.0
-
-* Licence: `MIT OR Apache-2.0`
-* Source: https://github.com/daxpedda/web-time
-
-  > Copyright 2023 dAxpeDDa
-  > Copyright (c) 2023 dAxpeDDa
 
 ### webkit2gtk 2.0.2
 
@@ -3378,6 +3383,21 @@ in executable form must tell the recipients where its source is available
 
 * Licence: `CDLA-Permissive-2.0`
 * Source: https://github.com/rustls/webpki-roots
+
+### web-sys 0.3.107
+
+* Licence: `MIT OR Apache-2.0`
+* Source: https://github.com/wasm-bindgen/wasm-bindgen/tree/master/crates/web-sys
+
+  > Copyright (c) 2014 Alex Crichton
+
+### web-time 1.1.0
+
+* Licence: `MIT OR Apache-2.0`
+* Source: https://github.com/daxpedda/web-time
+
+  > Copyright 2023 dAxpeDDa
+  > Copyright (c) 2023 dAxpeDDa
 
 ### webview2-com 0.39.1
 
@@ -3417,13 +3437,6 @@ in executable form must tell the recipients where its source is available
 
 * Licence: `MIT/Apache-2.0`
 * Source: https://github.com/retep998/winapi-rs
-
-### window-vibrancy 0.8.1
-
-* Licence: `Apache-2.0 OR MIT`
-* Source: https://github.com/tauri-apps/tauri-plugin-vibrancy
-
-  > Copyright (c) 2020-2022 Tauri Programme within The Commons Conservancy
 
 ### windows 0.62.2
 
@@ -3655,6 +3668,13 @@ in executable form must tell the recipients where its source is available
 * Source: https://github.com/microsoft/windows-rs
 
   > Copyright (c) Microsoft Corporation.
+
+### window-vibrancy 0.8.1
+
+* Licence: `Apache-2.0 OR MIT`
+* Source: https://github.com/tauri-apps/tauri-plugin-vibrancy
+
+  > Copyright (c) 2020-2022 Tauri Programme within The Commons Conservancy
 
 ### winnow 0.5.40
 

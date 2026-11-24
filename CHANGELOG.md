@@ -6,6 +6,8 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+## [1.15.0] - 2026-11-24
+
 ### Added
 
 - The shutter count shows when the photo was evaluated and the camera's
@@ -1113,6 +1115,7 @@ and Linux.
 - **Device list** in the app with the functions each known model supports,
   plus community reports for further models.
 
+[1.15.0]: https://github.com/masterflai/pmca-re-reloaded/compare/v1.14.1...v1.15.0
 [1.14.1]: https://github.com/masterflai/pmca-re-reloaded/compare/v1.14.0...v1.14.1
 [1.14.0]: https://github.com/masterflai/pmca-re-reloaded/compare/v1.13.0...v1.14.0
 [1.13.0]: https://github.com/masterflai/pmca-re-reloaded/compare/v1.12.0...v1.13.0

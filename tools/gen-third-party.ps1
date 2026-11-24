@@ -89,7 +89,11 @@ foreach ($pkg in $packages.Values) {
     foreach ($f in $files) {
         # 400 lines is past the header of every common licence; the notice is
         # never further down than that, and Apache-2.0 is long.
-        $head = Get-Content -Path $f.FullName -TotalCount 400 -ErrorAction SilentlyContinue
+        #
+        # Explicit UTF8: PowerShell 5.1's default for a BOM-less file is the
+        # system codepage, which turns a multi-byte character such as "©"
+        # into mojibake ("Â©"). pwsh 7 defaults to UTF-8 and never needed this.
+        $head = Get-Content -Path $f.FullName -TotalCount 400 -Encoding UTF8 -ErrorAction SilentlyContinue
         foreach ($line in $head) {
             $t = $line.Trim()
 
