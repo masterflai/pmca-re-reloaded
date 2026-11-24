@@ -13,6 +13,10 @@ fileName: string,
  */
 model: string | null, 
 /**
+ * The name Sony sells the model under, where that differs (e.g. `α5100`).
+ */
+salesName: string | null, 
+/**
  * Firmware that wrote the file (e.g. `ILCE-5100 v3.10`).
  */
 software: string | null, 
@@ -20,6 +24,10 @@ software: string | null,
  * Lens model, if the lens reported one.
  */
 lens: string | null, 
+/**
+ * Body serial number, where the file records it.
+ */
+serial: string | null, 
 /**
  * Capture time, `YYYY-MM-DD hh:mm:ss` plus the UTC offset if recorded.
  */

@@ -6,6 +6,17 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+### Added
+
+- The shutter count shows when the photo was evaluated and the camera's
+  serial number, taken from the photo or, for the same model, from the
+  camera read above. The result can be saved as a one-page report in PDF,
+  JPEG or PNG, on A4 or, in US English, on US Letter, naming the version of
+  PMCA-RE RELOADED that made it. The serial number is left off the report
+  unless it is asked for. When the photo carries no count (not a Sony photo,
+  an unresearched model or a file without one), the report says so in place
+  of a bare dash.
+
 ### Changed
 
 - The GUI window reopens at the size and position it had when it was last

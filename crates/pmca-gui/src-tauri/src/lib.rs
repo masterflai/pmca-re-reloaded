@@ -486,6 +486,7 @@ pub fn run() {
             get_camera_info,
             camera_presence,
             read_photo,
+            save_shutter_report,
             device_lists,
             device_support,
             save_usage_log,

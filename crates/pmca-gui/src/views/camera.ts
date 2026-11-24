@@ -8,6 +8,7 @@ import {
   fieldList,
   make,
   showBusy,
+  showDone,
   showError,
   showErrorKey,
   showStatus,
@@ -28,13 +29,14 @@ import { currentLocale, isCommandError, modeName, tr, trFill } from "../i18n";
 import { rememberCameraModel } from "../nav";
 import { markCell } from "./network";
 import { pluginText } from "./plugins";
+import { drawReport, paperFor, saveReport, type ReportFormat } from "./shutter-report";
 
 export function viewCameraInfo(host: HTMLElement): void {
   const status = statusLine();
   const details = make("div");
   const button = make("button", { className: "primary", i18n: "btn-get-info" });
-  /** Model of the camera last read, to compare a photo against. */
-  let connectedModel: string | null = null;
+  /** The camera last read, to compare a photo against and to fill in its serial number. */
+  let connected: ConnectedCamera = { model: null, serial: null };
 
   button.addEventListener("click", async () => {
     button.disabled = true;
@@ -42,7 +44,7 @@ export function viewCameraInfo(host: HTMLElement): void {
     details.replaceChildren();
     try {
       const info = await invoke<CameraSummary>("get_camera_info");
-      connectedModel = info.modelName;
+      connected = { model: info.modelName, serial: info.serial };
       rememberCameraModel(info.modelName);
       showStatus(status, "");
       details.append(
@@ -82,7 +84,7 @@ export function viewCameraInfo(host: HTMLElement): void {
       status,
       details,
     ),
-    cardShutterCount(() => connectedModel),
+    cardShutterCount(() => connected),
   );
 }
 
@@ -387,6 +389,12 @@ function deviceRows(
   );
 }
 
+/** Model and serial number of the camera last read on this page. */
+interface ConnectedCamera {
+  model: string | null;
+  serial: string | null;
+}
+
 /**
  * Read the shutter count from a photo the camera took.
  *
@@ -394,10 +402,11 @@ function deviceRows(
  * every image instead. The newest image therefore carries the current figure,
  * which is why the user is asked for that one.
  *
- * `connectedModel` is read at click time, so a camera queried after the photo
- * was chosen still takes part in the comparison.
+ * `connected` is read at click time, so a camera queried after the photo was
+ * chosen still takes part. Its serial number stands in where the file has
+ * none, but only for a photo of the same model.
  */
-function cardShutterCount(connectedModel: () => string | null): HTMLElement {
+function cardShutterCount(connected: () => ConnectedCamera): HTMLElement {
   const status = statusLine();
   const details = make("div");
   const photo = filePicker(
@@ -419,27 +428,31 @@ function cardShutterCount(connectedModel: () => string | null): HTMLElement {
     showStatus(status, "");
     try {
       const result = await invoke<PhotoSummary>("read_photo", { file });
+      const evaluated = new Date().toLocaleString(currentLocale, { dateStyle: "medium", timeStyle: "short" });
+      const camera = connected();
+      const sameModel =
+        camera.model !== null && result.model !== null && camera.model.toUpperCase() === result.model.toUpperCase();
+      const serial = result.serial ?? (sameModel ? camera.serial : null);
+      const model = result.model && result.salesName ? `${result.model} (${result.salesName})` : result.model;
       details.append(
         fieldList([
           ["shutter-file", result.fileName],
           ["shutter-taken", result.taken],
           ["shutter-count", result.shutterCount?.toLocaleString(currentLocale) ?? null],
           ["shutter-type", result.shutter ? { key: `shutter-type-${result.shutter}` } : null],
-          ["info-model", result.model],
+          ["info-model", model],
+          ["info-serial", serial ?? { key: "shutter-serial-unknown" }],
           ["info-firmware", result.software],
           ["info-lens", result.lens],
+          ["shutter-evaluated", evaluated],
         ]),
       );
-      if (result.countUnavailable) {
-        details.append(
-          make("p", { className: "hint", i18n: `shutter-${result.countUnavailable}` }),
-        );
-      }
-      if (result.shutter === "electronic") {
-        details.append(make("p", { className: "hint", i18n: "shutter-electronic-hint" }));
-      }
-      const connected = connectedModel();
-      if (connected && result.model && connected.toUpperCase() !== result.model.toUpperCase()) {
+      const notes: string[] = [];
+      if (result.countUnavailable) notes.push(`shutter-${result.countUnavailable}`);
+      if (result.shutter === "electronic") notes.push("shutter-electronic-hint");
+      for (const key of notes) details.append(make("p", { className: "hint", i18n: key }));
+      if (camera.model && result.model && !sameModel) {
+        notes.push("shutter-model-mismatch");
         details.append(
           make(
             "div",
@@ -448,6 +461,7 @@ function cardShutterCount(connectedModel: () => string | null): HTMLElement {
           ),
         );
       }
+      details.append(reportControls(result, serial, evaluated, notes));
     } catch (e) {
       showError(status, e);
     } finally {
@@ -463,5 +477,58 @@ function cardShutterCount(connectedModel: () => string | null): HTMLElement {
     make("div", { className: "row" }, read),
     status,
     details,
+  );
+}
+
+/**
+ * Format choice, the serial-number opt-in and the save button for the report.
+ *
+ * The serial number stays off the saved file unless the user ticks the box: a
+ * report is often passed on, the window is not.
+ */
+function reportControls(
+  photo: PhotoSummary,
+  serial: string | null,
+  evaluated: string,
+  noteKeys: string[],
+): HTMLElement {
+  const status = statusLine();
+  const format = make("select", { className: "field-select" });
+  for (const [value, label] of [
+    ["pdf", "PDF"],
+    ["jpeg", "JPEG"],
+    ["png", "PNG"],
+  ]) {
+    format.append(make("option", { value, textContent: label }));
+  }
+  const withSerial = make("input", { type: "checkbox", disabled: serial === null });
+  const save = make("button", { i18n: "btn-shutter-report" });
+  save.addEventListener("click", async () => {
+    save.disabled = true;
+    showStatus(status, "");
+    try {
+      const paper = paperFor(currentLocale);
+      const page = await drawReport(
+        { photo, serial: withSerial.checked ? serial : null, evaluated, notes: noteKeys.map(tr) },
+        paper,
+      );
+      const day = new Date().toISOString().slice(0, 10);
+      const name = `shutter-count_${photo.model ?? "camera"}_${day}`;
+      const path = await saveReport(page, format.value as ReportFormat, paper, name);
+      if (path !== null) showDone(status, trFill("tools-written", { path }));
+    } catch (e) {
+      showError(status, e);
+    } finally {
+      save.disabled = false;
+    }
+  });
+  return make(
+    "div",
+    { className: "shutter-report" },
+    make("label", { className: "field-label", i18n: "shutter-report-format" }),
+    format,
+    make("label", { className: "row" }, withSerial, make("span", { i18n: "shutter-report-serial" })),
+    make("div", { className: "row" }, save),
+    status,
   );
 }

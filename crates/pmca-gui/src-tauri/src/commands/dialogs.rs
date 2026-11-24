@@ -33,6 +33,9 @@ pub(crate) fn dialog_filter(
         "backup" => Ok(("file-filter-backup", &["bin"])),
         "spk" => Ok(("file-filter-spk", &["spk"])),
         "photo" => Ok(("file-filter-photo", &["arw", "jpg", "jpeg", "hif", "heif", "heic"])),
+        "report-png" => Ok(("file-filter-report-png", &["png"])),
+        "report-jpeg" => Ok(("file-filter-report-jpeg", &["jpg", "jpeg"])),
+        "report-pdf" => Ok(("file-filter-report-pdf", &["pdf"])),
         "plugin" => Ok(("file-filter-plugin", &["pmcaplugin"])),
         "any" => Ok(("file-filter-any", &["*"])),
         _ => Err(CommandError {

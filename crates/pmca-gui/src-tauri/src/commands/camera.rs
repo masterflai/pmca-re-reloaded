@@ -42,6 +42,62 @@ pub(crate) async fn read_photo(app: AppHandle, file: String) -> Result<PhotoSumm
     .await
 }
 
+/// Largest report image accepted from the window.
+const MAX_REPORT_BYTES: usize = 32 * 1024 * 1024;
+
+/// Ask where the shutter-count report should go and write it there.
+///
+/// The body is the page the window drew. Headers name the format (`png`,
+/// `jpeg`, or `pdf` with a JPEG body to wrap), the paper and a suggested file
+/// name. The path is only ever one picked in the native dialog; `None` when
+/// the dialog was dismissed.
+#[tauri::command(async)]
+pub(crate) fn save_shutter_report(
+    app: AppHandle,
+    window: Window,
+    state: State<'_, AppState>,
+    request: tauri::ipc::Request<'_>,
+) -> Result<Option<String>, CommandError> {
+    let invalid = || CommandError {
+        code: "report-invalid".into(),
+        message: "the report image is not usable".into(),
+        detail: None,
+        recovery: None,
+    };
+    let header =
+        |name: &str| request.headers().get(name).and_then(|v| v.to_str().ok()).unwrap_or_default();
+    let tauri::ipc::InvokeBody::Raw(image) = request.body() else {
+        return Err(invalid());
+    };
+    if image.len() > MAX_REPORT_BYTES {
+        return Err(invalid());
+    }
+    let (kind, extension, bytes) = match header("x-format") {
+        "png" if image.starts_with(b"\x89PNG\r\n\x1a\n") => ("report-png", "png", image.clone()),
+        "jpeg" if pmca_app::report::jpeg_size(image).is_some() => {
+            ("report-jpeg", "jpg", image.clone())
+        }
+        "pdf" => {
+            let paper = pmca_app::report::Paper::from_id(header("x-paper")).ok_or_else(invalid)?;
+            let pdf = pmca_app::report::pdf_from_jpeg(image, paper).ok_or_else(invalid)?;
+            ("report-pdf", "pdf", pdf)
+        }
+        _ => return Err(invalid()),
+    };
+    let stem: String = header("x-name")
+        .chars()
+        .filter(|c| c.is_ascii_alphanumeric() || matches!(c, '-' | '_'))
+        .take(80)
+        .collect();
+    let stem = if stem.is_empty() { "shutter-count" } else { &stem };
+    let name = format!("{stem}.{extension}");
+    let Some(path) = ask_save_path(&app, &window, &state, kind, &name)? else {
+        return Ok(None);
+    };
+    std::fs::write(&path, bytes)?;
+    Ok(Some(absolute_display(&path)))
+}
+
 /// The device lists, or only the models with `capability`.
 #[tauri::command]
 pub(crate) fn device_lists(capability: Option<Capability>) -> DeviceLists {

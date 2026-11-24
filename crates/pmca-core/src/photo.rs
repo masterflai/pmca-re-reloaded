@@ -70,6 +70,8 @@ pub struct PhotoInfo {
     pub software: Option<String>,
     /// Lens model, if the lens reported one.
     pub lens: Option<String>,
+    /// Body serial number, where the camera writes it into the file.
+    pub serial: Option<String>,
     /// Capture time as `YYYY-MM-DD hh:mm:ss`, with the UTC offset appended
     /// when the camera recorded one.
     pub taken: Option<String>,
@@ -167,7 +169,16 @@ fn from_exif(exif: &exif::Exif) -> PhotoInfo {
         (ShutterCount::NotSony, None)
     };
 
-    PhotoInfo { make, model, software: text(Tag::Software), lens, taken, shutter_count, shutter }
+    PhotoInfo {
+        make,
+        model,
+        software: text(Tag::Software),
+        lens,
+        serial: text(Tag::BodySerialNumber).filter(|s| !s.trim().is_empty()),
+        taken,
+        shutter_count,
+        shutter,
+    }
 }
 
 /// Read the count and shutter type out of a deciphered `0x9050` block.
@@ -433,6 +444,7 @@ mod tests {
                 (0x9003, 2, b"2026:01:02 10:20:30\0".to_vec()),
                 (0x9011, 2, b"+02:00\0".to_vec()),
                 (0x927c, 7, note),
+                (0xa431, 2, b"3456789\0".to_vec()),
                 (0xa434, 2, b"E 35mm F1.8 OSS\0".to_vec()),
             ],
         );
@@ -500,6 +512,7 @@ mod tests {
         assert_eq!(info.model.as_deref(), Some("ILCE-5100"));
         assert_eq!(info.software.as_deref(), Some("ILCE-5100 v3.10"));
         assert_eq!(info.lens.as_deref(), Some("E 35mm F1.8 OSS"));
+        assert_eq!(info.serial.as_deref(), Some("3456789"));
         assert_eq!(info.taken.as_deref(), Some("2026-01-02 10:20:30 (UTC+02:00)"));
         assert_eq!(info.shutter_count, ShutterCount::Counted(12_345));
         assert_eq!(info.shutter, Some(Shutter::Mechanical));

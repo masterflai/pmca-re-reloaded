@@ -38,6 +38,7 @@ pub mod ownership;
 pub mod plugins;
 pub mod projects;
 pub mod proxy;
+pub mod report;
 pub mod sensitive;
 pub mod service;
 pub mod service_mode;

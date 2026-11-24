@@ -1341,6 +1341,13 @@ summary {
   font-size: 12px;
 }
 
+/* Format, serial-number opt-in and save button below a shutter-count result. */
+.shutter-report {
+  margin-top: 16px;
+  padding-top: 12px;
+  border-top: 1px solid var(--border);
+}
+
 /* Read by screen readers, not shown. */
 .visually-hidden {
   position: absolute;

@@ -73,10 +73,14 @@ pub struct PhotoSummary {
     pub file_name: String,
     /// Camera model (e.g. `ILCE-5100`).
     pub model: Option<String>,
+    /// The name Sony sells the model under, where that differs (e.g. `α5100`).
+    pub sales_name: Option<String>,
     /// Firmware that wrote the file (e.g. `ILCE-5100 v3.10`).
     pub software: Option<String>,
     /// Lens model, if the lens reported one.
     pub lens: Option<String>,
+    /// Body serial number, where the file records it.
+    pub serial: Option<String>,
     /// Capture time, `YYYY-MM-DD hh:mm:ss` plus the UTC offset if recorded.
     pub taken: Option<String>,
     /// The shutter count stored in the file.
@@ -99,9 +103,11 @@ impl PhotoSummary {
         };
         Self {
             file_name,
+            sales_name: info.model.as_deref().and_then(crate::devices::sales_name),
             model: info.model,
             software: info.software,
             lens: info.lens,
+            serial: info.serial,
             taken: info.taken,
             shutter_count,
             count_unavailable: unavailable.map(str::to_string),
