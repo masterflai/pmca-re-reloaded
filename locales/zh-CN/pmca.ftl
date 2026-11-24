@@ -784,11 +784,11 @@ tools-written = 已写入 { $path }
 
 # 指向项目文档的链接
 docs-compatibility = 相机兼容性
-docs-compatibility-hint = 原项目提供了一份已验证相机的概览。其中主要是较早的机型，地址如下：
 devices-note = 数据取自原项目的概览。应用支持旁的数字是相机应用平台的版本。
 devices-more-note = 以下相机未经本程序专门测试。最后一列中的勾号表示社区曾报告过使用情况；若服务模式终端同时标记为 ✖，则表示使用未成功。
-btn-more-models = 更多设备
-btn-more-models-hide = 隐藏更多设备
+devices-search = 搜索型号（例如 ILCE-6000、α6000 或 RX100 III）
+devices-match-count = { $total } 个型号中的 { $shown } 个
+devices-no-match = 没有与搜索匹配的型号。
 check-updater-yes = 您的设备 { $model } 兼容：根据设备列表，升级模式终端可以访问它。
 check-updater-no = 您的设备 { $model } 不兼容：根据设备列表，升级模式终端无法访问它。
 check-updater-unknown = 您的设备 { $model } 的兼容性未知：它不在本程序的任何设备列表中，因此不清楚升级模式终端能否访问它。
@@ -804,7 +804,6 @@ check-cancelled = 操作已取消。设备未被修改。
 devices-col-confirmed = 已确认
 devices-group-ilc = 可换镜头相机（E 卡口和 A 卡口）
 devices-group-remote = 实时取景遥控器
-btn-copy-link = 复制链接
 shutter-heading = 快门计数
 shutter-hint = 相机会统计每一次快门释放，并把当前数值写入它保存的每张照片（ARW、JPEG 或 HEIF）。请选择最近拍摄的照片来读取当前数值。文件只会被读取，绝不会被修改。
 shutter-source = 计数在文件中的位置因机型而异。这些位置来自公开记录的研究（ExifTool），并未在所有机型上得到确认。
@@ -887,7 +886,6 @@ camset-bridge-legend-named = named：位置规则失效时按固件名称找到
 camset-bridge-legend-mr-name = name：按固件名称找到的记忆组数组（MR_…）
 camset-bridge-other-camera = 设置文件来自 { $file }，备份来自 { $backup }。只有两者来自同一台相机时才能找到记录。
 camset-no-changes = 两个文件的值相同。
-msg-link-copied = 链接已复制到剪贴板。
 
 # 后端故障消息，按后端报告的稳定代码索引。
 # 消息中的可变部分（路径、状态字节、设备错误）由前端附加，

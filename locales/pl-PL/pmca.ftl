@@ -790,11 +790,11 @@ tools-written = Zapisano do { $path }
 
 # Odsyłacze do dokumentacji projektu
 docs-compatibility = Zgodność aparatów
-docs-compatibility-hint = Pierwotny projekt udostępnił przegląd sprawdzonych aparatów. Obejmuje on głównie starsze modele i znajduje się pod tym adresem:
 devices-note = Dane z przeglądu pierwotnego projektu. Liczba przy obsłudze aplikacji to wersja platformy aplikacji aparatu.
 devices-more-note = Poniższe aparaty nie były wyraźnie testowane z tym programem. Znacznik w ostatniej kolumnie oznacza, że społeczność zgłosiła ich użycie. Jeśli dodatkowo powłoka serwisowa jest oznaczona ✖, użycie się nie powiodło.
-btn-more-models = Inne urządzenia
-btn-more-models-hide = Ukryj inne urządzenia
+devices-search = Szukaj modelu (np. ILCE-6000, α6000 lub RX100 III)
+devices-match-count = { $shown } z { $total } modeli
+devices-no-match = Żaden model nie pasuje do wyszukiwania.
 check-updater-yes = Twoje urządzenie { $model } jest zgodne: według listy urządzeń powłoka aktualizatora może się z nim połączyć.
 check-updater-no = Twoje urządzenie { $model } nie jest zgodne: według listy urządzeń powłoka aktualizatora nie może się z nim połączyć.
 check-updater-unknown = Zgodność Twojego urządzenia { $model } jest nieznana: nie ma go na żadnej liście urządzeń tego programu, więc nie wiadomo, czy powłoka aktualizatora może się z nim połączyć.
@@ -810,7 +810,6 @@ check-cancelled = Operacja anulowana. Urządzenie nie zostało zmienione.
 devices-col-confirmed = Potwierdzone
 devices-group-ilc = Aparaty z wymienną optyką (mocowanie E i A)
 devices-group-remote = Piloty Live-View
-btn-copy-link = Kopiuj odnośnik
 shutter-heading = Licznik migawki
 shutter-hint = Aparat liczy każde wyzwolenie migawki i zapisuje bieżący stan w każdym zapisywanym zdjęciu (ARW, JPEG lub HEIF). Wybierz najnowsze zdjęcie, aby odczytać bieżący stan. Plik jest tylko odczytywany, nigdy nie jest zmieniany.
 shutter-source = Położenie licznika w pliku zależy od modelu. Pozycje pochodzą z publicznie udokumentowanych badań (ExifTool) i nie zostały potwierdzone dla każdego modelu.
@@ -893,7 +892,6 @@ camset-bridge-legend-named = named: znalezione po nazwie w oprogramowaniu tam, g
 camset-bridge-legend-mr-name = name: tablica zestawu pamięci znaleziona po nazwie w oprogramowaniu (MR_…)
 camset-bridge-other-camera = Plik ustawień pochodzi z modelu { $file }, kopia zapasowa z modelu { $backup }. Rekordy można znaleźć tylko wtedy, gdy oba pochodzą z tego samego aparatu.
 camset-no-changes = Oba pliki zawierają te same wartości.
-msg-link-copied = Odnośnik skopiowano do schowka.
 
 # Komunikaty o błędach zaplecza, przypisane do stałego kodu zgłaszanego przez zaplecze.
 # Zmienna część komunikatu (ścieżka, bajt stanu, błąd urządzenia) jest

@@ -75,6 +75,8 @@ pub enum CommunityReport {
 pub struct CompatModel {
     /// Model name as the camera reports it.
     pub model: String,
+    /// The name Sony sells it under, where that differs; see [`sales_name`].
+    pub sales_name: Option<String>,
     /// Processor architecture.
     pub arch: String,
     /// Version of the app platform, `None` where the model runs no apps.
@@ -93,6 +95,8 @@ pub struct CompatModel {
 pub struct MoreModel {
     /// Model name as the camera reports it.
     pub model: String,
+    /// The name Sony sells it under, where that differs; see [`sales_name`].
+    pub sales_name: Option<String>,
     /// Processor architecture, where a source names it.
     pub arch: Option<String>,
     /// Whether the model runs PlayMemories Camera Apps, where known.
@@ -147,11 +151,52 @@ type More = (&'static str, Option<&'static str>, Option<bool>, Option<CommunityR
 type Gps = (&'static str, &'static str, Option<&'static str>, Option<bool>);
 
 fn compat_model(&(model, arch, apps, updater): &Compat) -> CompatModel {
-    CompatModel { model: model.into(), arch: arch.into(), apps: apps.map(Into::into), updater }
+    CompatModel {
+        model: model.into(),
+        sales_name: sales_name(model),
+        arch: arch.into(),
+        apps: apps.map(Into::into),
+        updater,
+    }
 }
 
 fn more_model(&(model, arch, apps, report): &More) -> MoreModel {
-    MoreModel { model: model.into(), arch: arch.map(Into::into), apps, report }
+    MoreModel {
+        model: model.into(),
+        sales_name: sales_name(model),
+        arch: arch.map(Into::into),
+        apps,
+        report,
+    }
+}
+
+/// The name Sony sells `model` under, where it says more than the model name.
+///
+/// Interchangeable-lens bodies are sold as α (ILCE-6000 is the α6000, SLT-A99
+/// the α99), and a trailing M2, M3, ... is the generation, written as a Roman
+/// numeral (DSC-RX100M3 is the RX100 III, ILCE-7RM4A the α7R IVA).
+#[must_use]
+pub fn sales_name(model: &str) -> Option<String> {
+    let (prefix, body) = model.split_once('-')?;
+    let alpha = |body: &str| format!("α{}", generation(body).unwrap_or_else(|| body.to_string()));
+    match prefix {
+        "ILCE" | "ILCA" if !body.starts_with("QX") => Some(alpha(body)),
+        "SLT" | "DSLR" => body.strip_prefix('A').map(alpha),
+        "DSC" | "ILME" => generation(body),
+        "ZV" => generation(model),
+        _ => None,
+    }
+}
+
+/// `name` with its trailing generation (M2 ... M9, optionally followed by A)
+/// as a Roman numeral; `None` when it has none.
+fn generation(name: &str) -> Option<String> {
+    const ROMAN: [&str; 8] = ["II", "III", "IV", "V", "VI", "VII", "VIII", "IX"];
+    let (rest, suffix) = name.strip_suffix('A').map_or((name, ""), |r| (r, "A"));
+    let digit = rest.chars().last()?.to_digit(10)?;
+    let stem = rest[..rest.len() - 1].strip_suffix('M')?;
+    let numeral = ROMAN.get(usize::try_from(digit).ok()?.checked_sub(2)?)?;
+    Some(format!("{stem} {numeral}{suffix}"))
 }
 
 fn gps_model(&(model, variant, arch, apps): &Gps) -> GpsModel {
@@ -639,5 +684,27 @@ mod tests {
         assert_eq!(all.more.iter().map(|g| g.models.len()).sum::<usize>(), 61);
         assert_eq!(all.gps.iter().map(|g| g.models.len()).sum::<usize>(), 26);
         assert_eq!(all.gps_untested.len(), 17);
+    }
+
+    #[test]
+    fn sales_names_follow_sonys_naming() {
+        let name = sales_name;
+        assert_eq!(name("ILCE-6000").as_deref(), Some("α6000"));
+        assert_eq!(name("ILCE-7M3").as_deref(), Some("α7 III"));
+        assert_eq!(name("ILCE-7RM4A").as_deref(), Some("α7R IVA"));
+        assert_eq!(name("ILCE-7CR").as_deref(), Some("α7CR"));
+        assert_eq!(name("ILCA-77M2").as_deref(), Some("α77 II"));
+        assert_eq!(name("SLT-A99").as_deref(), Some("α99"));
+        assert_eq!(name("DSLR-A100").as_deref(), Some("α100"));
+        assert_eq!(name("DSC-RX100M5A").as_deref(), Some("RX100 VA"));
+        assert_eq!(name("DSC-RX1RM2").as_deref(), Some("RX1R II"));
+        assert_eq!(name("ZV-E10M2").as_deref(), Some("ZV-E10 II"));
+        // Nothing to add where the model name is the sales name.
+        assert_eq!(name("ILCE-QX1"), None);
+        assert_eq!(name("ILME-FX3A"), None);
+        assert_eq!(name("DSC-HX60"), None);
+        assert_eq!(name("ZV-1F"), None);
+        assert_eq!(name("NEX-5N"), None);
+        assert_eq!(name("HDR-AS100V"), None);
     }
 }

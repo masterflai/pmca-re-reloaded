@@ -793,11 +793,11 @@ tools-written = Geschreven naar { $path }
 
 # Verwijzingen naar de projectdocumentatie
 docs-compatibility = Compatibiliteit van camera's
-docs-compatibility-hint = Het oorspronkelijke project bood een overzicht van geteste camera's. Het omvat vooral oudere cameramodellen en staat op dit adres:
 devices-note = Gegevens uit het overzicht van het oorspronkelijke project. Het getal bij app-ondersteuning is de versie van het app-platform van de camera.
 devices-more-note = De volgende camera's zijn niet uitdrukkelijk met dit programma getest. Een vinkje in de laatste kolom betekent dat de community over het gebruik ervan heeft bericht. Is daarnaast de service-shell met ✖ gemarkeerd, dan was dat gebruik niet succesvol.
-btn-more-models = Meer apparaten
-btn-more-models-hide = Meer apparaten verbergen
+devices-search = Model zoeken (bijv. ILCE-6000, α6000 of RX100 III)
+devices-match-count = { $shown } van { $total } modellen
+devices-no-match = Geen model komt overeen met de zoekopdracht.
 check-updater-yes = Uw apparaat { $model } is compatibel: volgens de apparatenlijst kan de updater-shell het bereiken.
 check-updater-no = Uw apparaat { $model } is niet compatibel: volgens de apparatenlijst kan de updater-shell het niet bereiken.
 check-updater-unknown = De compatibiliteit van uw apparaat { $model } is onbekend: het staat in geen enkele apparatenlijst van dit programma, dus het is niet bekend of de updater-shell het kan bereiken.
@@ -813,7 +813,6 @@ check-cancelled = Bewerking geannuleerd. Het apparaat is niet gewijzigd.
 devices-col-confirmed = Bevestigd
 devices-group-ilc = Systeemcamera's (E- en A-vatting)
 devices-group-remote = Live-View-afstandsbedieningen
-btn-copy-link = Koppeling kopiëren
 shutter-heading = Sluitertelling
 shutter-hint = De camera telt elke ontspanning van de sluiter en schrijft de actuele stand in elke foto die hij opslaat (ARW, JPEG of HEIF). Kies de meest recente foto om de actuele stand uit te lezen. Het bestand wordt alleen gelezen, nooit gewijzigd.
 shutter-source = Waar de teller in het bestand staat, verschilt per model. De posities komen uit openbaar gedocumenteerd onderzoek (ExifTool) en zijn niet voor elk model bevestigd.
@@ -896,7 +895,6 @@ camset-bridge-legend-named = named: gevonden via de firmwarenaam waar de positie
 camset-bridge-legend-mr-name = name: geheugenset-array gevonden via de firmwarenaam (MR_…)
 camset-bridge-other-camera = Het instellingenbestand komt van een { $file }, de back-up van een { $backup }. Records worden alleen gevonden als beide van dezelfde camera komen.
 camset-no-changes = Beide bestanden bevatten dezelfde waarden.
-msg-link-copied = Koppeling naar het klembord gekopieerd.
 
 # Foutmeldingen van de backend, gerangschikt op de stabiele code die de backend meldt.
 # Het variabele deel van een melding (een pad, een statusbyte, een apparaatfout)

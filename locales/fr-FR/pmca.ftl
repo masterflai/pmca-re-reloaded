@@ -791,11 +791,11 @@ tools-written = Écrit dans { $path }
 
 # Renvois vers la documentation du projet
 docs-compatibility = Compatibilité des appareils
-docs-compatibility-hint = Le projet d'origine a fourni un aperçu des appareils testés. Il porte surtout sur des modèles anciens et se trouve à cette adresse :
 devices-note = Données reprises de l'aperçu du projet d'origine. Le nombre à côté de la prise en charge des applis est la version de la plateforme d'applications de l'appareil.
 devices-more-note = Les appareils suivants n'ont pas été testés explicitement avec ce programme. Une coche dans la dernière colonne signifie que la communauté a signalé leur utilisation. Si le shell de service est en plus marqué ✖, cette utilisation a échoué.
-btn-more-models = Autres appareils
-btn-more-models-hide = Masquer les autres appareils
+devices-search = Rechercher un modèle (p. ex. ILCE-6000, α6000 ou RX100 III)
+devices-match-count = { $shown } modèles sur { $total }
+devices-no-match = Aucun modèle ne correspond à la recherche.
 check-updater-yes = Votre appareil { $model } est compatible : selon la liste des appareils, le shell de l'updater peut l'atteindre.
 check-updater-no = Votre appareil { $model } n'est pas compatible : selon la liste des appareils, le shell de l'updater ne peut pas l'atteindre.
 check-updater-unknown = La compatibilité de votre appareil { $model } est inconnue : il ne figure dans aucune liste d'appareils de ce programme, on ne sait donc pas si le shell de l'updater peut l'atteindre.
@@ -893,8 +893,6 @@ camset-bridge-legend-named = named : trouvé par son nom de firmware là où la 
 camset-bridge-legend-mr-name = name : tableau de jeu de mémoire trouvé par son nom de firmware (MR_…)
 camset-bridge-other-camera = Le fichier de réglages provient d'un { $file }, la sauvegarde d'un { $backup }. Les enregistrements ne sont trouvés que si les deux viennent du même appareil.
 camset-no-changes = Les deux fichiers contiennent les mêmes valeurs.
-btn-copy-link = Copier le lien
-msg-link-copied = Lien copié dans le presse-papiers.
 
 # Messages d'erreur du backend, adressés par leur code stable.
 # La partie variable (chemin, octet d'état, message de l'appareil) est ajoutée

@@ -8,7 +8,6 @@ import {
   fieldList,
   make,
   showBusy,
-  showDone,
   showError,
   showErrorKey,
   showStatus,
@@ -25,11 +24,10 @@ import type {
   PluginCompat,
   Support,
 } from "../dto";
-import { currentLocale, isCommandError, modeName, tr } from "../i18n";
+import { currentLocale, isCommandError, modeName, tr, trFill } from "../i18n";
 import { rememberCameraModel } from "../nav";
-import { deviceToggle, markCell } from "./network";
+import { markCell } from "./network";
 import { pluginText } from "./plugins";
-import { DOCS_DEVICES_URL } from "./welcome";
 
 export function viewCameraInfo(host: HTMLElement): void {
   const status = statusLine();
@@ -88,47 +86,61 @@ export function viewCameraInfo(host: HTMLElement): void {
   );
 }
 
-/** The compatibility page: the device lists, open from the start, and what plugins add. */
+/** The compatibility page: every device list at once, searchable, and what plugins add. */
 export function viewCompatibility(host: HTMLElement): void {
-  // No shell or opener plugin is bundled, so the address is shown in full and
-  // offered for copying. A link the webview silently refuses to follow would be
-  // worse than plain text the user can paste into a browser.
-  const linkStatus = statusLine();
-  const copy = make("button", { i18n: "btn-copy-link" });
-  copy.addEventListener("click", async () => {
-    try {
-      await navigator.clipboard.writeText(DOCS_DEVICES_URL);
-      showDone(linkStatus, tr("msg-link-copied"));
-    } catch (e) {
-      showError(linkStatus, e);
-    }
-  });
-
+  const search = make("input", { type: "search", className: "path-input" });
+  const count = make("p", { className: "hint" });
   const all = deviceLists();
   const devices = filledLater(
     all,
     (lists) => compatGroups(lists.compat),
     make("p", { className: "hint", i18n: "devices-note" }),
   );
-  const more = filledLater(all, (lists) => moreGroups(lists.more));
-  const moreToggle = deviceToggle(more, "btn-more-models", "btn-more-models-hide");
-
-  host.append(
-    card(
-      make("h2", { i18n: "docs-compatibility" }),
-      devices,
-      make("p", { className: "hint", i18n: "devices-more-note" }),
-      moreToggle,
-      more,
-      pluginDevices(),
-    ),
-    card(
-      make("p", { i18n: "docs-compatibility-hint" }),
-      make("p", { className: "doc-url", textContent: DOCS_DEVICES_URL }),
-      make("div", { className: "row" }, copy),
-      linkStatus,
-    ),
+  const moreNote = make("p", { className: "hint", i18n: "devices-more-note" });
+  const more = filledLater(all, (lists) => moreGroups(lists.more), moreNote);
+  const page = card(
+    make("h2", { i18n: "docs-compatibility" }),
+    make("label", { className: "field-label", i18n: "devices-search" }),
+    search,
+    count,
+    devices,
+    more,
   );
+
+  const apply = (): void => filterDevices(page, normalized(search.value), count, moreNote);
+  search.addEventListener("input", apply);
+  all.then(apply).catch(() => undefined);
+  page.append(pluginDevices(apply));
+  host.append(page);
+}
+
+/** A model name reduced for matching: lower case, α as a, no spaces or dashes. */
+function normalized(text: string): string {
+  return text.toLowerCase().replace(/alpha|α/g, "a").replace(/[^\p{L}\p{N}]/gu, "");
+}
+
+/**
+ * Show only the rows whose model or sales name contains `query`, hide tables
+ * (and their headings) left empty, and say how many rows remain.
+ */
+function filterDevices(page: HTMLElement, query: string, count: HTMLElement, moreNote: HTMLElement): void {
+  let shown = 0;
+  let total = 0;
+  for (const table of page.querySelectorAll<HTMLTableElement>("table.device-table")) {
+    let visible = 0;
+    for (const row of table.tBodies[0]?.rows ?? []) {
+      const match = (row.dataset.search ?? "").includes(query);
+      row.hidden = !match;
+      if (match) visible += 1;
+      total += 1;
+    }
+    shown += visible;
+    table.hidden = visible === 0;
+    const heading = table.previousElementSibling;
+    if (heading instanceof HTMLHeadingElement) heading.hidden = visible === 0;
+  }
+  moreNote.hidden = moreNote.parentElement?.querySelector("table:not([hidden])") === null;
+  count.textContent = shown === 0 ? tr("devices-no-match") : trFill("devices-match-count", { shown, total });
 }
 
 /**
@@ -138,7 +150,7 @@ export function viewCompatibility(host: HTMLElement): void {
  * a plugin is its author's statement, and the reader should be able to tell
  * whose statement they are reading.
  */
-function pluginDevices(): HTMLElement {
+function pluginDevices(loaded: () => void): HTMLElement {
   const box = make("div", { className: "gps-devices" });
   invoke<PluginCompat[]>("plugins_compatibility")
     .then((lists) => {
@@ -149,7 +161,7 @@ function pluginDevices(): HTMLElement {
             "device-table more",
             [...COMPAT_COLUMNS, "plugin-col-note"],
             list.entries.map((row) => [
-              row.model,
+              { model: row.model, salesName: null },
               row.arch === null ? markCell(null) : make("td", { textContent: row.arch }),
               markCell(row.apps),
               markCell(row.updater),
@@ -159,6 +171,7 @@ function pluginDevices(): HTMLElement {
           ),
         );
       }
+      loaded();
     })
     .catch(() => undefined);
   return box;
@@ -306,8 +319,8 @@ function compatTable(rows: CompatModel[]): HTMLTableElement {
   return deviceRows(
     "device-table compat",
     COMPAT_COLUMNS,
-    rows.map(({ model, arch, apps, updater }) => [
-      model,
+    rows.map(({ model, salesName, arch, apps, updater }) => [
+      { model, salesName },
       make("td", { textContent: arch }),
       markCell(apps !== null, apps ?? undefined),
       markCell(updater),
@@ -324,8 +337,8 @@ function moreTable(rows: MoreModel[]): HTMLTableElement {
   return deviceRows(
     "device-table more",
     [...COMPAT_COLUMNS, "devices-col-confirmed"],
-    rows.map(({ model, arch, apps, report }) => [
-      model,
+    rows.map(({ model, salesName, arch, apps, report }) => [
+      { model, salesName },
       arch === null ? markCell(null) : make("td", { textContent: arch }),
       markCell(apps),
       markCell(false),
@@ -335,10 +348,26 @@ function moreTable(rows: MoreModel[]): HTMLTableElement {
   );
 }
 
+/** A row's model, with the name Sony sells it under where that differs. */
+interface ModelName {
+  model: string;
+  salesName: string | null;
+}
+
+/**
+ * What a search matches a row against: the model, its sales name and, for an α
+ * body, the short form people write (a7m3 for ILCE-7M3).
+ */
+function searchKeys({ model, salesName }: ModelName): string {
+  const keys = [model, salesName ?? ""];
+  if (salesName?.startsWith("α")) keys.push(`a${model.slice(model.indexOf("-") + 1)}`);
+  return keys.map(normalized).join(" ");
+}
+
 function deviceRows(
   className: string,
   columns: string[],
-  rows: [string, ...HTMLTableCellElement[]][],
+  rows: [ModelName, ...HTMLTableCellElement[]][],
 ): HTMLTableElement {
   return make(
     "table",
@@ -347,9 +376,13 @@ function deviceRows(
     make(
       "tbody",
       {},
-      ...rows.map(([model, ...cells]) =>
-        make("tr", {}, make("th", { scope: "row", textContent: model }), ...cells),
-      ),
+      ...rows.map(([name, ...cells]) => {
+        const head = make("th", { scope: "row", textContent: name.model });
+        if (name.salesName) head.append(make("span", { className: "sales-name", textContent: name.salesName }));
+        const row = make("tr", {}, head, ...cells);
+        row.dataset.search = searchKeys(name);
+        return row;
+      }),
     ),
   );
 }

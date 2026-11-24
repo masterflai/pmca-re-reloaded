@@ -790,11 +790,11 @@ tools-written = Zapsáno do { $path }
 
 # Odkazy na dokumentaci projektu
 docs-compatibility = Kompatibilita fotoaparátů
-docs-compatibility-hint = Původní projekt poskytl přehled ověřených fotoaparátů. Zahrnuje převážně starší modely a najdete jej na této adrese:
 devices-note = Údaje z přehledu původního projektu. Číslo u podpory aplikací je verze aplikační platformy fotoaparátu.
 devices-more-note = Následující fotoaparáty nebyly s tímto programem výslovně testovány. Zaškrtnutí v posledním sloupci znamená, že komunita hlásila jejich použití. Je-li navíc servisní shell označen ✖, použití bylo neúspěšné.
-btn-more-models = Další zařízení
-btn-more-models-hide = Skrýt další zařízení
+devices-search = Hledat model (např. ILCE-6000, α6000 nebo RX100 III)
+devices-match-count = { $shown } z { $total } modelů
+devices-no-match = Hledání neodpovídá žádný model.
 check-updater-yes = Vaše zařízení { $model } je kompatibilní: podle seznamu zařízení se k němu shell updateru dokáže připojit.
 check-updater-no = Vaše zařízení { $model } není kompatibilní: podle seznamu zařízení se k němu shell updateru nedokáže připojit.
 check-updater-unknown = Kompatibilita vašeho zařízení { $model } je neznámá: není v žádném seznamu zařízení tohoto programu, takže není známo, zda se k němu shell updateru dokáže připojit.
@@ -810,7 +810,6 @@ check-cancelled = Operace zrušena. Zařízení nebylo změněno.
 devices-col-confirmed = Ověřeno
 devices-group-ilc = Systémové fotoaparáty (bajonet E a A)
 devices-group-remote = Dálková ovládání Live-View
-btn-copy-link = Kopírovat odkaz
 shutter-heading = Počítadlo závěrky
 shutter-hint = Fotoaparát počítá každé spuštění závěrky a aktuální stav zapisuje do každé fotografie, kterou uloží (ARW, JPEG nebo HEIF). Vyberte naposledy pořízenou fotografii a přečtěte aktuální stav. Soubor se pouze čte, nikdy se nemění.
 shutter-source = Umístění počítadla v souboru se liší podle modelu. Pozice pocházejí z veřejně zdokumentovaného výzkumu (ExifTool) a nejsou potvrzeny pro každý model.
@@ -893,7 +892,6 @@ camset-bridge-legend-named = named: nalezeno podle názvu ve firmwaru tam, kde s
 camset-bridge-legend-mr-name = name: pole paměťové sady nalezené podle názvu ve firmwaru (MR_…)
 camset-bridge-other-camera = Soubor nastavení pochází z modelu { $file }, záloha z modelu { $backup }. Záznamy se najdou jen tehdy, když oba pocházejí ze stejného fotoaparátu.
 camset-no-changes = Oba soubory obsahují stejné hodnoty.
-msg-link-copied = Odkaz byl zkopírován do schránky.
 
 # Chybové zprávy z backendu, adresované stabilním kódem, který backend hlásí.
 # Proměnnou část zprávy (cestu, stavový bajt, chybu zařízení) doplňuje

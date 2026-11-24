@@ -791,11 +791,11 @@ tools-written = Ditulis ke { $path }
 
 # Tautan ke dokumentasi proyek
 docs-compatibility = Kompatibilitas kamera
-docs-compatibility-hint = Proyek aslinya menyediakan ikhtisar kamera yang telah diuji. Ikhtisar ini terutama mencakup model kamera lama dan tersedia di alamat berikut:
 devices-note = Data diambil dari ikhtisar proyek asli. Angka di samping dukungan aplikasi adalah versi platform aplikasi kamera.
 devices-more-note = Kamera berikut belum diuji secara khusus dengan program ini. Tanda centang di kolom terakhir berarti komunitas telah melaporkan penggunaannya. Jika shell servis juga ditandai ✖, penggunaan tersebut gagal.
-btn-more-models = Perangkat lainnya
-btn-more-models-hide = Sembunyikan perangkat lainnya
+devices-search = Cari model (mis. ILCE-6000, α6000, atau RX100 III)
+devices-match-count = { $shown } dari { $total } model
+devices-no-match = Tidak ada model yang cocok dengan pencarian.
 check-updater-yes = Perangkat Anda { $model } kompatibel: menurut daftar perangkat, shell updater dapat menjangkaunya.
 check-updater-no = Perangkat Anda { $model } tidak kompatibel: menurut daftar perangkat, shell updater tidak dapat menjangkaunya.
 check-updater-unknown = Kompatibilitas perangkat Anda { $model } tidak diketahui: perangkat ini tidak ada di daftar perangkat mana pun dalam program ini, sehingga tidak diketahui apakah shell updater dapat menjangkaunya.
@@ -811,7 +811,6 @@ check-cancelled = Operasi dibatalkan. Perangkat tidak diubah.
 devices-col-confirmed = Terkonfirmasi
 devices-group-ilc = Kamera lensa tukar (dudukan E dan A)
 devices-group-remote = Remote Live-View
-btn-copy-link = Salin tautan
 shutter-heading = Penghitung rana
 shutter-hint = Kamera menghitung setiap pelepasan rana dan menulis nilai terkini ke setiap foto yang disimpannya (ARW, JPEG, atau HEIF). Pilih foto yang paling akhir diambil untuk membaca nilai terkini. Berkas hanya dibaca, tidak pernah diubah.
 shutter-source = Letak penghitung di dalam berkas berbeda-beda menurut model. Posisinya berasal dari riset yang didokumentasikan secara publik (ExifTool) dan belum dikonfirmasi untuk setiap model.
@@ -894,7 +893,6 @@ camset-bridge-legend-named = named: ditemukan lewat nama firmware ketika aturan 
 camset-bridge-legend-mr-name = name: larik set memori ditemukan lewat nama firmware (MR_…)
 camset-bridge-other-camera = Berkas pengaturan berasal dari model { $file }, cadangan dari model { $backup }. Entri hanya ditemukan bila keduanya berasal dari kamera yang sama.
 camset-no-changes = Kedua berkas berisi nilai yang sama.
-msg-link-copied = Tautan disalin ke papan klip.
 
 # Pesan kegagalan backend, dikunci oleh kode stabil yang dilaporkan backend.
 # Bagian variabel dari pesan (jalur, bita status, galat perangkat) ditambahkan

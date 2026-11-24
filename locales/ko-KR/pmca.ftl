@@ -802,11 +802,11 @@ tools-written = { $path }에 저장했습니다
 
 # 프로젝트 문서 링크
 docs-compatibility = 카메라 호환성
-docs-compatibility-hint = 원래 프로젝트에서 테스트된 카메라 개요를 제공했습니다. 주로 이전 카메라 모델을 다루며 다음 주소에서 확인할 수 있습니다:
 devices-note = 원래 프로젝트의 개요에서 가져온 정보입니다. 앱 지원 옆의 숫자는 카메라 앱 플랫폼의 버전입니다.
 devices-more-note = 다음 카메라는 이 프로그램으로 명시적으로 테스트되지 않았습니다. 마지막 열의 체크 표시는 커뮤니티에서 사용했다고 보고한 경우를 뜻합니다. 서비스 셸에도 ✖가 표시된 경우 그 사용은 실패한 것입니다.
-btn-more-models = 추가 장치
-btn-more-models-hide = 추가 장치 숨기기
+devices-search = 모델 검색(예: ILCE-6000, α6000, RX100 III)
+devices-match-count = { $total }개 모델 중 { $shown }개
+devices-no-match = 검색과 일치하는 모델이 없습니다.
 check-updater-yes = 장치 { $model }은(는) 호환됩니다. 장치 목록에 따르면 업데이터 셸이 이 장치에 접근할 수 있습니다.
 check-updater-no = 장치 { $model }은(는) 호환되지 않습니다. 장치 목록에 따르면 업데이터 셸이 이 장치에 접근할 수 없습니다.
 check-updater-unknown = 장치 { $model }의 호환성을 알 수 없습니다. 이 프로그램의 어떤 장치 목록에도 없으므로 업데이터 셸이 이 장치에 접근할 수 있는지 알 수 없습니다.
@@ -822,7 +822,6 @@ check-cancelled = 취소되었습니다. 장치는 수정되지 않았습니다.
 devices-col-confirmed = 확인됨
 devices-group-ilc = 렌즈 교환식 카메라 (E 마운트 및 A 마운트)
 devices-group-remote = 라이브 뷰 리모컨
-btn-copy-link = 링크 복사
 shutter-heading = 셔터 횟수
 shutter-hint = 카메라는 셔터를 누를 때마다 횟수를 세고, 저장하는 모든 사진(ARW, JPEG 또는 HEIF)에 현재 값을 기록합니다. 현재 횟수를 읽으려면 가장 최근에 촬영한 사진을 선택하십시오. 파일은 읽기만 하며 수정하지 않습니다.
 shutter-source = 파일 안에서 횟수가 저장되는 위치는 모델마다 다릅니다. 이 위치 정보는 공개적으로 문서화된 연구(ExifTool)에서 가져온 것이며 모든 모델에 대해 확인된 것은 아닙니다.
@@ -905,7 +904,6 @@ camset-bridge-legend-named = named: 위치 규칙이 통하지 않는 곳에서 
 camset-bridge-legend-mr-name = name: 펌웨어 이름으로 찾은 메모리 세트 배열 (MR_…)
 camset-bridge-other-camera = 설정 파일은 { $file } 모델, 백업은 { $backup } 모델에서 나왔습니다. 둘 다 같은 카메라에서 나온 경우에만 레코드를 찾을 수 있습니다.
 camset-no-changes = 두 파일의 값이 같습니다.
-msg-link-copied = 링크를 클립보드에 복사했습니다.
 
 # 백엔드 오류 메시지이며, 백엔드가 보고하는 고정 코드를 키로 사용합니다.
 # 메시지의 가변 부분(경로, 상태 바이트, 장치 오류)은 프런트엔드가 덧붙이므로,

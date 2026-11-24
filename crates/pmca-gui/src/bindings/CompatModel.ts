@@ -9,6 +9,10 @@ export type CompatModel = {
  */
 model: string, 
 /**
+ * The name Sony sells it under, where that differs; see [`sales_name`].
+ */
+salesName: string | null, 
+/**
  * Processor architecture.
  */
 arch: string, 

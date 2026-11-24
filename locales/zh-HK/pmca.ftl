@@ -802,11 +802,11 @@ tools-written = 已寫入 { $path }
 
 # 項目文件的連結
 docs-compatibility = 相機相容性
-docs-compatibility-hint = 原有項目提供了一份已測試相機的概覽。內容主要涵蓋較舊的相機型號，可於以下網址查閱：
 devices-note = 取自原有項目的概覽。應用程式支援旁邊的數字是相機應用程式平台的版本。
 devices-more-note = 以下相機未曾以本程式進行明確測試。最後一欄中的剔號表示社群曾報告使用過這些相機。如服務模式 Shell 一欄同時標示為 ✖，則表示該次使用失敗。
-btn-more-models = 更多裝置
-btn-more-models-hide = 隱藏更多裝置
+devices-search = 搜尋型號（例如 ILCE-6000、α6000 或 RX100 III）
+devices-match-count = { $total } 個型號中的 { $shown } 個
+devices-no-match = 沒有與搜尋相符的型號。
 check-updater-yes = 您的裝置 { $model } 相容：根據裝置清單，更新模式 Shell 能夠連接此裝置。
 check-updater-no = 您的裝置 { $model } 不相容：根據裝置清單，更新模式 Shell 無法連接此裝置。
 check-updater-unknown = 您的裝置 { $model } 的相容性不明：此裝置不在本程式的任何裝置清單中，因此無法得知更新模式 Shell 能否連接此裝置。
@@ -822,7 +822,6 @@ check-cancelled = 已取消。裝置未被修改。
 devices-col-confirmed = 已確認
 devices-group-ilc = 可換鏡頭相機（E 接環及 A 接環）
 devices-group-remote = 即時取景遙控器
-btn-copy-link = 複製連結
 shutter-heading = 快門次數
 shutter-hint = 相機會計算每一次快門釋放，並將目前的數字寫入它儲存的每張相片（ARW、JPEG 或 HEIF）。請選擇最近拍攝的相片以讀取目前的次數。檔案只會被讀取，絕不會被修改。
 shutter-source = 次數儲存在檔案中的位置因型號而異。這些位置來自公開記錄的研究（ExifTool），並未就每個型號獲得確認。
@@ -905,7 +904,6 @@ camset-bridge-legend-named = named：位置規則失效時按固件名稱找到
 camset-bridge-legend-mr-name = name：按固件名稱找到的記憶組陣列（MR_…）
 camset-bridge-other-camera = 設定檔案來自型號 { $file }，備份來自型號 { $backup }。只有兩者來自同一部相機時才能找到記錄。
 camset-no-changes = 兩個檔案的值相同。
-msg-link-copied = 連結已複製至剪貼簿。
 
 # 後端失敗訊息，以後端報告的固定代碼作為鍵。
 # 訊息中的可變部分（路徑、狀態位元組、裝置錯誤）由前端

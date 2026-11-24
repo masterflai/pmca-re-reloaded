@@ -13,6 +13,10 @@ export type MoreModel = {
  */
 model: string, 
 /**
+ * The name Sony sells it under, where that differs; see [`sales_name`].
+ */
+salesName: string | null, 
+/**
  * Processor architecture, where a source names it.
  */
 arch: string | null, 

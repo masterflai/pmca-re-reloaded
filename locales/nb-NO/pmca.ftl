@@ -791,11 +791,11 @@ tools-written = Skrevet til { $path }
 
 # Henvisninger til prosjektdokumentasjonen
 docs-compatibility = Kamerakompatibilitet
-docs-compatibility-hint = Det opprinnelige prosjektet ga en oversikt over testede kameraer. Den omfatter hovedsakelig eldre kameramodeller og finnes på denne adressen:
 devices-note = Opplysninger fra oversikten i det opprinnelige prosjektet. Tallet ved app-støtte er versjonen av kameraets app-plattform.
 devices-more-note = Følgende kameraer er ikke uttrykkelig testet med dette programmet. En hake i siste kolonne betyr at fellesskapet har meldt om bruk av dem. Er servicekonsollen i tillegg merket med ✖, mislyktes bruken.
-btn-more-models = Flere enheter
-btn-more-models-hide = Skjul flere enheter
+devices-search = Søk etter modell (f.eks. ILCE-6000, α6000 eller RX100 III)
+devices-match-count = { $shown } av { $total } modeller
+devices-no-match = Ingen modell samsvarer med søket.
 check-updater-yes = Enheten din { $model } er kompatibel: ifølge enhetslisten kan updater-konsollen nå den.
 check-updater-no = Enheten din { $model } er ikke kompatibel: ifølge enhetslisten kan updater-konsollen ikke nå den.
 check-updater-unknown = Kompatibiliteten til enheten din { $model } er ukjent: den står ikke på noen av programmets enhetslister, så det er ikke kjent om updater-konsollen kan nå den.
@@ -811,7 +811,6 @@ check-cancelled = Handlingen ble avbrutt. Enheten ble ikke endret.
 devices-col-confirmed = Bekreftet
 devices-group-ilc = Systemkameraer (E- og A-fatning)
 devices-group-remote = Live-View-fjernkontroller
-btn-copy-link = Kopier lenke
 shutter-heading = Lukkerteller
 shutter-hint = Kameraet teller hver utløsning av lukkeren og skriver gjeldende stand inn i hvert bilde det lagrer (ARW, JPEG eller HEIF). Velg det sist tatte bildet for å lese av gjeldende stand. Filen blir bare lest, aldri endret.
 shutter-source = Hvor telleren står i filen, varierer fra modell til modell. Posisjonene kommer fra offentlig dokumenterte undersøkelser (ExifTool) og er ikke bekreftet for alle modeller.
@@ -894,7 +893,6 @@ camset-bridge-legend-named = named: funnet via fastvarenavnet der posisjonsregel
 camset-bridge-legend-mr-name = name: minnesett-matrise funnet via fastvarenavnet (MR_…)
 camset-bridge-other-camera = Innstillingsfilen kommer fra et { $file }, sikkerhetskopien fra et { $backup }. Poster finnes bare når begge kommer fra samme kamera.
 camset-no-changes = Begge filene inneholder de samme verdiene.
-msg-link-copied = Lenken er kopiert til utklippstavlen.
 
 # Feilmeldinger fra bakstykket, slått opp med den stabile koden det melder fra om.
 # Den variable delen av en melding (en bane, en statusbyte, en enhetsfeil)

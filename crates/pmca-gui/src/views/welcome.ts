@@ -147,6 +147,3 @@ function welcomeMap(): HTMLElement {
   }
   return map;
 }
-
-/** Where the project documents which cameras are supported. */
-export const DOCS_DEVICES_URL = "https://openmemories.readthedocs.io/devices.html";

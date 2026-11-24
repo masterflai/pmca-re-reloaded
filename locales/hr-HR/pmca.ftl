@@ -790,11 +790,11 @@ tools-written = Zapisano u { $path }
 
 # Poveznice na dokumentaciju projekta
 docs-compatibility = Kompatibilnost fotoaparata
-docs-compatibility-hint = Izvorni projekt objavio je pregled provjerenih fotoaparata. Obuhvaća pretežno starije modele i nalazi se na ovoj adresi:
 devices-note = Podaci iz pregleda izvornog projekta. Broj uz podršku za aplikacije verzija je platforme za aplikacije fotoaparata.
 devices-more-note = Sljedeći fotoaparati nisu izričito testirani s ovim programom. Kvačica u posljednjem stupcu znači da je zajednica izvijestila o njihovoj upotrebi. Ako je uz to servisna ljuska označena s ✖, upotreba nije uspjela.
-btn-more-models = Ostali uređaji
-btn-more-models-hide = Sakrij ostale uređaje
+devices-search = Traži model (npr. ILCE-6000, α6000 ili RX100 III)
+devices-match-count = { $shown } od { $total } modela
+devices-no-match = Nijedan model ne odgovara pretrazi.
 check-updater-yes = Vaš uređaj { $model } je kompatibilan: prema popisu uređaja ljuska updatera može ga dosegnuti.
 check-updater-no = Vaš uređaj { $model } nije kompatibilan: prema popisu uređaja ljuska updatera ne može ga dosegnuti.
 check-updater-unknown = Kompatibilnost vašeg uređaja { $model } nije poznata: nije ni na jednom popisu uređaja ovog programa, pa se ne zna može li ga ljuska updatera dosegnuti.
@@ -810,7 +810,6 @@ check-cancelled = Postupak je otkazan. Uređaj nije izmijenjen.
 devices-col-confirmed = Potvrđeno
 devices-group-ilc = Fotoaparati s izmjenjivim objektivima (bajunet E i A)
 devices-group-remote = Daljinski upravljači Live-View
-btn-copy-link = Kopiraj poveznicu
 shutter-heading = Brojač okidanja
 shutter-hint = Fotoaparat broji svako okidanje zatvarača i trenutačno stanje upisuje u svaku fotografiju koju spremi (ARW, JPEG ili HEIF). Odaberite posljednju snimljenu fotografiju kako biste očitali trenutačno stanje. Datoteka se samo čita, nikada se ne mijenja.
 shutter-source = Položaj brojača u datoteci razlikuje se od modela do modela. Položaji potječu iz javno dokumentiranih istraživanja (ExifTool) i nisu potvrđeni za svaki model.
@@ -893,7 +892,6 @@ camset-bridge-legend-named = named: pronađeno po nazivu u firmveru gdje pravilo
 camset-bridge-legend-mr-name = name: polje memorijskog skupa pronađeno po nazivu u firmveru (MR_…)
 camset-bridge-other-camera = Datoteka postavki potječe s modela { $file }, sigurnosna kopija s modela { $backup }. Zapisi se pronalaze samo ako oboje potječu s istog fotoaparata.
 camset-no-changes = Obje datoteke sadrže iste vrijednosti.
-msg-link-copied = Poveznica je kopirana u međuspremnik.
 
 # Poruke o pogreškama pozadinskog sloja, prema stabilnoj šifri koju on prijavljuje.
 # Promjenjivi dio poruke (putanju, statusni bajt, pogrešku uređaja) dodaje

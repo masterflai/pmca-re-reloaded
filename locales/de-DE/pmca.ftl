@@ -797,11 +797,11 @@ tools-written = Geschrieben nach { $path }
 
 # Verweise auf die Projektdokumentation
 docs-compatibility = Kamera-Kompatibilität
-docs-compatibility-hint = Das ursprüngliche Projekt hat eine Übersicht geprüfter Kameras bereitgestellt. Sie umfasst vorwiegend ältere Kameramodelle und ist unter folgender Adresse zu finden:
 devices-note = Angaben aus der Übersicht des ursprünglichen Projekts. Die Zahl beim App-Support ist die Version der App-Plattform der Kamera.
 devices-more-note = Die folgenden Kameras wurden mit diesem Programm nicht ausdrücklich getestet. Ein Haken in der letzten Spalte bedeutet, dass die Community über ihren Einsatz berichtet hat. Ist zusätzlich die Service-Shell mit ✖ markiert, war der Einsatz erfolglos.
-btn-more-models = Weitere Geräte
-btn-more-models-hide = Weitere Geräte ausblenden
+devices-search = Modell suchen (z. B. ILCE-6000, α6000 oder RX100 III)
+devices-match-count = { $shown } von { $total } Modellen
+devices-no-match = Kein Modell passt zur Suche.
 check-updater-yes = Ihr Gerät { $model } ist kompatibel: Laut Geräteliste lässt es sich über die Updater-Shell ansprechen.
 check-updater-no = Ihr Gerät { $model } ist nicht kompatibel: Laut Geräteliste lässt es sich nicht über die Updater-Shell ansprechen.
 check-updater-unknown = Die Kompatibilität Ihres Geräts { $model } ist unbekannt: Es steht in keiner Geräteliste dieses Programms, daher ist nicht bekannt, ob es sich über die Updater-Shell ansprechen lässt.
@@ -817,7 +817,6 @@ check-cancelled = Vorgang abgebrochen. Das Gerät wurde nicht verändert.
 devices-col-confirmed = Bestätigt
 devices-group-ilc = Systemkameras (E- und A-Mount)
 devices-group-remote = Live-View-Fernbedienungen
-btn-copy-link = Link kopieren
 shutter-heading = Auslösezähler
 shutter-hint = Die Kamera zählt jede Auslösung des Verschlusses und schreibt den aktuellen Stand in jedes Foto, das sie speichert (ARW, JPEG oder HEIF). Wählen Sie das zuletzt aufgenommene Foto aus, um den aktuellen Stand auszulesen. Die Datei wird nur gelesen, nicht verändert.
 shutter-source = Wo der Zähler in der Datei steht, unterscheidet sich je nach Modell. Die Positionen stammen aus öffentlich dokumentierten Untersuchungen (ExifTool) und sind nicht für jedes Modell bestätigt.
@@ -900,7 +899,6 @@ camset-bridge-legend-named = named: über den Firmware-Namen gefunden, wo die Po
 camset-bridge-legend-mr-name = name: Speicherset-Array über den Firmware-Namen gefunden (MR_…)
 camset-bridge-other-camera = Die Einstellungsdatei stammt vom Modell { $file }, das Backup vom Modell { $backup }. Einträge werden nur gefunden, wenn beide von derselben Kamera stammen.
 camset-no-changes = Beide Dateien enthalten dieselben Werte.
-msg-link-copied = Link in die Zwischenablage kopiert.
 
 # Fehlermeldungen des Backends, adressiert über den stabilen Fehlercode.
 # Der variable Teil (Pfad, Statusbyte, Gerätemeldung) wird vom Frontend

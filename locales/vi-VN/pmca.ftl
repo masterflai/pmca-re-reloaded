@@ -802,11 +802,11 @@ tools-written = Đã ghi vào { $path }
 
 # Liên kết đến tài liệu dự án
 docs-compatibility = Khả năng tương thích của máy ảnh
-docs-compatibility-hint = Dự án gốc đã cung cấp bảng tổng quan về các máy ảnh đã được kiểm thử. Bảng này chủ yếu bao gồm các kiểu máy ảnh cũ và có tại địa chỉ sau:
 devices-note = Lấy từ bảng tổng quan của dự án gốc. Con số bên cạnh mục hỗ trợ ứng dụng là phiên bản nền tảng ứng dụng của máy ảnh.
 devices-more-note = Các máy ảnh sau chưa được kiểm thử cụ thể với chương trình này. Dấu tích ở cột cuối cùng nghĩa là cộng đồng đã báo cáo có sử dụng chúng. Nếu trình bao dịch vụ cũng được đánh dấu ✖, việc sử dụng đó đã thất bại.
-btn-more-models = Thêm thiết bị
-btn-more-models-hide = Ẩn bớt thiết bị
+devices-search = Tìm mẫu máy (vd. ILCE-6000, α6000 hoặc RX100 III)
+devices-match-count = { $shown } / { $total } mẫu máy
+devices-no-match = Không có mẫu máy nào khớp với tìm kiếm.
 check-updater-yes = Thiết bị { $model } của bạn tương thích: theo danh sách thiết bị, trình bao cập nhật có thể kết nối với thiết bị này.
 check-updater-no = Thiết bị { $model } của bạn không tương thích: theo danh sách thiết bị, trình bao cập nhật không thể kết nối với thiết bị này.
 check-updater-unknown = Chưa rõ khả năng tương thích của thiết bị { $model }: thiết bị không có trong bất kỳ danh sách thiết bị nào của chương trình này, nên không biết trình bao cập nhật có thể kết nối với thiết bị hay không.
@@ -822,7 +822,6 @@ check-cancelled = Đã hủy. Thiết bị không bị sửa đổi.
 devices-col-confirmed = Đã xác nhận
 devices-group-ilc = Máy ảnh ống kính rời (ngàm E và ngàm A)
 devices-group-remote = Bộ điều khiển từ xa Live-View
-btn-copy-link = Sao chép liên kết
 shutter-heading = Số lần chụp
 shutter-hint = Máy ảnh đếm mỗi lần nhả màn trập và ghi con số hiện tại vào mỗi ảnh mà nó lưu (ARW, JPEG hoặc HEIF). Hãy chọn ảnh được chụp gần đây nhất để đọc số lần chụp hiện tại. Tệp chỉ được đọc, không bao giờ bị sửa đổi.
 shutter-source = Vị trí lưu số lần chụp trong tệp khác nhau giữa các kiểu máy. Các vị trí này lấy từ nghiên cứu được công bố công khai (ExifTool) và chưa được xác nhận cho mọi kiểu máy.
@@ -905,7 +904,6 @@ camset-bridge-legend-named = named: tìm thấy qua tên phần sụn khi quy t�
 camset-bridge-legend-mr-name = name: mảng bộ ghi nhớ tìm thấy qua tên phần sụn (MR_…)
 camset-bridge-other-camera = Tệp cài đặt đến từ { $file }, bản sao lưu đến từ { $backup }. Chỉ tìm được bản ghi khi cả hai đến từ cùng một máy ảnh.
 camset-no-changes = Hai tệp chứa cùng các giá trị.
-msg-link-copied = Đã sao chép liên kết vào bảng tạm.
 
 # Thông báo lỗi của phần phụ trợ, theo mã ổn định mà phần phụ trợ báo cáo.
 # Phần thay đổi của thông báo (đường dẫn, byte trạng thái, lỗi thiết bị) được giao

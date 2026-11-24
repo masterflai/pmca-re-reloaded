@@ -790,11 +790,11 @@ tools-written = Skrevet til { $path }
 
 # Henvisninger til projektets dokumentation
 docs-compatibility = Kamerakompatibilitet
-docs-compatibility-hint = Det oprindelige projekt stillede en oversigt over testede kameraer til rådighed. Den omfatter hovedsageligt ældre kameramodeller og findes på denne adresse:
 devices-note = Oplysninger fra det oprindelige projekts oversigt. Tallet ved app-understøttelse er versionen af kameraets app-platform.
 devices-more-note = Følgende kameraer er ikke udtrykkeligt testet med dette program. Et flueben i den sidste kolonne betyder, at fællesskabet har meldt om brug af dem. Er serviceshellen desuden markeret med ✖, mislykkedes brugen.
-btn-more-models = Flere enheder
-btn-more-models-hide = Skjul flere enheder
+devices-search = Søg efter model (f.eks. ILCE-6000, α6000 eller RX100 III)
+devices-match-count = { $shown } af { $total } modeller
+devices-no-match = Ingen model matcher søgningen.
 check-updater-yes = Din enhed { $model } er kompatibel: ifølge enhedslisten kan updater-shellen nå den.
 check-updater-no = Din enhed { $model } er ikke kompatibel: ifølge enhedslisten kan updater-shellen ikke nå den.
 check-updater-unknown = Kompatibiliteten af din enhed { $model } er ukendt: den står ikke på nogen af programmets enhedslister, så det vides ikke, om updater-shellen kan nå den.
@@ -810,7 +810,6 @@ check-cancelled = Handlingen blev annulleret. Enheden blev ikke ændret.
 devices-col-confirmed = Bekræftet
 devices-group-ilc = Systemkameraer (E- og A-fatning)
 devices-group-remote = Live-View-fjernbetjeninger
-btn-copy-link = Kopiér link
 shutter-heading = Lukkertæller
 shutter-hint = Kameraet tæller hver udløsning af lukkeren og skriver den aktuelle stand i hvert foto, det gemmer (ARW, JPEG eller HEIF). Vælg det senest optagne foto for at aflæse den aktuelle stand. Filen bliver kun læst, aldrig ændret.
 shutter-source = Hvor tælleren står i filen, varierer fra model til model. Positionerne stammer fra offentligt dokumenterede undersøgelser (ExifTool) og er ikke bekræftet for alle modeller.
@@ -893,7 +892,6 @@ camset-bridge-legend-named = named: fundet via firmwarenavnet, hvor positionsreg
 camset-bridge-legend-mr-name = name: hukommelsessæt-array fundet via firmwarenavnet (MR_…)
 camset-bridge-other-camera = Indstillingsfilen stammer fra et { $file }, backuppen fra et { $backup }. Poster findes kun, når begge kommer fra samme kamera.
 camset-no-changes = Begge filer indeholder de samme værdier.
-msg-link-copied = Linket er kopieret til udklipsholderen.
 
 # Backendens fejlmeddelelser, slået op via den stabile kode, backenden melder.
 # Den variable del af en meddelelse (en sti, en statusbyte, en enhedsfejl)

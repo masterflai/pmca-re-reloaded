@@ -791,11 +791,11 @@ tools-written = { $path } dosyasına yazıldı
 
 # Proje belgelerine bağlantılar
 docs-compatibility = Kamera uyumluluğu
-docs-compatibility-hint = Özgün proje, test edilmiş kameraların bir listesini sunmuştu. Liste ağırlıklı olarak eski kamera modellerini kapsar ve şu adrestedir:
 devices-note = Veriler özgün projenin listesinden alınmıştır. Uygulama desteğinin yanındaki sayı, kameranın uygulama platformunun sürümüdür.
 devices-more-note = Aşağıdaki kameralar bu programla özel olarak test edilmemiştir. Son sütundaki onay işareti, topluluğun bu kameraların kullanımını bildirdiği anlamına gelir. Servis kabuğu ayrıca ✖ ile işaretliyse kullanım başarısız olmuştur.
-btn-more-models = Diğer cihazlar
-btn-more-models-hide = Diğer cihazları gizle
+devices-search = Model ara (ör. ILCE-6000, α6000 veya RX100 III)
+devices-match-count = { $total } modelden { $shown } tanesi
+devices-no-match = Aramayla eşleşen model yok.
 check-updater-yes = { $model } cihazınız uyumlu: cihaz listesine göre güncelleyici kabuğu ona erişebilir.
 check-updater-no = { $model } cihazınız uyumlu değil: cihaz listesine göre güncelleyici kabuğu ona erişemez.
 check-updater-unknown = { $model } cihazınızın uyumluluğu bilinmiyor: bu programın hiçbir cihaz listesinde yer almıyor, bu nedenle güncelleyici kabuğunun ona erişip erişemeyeceği bilinmiyor.
@@ -811,7 +811,6 @@ check-cancelled = İşlem iptal edildi. Cihaz değiştirilmedi.
 devices-col-confirmed = Doğrulandı
 devices-group-ilc = Değiştirilebilir objektifli kameralar (E ve A yuvası)
 devices-group-remote = Live-View uzaktan kumandaları
-btn-copy-link = Bağlantıyı kopyala
 shutter-heading = Deklanşör sayacı
 shutter-hint = Kamera her deklanşör basışını sayar ve güncel değeri kaydettiği her fotoğrafa yazar (ARW, JPEG veya HEIF). Güncel değeri okumak için en son çekilen fotoğrafı seçin. Dosya yalnızca okunur, asla değiştirilmez.
 shutter-source = Sayacın dosyadaki konumu modele göre değişir. Konumlar herkese açık olarak belgelenmiş araştırmalardan (ExifTool) alınmıştır ve her model için doğrulanmamıştır.
@@ -894,7 +893,6 @@ camset-bridge-legend-named = named: konum kuralının işlemediği yerde ürün 
 camset-bridge-legend-mr-name = name: ürün yazılımı adıyla bulunan bellek seti dizisi (MR_…)
 camset-bridge-other-camera = Ayar dosyası bir { $file }, yedek ise bir { $backup } cihazından geliyor. Kayıtlar yalnızca ikisi aynı kameradan geldiğinde bulunur.
 camset-no-changes = İki dosya da aynı değerleri içeriyor.
-msg-link-copied = Bağlantı panoya kopyalandı.
 
 # Arka uç hata iletileri, arka ucun bildirdiği kararlı koda göre.
 # İletinin değişken bölümünü (yol, durum baytı, aygıt hatası) ön yüz ekler;

@@ -789,11 +789,11 @@ tools-written = { $path } に書き出しました
 
 # プロジェクトドキュメントへの案内
 docs-compatibility = カメラの対応状況
-docs-compatibility-hint = 元のプロジェクトは、動作確認済みカメラの一覧を公開していました。主に旧型のモデルが対象で、次のアドレスにあります:
 devices-note = 元のプロジェクトの一覧に基づくデータです。アプリ対応の横の数字は、カメラのアプリプラットフォームのバージョンです。
 devices-more-note = 以下のカメラは、このプログラムで明示的にテストされていません。最後の列のチェックは、コミュニティから使用の報告があることを示します。さらにサービスシェルに ✖ が付いている場合、その使用は失敗しています。
-btn-more-models = その他の機種
-btn-more-models-hide = その他の機種を隠す
+devices-search = モデルを検索（例：ILCE-6000、α6000、RX100 III）
+devices-match-count = { $total } 機種中 { $shown } 機種
+devices-no-match = 検索に一致する機種はありません。
 check-updater-yes = お使いのデバイス { $model } は対応しています。デバイス一覧によると、アップデーターシェルで接続できます。
 check-updater-no = お使いのデバイス { $model } は対応していません。デバイス一覧によると、アップデーターシェルで接続できません。
 check-updater-unknown = お使いのデバイス { $model } の対応状況は不明です。このプログラムのどのデバイス一覧にも載っていないため、アップデーターシェルで接続できるかどうかはわかりません。
@@ -891,8 +891,6 @@ camset-bridge-legend-named = named: 位置の規則で見つからない場合�
 camset-bridge-legend-mr-name = name: ファームウェア名で特定したメモリーセット配列 (MR_…)
 camset-bridge-other-camera = 設定ファイルは { $file }、バックアップは { $backup } のものです。両方が同じカメラのものでなければレコードは見つかりません。
 camset-no-changes = 両方のファイルの値は同じです。
-btn-copy-link = リンクをコピー
-msg-link-copied = リンクをクリップボードにコピーしました。
 
 # バックエンドのエラーメッセージ。安定したエラーコードで参照する。
 # 可変部分（パス、ステータスバイト、機器のメッセージ）はフロントエンドが

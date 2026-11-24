@@ -802,11 +802,11 @@ tools-written = Written to { $path }
 
 # Pointers to the project documentation
 docs-compatibility = Camera compatibility
-docs-compatibility-hint = The original project provided an overview of tested cameras. It covers mainly older camera models and can be found at this address:
 devices-note = Taken from the original project's overview. The number beside app support is the version of the camera's app platform.
 devices-more-note = The following cameras have not been explicitly tested with this program. A tick in the last column means the community has reported using them. Where the service shell is also marked ✖, that use failed.
-btn-more-models = More devices
-btn-more-models-hide = Hide more devices
+devices-search = Search model (e.g. ILCE-6000, α6000 or RX100 III)
+devices-match-count = { $shown } of { $total } models
+devices-no-match = No model matches the search.
 check-updater-yes = Your device { $model } is compatible: according to the device list, the updater shell can reach it.
 check-updater-no = Your device { $model } is not compatible: according to the device list, the updater shell cannot reach it.
 check-updater-unknown = The compatibility of your device { $model } is unknown: it is not in any of this program's device lists, so whether the updater shell can reach it is not known.
@@ -822,7 +822,6 @@ check-cancelled = Cancelled. The device was not modified.
 devices-col-confirmed = Confirmed
 devices-group-ilc = Interchangeable-lens cameras (E- and A-mount)
 devices-group-remote = Live-View remotes
-btn-copy-link = Copy link
 shutter-heading = Shutter count
 shutter-hint = The camera counts every shutter release and writes the current figure into every photo it saves (ARW, JPEG or HEIF). Select the most recently taken photo to read the current count. The file is only read, never modified.
 shutter-source = Where the count is stored in the file differs between models. The positions come from publicly documented research (ExifTool) and are not confirmed for every model.
@@ -905,7 +904,6 @@ camset-bridge-legend-named = named: found by its firmware name where the positio
 camset-bridge-legend-mr-name = name: memory-set array found by its firmware name (MR_…)
 camset-bridge-other-camera = The settings file comes from model { $file }, the backup from model { $backup }. Records are only found when both come from the same camera.
 camset-no-changes = Both files hold the same values.
-msg-link-copied = Link copied to the clipboard.
 
 # Backend failure messages, keyed by the stable code the backend reports.
 # The variable part of a message (a path, a status byte, a device error) is

@@ -10,6 +10,11 @@ All notable changes to this project are documented here. The format follows
 
 - The GUI window reopens at the size and position it had when it was last
   closed.
+- The camera compatibility page shows every model at once and can be
+  searched by model or sales name (ILCE-6000, α6000, a6000, RX100 III); the
+  list gives the sales name below the model where it differs. The pointer to
+  the original project's device list is gone; the project is credited on the
+  About page.
 
 ### Security
 
