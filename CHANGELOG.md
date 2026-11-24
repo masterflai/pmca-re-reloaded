@@ -6,6 +6,8 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+## [1.15.1] - 2026-11-24
+
 ### Fixed
 
 - A dropdown's open list, such as the Apps page's source filter, showed
@@ -1121,6 +1123,7 @@ and Linux.
 - **Device list** in the app with the functions each known model supports,
   plus community reports for further models.
 
+[1.15.1]: https://github.com/masterflai/pmca-re-reloaded/compare/v1.15.0...v1.15.1
 [1.15.0]: https://github.com/masterflai/pmca-re-reloaded/compare/v1.14.1...v1.15.0
 [1.14.1]: https://github.com/masterflai/pmca-re-reloaded/compare/v1.14.0...v1.14.1
 [1.14.0]: https://github.com/masterflai/pmca-re-reloaded/compare/v1.13.0...v1.14.0
