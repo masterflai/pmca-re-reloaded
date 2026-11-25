@@ -81,8 +81,12 @@ pub struct SourceRepo {
     pub id: String,
     /// The repository on GitHub.
     pub url: String,
+    /// The repository's name, for prefilling a publish form.
+    pub name: String,
     /// The repository's own description.
     pub description: Option<String>,
+    /// The website its owner gave, for prefilling a publish form.
+    pub homepage: Option<String>,
     /// How many GitHub users have starred it.
     pub stars: u32,
     /// Last push, ISO-8601.
@@ -299,7 +303,9 @@ fn describe(info: &RepoInfo, added: &[Stored]) -> SourceRepo {
         url: format!("https://github.com/{id}"),
         added: added.iter().any(|s| s.id().eq_ignore_ascii_case(&id)),
         id,
+        name: info.name.clone(),
         description: info.description.clone(),
+        homepage: info.homepage.clone(),
         stars: info.stars,
         pushed_at: info.pushed_at.clone(),
         archived: info.archived,

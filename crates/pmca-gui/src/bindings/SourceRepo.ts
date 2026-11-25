@@ -13,9 +13,17 @@ id: string,
  */
 url: string, 
 /**
+ * The repository's name, for prefilling a publish form.
+ */
+name: string, 
+/**
  * The repository's own description.
  */
 description: string | null, 
+/**
+ * The website its owner gave, for prefilling a publish form.
+ */
+homepage: string | null, 
 /**
  * How many GitHub users have starred it.
  */

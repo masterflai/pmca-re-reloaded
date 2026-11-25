@@ -3,6 +3,7 @@
 import { invoke } from "@tauri-apps/api/core";
 import {
   card,
+  clearStatusState,
   confirmed,
   make,
   showBusy,
@@ -420,6 +421,7 @@ function buildSourceYaml(fields: Record<string, HTMLInputElement>, isPlugin: boo
  */
 export function cardPublish(): HTMLElement {
   const status = statusLine();
+  const fetchStatus = statusLine();
   const preview = make("pre", { className: "shell-output" });
 
   const isPlugin = make("input", { type: "checkbox" });
@@ -442,6 +444,51 @@ export function cardPublish(): HTMLElement {
   isPlugin.addEventListener("change", update);
   for (const field of Object.values(fields)) field.addEventListener("input", update);
   update();
+
+  /** Fill a field with `value`, but only when the user has not typed one in. */
+  function fillIfEmpty(field: HTMLInputElement, value: string | undefined | null): void {
+    if (value && field.value.trim() === "") field.value = value;
+  }
+
+  const repoLink = make("input", {
+    type: "text",
+    className: "path-input",
+    placeholder: "owner/repository",
+    spellcheck: false,
+  });
+  const fetchButton = make("button", { i18n: "btn-publish-fetch" });
+  const stars = make("span");
+  fetchButton.addEventListener("click", async () => {
+    const id = parseSpec(repoLink.value);
+    if (id === null) {
+      showErrorKey(fetchStatus, "source-invalid");
+      return;
+    }
+    fetchButton.disabled = true;
+    stars.replaceChildren();
+    try {
+      const repo = await sourceRepo(id);
+      if (repo === null) {
+        showErrorKey(fetchStatus, "publish-fetch-failed");
+        return;
+      }
+      const [owner] = repo.id.split("/");
+      fillIfEmpty(fields.ghUser, owner);
+      fillIfEmpty(fields.ghRepo, repo.name);
+      fillIfEmpty(fields.name, repo.name);
+      fillIfEmpty(fields.author, owner);
+      fillIfEmpty(fields.desc, repo.description);
+      fillIfEmpty(fields.homepage, repo.homepage);
+      update();
+      clearStatusState(fetchStatus);
+      fetchStatus.textContent = "";
+      stars.replaceChildren(starsBadge(repo.id));
+    } catch (e) {
+      showError(fetchStatus, e);
+    } finally {
+      fetchButton.disabled = false;
+    }
+  });
 
   const copy = make("button", { i18n: "btn-copy-url" });
   copy.addEventListener("click", async () => {
@@ -469,6 +516,8 @@ export function cardPublish(): HTMLElement {
   const panel = make(
     "div",
     {},
+    make("div", { className: "row" }, repoLink, fetchButton, stars),
+    fetchStatus,
     make("label", { className: "row" }, isPlugin, make("span", { i18n: "publish-is-plugin" })),
     fields.package,
     fields.name,
