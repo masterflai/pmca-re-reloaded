@@ -361,6 +361,7 @@ btn-projects-search = Pesquisar no GitHub
 projects-searching = Pesquisando no GitHub…
 projects-search-none = O GitHub não tem nenhum repositório com o tópico pmca-project.
 projects-search-found = { $count } projetos encontrados. Nenhum deles foi verificado por este programa.
+projects-search-all-pinned = Todos os projetos com o tópico pmca-project que o GitHub conhece já foram fixados.
 btn-project-pin = Fixar
 btn-project-unpin = Desafixar
 projects-pinned-badge = fixado
@@ -689,7 +690,7 @@ about-link-nexhack = Nex-Hack — a pesquisa comunitária na qual este projeto s
 about-version = Versão
 btn-copy-url = Copiar endereço
 btn-catalog-submit = Copiar link de sugestão
-catalog-submit-hint = Disponível depois de enviar sua própria versão deste idioma. Copia um link para um novo issue do GitHub, preenchido apenas com as linhas que você alterou; cole-o em um navegador e envie o issue lá para enviar a sugestão.
+catalog-submit-hint = Copia um link para um novo issue do GitHub, preenchido apenas com as linhas que você alterou; cole-o em um navegador e envie o issue lá para enviar a sugestão.
 msg-url-copied = Endereço copiado para a área de transferência.
 
 # Aviso de segurança
@@ -769,7 +770,7 @@ firmware-restore-none = Nenhuma regravação interrompida a concluir — não h�
 firmware-set-version-invalid = Versão inválida. Use a forma maior.menor, por exemplo 1.10.
 btn-firmware-restore-version = Restaurar a versão real
 firmware-set-version-label = Definir a versão informada manualmente
-firmware-set-version-hint = Ferramenta avançada: grava a versão pelo modo de serviço. Use-a para forçar uma câmera presa em uma versão elevada de volta à sua versão real quando o programa não a tiver memorizado. Requer as chaves do modo de serviço.
+firmware-set-version-hint = Ferramenta avançada: grava a versão pelo modo de serviço. Use-a para restaurar a versão real de uma câmera presa em uma versão elevada quando o programa não a tiver memorizado. Requer as chaves do modo de serviço.
 btn-firmware-set-version = Definir versão
 
 # Ferramentas de arquivo: as operações que não precisam de câmera alguma.

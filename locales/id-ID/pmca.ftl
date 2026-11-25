@@ -361,6 +361,7 @@ btn-projects-search = Cari di GitHub
 projects-searching = Mencari di GitHub…
 projects-search-none = GitHub tidak memiliki repositori dengan topik pmca-project.
 projects-search-found = { $count } proyek ditemukan. Tidak satu pun diperiksa oleh program ini.
+projects-search-all-pinned = Semua proyek bertopik pmca-project yang dikenal GitHub sudah disematkan.
 btn-project-pin = Sematkan
 btn-project-unpin = Lepas sematan
 projects-pinned-badge = disematkan
@@ -689,7 +690,7 @@ about-link-nexhack = Nex-Hack — riset komunitas yang menjadi dasar proyek ini
 about-version = Versi
 btn-copy-url = Salin alamat
 btn-catalog-submit = Salin tautan saran
-catalog-submit-hint = Tersedia setelah Anda mengunggah versi Anda sendiri untuk bahasa ini. Menyalin tautan ke isu GitHub baru, sudah terisi hanya dengan baris yang Anda ubah; tempelkan di peramban dan kirim isu di sana untuk mengirim saran.
+catalog-submit-hint = Menyalin tautan ke isu GitHub baru, sudah terisi hanya dengan baris yang Anda ubah; tempelkan di peramban dan kirim isu di sana untuk mengirim saran.
 msg-url-copied = Alamat disalin ke papan klip.
 
 # Pemberitahuan keselamatan
@@ -769,7 +770,7 @@ firmware-restore-none = Tidak ada penulisan ulang terputus untuk diselesaikan �
 firmware-set-version-invalid = Versi tidak valid. Gunakan bentuk major.minor, misalnya 1.10.
 btn-firmware-restore-version = Pulihkan versi asli
 firmware-set-version-label = Atur versi yang dilaporkan secara manual
-firmware-set-version-hint = Alat ahli: menulis versi lewat mode servis. Gunakan untuk memaksa kamera yang macet di versi yang dinaikkan kembali ke versi aslinya saat program tidak mengingat versi aslinya. Memerlukan kunci mode servis.
+firmware-set-version-hint = Alat ahli: menulis versi lewat mode servis. Gunakan untuk memulihkan versi asli kamera yang macet di versi yang dinaikkan, saat program tidak mengingat versi aslinya. Memerlukan kunci mode servis.
 btn-firmware-set-version = Atur versi
 
 # Perkakas berkas: operasi yang sama sekali tidak memerlukan kamera.

@@ -361,6 +361,7 @@ btn-projects-search = Buscar en GitHub
 projects-searching = Buscando en GitHub…
 projects-search-none = GitHub no tiene ningún repositorio con el tema pmca-project.
 projects-search-found = { $count } proyectos encontrados. Ninguno ha sido comprobado por este programa.
+projects-search-all-pinned = Todos los proyectos con el tema pmca-project que conoce GitHub ya están fijados.
 btn-project-pin = Fijar
 btn-project-unpin = Quitar
 projects-pinned-badge = fijado
@@ -689,7 +690,7 @@ about-link-nexhack = Nex-Hack — la investigación comunitaria en la que se bas
 about-version = Versión
 btn-copy-url = Copiar dirección
 btn-catalog-submit = Copiar enlace de sugerencia
-catalog-submit-hint = Disponible una vez que haya subido su propia versión de este idioma. Copia un enlace a un nuevo issue de GitHub, rellenado solo con las líneas que cambió; péguelo en un navegador y envíe el issue allí para enviar la sugerencia.
+catalog-submit-hint = Copia un enlace a un nuevo issue de GitHub, rellenado solo con las líneas que cambió; péguelo en un navegador y envíe el issue allí para enviar la sugerencia.
 msg-url-copied = Dirección copiada al portapapeles.
 
 # Aviso de seguridad
@@ -769,7 +770,7 @@ firmware-restore-none = No hay ninguna regrabación interrumpida que terminar: n
 firmware-set-version-invalid = Versión no válida. Use la forma mayor.menor, por ejemplo 1.10.
 btn-firmware-restore-version = Restaurar la versión real
 firmware-set-version-label = Establecer la versión informada a mano
-firmware-set-version-hint = Herramienta experta: escribe la versión mediante el modo de servicio. Úsela para forzar una cámara atascada en una versión elevada a su versión real cuando el programa no la ha memorizado. Requiere las claves del modo de servicio.
+firmware-set-version-hint = Herramienta experta: escribe la versión mediante el modo de servicio. Úsela para restaurar la versión real de una cámara atascada en una versión elevada cuando el programa no la ha memorizado. Requiere las claves del modo de servicio.
 btn-firmware-set-version = Establecer versión
 
 # Herramientas de archivos: las operaciones que no necesitan cámara alguna.

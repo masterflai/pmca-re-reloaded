@@ -281,7 +281,7 @@ export function cardSources(): HTMLElement {
     spellcheck: false,
   });
   const addButton = make("button", { className: "primary", i18n: "btn-source-add" });
-  const search = sourceSearch(false, () => void refresh().catch((e) => showError(status, e)));
+  const search = sourceSearch(true, () => void refresh().catch((e) => showError(status, e)));
 
   async function refresh(): Promise<void> {
     const state = await invoke<SourcesState>("sources_list");

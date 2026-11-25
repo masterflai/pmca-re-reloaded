@@ -370,6 +370,7 @@ btn-projects-search = Tìm trên GitHub
 projects-searching = Đang tìm trên GitHub…
 projects-search-none = GitHub không có kho nào với chủ đề pmca-project.
 projects-search-found = Tìm thấy { $count } dự án. Chương trình này chưa kiểm tra dự án nào trong số đó.
+projects-search-all-pinned = Tất cả dự án có chủ đề pmca-project mà GitHub biết đều đã được ghim.
 btn-project-pin = Ghim
 btn-project-unpin = Bỏ ghim
 projects-pinned-badge = đã ghim
@@ -700,7 +701,7 @@ about-link-nexhack = Nex-Hack — nghiên cứu cộng đồng mà dự án này
 about-version = Phiên bản
 btn-copy-url = Sao chép địa chỉ
 btn-catalog-submit = Sao chép liên kết đề xuất
-catalog-submit-hint = Chỉ khả dụng sau khi bạn đã tải lên phiên bản của riêng mình cho ngôn ngữ này. Sao chép liên kết đến một issue GitHub mới, đã điền sẵn chỉ những dòng bạn đã thay đổi; dán vào trình duyệt và gửi issue ở đó để gửi đề xuất.
+catalog-submit-hint = Sao chép liên kết đến một issue GitHub mới, đã điền sẵn chỉ những dòng bạn đã thay đổi; dán vào trình duyệt và gửi issue ở đó để gửi đề xuất.
 msg-url-copied = Đã sao chép địa chỉ vào bảng tạm.
 
 # Thông báo an toàn
@@ -780,7 +781,7 @@ firmware-restore-none = Không có lần ghi lại bị gián đoạn nào cần
 firmware-set-version-invalid = Phiên bản không hợp lệ. Dùng dạng major.minor, ví dụ 1.10.
 btn-firmware-restore-version = Khôi phục phiên bản thật
 firmware-set-version-label = Đặt phiên bản báo cáo bằng tay
-firmware-set-version-hint = Công cụ chuyên gia: ghi phiên bản qua chế độ dịch vụ. Dùng nó để buộc máy ảnh kẹt ở một phiên bản được nâng về phiên bản thật khi chương trình không ghi nhớ phiên bản thật. Cần các khóa chế độ dịch vụ.
+firmware-set-version-hint = Công cụ chuyên gia: ghi phiên bản qua chế độ dịch vụ. Dùng nó để khôi phục phiên bản thật của máy ảnh kẹt ở một phiên bản được nâng, khi chương trình không ghi nhớ phiên bản thật. Cần các khóa chế độ dịch vụ.
 btn-firmware-set-version = Đặt phiên bản
 
 # Công cụ tệp: các thao tác hoàn toàn không cần máy ảnh.

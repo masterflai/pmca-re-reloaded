@@ -247,9 +247,11 @@ function cardSearch(onPinned: () => Promise<void>): HTMLElement {
     showBusy(status, tr("projects-searching"));
     try {
       const hits = await invoke<ProjectRepo[]>("projects_search");
+      const shown = hits.filter((hit) => !hit.pinned);
       if (hits.length === 0) showStatus(status, tr("projects-search-none"));
-      else showStatus(status, trFill("projects-search-found", { count: hits.length }));
-      results.append(...hits.map(hitRow));
+      else if (shown.length === 0) showStatus(status, tr("projects-search-all-pinned"));
+      else showStatus(status, trFill("projects-search-found", { count: shown.length }));
+      results.append(...shown.map(hitRow));
     } catch (e) {
       showError(status, e);
     } finally {

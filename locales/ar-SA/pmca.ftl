@@ -360,6 +360,7 @@ btn-projects-search = البحث في GitHub
 projects-searching = جارٍ البحث في GitHub…
 projects-search-none = لا يوجد في GitHub مستودع يحمل الموضوع pmca-project.
 projects-search-found = عدد المشاريع التي عُثر عليها: { $count }. لم يفحص هذا البرنامج أيًّا منها.
+projects-search-all-pinned = كل المشاريع التي يعرفها GitHub بالموضوع pmca-project مثبّتة بالفعل.
 btn-project-pin = تثبيت
 btn-project-unpin = إلغاء التثبيت
 projects-pinned-badge = مثبّت
@@ -687,7 +688,7 @@ about-link-nexhack = Nex-Hack — أبحاث المجتمع التي يقوم ع
 about-version = الإصدار
 btn-copy-url = نسخ العنوان
 btn-catalog-submit = نسخ رابط الاقتراح
-catalog-submit-hint = يتوفر بمجرد رفع نسختك الخاصة من هذه اللغة. يُنسخ رابط لمشكلة (Issue) جديدة على GitHub، معبأ مسبقًا بالأسطر التي غيّرتها فقط؛ الصقه في المتصفح وأرسل المشكلة هناك لإرسال الاقتراح.
+catalog-submit-hint = يُنسخ رابط لمشكلة (Issue) جديدة على GitHub، معبأ مسبقًا بالأسطر التي غيّرتها فقط؛ الصقه في المتصفح وأرسل المشكلة هناك لإرسال الاقتراح.
 msg-url-copied = نُسخ العنوان إلى الحافظة.
 
 # تنبيه السلامة
@@ -767,7 +768,7 @@ firmware-restore-none = لا توجد إعادة فلاش منقطعة لإكم�
 firmware-set-version-invalid = إصدار غير صالح. استخدم الصيغة major.minor، مثل 1.10.
 btn-firmware-restore-version = استعادة الإصدار الحقيقي
 firmware-set-version-label = تعيين الإصدار المُبلَّغ يدويًا
-firmware-set-version-hint = أداة للخبراء: تكتب الإصدار عبر وضع الخدمة. استخدمها لإجبار كاميرا عالقة على إصدار مرفوع على العودة إلى إصدارها الحقيقي عندما لا يكون البرنامج قد حفظ الإصدار الحقيقي. تتطلب مفاتيح وضع الخدمة.
+firmware-set-version-hint = أداة للخبراء: تكتب الإصدار عبر وضع الخدمة. استخدمها لاستعادة الإصدار الحقيقي لكاميرا عالقة عند إصدار مرفوع عندما لا يكون البرنامج قد حفظ الإصدار الحقيقي. تتطلب مفاتيح وضع الخدمة.
 btn-firmware-set-version = تعيين الإصدار
 
 # أدوات الملفات: العمليات التي لا تحتاج إلى كاميرا إطلاقًا.

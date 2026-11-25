@@ -361,6 +361,7 @@ btn-projects-search = Søk på GitHub
 projects-searching = Søker på GitHub…
 projects-search-none = GitHub har ingen repositorier med emnet pmca-project.
 projects-search-found = { $count } prosjekter funnet. Ingen av dem er kontrollert av dette programmet.
+projects-search-all-pinned = Alle prosjekter med emnet pmca-project som GitHub kjenner, er allerede festet.
 btn-project-pin = Fest
 btn-project-unpin = Løsne
 projects-pinned-badge = festet
@@ -689,7 +690,7 @@ about-link-nexhack = Nex-Hack — fellesskapets forskning som dette prosjektet b
 about-version = Versjon
 btn-copy-url = Kopier adresse
 btn-catalog-submit = Kopiér forslagslenke
-catalog-submit-hint = Tilgjengelig når du har lastet opp din egen versjon av dette språket. Kopierer en lenke til en ny GitHub-sak, forhåndsutfylt kun med linjene du endret; lim den inn i en nettleser og send saken der for å sende forslaget.
+catalog-submit-hint = Kopierer en lenke til en ny GitHub-sak, forhåndsutfylt kun med linjene du endret; lim den inn i en nettleser og send saken der for å sende forslaget.
 msg-url-copied = Adressen er kopiert til utklippstavlen.
 
 # Sikkerhetsmerknad
@@ -769,7 +770,7 @@ firmware-restore-none = Ingen avbrutt reflashing å fullføre — det finnes ing
 firmware-set-version-invalid = Ugyldig versjon. Bruk formen major.minor, for eksempel 1.10.
 btn-firmware-restore-version = Gjenopprett den ekte versjonen
 firmware-set-version-label = Angi den rapporterte versjonen manuelt
-firmware-set-version-hint = Ekspertverktøy: skriver versjonen via servicemodus. Bruk det til å tvinge et kamera som sitter fast på en hevet versjon tilbake til sin ekte versjon når programmet ikke har husket den ekte versjonen. Krever servicemodus-nøklene.
+firmware-set-version-hint = Ekspertverktøy: skriver versjonen via servicemodus. Bruk det til å gjenopprette den ekte versjonen på et kamera som sitter fast på en hevet versjon, når programmet ikke har husket den ekte versjonen. Krever servicemodus-nøklene.
 btn-firmware-set-version = Angi versjon
 
 # Filverktøy: operasjonene som ikke trenger noe kamera i det hele tatt.

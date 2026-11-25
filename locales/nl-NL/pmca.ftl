@@ -363,6 +363,7 @@ btn-projects-search = Zoeken op GitHub
 projects-searching = Zoeken op GitHub…
 projects-search-none = GitHub heeft geen repository met het onderwerp pmca-project.
 projects-search-found = { $count } projecten gevonden. Geen ervan is door dit programma gecontroleerd.
+projects-search-all-pinned = Alle projecten met het onderwerp pmca-project die GitHub kent, zijn al vastgezet.
 btn-project-pin = Vastzetten
 btn-project-unpin = Losmaken
 projects-pinned-badge = vastgezet
@@ -691,7 +692,7 @@ about-link-nexhack = Nex-Hack — het gemeenschapsonderzoek waarop dit project v
 about-version = Versie
 btn-copy-url = Adres kopiëren
 btn-catalog-submit = Suggestielink kopiëren
-catalog-submit-hint = Beschikbaar zodra u uw eigen versie van deze taal hebt geüpload. Kopieert een link naar een nieuw GitHub-issue, al ingevuld met alleen de regels die u hebt gewijzigd; plak hem in een browser en dien het issue daar in om de suggestie te versturen.
+catalog-submit-hint = Kopieert een link naar een nieuw GitHub-issue, al ingevuld met alleen de regels die u hebt gewijzigd; plak hem in een browser en dien het issue daar in om de suggestie te versturen.
 msg-url-copied = Het adres is naar het klembord gekopieerd.
 
 # Veiligheidswaarschuwing
@@ -771,7 +772,7 @@ firmware-restore-none = Geen onderbroken herflash om af te ronden — er is geen
 firmware-set-version-invalid = Ongeldige versie. Gebruik de vorm major.minor, bijvoorbeeld 1.10.
 btn-firmware-restore-version = Echte versie herstellen
 firmware-set-version-label = De gemelde versie handmatig instellen
-firmware-set-version-hint = Expertgereedschap: schrijft de versie via de servicemodus. Gebruik het om een camera die op een verhoogde versie vastzit terug te dwingen naar zijn echte versie wanneer het programma die niet heeft onthouden. Vereist de servicemodus-sleutels.
+firmware-set-version-hint = Expertgereedschap: schrijft de versie via de servicemodus. Gebruik het om de echte versie te herstellen van een camera die op een verhoogde versie vastzit, wanneer het programma die niet heeft onthouden. Vereist de servicemodus-sleutels.
 btn-firmware-set-version = Versie instellen
 
 # Bestandsgereedschap: de bewerkingen die helemaal geen camera nodig hebben.

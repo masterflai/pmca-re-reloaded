@@ -359,6 +359,7 @@ btn-projects-search = GitHub ਉੱਤੇ ਖੋਜੋ
 projects-searching = GitHub ਉੱਤੇ ਖੋਜ ਹੋ ਰਹੀ ਹੈ…
 projects-search-none = GitHub ਉੱਤੇ pmca-project ਵਿਸ਼ੇ ਵਾਲੀ ਕੋਈ ਰਿਪੋਜ਼ਟਰੀ ਨਹੀਂ ਹੈ।
 projects-search-found = { $count } ਪ੍ਰੋਜੈਕਟ ਮਿਲੇ। ਇਹਨਾਂ ਵਿੱਚੋਂ ਕਿਸੇ ਨੂੰ ਵੀ ਇਸ ਪ੍ਰੋਗਰਾਮ ਨੇ ਨਹੀਂ ਜਾਂਚਿਆ।
+projects-search-all-pinned = GitHub ਨੂੰ ਪਤਾ pmca-project ਵਿਸ਼ੇ ਵਾਲੇ ਸਾਰੇ ਪ੍ਰੋਜੈਕਟ ਪਹਿਲਾਂ ਹੀ ਪਿੰਨ ਕੀਤੇ ਜਾ ਚੁੱਕੇ ਹਨ।
 btn-project-pin = ਪਿੰਨ ਕਰੋ
 btn-project-unpin = ਅਨਪਿੰਨ ਕਰੋ
 projects-pinned-badge = ਪਿੰਨ ਕੀਤਾ
@@ -688,7 +689,7 @@ about-link-nexhack = Nex-Hack — ਉਹ ਭਾਈਚਾਰਕ ਖੋਜ ਜਿ�
 about-version = ਵਰਜਨ
 btn-copy-url = ਪਤਾ ਕਾਪੀ ਕਰੋ
 btn-catalog-submit = ਸੁਝਾਅ ਲਿੰਕ ਕਾਪੀ ਕਰੋ
-catalog-submit-hint = ਇਸ ਭਾਸ਼ਾ ਦਾ ਆਪਣਾ ਵਰਜਨ ਅੱਪਲੋਡ ਕਰਨ ਤੋਂ ਬਾਅਦ ਉਪਲਬਧ। ਸਿਰਫ਼ ਤੁਹਾਡੇ ਬਦਲੇ ਲਾਈਨਾਂ ਨਾਲ ਪਹਿਲਾਂ ਤੋਂ ਭਰੇ ਨਵੇਂ GitHub ਇਸ਼ੂ ਦਾ ਲਿੰਕ ਕਾਪੀ ਕਰਦਾ ਹੈ; ਸੁਝਾਅ ਭੇਜਣ ਲਈ ਇਸਨੂੰ ਬ੍ਰਾਊਜ਼ਰ ਵਿੱਚ ਪੇਸਟ ਕਰੋ ਅਤੇ ਉੱਥੇ ਇਸ਼ੂ ਜਮ੍ਹਾਂ ਕਰੋ।
+catalog-submit-hint = ਸਿਰਫ਼ ਤੁਹਾਡੇ ਬਦਲੇ ਲਾਈਨਾਂ ਨਾਲ ਪਹਿਲਾਂ ਤੋਂ ਭਰੇ ਨਵੇਂ GitHub ਇਸ਼ੂ ਦਾ ਲਿੰਕ ਕਾਪੀ ਕਰਦਾ ਹੈ; ਸੁਝਾਅ ਭੇਜਣ ਲਈ ਇਸਨੂੰ ਬ੍ਰਾਊਜ਼ਰ ਵਿੱਚ ਪੇਸਟ ਕਰੋ ਅਤੇ ਉੱਥੇ ਇਸ਼ੂ ਜਮ੍ਹਾਂ ਕਰੋ।
 msg-url-copied = ਪਤਾ ਕਲਿੱਪਬੋਰਡ ਵਿੱਚ ਕਾਪੀ ਕਰ ਦਿੱਤਾ ਗਿਆ।
 
 # ਸੁਰੱਖਿਆ ਸੂਚਨਾ

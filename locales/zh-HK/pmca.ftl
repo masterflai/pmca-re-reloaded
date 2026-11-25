@@ -370,6 +370,7 @@ btn-projects-search = 在 GitHub 上搜尋
 projects-searching = 正在 GitHub 上搜尋…
 projects-search-none = GitHub 上沒有帶 pmca-project 主題的儲存庫。
 projects-search-found = 找到 { $count } 個項目。全部均未經本程式檢查。
+projects-search-all-pinned = GitHub 已知的所有帶 pmca-project 主題的專案都已釘選。
 btn-project-pin = 釘選
 btn-project-unpin = 取消釘選
 projects-pinned-badge = 已釘選
@@ -700,7 +701,7 @@ about-link-nexhack = Nex-Hack — 本項目所依據的社群研究
 about-version = 版本
 btn-copy-url = 複製網址
 btn-catalog-submit = 複製建議連結
-catalog-submit-hint = 僅在您上傳了此語言的自訂版本後才可用。複製一個新建 GitHub issue 的連結，當中已預先填入您更改過的行；將其貼上至瀏覽器並在那裡提交 issue，即可傳送建議。
+catalog-submit-hint = 複製一個新建 GitHub issue 的連結，當中已預先填入您更改過的行；將其貼上至瀏覽器並在那裡提交 issue，即可傳送建議。
 msg-url-copied = 網址已複製至剪貼簿。
 
 # 安全提示
@@ -780,7 +781,7 @@ firmware-restore-none = 沒有可完成的中斷的重新燒錄——沒有記�
 firmware-set-version-invalid = 版本無效。請使用 major.minor 格式，例如 1.10。
 btn-firmware-restore-version = 還原真實版本
 firmware-set-version-label = 手動設定回報的版本
-firmware-set-version-hint = 專家工具：透過服務模式寫入版本。當本程式沒有記住真實版本時，用它將卡在被抬高版本的相機強制還原到其真實版本。需要服務模式金鑰。
+firmware-set-version-hint = 專家工具：透過服務模式寫入版本。當本程式沒有記住真實版本時，用它將卡在被抬高版本的相機還原到其真實版本。需要服務模式金鑰。
 btn-firmware-set-version = 設定版本
 
 # 檔案工具：完全無需相機的操作。

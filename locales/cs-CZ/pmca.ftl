@@ -361,6 +361,7 @@ btn-projects-search = Hledat na GitHubu
 projects-searching = Hledá se na GitHubu…
 projects-search-none = GitHub nemá žádné úložiště s tématem pmca-project.
 projects-search-found = Nalezené projekty: { $count }. Žádný z nich tento program nezkontroloval.
+projects-search-all-pinned = Všechny projekty s tématem pmca-project, které GitHub zná, jsou už připnuté.
 btn-project-pin = Připnout
 btn-project-unpin = Odepnout
 projects-pinned-badge = připnuto
@@ -688,7 +689,7 @@ about-link-nexhack = Nex-Hack — komunitní výzkum, na kterém tento projekt s
 about-version = Verze
 btn-copy-url = Kopírovat adresu
 btn-catalog-submit = Kopírovat odkaz s návrhem
-catalog-submit-hint = Dostupné, jakmile nahrajete vlastní verzi tohoto jazyka. Zkopíruje odkaz na nový problém (issue) na GitHubu, předvyplněný jen vámi změněnými řádky; vložte jej do prohlížeče a problém tam odešlete, abyste návrh odeslali.
+catalog-submit-hint = Zkopíruje odkaz na nový problém (issue) na GitHubu, předvyplněný jen vámi změněnými řádky; vložte jej do prohlížeče a problém tam odešlete, abyste návrh odeslali.
 msg-url-copied = Adresa byla zkopírována do schránky.
 
 # Bezpečnostní upozornění
@@ -768,7 +769,7 @@ firmware-restore-none = Žádné přerušené přeflashování k dokončení —
 firmware-set-version-invalid = Neplatná verze. Použijte tvar major.minor, například 1.10.
 btn-firmware-restore-version = Obnovit skutečnou verzi
 firmware-set-version-label = Nastavit hlášenou verzi ručně
-firmware-set-version-hint = Expertní nástroj: zapíše verzi přes servisní režim. Použijte jej k vynucení skutečné verze u fotoaparátu zaseknutého na zvýšené verzi, když si program skutečnou verzi nezapamatoval. Vyžaduje klíče servisního režimu.
+firmware-set-version-hint = Expertní nástroj: zapíše verzi přes servisní režim. Použijte jej k obnovení skutečné verze u fotoaparátu zaseknutého na zvýšené verzi, když si program skutečnou verzi nezapamatoval. Vyžaduje klíče servisního režimu.
 btn-firmware-set-version = Nastavit verzi
 
 # Souborové nástroje: operace, které žádný fotoaparát nepotřebují.

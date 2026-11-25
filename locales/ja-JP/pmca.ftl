@@ -360,6 +360,7 @@ btn-projects-search = GitHub で検索
 projects-searching = GitHub を検索しています…
 projects-search-none = トピック pmca-project を持つリポジトリは GitHub にありません。
 projects-search-found = { $count } 件のプロジェクトが見つかりました。いずれもこのプログラムでは確認されていません。
+projects-search-all-pinned = GitHub が把握しているトピック pmca-project のプロジェクトはすべてピン留め済みです。
 btn-project-pin = ピン留め
 btn-project-unpin = ピン留めを外す
 projects-pinned-badge = ピン留め済み
@@ -687,7 +688,7 @@ about-link-nexhack = Nex-Hack — このプロジェクトの基盤となった�
 about-version = バージョン
 btn-copy-url = アドレスをコピー
 btn-catalog-submit = 提案リンクをコピー
-catalog-submit-hint = この言語の自分の版をアップロードすると利用できます。変更した行だけがあらかじめ入力された、新しい GitHub Issue へのリンクをコピーします。ブラウザーに貼り付けて Issue を送信すると、提案を送れます。
+catalog-submit-hint = 変更した行だけがあらかじめ入力された、新しい GitHub Issue へのリンクをコピーします。ブラウザーに貼り付けて Issue を送信すると、提案を送れます。
 msg-url-copied = アドレスをクリップボードにコピーしました。
 
 # 安全に関する注意

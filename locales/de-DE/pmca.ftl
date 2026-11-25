@@ -367,6 +367,7 @@ btn-projects-search = Auf GitHub suchen
 projects-searching = Es wird auf GitHub gesucht…
 projects-search-none = Auf GitHub gibt es kein Repository mit dem Thema pmca-project.
 projects-search-found = { $count } Projekte gefunden. Keines davon wurde von diesem Programm geprüft.
+projects-search-all-pinned = Alle Projekte mit dem Thema pmca-project, die GitHub kennt, sind bereits gepinnt.
 btn-project-pin = Anpinnen
 btn-project-unpin = Lösen
 projects-pinned-badge = gepinnt
@@ -695,7 +696,7 @@ about-link-nexhack = Nex-Hack — die Gemeinschaftsforschung, auf der dieses Pro
 about-version = Version
 btn-copy-url = Adresse kopieren
 btn-catalog-submit = Vorschlagslink kopieren
-catalog-submit-hint = Verfügbar, sobald Sie eine eigene Version dieser Sprache hochgeladen haben. Kopiert einen Link zu einem neuen GitHub-Issue, vorausgefüllt nur mit den von Ihnen geänderten Zeilen; fügen Sie ihn in einen Browser ein und senden Sie das Issue dort ab, um den Vorschlag zu übermitteln.
+catalog-submit-hint = Kopiert einen Link zu einem neuen GitHub-Issue, vorausgefüllt nur mit den von Ihnen geänderten Zeilen; fügen Sie ihn in einen Browser ein und senden Sie das Issue dort ab, um den Vorschlag zu übermitteln.
 msg-url-copied = Adresse in die Zwischenablage kopiert.
 
 # Sicherheitshinweis
@@ -774,8 +775,8 @@ firmware-reflash-pending = Ein früheres Neu-Flashen wurde nicht abgeschlossen: 
 firmware-restore-none = Kein unterbrochenes Neu-Flashen abzuschließen — es ist keine gemerkte Version zum Wiederherstellen vorhanden.
 firmware-set-version-invalid = Ungültige Version. Verwenden Sie die Form major.minor, zum Beispiel 1.10.
 btn-firmware-restore-version = Echte Version wiederherstellen
-firmware-set-version-label = Gemeldete Version von Hand setzen
-firmware-set-version-hint = Expertenwerkzeug: schreibt die Version über den Servicemodus. Damit lässt sich eine auf einer erhöhten Version hängengebliebene Kamera auf ihre echte Version zwingen, wenn sich das Programm die echte Version nicht gemerkt hat. Braucht die Servicemodus-Schlüssel.
+firmware-set-version-label = Gemeldete Version manuell festlegen
+firmware-set-version-hint = Expertenwerkzeug: schreibt die Version über den Servicemodus. Damit lässt sich die echte Version wiederherstellen, wenn eine Kamera auf einer erhöhten Version hängen geblieben ist und das Programm sich die echte Version nicht gemerkt hat. Braucht die Servicemodus-Schlüssel.
 btn-firmware-set-version = Version setzen
 
 # Dateiwerkzeuge: die Vorgänge, die gar keine Kamera brauchen.

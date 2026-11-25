@@ -360,6 +360,7 @@ btn-projects-search = Søg på GitHub
 projects-searching = Søger på GitHub…
 projects-search-none = GitHub har intet repository med emnet pmca-project.
 projects-search-found = { $count } projekter fundet. Ingen af dem er kontrolleret af dette program.
+projects-search-all-pinned = Alle projekter med emnet pmca-project, som GitHub kender, er allerede fastgjort.
 btn-project-pin = Fastgør
 btn-project-unpin = Frigør
 projects-pinned-badge = fastgjort
@@ -688,7 +689,7 @@ about-link-nexhack = Nex-Hack — fællesskabets research, som dette projekt byg
 about-version = Version
 btn-copy-url = Kopiér adresse
 btn-catalog-submit = Kopiér forslagslink
-catalog-submit-hint = Tilgængelig, når du har uploadet din egen version af dette sprog. Kopierer et link til et nyt GitHub-issue, forudfyldt kun med de linjer, du har ændret; indsæt det i en browser, og send issuet der for at sende forslaget.
+catalog-submit-hint = Kopierer et link til et nyt GitHub-issue, forudfyldt kun med de linjer, du har ændret; indsæt det i en browser, og send issuet der for at sende forslaget.
 msg-url-copied = Adressen er kopieret til udklipsholderen.
 
 # Sikkerhedsbemærkning
@@ -768,7 +769,7 @@ firmware-restore-none = Ingen afbrudt genflashning at fuldføre — der er ingen
 firmware-set-version-invalid = Ugyldig version. Brug formen major.minor, for eksempel 1.10.
 btn-firmware-restore-version = Gendan den rigtige version
 firmware-set-version-label = Angiv den rapporterede version manuelt
-firmware-set-version-hint = Ekspertværktøj: skriver versionen via servicetilstand. Brug det til at tvinge et kamera, der sidder fast på en hævet version, tilbage til dets rigtige version, når programmet ikke har husket den. Kræver servicetilstandsnøglerne.
+firmware-set-version-hint = Ekspertværktøj: skriver versionen via servicetilstand. Brug det til at gendanne den rigtige version på et kamera, der sidder fast på en hævet version, når programmet ikke har husket den. Kræver servicetilstandsnøglerne.
 btn-firmware-set-version = Angiv version
 
 # Filværktøjer: de handlinger, der slet ikke kræver et kamera.

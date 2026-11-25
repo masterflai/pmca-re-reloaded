@@ -370,6 +370,7 @@ btn-projects-search = Search GitHub
 projects-searching = Searching GitHub…
 projects-search-none = GitHub has no repository with the topic pmca-project.
 projects-search-found = Projects found: { $count }. None of them has been checked by this program.
+projects-search-all-pinned = Every project with the topic pmca-project that GitHub knows has already been pinned.
 btn-project-pin = Pin
 btn-project-unpin = Unpin
 projects-pinned-badge = pinned
@@ -700,7 +701,7 @@ about-link-nexhack = Nex-Hack — the community research this project builds on
 about-version = Version
 btn-copy-url = Copy address
 btn-catalog-submit = Copy suggestion link
-catalog-submit-hint = Available once you have uploaded your own version of this language. Copies a link to a new GitHub issue, pre-filled with only the lines you changed; paste it into a browser and submit the issue there to send the suggestion.
+catalog-submit-hint = Copies a link to a new GitHub issue, pre-filled with only the lines you changed; paste it into a browser and submit the issue there to send the suggestion.
 msg-url-copied = Address copied to the clipboard.
 
 # Safety notice
@@ -779,8 +780,8 @@ firmware-reflash-pending = An earlier re-flash did not finish: the camera report
 firmware-restore-none = No interrupted re-flash to finish — there is no remembered version to restore.
 firmware-set-version-invalid = Invalid version. Use the form major.minor, for example 1.10.
 btn-firmware-restore-version = Restore the real version
-firmware-set-version-label = Set the reported version by hand
-firmware-set-version-hint = Expert tool: writes the version over service mode. Use it to force a camera stuck on a raised version back to its genuine one when the program has not remembered the genuine version. Needs the service-mode keys.
+firmware-set-version-label = Set the reported version manually
+firmware-set-version-hint = Expert tool: writes the version over service mode. Use it to restore the genuine version of a camera stuck on a raised one when the program has not remembered it. Needs the service-mode keys.
 btn-firmware-set-version = Set version
 
 # File tools: the operations that need no camera at all.

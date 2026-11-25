@@ -370,6 +370,7 @@ btn-projects-search = Шукати на GitHub
 projects-searching = Пошук на GitHub…
 projects-search-none = На GitHub немає жодного репозиторію з темою pmca-project.
 projects-search-found = Знайдено проєктів: { $count }. Жоден із них не перевірено цією програмою.
+projects-search-all-pinned = Усі проєкти з темою pmca-project, відомі GitHub, уже закріплено.
 btn-project-pin = Закріпити
 btn-project-unpin = Відкріпити
 projects-pinned-badge = закріплено
@@ -700,7 +701,7 @@ about-link-nexhack = Nex-Hack — дослідження спільноти, н�
 about-version = Версія
 btn-copy-url = Копіювати адресу
 btn-catalog-submit = Скопіювати посилання з пропозицією
-catalog-submit-hint = Доступно після того, як ви завантажите власну версію цієї мови. Копіює посилання на новий issue на GitHub, попередньо заповнений лише змінених вами рядками; вставте його в браузер і надішліть issue там, щоб надіслати пропозицію.
+catalog-submit-hint = Копіює посилання на новий issue на GitHub, попередньо заповнений лише змінених вами рядками; вставте його в браузер і надішліть issue там, щоб надіслати пропозицію.
 msg-url-copied = Адресу скопійовано в буфер обміну.
 
 # Попередження про безпеку

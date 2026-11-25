@@ -361,6 +361,7 @@ btn-projects-search = Rechercher sur GitHub
 projects-searching = Recherche sur GitHub…
 projects-search-none = GitHub n'a aucun dépôt portant le sujet pmca-project.
 projects-search-found = { $count } projets trouvés. Aucun n'a été vérifié par ce programme.
+projects-search-all-pinned = Tous les projets avec le sujet pmca-project que GitHub connaît sont déjà épinglés.
 btn-project-pin = Épingler
 btn-project-unpin = Désépingler
 projects-pinned-badge = épinglé
@@ -689,7 +690,7 @@ about-link-nexhack = Nex-Hack — les recherches communautaires sur lesquelles r
 about-version = Version
 btn-copy-url = Copier l'adresse
 btn-catalog-submit = Copier le lien de suggestion
-catalog-submit-hint = Disponible une fois que vous avez envoyé votre propre version de cette langue. Copie un lien vers un nouveau ticket (issue) GitHub, pré-rempli uniquement avec les lignes que vous avez modifiées ; collez-le dans un navigateur et envoyez le ticket là-bas pour transmettre la suggestion.
+catalog-submit-hint = Copie un lien vers un nouveau ticket (issue) GitHub, pré-rempli uniquement avec les lignes que vous avez modifiées ; collez-le dans un navigateur et envoyez le ticket là-bas pour transmettre la suggestion.
 msg-url-copied = Adresse copiée dans le presse-papiers.
 
 # Avertissement de sécurité
@@ -769,7 +770,7 @@ firmware-restore-none = Aucun reflashage interrompu à terminer — aucune versi
 firmware-set-version-invalid = Version non valide. Utilisez la forme majeure.mineure, par exemple 1.10.
 btn-firmware-restore-version = Restaurer la version réelle
 firmware-set-version-label = Définir la version indiquée à la main
-firmware-set-version-hint = Outil expert : écrit la version via le mode service. Permet de forcer un appareil bloqué sur une version relevée à revenir à sa version réelle lorsque le programme ne l'a pas mémorisée. Nécessite les clés du mode service.
+firmware-set-version-hint = Outil expert : écrit la version via le mode service. Permet de restaurer la version réelle d'un appareil bloqué sur une version relevée lorsque le programme ne l'a pas mémorisée. Nécessite les clés du mode service.
 btn-firmware-set-version = Définir la version
 
 # Outils de fichiers : les opérations qui n'ont besoin d'aucun appareil.

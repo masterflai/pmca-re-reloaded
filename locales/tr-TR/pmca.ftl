@@ -361,6 +361,7 @@ btn-projects-search = GitHub'da ara
 projects-searching = GitHub'da aranıyor…
 projects-search-none = GitHub'da pmca-project konusuna sahip depo yok.
 projects-search-found = { $count } proje bulundu. Hiçbiri bu program tarafından denetlenmedi.
+projects-search-all-pinned = GitHub'ın bildiği pmca-project konulu tüm projeler zaten sabitlenmiş.
 btn-project-pin = Sabitle
 btn-project-unpin = Sabitlemeyi kaldır
 projects-pinned-badge = sabitlendi
@@ -689,7 +690,7 @@ about-link-nexhack = Nex-Hack — bu projenin dayandığı topluluk araştırmas
 about-version = Sürüm
 btn-copy-url = Adresi kopyala
 btn-catalog-submit = Öneri bağlantısını kopyala
-catalog-submit-hint = Bu dilin kendi sürümünüzü yükledikten sonra kullanılabilir. Yalnızca değiştirdiğiniz satırlarla önceden doldurulmuş yeni bir GitHub issue bağlantısını kopyalar; öneriyi göndermek için bunu bir tarayıcıya yapıştırın ve issue'yu orada gönderin.
+catalog-submit-hint = Yalnızca değiştirdiğiniz satırlarla önceden doldurulmuş yeni bir GitHub issue bağlantısını kopyalar; öneriyi göndermek için bunu bir tarayıcıya yapıştırın ve issue'yu orada gönderin.
 msg-url-copied = Adres panoya kopyalandı.
 
 # Güvenlik uyarısı

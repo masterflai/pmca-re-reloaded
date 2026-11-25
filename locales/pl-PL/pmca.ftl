@@ -361,6 +361,7 @@ btn-projects-search = Szukaj na GitHubie
 projects-searching = Wyszukiwanie na GitHubie…
 projects-search-none = GitHub nie ma żadnego repozytorium z tematem pmca-project.
 projects-search-found = Znalezione projekty: { $count }. Żaden z nich nie został sprawdzony przez ten program.
+projects-search-all-pinned = Wszystkie projekty z tematem pmca-project, które zna GitHub, są już przypięte.
 btn-project-pin = Przypnij
 btn-project-unpin = Odepnij
 projects-pinned-badge = przypięty
@@ -688,7 +689,7 @@ about-link-nexhack = Nex-Hack — badania społeczności, na których opiera si�
 about-version = Wersja
 btn-copy-url = Kopiuj adres
 btn-catalog-submit = Kopiuj link z propozycją
-catalog-submit-hint = Dostępne po przesłaniu własnej wersji tego języka. Kopiuje link do nowego zgłoszenia (issue) na GitHubie, wypełnionego wyłącznie zmienionymi przez Ciebie liniami; wklej go w przeglądarce i wyślij tam zgłoszenie, aby przesłać propozycję.
+catalog-submit-hint = Kopiuje link do nowego zgłoszenia (issue) na GitHubie, wypełnionego wyłącznie zmienionymi przez Ciebie liniami; wklej go w przeglądarce i wyślij tam zgłoszenie, aby przesłać propozycję.
 msg-url-copied = Adres skopiowano do schowka.
 
 # Informacja o bezpieczeństwie
@@ -768,7 +769,7 @@ firmware-restore-none = Brak przerwanego ponownego zapisu do dokończenia — ni
 firmware-set-version-invalid = Nieprawidłowa wersja. Użyj formy major.minor, na przykład 1.10.
 btn-firmware-restore-version = Przywróć prawdziwą wersję
 firmware-set-version-label = Ustaw zgłaszaną wersję ręcznie
-firmware-set-version-hint = Narzędzie eksperckie: zapisuje wersję przez tryb serwisowy. Użyj go, aby zmusić aparat zablokowany na podwyższonej wersji do powrotu do prawdziwej wersji, gdy program jej nie zapamiętał. Wymaga kluczy trybu serwisowego.
+firmware-set-version-hint = Narzędzie eksperckie: zapisuje wersję przez tryb serwisowy. Użyj go, aby przywrócić prawdziwą wersję aparatu zablokowanego na podwyższonej wersji, gdy program jej nie zapamiętał. Wymaga kluczy trybu serwisowego.
 btn-firmware-set-version = Ustaw wersję
 
 # Narzędzia plikowe: operacje, które w ogóle nie potrzebują aparatu.

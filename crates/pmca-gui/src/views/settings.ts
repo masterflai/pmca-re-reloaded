@@ -195,7 +195,8 @@ function cardTranslationEditor(): HTMLElement {
       }),
     );
     if (path !== null) state.append(` ${path}`);
-    submit.disabled = path === null;
+    submit.hidden = path === null;
+    submitHint.hidden = path === null;
   }
 
   /** A `label: count` line, kept translatable across a language change. */
@@ -326,7 +327,8 @@ function cardTranslationEditor(): HTMLElement {
    * actually changed — rather than the full catalogue, so a reviewer sees
    * just the correction and not every built-in line along with it.
    */
-  const submit = make("button", { i18n: "btn-catalog-submit", disabled: true });
+  const submit = make("button", { i18n: "btn-catalog-submit", hidden: true });
+  const submitHint = make("p", { className: "hint", i18n: "catalog-submit-hint", hidden: true });
   submit.addEventListener("click", async () => {
     const locale = chosen();
     try {
@@ -363,7 +365,7 @@ function cardTranslationEditor(): HTMLElement {
       reset,
       submit,
     ),
-    make("p", { className: "hint", i18n: "catalog-submit-hint" }),
+    submitHint,
     state,
     status,
     report,
