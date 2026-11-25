@@ -680,6 +680,7 @@ about-link-nexhack = Nex-Hack — 本项目所依托的社区研究
 about-version = 版本
 btn-copy-url = 复制地址
 btn-catalog-submit = 复制建议链接
+catalog-submit-hint = 仅当您上传了此语言的自定义版本后可用。复制一个新建 GitHub issue 的链接，其中已预先填入您更改过的行；将其粘贴到浏览器中并在那里提交 issue，即可发送建议。
 msg-url-copied = 地址已复制到剪贴板。
 
 # 安全提示

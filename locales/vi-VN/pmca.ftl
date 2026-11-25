@@ -698,6 +698,7 @@ about-link-nexhack = Nex-Hack — nghiên cứu cộng đồng mà dự án này
 about-version = Phiên bản
 btn-copy-url = Sao chép địa chỉ
 btn-catalog-submit = Sao chép liên kết đề xuất
+catalog-submit-hint = Chỉ khả dụng sau khi bạn đã tải lên phiên bản của riêng mình cho ngôn ngữ này. Sao chép liên kết đến một issue GitHub mới, đã điền sẵn chỉ những dòng bạn đã thay đổi; dán vào trình duyệt và gửi issue ở đó để gửi đề xuất.
 msg-url-copied = Đã sao chép địa chỉ vào bảng tạm.
 
 # Thông báo an toàn

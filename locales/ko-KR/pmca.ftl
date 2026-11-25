@@ -698,6 +698,7 @@ about-link-nexhack = Nex-Hack — 이 프로젝트의 기반이 된 커뮤니티
 about-version = 버전
 btn-copy-url = 주소 복사
 btn-catalog-submit = 제안 링크 복사
+catalog-submit-hint = 이 언어의 본인 버전을 업로드한 후에 사용할 수 있습니다. 변경한 줄만 미리 채워진 새 GitHub 이슈 링크를 복사합니다. 브라우저에 붙여넣고 이슈를 제출하면 제안을 보낼 수 있습니다.
 msg-url-copied = 주소를 클립보드에 복사했습니다.
 
 # 안전 고지

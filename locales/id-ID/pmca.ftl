@@ -687,6 +687,7 @@ about-link-nexhack = Nex-Hack — riset komunitas yang menjadi dasar proyek ini
 about-version = Versi
 btn-copy-url = Salin alamat
 btn-catalog-submit = Salin tautan saran
+catalog-submit-hint = Tersedia setelah Anda mengunggah versi Anda sendiri untuk bahasa ini. Menyalin tautan ke isu GitHub baru, sudah terisi hanya dengan baris yang Anda ubah; tempelkan di peramban dan kirim isu di sana untuk mengirim saran.
 msg-url-copied = Alamat disalin ke papan klip.
 
 # Pemberitahuan keselamatan

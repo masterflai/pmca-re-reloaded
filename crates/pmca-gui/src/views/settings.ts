@@ -368,6 +368,7 @@ function cardTranslationEditor(): HTMLElement {
       reset,
       submit,
     ),
+    make("p", { className: "hint", i18n: "catalog-submit-hint" }),
     state,
     status,
     report,

@@ -687,6 +687,7 @@ about-link-nexhack = Nex-Hack — les recherches communautaires sur lesquelles r
 about-version = Version
 btn-copy-url = Copier l'adresse
 btn-catalog-submit = Copier le lien de suggestion
+catalog-submit-hint = Disponible une fois que vous avez envoyé votre propre version de cette langue. Copie un lien vers un nouveau ticket (issue) GitHub, pré-rempli uniquement avec les lignes que vous avez modifiées ; collez-le dans un navigateur et envoyez le ticket là-bas pour transmettre la suggestion.
 msg-url-copied = Adresse copiée dans le presse-papiers.
 
 # Avertissement de sécurité

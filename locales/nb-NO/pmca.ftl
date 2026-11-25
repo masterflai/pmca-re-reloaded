@@ -687,6 +687,7 @@ about-link-nexhack = Nex-Hack — fellesskapets forskning som dette prosjektet b
 about-version = Versjon
 btn-copy-url = Kopier adresse
 btn-catalog-submit = Kopiér forslagslenke
+catalog-submit-hint = Tilgjengelig når du har lastet opp din egen versjon av dette språket. Kopierer en lenke til en ny GitHub-sak, forhåndsutfylt kun med linjene du endret; lim den inn i en nettleser og send saken der for å sende forslaget.
 msg-url-copied = Adressen er kopiert til utklippstavlen.
 
 # Sikkerhetsmerknad

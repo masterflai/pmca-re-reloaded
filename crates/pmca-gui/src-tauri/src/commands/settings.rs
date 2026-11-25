@@ -199,8 +199,37 @@ pub(crate) async fn update_install(
     if let Ok(mut broker) = state.broker.lock() {
         broker.take();
     }
+    let version = pending.update.version.clone();
     pending.update.install(&pending.bytes).map_err(|e| update_error("update-install-failed", e))?;
+    #[cfg(target_os = "linux")]
+    rename_appimage_after_update(&version);
+    #[cfg(not(target_os = "linux"))]
+    let _ = version;
     app.restart();
+}
+
+/// Give the AppImage on disk the name a fresh download of this version would
+/// have, after its *content* was just replaced in place at its existing path.
+///
+/// The updater plugin deliberately keeps the path unchanged: a `.desktop`
+/// entry AppImageLauncher created for it, or a taskbar pin, names that exact
+/// path, and moving the file would orphan them. Renaming — same directory,
+/// same integration, just the label — is the one part of that path a user
+/// actually reads, which is why the file kept announcing the old version.
+///
+/// Best-effort only: the update itself already succeeded, so a rename that
+/// fails (read-only mount, a name GUI integration insists on, …) is not worth
+/// failing the whole command over.
+#[cfg(target_os = "linux")]
+fn rename_appimage_after_update(version: &str) {
+    let Some(path) = std::env::var_os("APPIMAGE").map(std::path::PathBuf::from) else {
+        return;
+    };
+    let Some(dir) = path.parent() else { return };
+    let target = dir.join(format!("PMCA-RE.RELOADED_{version}_amd64.AppImage"));
+    if target != path {
+        let _ = std::fs::rename(&path, &target);
+    }
 }
 
 /// Mark the downloaded update to be installed when the window is closed instead

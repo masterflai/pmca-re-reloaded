@@ -686,6 +686,7 @@ about-link-nexhack = Nex-Hack — istraživanje zajednice na kojem se ovaj proje
 about-version = Verzija
 btn-copy-url = Kopiraj adresu
 btn-catalog-submit = Kopiraj poveznicu prijedloga
+catalog-submit-hint = Dostupno nakon što prenesete vlastitu verziju ovog jezika. Kopira poveznicu na novi GitHub issue, unaprijed ispunjen samo redcima koje ste promijenili; zalijepite je u preglednik i tamo pošaljite issue kako biste poslali prijedlog.
 msg-url-copied = Adresa je kopirana u međuspremnik.
 
 # Sigurnosna napomena

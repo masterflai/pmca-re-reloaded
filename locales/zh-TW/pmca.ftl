@@ -698,6 +698,7 @@ about-link-nexhack = Nex-Hack — 本專案所依據的社群研究
 about-version = 版本
 btn-copy-url = 複製網址
 btn-catalog-submit = 複製建議連結
+catalog-submit-hint = 僅在您上傳了此語言的自訂版本後才可用。複製一個新建 GitHub issue 的連結，其中已預先填入您更改過的行；將其貼到瀏覽器中並在那裡提交 issue，即可傳送建議。
 msg-url-copied = 網址已複製到剪貼簿。
 
 # 安全注意事項
