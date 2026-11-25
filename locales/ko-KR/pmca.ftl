@@ -697,6 +697,7 @@ about-link-devices = 지원되는 카메라 모델
 about-link-nexhack = Nex-Hack — 이 프로젝트의 기반이 된 커뮤니티 연구
 about-version = 버전
 btn-copy-url = 주소 복사
+btn-catalog-submit = 제안 링크 복사
 msg-url-copied = 주소를 클립보드에 복사했습니다.
 
 # 안전 고지
@@ -1105,6 +1106,12 @@ plugin-names-no-match = 일치하는 펌웨어 이름이 없습니다.
 plugin-inactive = (다시 시작한 후 활성화됨)
 plugin-author = 작성자
 plugin-restart = 변경 사항을 적용하려면 프로그램을 다시 시작하십시오.
+publish-heading = 내 소스 게시
+publish-intro = 필드를 채우면 자신의 저장소용 pmca-source.yaml 항목이 만들어집니다. 여기서는 아무것도 업로드되지 않습니다. 결과는 직접 복사하거나 저장하세요.
+publish-is-plugin = 이것은 앱이 아니라 플러그인입니다
+btn-publish-download = 파일로 저장…
+publish-copied = 클립보드에 복사했습니다.
+publish-saved = 저장 위치
 btn-plugin-install = 플러그인 설치…
 plugin-install-confirm = 이 플러그인은 다음을 할 수 있습니다:
 btn-confirm-plugin-install = 플러그인 설치

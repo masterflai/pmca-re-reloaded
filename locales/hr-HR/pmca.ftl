@@ -685,6 +685,7 @@ about-link-devices = Podržani modeli fotoaparata
 about-link-nexhack = Nex-Hack — istraživanje zajednice na kojem se ovaj projekt temelji
 about-version = Verzija
 btn-copy-url = Kopiraj adresu
+btn-catalog-submit = Kopiraj poveznicu prijedloga
 msg-url-copied = Adresa je kopirana u međuspremnik.
 
 # Sigurnosna napomena
@@ -1093,6 +1094,12 @@ plugin-names-no-match = Nijedan naziv iz firmvera ne odgovara.
 plugin-inactive = (aktivan nakon ponovnog pokretanja)
 plugin-author = Autor
 plugin-restart = Ponovno pokrenite program kako bi promjena stupila na snagu.
+publish-heading = Objavi vlastiti izvor
+publish-intro = Ispunite polja kako biste izradili unos pmca-source.yaml za vlastiti repozitorij. Ovdje se ništa ne prenosi; rezultat sami kopirajte ili spremite.
+publish-is-plugin = Ovo je dodatak, ne aplikacija
+btn-publish-download = Spremi kao datoteku…
+publish-copied = Kopirano u međuspremnik.
+publish-saved = Zapisano u
 btn-plugin-install = Instaliraj dodatak…
 plugin-install-confirm = Ovaj dodatak smije:
 btn-confirm-plugin-install = Instaliraj dodatak

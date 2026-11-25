@@ -684,6 +684,7 @@ about-link-devices = 対応するカメラ機種
 about-link-nexhack = Nex-Hack — このプロジェクトの基盤となったコミュニティの調査
 about-version = バージョン
 btn-copy-url = アドレスをコピー
+btn-catalog-submit = 提案リンクをコピー
 msg-url-copied = アドレスをクリップボードにコピーしました。
 
 # 安全に関する注意
@@ -1092,6 +1093,12 @@ plugin-names-no-match = 該当するファームウェア名はありません�
 plugin-inactive = （再起動後に有効）
 plugin-author = 作成者
 plugin-restart = 変更を反映するには、プログラムを再起動してください。
+publish-heading = 自分のソースを公開
+publish-intro = 項目を入力すると、自分のリポジトリ用の pmca-source.yaml エントリを作成できます。ここでは何もアップロードされません。結果は自分でコピーまたは保存してください。
+publish-is-plugin = これはプラグインであり、アプリではありません
+btn-publish-download = ファイルとして保存…
+publish-copied = クリップボードにコピーしました。
+publish-saved = 書き込み先
 btn-plugin-install = プラグインをインストール…
 plugin-install-confirm = このプラグインができること：
 btn-confirm-plugin-install = プラグインをインストール

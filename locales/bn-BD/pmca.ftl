@@ -682,6 +682,7 @@ about-link-devices = সমর্থিত ক্যামেরা মডেল
 about-link-nexhack = Nex-Hack — যে সম্প্রদায়ভিত্তিক গবেষণার ওপর এই প্রকল্প গড়ে উঠেছে
 about-version = সংস্করণ
 btn-copy-url = ঠিকানা কপি করুন
+btn-catalog-submit = পরামর্শ লিংক কপি করুন
 msg-url-copied = ঠিকানা ক্লিপবোর্ডে কপি করা হয়েছে।
 
 # নিরাপত্তা বিজ্ঞপ্তি
@@ -1088,6 +1089,12 @@ plugin-names-no-match = কোনো ফার্মওয়্যার না
 plugin-inactive = (পুনরায় চালু করার পর সক্রিয়)
 plugin-author = লেখক
 plugin-restart = পরিবর্তন কার্যকর করতে প্রোগ্রামটি পুনরায় চালু করুন।
+publish-heading = আপনার নিজস্ব উৎস প্রকাশ করুন
+publish-intro = আপনার নিজস্ব রিপোজিটরির জন্য pmca-source.yaml এন্ট্রি তৈরি করতে ক্ষেত্রগুলো পূরণ করুন। এখানে কিছুই আপলোড হয় না; ফলাফল নিজে কপি বা সংরক্ষণ করুন।
+publish-is-plugin = এটি একটি প্লাগইন, অ্যাপ নয়
+btn-publish-download = ফাইল হিসেবে সংরক্ষণ করুন…
+publish-copied = ক্লিপবোর্ডে কপি করা হয়েছে।
+publish-saved = এখানে লেখা হয়েছে
 btn-plugin-install = প্লাগইন ইনস্টল করুন…
 plugin-install-confirm = এই প্লাগইন যা করতে পারে:
 btn-confirm-plugin-install = প্লাগইন ইনস্টল করুন

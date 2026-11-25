@@ -686,6 +686,7 @@ about-link-devices = Поддерживаемые модели камер
 about-link-nexhack = Nex-Hack — исследования сообщества, на которых основан этот проект
 about-version = Версия
 btn-copy-url = Копировать адрес
+btn-catalog-submit = Скопировать ссылку с предложением
 msg-url-copied = Адрес скопирован в буфер обмена.
 
 # Предупреждение о безопасности
@@ -1094,6 +1095,12 @@ plugin-names-no-match = Подходящих имён из прошивки не
 plugin-inactive = (активен после перезапуска)
 plugin-author = Автор
 plugin-restart = Перезапустите программу, чтобы изменение вступило в силу.
+publish-heading = Опубликовать свой источник
+publish-intro = Заполните поля, чтобы создать запись pmca-source.yaml для вашего репозитория. Здесь ничего не загружается; скопируйте или сохраните результат сами.
+publish-is-plugin = Это плагин, а не приложение
+btn-publish-download = Сохранить как файл…
+publish-copied = Скопировано в буфер обмена.
+publish-saved = Записано в
 btn-plugin-install = Установить плагин…
 plugin-install-confirm = Этот плагин может:
 btn-confirm-plugin-install = Установить плагин

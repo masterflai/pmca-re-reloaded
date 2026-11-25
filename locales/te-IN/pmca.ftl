@@ -684,6 +684,7 @@ about-link-devices = మద్దతు ఉన్న కెమెరా మో�
 about-link-nexhack = Nex-Hack — ఈ ప్రాజెక్టుకు ఆధారమైన సముదాయ పరిశోధన
 about-version = వెర్షన్
 btn-copy-url = చిరునామా కాపీ చేయండి
+btn-catalog-submit = సూచన లింక్‌ని కాపీ చేయండి
 msg-url-copied = చిరునామా క్లిప్‌బోర్డుకు కాపీ చేయబడింది.
 
 # భద్రతా సూచన
@@ -1092,6 +1093,12 @@ plugin-names-no-match = ఏ ఫర్మ్‌వేర్ పేరూ సర�
 plugin-inactive = (పునఃప్రారంభం తర్వాత సక్రియం)
 plugin-author = రచయిత
 plugin-restart = మార్పు అమలులోకి రావడానికి ప్రోగ్రామ్‌ను పునఃప్రారంభించండి.
+publish-heading = మీ స్వంత మూలాన్ని ప్రచురించండి
+publish-intro = మీ స్వంత రిపోజిటరీ కోసం pmca-source.yaml ఎంట్రీని తయారు చేయడానికి ఫీల్డ్‌లను పూరించండి. ఇక్కడ ఏమీ అప్‌లోడ్ కాదు; ఫలితాన్ని మీరే కాపీ చేయండి లేదా సేవ్ చేయండి.
+publish-is-plugin = ఇది యాప్ కాదు, ప్లగిన్
+btn-publish-download = ఫైల్‌గా సేవ్ చేయండి…
+publish-copied = క్లిప్‌బోర్డుకు కాపీ చేయబడింది.
+publish-saved = ఇక్కడ వ్రాయబడింది
 btn-plugin-install = ప్లగిన్ ఇన్‌స్టాల్ చేయండి…
 plugin-install-confirm = ఈ ప్లగిన్ చేయగలిగేవి:
 btn-confirm-plugin-install = ప్లగిన్ ఇన్‌స్టాల్ చేయండి

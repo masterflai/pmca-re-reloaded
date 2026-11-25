@@ -378,3 +378,109 @@ export function cardSources(): HTMLElement {
     search.results,
   );
 }
+
+/** One field of the generated entry: a plain, untranslated placeholder names it, like `owner/repository` above. */
+function publishField(placeholder: string): HTMLInputElement {
+  return make("input", { type: "text", className: "path-input", placeholder, spellcheck: false });
+}
+
+/** A YAML double-quoted scalar: always safe, whatever the field contains. */
+function yamlScalar(value: string): string {
+  return JSON.stringify(value);
+}
+
+/**
+ * Build a `pmca-source.yaml` entry from the form fields, leaving out anything
+ * left empty. `release` is left out entirely without both GitHub fields,
+ * matching the spec: the entry is then listed but cannot be installed.
+ */
+function buildSourceYaml(fields: Record<string, HTMLInputElement>, isPlugin: boolean): string {
+  const get = (name: string): string => fields[name].value.trim();
+  const lines = ["---"];
+  if (isPlugin) lines.push("kind: plugin");
+  for (const name of ["package", "name", "author", "desc", "homepage"]) {
+    const value = get(name);
+    if (value !== "") lines.push(`${name}: ${yamlScalar(value)}`);
+  }
+  const ghUser = get("ghUser");
+  const ghRepo = get("ghRepo");
+  if (ghUser !== "" && ghRepo !== "") {
+    lines.push("release:", "  type: github", `  user: ${yamlScalar(ghUser)}`, `  repo: ${yamlScalar(ghRepo)}`);
+  }
+  if (!isPlugin && get("certSha256") !== "") lines.push(`cert_sha256: ${yamlScalar(get("certSha256"))}`);
+  return lines.join("\n");
+}
+
+/**
+ * Generate a `pmca-source.yaml` entry for the user's own repository.
+ *
+ * Nothing here is uploaded anywhere: the result is only ever copied or saved
+ * by the user, who still has to add the file to their own repository and give
+ * it the topic `pmca-source` themselves (see `docs/app-sources.md`).
+ */
+export function cardPublish(): HTMLElement {
+  const status = statusLine();
+  const preview = make("pre", { className: "shell-output" });
+
+  const isPlugin = make("input", { type: "checkbox" });
+  const certSha256 = publishField("cert_sha256");
+  const fields: Record<string, HTMLInputElement> = {
+    package: publishField("package"),
+    name: publishField("name"),
+    author: publishField("author"),
+    desc: publishField("desc"),
+    homepage: publishField("homepage"),
+    ghUser: publishField("github user"),
+    ghRepo: publishField("github repo"),
+    certSha256,
+  };
+
+  function update(): void {
+    certSha256.hidden = isPlugin.checked;
+    preview.textContent = buildSourceYaml(fields, isPlugin.checked);
+  }
+  isPlugin.addEventListener("change", update);
+  for (const field of Object.values(fields)) field.addEventListener("input", update);
+  update();
+
+  const copy = make("button", { i18n: "btn-copy-url" });
+  copy.addEventListener("click", async () => {
+    try {
+      await navigator.clipboard.writeText(preview.textContent ?? "");
+      showDone(status, tr("publish-copied"));
+    } catch (e) {
+      showError(status, e);
+    }
+  });
+
+  const download = make("button", { i18n: "btn-publish-download" });
+  download.addEventListener("click", async () => {
+    download.disabled = true;
+    try {
+      const written = await invoke<string | null>("export_source_yaml", { text: preview.textContent ?? "" });
+      if (written !== null) showDone(status, `${tr("publish-saved")} ${written}`);
+    } catch (e) {
+      showError(status, e);
+    } finally {
+      download.disabled = false;
+    }
+  });
+
+  const panel = make(
+    "div",
+    {},
+    make("label", { className: "row" }, isPlugin, make("span", { i18n: "publish-is-plugin" })),
+    fields.package,
+    fields.name,
+    fields.author,
+    fields.desc,
+    fields.homepage,
+    fields.ghUser,
+    fields.ghRepo,
+    certSha256,
+    preview,
+    make("div", { className: "row" }, copy, download),
+    status,
+  );
+  return card(make("h2", { i18n: "publish-heading" }), make("p", { i18n: "publish-intro" }), detailsLine(panel), panel);
+}

@@ -62,6 +62,24 @@ pub(crate) async fn sources_search() -> Result<Vec<SourceRepo>, CommandError> {
     in_background(|| Ok(pmca_app::sources::search()?)).await
 }
 
+/// Ask where to save a generated `pmca-source.yaml` entry and write it there.
+///
+/// The filter is `"any"`: this is a plain-text file the user names themselves,
+/// not one of the kinds [`dialog_filter`] already knows an extension for.
+#[tauri::command(async)]
+pub(crate) fn export_source_yaml(
+    app: AppHandle,
+    window: Window,
+    state: State<'_, AppState>,
+    text: String,
+) -> Result<Option<String>, CommandError> {
+    let Some(path) = ask_save_path(&app, &window, &state, "any", "pmca-source.yaml")? else {
+        return Ok(None);
+    };
+    std::fs::write(&path, text)?;
+    Ok(Some(absolute_display(&path)))
+}
+
 /// The plugins the user's sources offer.
 #[tauri::command]
 pub(crate) async fn list_community_plugins() -> Result<CommunityList, CommandError> {

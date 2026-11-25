@@ -686,6 +686,7 @@ about-link-devices = Model kamera yang didukung
 about-link-nexhack = Nex-Hack — riset komunitas yang menjadi dasar proyek ini
 about-version = Versi
 btn-copy-url = Salin alamat
+btn-catalog-submit = Salin tautan saran
 msg-url-copied = Alamat disalin ke papan klip.
 
 # Pemberitahuan keselamatan
@@ -1094,6 +1095,12 @@ plugin-names-no-match = Tidak ada nama firmware yang cocok.
 plugin-inactive = (aktif setelah dimulai ulang)
 plugin-author = Pembuat
 plugin-restart = Mulai ulang program agar perubahan berlaku.
+publish-heading = Terbitkan sumber Anda sendiri
+publish-intro = Isi kolom untuk membuat entri pmca-source.yaml bagi repositori Anda sendiri. Tidak ada yang diunggah di sini; salin atau simpan sendiri hasilnya.
+publish-is-plugin = Ini adalah plugin, bukan aplikasi
+btn-publish-download = Simpan sebagai berkas…
+publish-copied = Disalin ke papan klip.
+publish-saved = Ditulis ke
 btn-plugin-install = Pasang plugin…
 plugin-install-confirm = Plugin ini dapat:
 btn-confirm-plugin-install = Pasang plugin

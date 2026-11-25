@@ -34,7 +34,7 @@ import {
 } from "../preferences";
 import { syncUpdateToggles } from "../update";
 import { cardPlugins } from "./plugins";
-import { cardSources } from "./sources";
+import { cardPublish, cardSources } from "./sources";
 
 /**
  * Settings: everything about the *content* of a translation.
@@ -49,6 +49,7 @@ export function viewSettings(host: HTMLElement): void {
   host.append(
     cardTranslationEditor(),
     cardSources(),
+    cardPublish(),
     cardPlugins(),
     cardUpdateCheck(),
     cardAdvancedMode(),
@@ -199,6 +200,7 @@ function cardTranslationEditor(): HTMLElement {
       }),
     );
     if (path !== null) state.append(` ${path}`);
+    submit.disabled = path === null;
   }
 
   /** A `label: count` line, kept translatable across a language change. */
@@ -322,6 +324,30 @@ function cardTranslationEditor(): HTMLElement {
     }
   });
 
+  /**
+   * Copy a GitHub issue link pre-filled with the user's own edits.
+   *
+   * The overlay file is sent as it is stored — only the entries the user
+   * actually changed — rather than the full catalogue, so a reviewer sees
+   * just the correction and not every built-in line along with it.
+   */
+  const submit = make("button", { i18n: "btn-catalog-submit", disabled: true });
+  submit.addEventListener("click", async () => {
+    const locale = chosen();
+    try {
+      const overlay = await invoke<string | null>("catalog_overlay", { locale });
+      if (overlay === null) return;
+      const body = `Locale: ${locale}\n\n\`\`\`\n${overlay}\n\`\`\``;
+      const url =
+        "https://github.com/masterflai/pmca-re-reloaded/issues/new" +
+        `?title=${encodeURIComponent(`Translation suggestion: ${locale}`)}&body=${encodeURIComponent(body)}`;
+      await navigator.clipboard.writeText(url);
+      showDone(status, tr("msg-url-copied-browser"));
+    } catch (e) {
+      showError(status, e);
+    }
+  });
+
   select.addEventListener("change", () => {
     clearStatusState(status);
     status.textContent = "";
@@ -340,6 +366,7 @@ function cardTranslationEditor(): HTMLElement {
       download,
       upload,
       reset,
+      submit,
     ),
     state,
     status,

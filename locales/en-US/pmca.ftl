@@ -697,6 +697,7 @@ about-link-devices = Supported camera models
 about-link-nexhack = Nex-Hack — the community research this project builds on
 about-version = Version
 btn-copy-url = Copy address
+btn-catalog-submit = Copy suggestion link
 msg-url-copied = Address copied to the clipboard.
 
 # Safety notice
@@ -1105,6 +1106,12 @@ plugin-names-no-match = No firmware name fits.
 plugin-inactive = (active after a restart)
 plugin-author = Author
 plugin-restart = Restart the program for the change to take effect.
+publish-heading = Publish your own source
+publish-intro = Fill in the fields to build a pmca-source.yaml entry for your own repository. Nothing is uploaded here; copy or save the result yourself.
+publish-is-plugin = This is a plugin, not an app
+btn-publish-download = Save as file…
+publish-copied = Copied to the clipboard.
+publish-saved = Written to
 btn-plugin-install = Install plugin…
 plugin-install-confirm = This plugin may:
 btn-confirm-plugin-install = Install plugin

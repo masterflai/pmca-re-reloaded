@@ -686,6 +686,7 @@ about-link-devices = Desteklenen kamera modelleri
 about-link-nexhack = Nex-Hack — bu projenin dayandığı topluluk araştırması
 about-version = Sürüm
 btn-copy-url = Adresi kopyala
+btn-catalog-submit = Öneri bağlantısını kopyala
 msg-url-copied = Adres panoya kopyalandı.
 
 # Güvenlik uyarısı
@@ -1094,6 +1095,12 @@ plugin-names-no-match = Eşleşen ürün yazılımı adı yok.
 plugin-inactive = (yeniden başlatmadan sonra etkin)
 plugin-author = Yazar
 plugin-restart = Değişikliğin geçerli olması için programı yeniden başlatın.
+publish-heading = Kendi kaynağınızı yayımlayın
+publish-intro = Kendi deponuz için bir pmca-source.yaml girdisi oluşturmak üzere alanları doldurun. Burada hiçbir şey yüklenmez; sonucu kendiniz kopyalayın veya kaydedin.
+publish-is-plugin = Bu bir eklenti, uygulama değil
+btn-publish-download = Dosya olarak kaydet…
+publish-copied = Panoya kopyalandı.
+publish-saved = Şuraya yazıldı
 btn-plugin-install = Eklenti kur…
 plugin-install-confirm = Bu eklenti şunları yapabilir:
 btn-confirm-plugin-install = Eklentiyi kur

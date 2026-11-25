@@ -94,7 +94,10 @@ export function cardPlugins(): HTMLElement {
     const head = make("div", { className: "row" }, title, make("span", { className: "hint", textContent: plugin.id }));
     if (!plugin.active) head.append(make("span", { className: "hint", i18n: "plugin-inactive" }));
     head.append(remove);
-    const body: (Node | string)[] = [head];
+    // Author, description, signer and the permission list are the part of a
+    // row that grows with every plugin installed; folded away by default, a
+    // long list stays scannable by name instead of by paragraph.
+    const body: (Node | string)[] = [];
     if (plugin.author) body.push(make("p", { className: "hint" }, make("span", { i18n: "plugin-author" }), `: ${plugin.author}`));
     if (plugin.description) {
       body.push(make("p", { textContent: pluginText(plugin.descriptionKey, plugin.description) }));
@@ -104,8 +107,10 @@ export function cardPlugins(): HTMLElement {
       body.push(make("p", { className: "hint", textContent: trFill("plugin-names-count", { count: plugin.names }) }));
     }
     body.push(make("ul", {}, ...plugin.permissions.map((p) => make("li", { i18n: `plugin-perm-${p}` }))));
-    return make("div", { className: "plugin-row" }, ...body);
+    const panel = make("div", {}, ...body);
+    return make("div", { className: "plugin-row" }, head, detailsLine(panel), panel);
   }
+
 
   const install = make("button", { className: "primary", i18n: "btn-plugin-install" });
   install.addEventListener("click", async () => {

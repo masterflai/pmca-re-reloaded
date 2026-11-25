@@ -697,6 +697,7 @@ about-link-devices = รุ่นกล้องที่รองรับ
 about-link-nexhack = Nex-Hack — งานวิจัยของชุมชนที่โปรเจกต์นี้ใช้เป็นพื้นฐาน
 about-version = เวอร์ชัน
 btn-copy-url = คัดลอกที่อยู่
+btn-catalog-submit = คัดลอกลิงก์ข้อเสนอแนะ
 msg-url-copied = คัดลอกที่อยู่ไปยังคลิปบอร์ดแล้ว
 
 # ประกาศด้านความปลอดภัย
@@ -1105,6 +1106,12 @@ plugin-names-no-match = ไม่มีชื่อจากเฟิร์ม�
 plugin-inactive = (ใช้งานได้หลังจากรีสตาร์ท)
 plugin-author = ผู้สร้าง
 plugin-restart = รีสตาร์ทโปรแกรมเพื่อให้การเปลี่ยนแปลงมีผล
+publish-heading = เผยแพร่แหล่งที่มาของคุณเอง
+publish-intro = กรอกข้อมูลในช่องต่าง ๆ เพื่อสร้างรายการ pmca-source.yaml สำหรับพื้นที่เก็บข้อมูลของคุณเอง ไม่มีการอัปโหลดใด ๆ ที่นี่ โปรดคัดลอกหรือบันทึกผลลัพธ์ด้วยตนเอง
+publish-is-plugin = นี่คือปลั๊กอิน ไม่ใช่แอป
+btn-publish-download = บันทึกเป็นไฟล์…
+publish-copied = คัดลอกไปยังคลิปบอร์ดแล้ว
+publish-saved = เขียนไปยัง
 btn-plugin-install = ติดตั้งปลั๊กอิน…
 plugin-install-confirm = ปลั๊กอินนี้สามารถ:
 btn-confirm-plugin-install = ติดตั้งปลั๊กอิน

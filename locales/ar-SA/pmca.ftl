@@ -684,6 +684,7 @@ about-link-devices = طرازات الكاميرات المدعومة
 about-link-nexhack = Nex-Hack — أبحاث المجتمع التي يقوم عليها هذا المشروع
 about-version = الإصدار
 btn-copy-url = نسخ العنوان
+btn-catalog-submit = نسخ رابط الاقتراح
 msg-url-copied = نُسخ العنوان إلى الحافظة.
 
 # تنبيه السلامة
@@ -1092,6 +1093,12 @@ plugin-names-no-match = لا يوجد اسم من البرنامج الثابت 
 plugin-inactive = (تصبح فعّالة بعد إعادة التشغيل)
 plugin-author = المؤلف
 plugin-restart = أعد تشغيل البرنامج ليسري التغيير.
+publish-heading = انشر مصدرك الخاص
+publish-intro = املأ الحقول لإنشاء مدخل pmca-source.yaml لمستودعك الخاص. لا يُرفَع هنا شيء؛ انسخ النتيجة أو احفظها بنفسك.
+publish-is-plugin = هذا إضافة (بلَغِن)، وليس تطبيقًا
+btn-publish-download = حفظ كملف…
+publish-copied = نُسخ إلى الحافظة.
+publish-saved = كُتب إلى
 btn-plugin-install = تثبيت إضافة…
 plugin-install-confirm = يمكن لهذه الإضافة:
 btn-confirm-plugin-install = تثبيت الإضافة

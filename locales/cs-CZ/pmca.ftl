@@ -685,6 +685,7 @@ about-link-devices = Podporované modely fotoaparátů
 about-link-nexhack = Nex-Hack — komunitní výzkum, na kterém tento projekt staví
 about-version = Verze
 btn-copy-url = Kopírovat adresu
+btn-catalog-submit = Kopírovat odkaz s návrhem
 msg-url-copied = Adresa byla zkopírována do schránky.
 
 # Bezpečnostní upozornění
@@ -1093,6 +1094,12 @@ plugin-names-no-match = Žádný název z firmwaru neodpovídá.
 plugin-inactive = (aktivní po restartu)
 plugin-author = Autor
 plugin-restart = Změna se projeví po restartu programu.
+publish-heading = Zveřejnit vlastní zdroj
+publish-intro = Vyplňte pole a vytvořte záznam pmca-source.yaml pro svůj vlastní repozitář. Nic se zde nenahrává; výsledek si sami zkopírujte nebo uložte.
+publish-is-plugin = Toto je zásuvný modul, ne aplikace
+btn-publish-download = Uložit jako soubor…
+publish-copied = Zkopírováno do schránky.
+publish-saved = Zapsáno do
 btn-plugin-install = Nainstalovat zásuvný modul…
 plugin-install-confirm = Tento zásuvný modul smí:
 btn-confirm-plugin-install = Nainstalovat zásuvný modul

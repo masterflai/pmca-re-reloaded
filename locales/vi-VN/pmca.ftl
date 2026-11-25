@@ -697,6 +697,7 @@ about-link-devices = Các kiểu máy ảnh được hỗ trợ
 about-link-nexhack = Nex-Hack — nghiên cứu cộng đồng mà dự án này dựa vào
 about-version = Phiên bản
 btn-copy-url = Sao chép địa chỉ
+btn-catalog-submit = Sao chép liên kết đề xuất
 msg-url-copied = Đã sao chép địa chỉ vào bảng tạm.
 
 # Thông báo an toàn
@@ -1105,6 +1106,12 @@ plugin-names-no-match = Không có tên phần sụn nào phù hợp.
 plugin-inactive = (hoạt động sau khi khởi động lại)
 plugin-author = Tác giả
 plugin-restart = Khởi động lại chương trình để thay đổi có hiệu lực.
+publish-heading = Xuất bản nguồn của riêng bạn
+publish-intro = Điền vào các trường để tạo mục pmca-source.yaml cho kho lưu trữ của riêng bạn. Không có gì được tải lên ở đây; hãy tự sao chép hoặc lưu kết quả.
+publish-is-plugin = Đây là plugin, không phải ứng dụng
+btn-publish-download = Lưu dưới dạng tệp…
+publish-copied = Đã sao chép vào bảng tạm.
+publish-saved = Đã ghi vào
 btn-plugin-install = Cài đặt plugin…
 plugin-install-confirm = Plugin này có thể:
 btn-confirm-plugin-install = Cài đặt plugin

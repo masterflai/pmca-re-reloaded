@@ -686,6 +686,7 @@ about-link-devices = Modèles d'appareils pris en charge
 about-link-nexhack = Nex-Hack — les recherches communautaires sur lesquelles repose ce projet
 about-version = Version
 btn-copy-url = Copier l'adresse
+btn-catalog-submit = Copier le lien de suggestion
 msg-url-copied = Adresse copiée dans le presse-papiers.
 
 # Avertissement de sécurité
@@ -1094,6 +1095,12 @@ plugin-names-no-match = Aucun nom du firmware ne correspond.
 plugin-inactive = (active après un redémarrage)
 plugin-author = Auteur
 plugin-restart = Redémarrez le programme pour que la modification prenne effet.
+publish-heading = Publier votre propre source
+publish-intro = Remplissez les champs pour créer une entrée pmca-source.yaml pour votre propre dépôt. Rien n’est envoyé ici ; copiez ou enregistrez le résultat vous-même.
+publish-is-plugin = Ceci décrit une extension, pas une application
+btn-publish-download = Enregistrer dans un fichier…
+publish-copied = Copié dans le presse-papiers.
+publish-saved = Écrit dans
 btn-plugin-install = Installer une extension…
 plugin-install-confirm = Cette extension peut :
 btn-confirm-plugin-install = Installer l’extension

@@ -697,6 +697,7 @@ about-link-devices = 支援的相機型號
 about-link-nexhack = Nex-Hack — 本項目所依據的社群研究
 about-version = 版本
 btn-copy-url = 複製網址
+btn-catalog-submit = 複製建議連結
 msg-url-copied = 網址已複製至剪貼簿。
 
 # 安全提示
@@ -1105,6 +1106,12 @@ plugin-names-no-match = 沒有相符的固件名稱。
 plugin-inactive = （重新啟動後生效）
 plugin-author = 作者
 plugin-restart = 請重新啟動本程式，令變更生效。
+publish-heading = 發佈您自己的來源
+publish-intro = 填寫以下欄位，為您自己的儲存庫產生 pmca-source.yaml 項目。此處不會上傳任何內容；請自行複製或儲存結果。
+publish-is-plugin = 這是一個插件，而不是應用程式
+btn-publish-download = 另存為檔案…
+publish-copied = 已複製至剪貼簿。
+publish-saved = 已寫入
 btn-plugin-install = 安裝插件…
 plugin-install-confirm = 此插件可以：
 btn-confirm-plugin-install = 安裝插件

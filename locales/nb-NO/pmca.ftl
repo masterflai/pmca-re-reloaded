@@ -686,6 +686,7 @@ about-link-devices = Støttede kameramodeller
 about-link-nexhack = Nex-Hack — fellesskapets forskning som dette prosjektet bygger på
 about-version = Versjon
 btn-copy-url = Kopier adresse
+btn-catalog-submit = Kopiér forslagslenke
 msg-url-copied = Adressen er kopiert til utklippstavlen.
 
 # Sikkerhetsmerknad
@@ -1094,6 +1095,12 @@ plugin-names-no-match = Ingen fastvarenavn passer.
 plugin-inactive = (aktivt etter en omstart)
 plugin-author = Forfatter
 plugin-restart = Start programmet på nytt for at endringen skal tre i kraft.
+publish-heading = Publiser din egen kilde
+publish-intro = Fyll ut feltene for å lage en pmca-source.yaml-oppføring for ditt eget repositorium. Ingenting lastes opp her; kopiér eller lagre resultatet selv.
+publish-is-plugin = Dette er et programtillegg, ikke en app
+btn-publish-download = Lagre som fil…
+publish-copied = Kopiert til utklippstavlen.
+publish-saved = Skrevet til
 btn-plugin-install = Installer programtillegg…
 plugin-install-confirm = Dette programtillegget kan:
 btn-confirm-plugin-install = Installer programtillegg

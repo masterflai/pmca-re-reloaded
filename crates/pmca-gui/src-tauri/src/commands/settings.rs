@@ -283,6 +283,17 @@ pub(crate) fn catalog_status(locale: String) -> Result<Option<String>, CommandEr
     Ok(path)
 }
 
+/// The user's own edits for `locale`, exactly as stored, for sharing as a suggestion.
+///
+/// Returned verbatim rather than merged with the built-in text: the catalogue
+/// the user uploaded already contains only what they changed, which is the
+/// smallest, clearest thing to hand to someone reviewing a correction.
+#[tauri::command]
+pub(crate) fn catalog_overlay(locale: String) -> Result<Option<String>, CommandError> {
+    known_locale(&locale)?;
+    Ok(pmca_i18n::catalog::user_catalog_source(&locale))
+}
+
 /// Ask where the editable catalogue for `locale` should go and write it there.
 ///
 /// Like [`analysis_export`], the save dialog is opened here so the window never
