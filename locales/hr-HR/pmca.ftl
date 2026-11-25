@@ -15,6 +15,7 @@ nav-service = Servisna ljuska
 nav-tools = Alati za datoteke
 nav-settings = Postavke
 nav-license = Licenca
+nav-extensions = Proširenja
 
 # Početna stranica: stranica kojom se prozor otvara.
 nav-welcome = Dobro došli
@@ -39,7 +40,8 @@ welcome-where-analysis = Pogledajte sve vrijednosti u memoriji postavki fotoapar
 welcome-where-firmware = Zapisati sliku firmvera u fotoaparat.
 welcome-where-tools = Raspakirati i pregledati datoteke firmvera i paketa. Bez fotoaparata.
 welcome-where-shell = Servisna ljuska i ljuska updatera: izravan pristup memoriji i datotečnom sustavu fotoaparata. Prethodno u Postavkama uključite napredni način rada.
-welcome-where-settings = Uređivanje prijevoda ovog programa, izvori aplikacija i dodataka, dodaci, obavijest o ažuriranju, napredni način rada i analiza funkcija.
+welcome-where-settings = Uređivanje prijevoda ovog programa, obavijest o ažuriranju, napredni način rada i analiza funkcija.
+welcome-where-extensions = Izvori aplikacija i dodataka, dodaci instalirani iz njih te objavljivanje vlastitog izvora.
 welcome-where-license = Odakle ovaj port dolazi, na čijem radu počiva i pod kojim je uvjetima objavljen.
 welcome-where-hint = Nijedna stranica ne dira fotoaparat sama od sebe. Ništa se ne čita ni ne zapisuje dok ne pritisnete gumb koji to najavljuje.
 nav-diagnose = Dijagnostika
@@ -1096,7 +1098,7 @@ plugin-inactive = (aktivan nakon ponovnog pokretanja)
 plugin-author = Autor
 plugin-restart = Ponovno pokrenite program kako bi promjena stupila na snagu.
 publish-heading = Objavi vlastiti izvor
-publish-intro = Ispunite polja kako biste izradili unos pmca-source.yaml za vlastiti repozitorij. Ovdje se ništa ne prenosi; rezultat sami kopirajte ili spremite.
+publish-intro = Ispunite polja kako biste izradili unos pmca-source.yaml za vlastiti repozitorij. Ovdje se ništa ne prenosi; rezultat sami kopirajte ili spremite. Dodajte repozitoriju na GitHubu i temu (topic) `pmca-source`, kako bi ga bilo moguće pronaći.
 publish-is-plugin = Ovo je dodatak, ne aplikacija
 btn-publish-fetch = Ispuni s GitHuba
 publish-fetch-failed = Ovaj repozitorij nije bilo moguće pročitati.

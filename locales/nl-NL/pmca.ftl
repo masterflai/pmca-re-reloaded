@@ -15,6 +15,7 @@ nav-service = Service-shell
 nav-tools = Bestandsgereedschap
 nav-settings = Instellingen
 nav-license = Licentie
+nav-extensions = Uitbreidingen
 
 # Welkomstpagina: de pagina waarmee het venster opent.
 nav-welcome = Welkom
@@ -39,7 +40,8 @@ welcome-where-analysis = Alle waarden in het instellingengeheugen van uw camera 
 welcome-where-firmware = Een firmwarebestand naar de camera schrijven.
 welcome-where-tools = Firmware- en pakketbestanden uitpakken en bekijken. Zonder camera.
 welcome-where-shell = Service-shell en updater-shell: rechtstreekse toegang tot het geheugen en bestandssysteem van de camera. Schakel eerst de geavanceerde modus in via Instellingen.
-welcome-where-settings = De vertaling van dit programma bewerken, bronnen voor apps en plug-ins, plug-ins, de updatemelding, de geavanceerde modus en de functieanalyse.
+welcome-where-settings = De vertaling van dit programma bewerken, de updatemelding, de geavanceerde modus en de functieanalyse.
+welcome-where-extensions = Bronnen voor apps en plug-ins, de daaruit geïnstalleerde plug-ins, en het publiceren van uw eigen bron.
 welcome-where-license = Waar deze overzetting vandaan komt, op wiens werk ze voortbouwt en onder welke voorwaarden ze staat.
 welcome-where-hint = Geen enkele pagina doet uit zichzelf iets met de camera. Er wordt niets gelezen of geschreven voordat u op een knop drukt die dat aankondigt.
 nav-diagnose = Diagnose
@@ -1099,7 +1101,7 @@ plugin-inactive = (actief na een herstart)
 plugin-author = Auteur
 plugin-restart = Start het programma opnieuw om de wijziging door te voeren.
 publish-heading = Uw eigen bron publiceren
-publish-intro = Vul de velden in om een pmca-source.yaml-item voor uw eigen repository te maken. Hier wordt niets geüpload; kopieer of bewaar het resultaat zelf.
+publish-intro = Vul de velden in om een pmca-source.yaml-item voor uw eigen repository te maken. Hier wordt niets geüpload; kopieer of bewaar het resultaat zelf. Geef de repository op GitHub ook het topic `pmca-source`, zodat deze te vinden is.
 publish-is-plugin = Dit is een plug-in, geen app
 btn-publish-fetch = Invullen vanaf GitHub
 publish-fetch-failed = Deze repository kon niet worden gelezen.

@@ -391,6 +391,17 @@ function yamlScalar(value: string): string {
 }
 
 /**
+ * A repository name turned into a valid plugin id (`^[a-z][a-z0-9-]{1,31}$`),
+ * for prefilling `package` once a kind of plugin has been chosen; apps have no
+ * such derivable default, since their package name comes from the APK
+ * manifest, not the repository's name.
+ */
+function slugifyPluginId(name: string): string {
+  const slug = name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "").slice(0, 32);
+  return /^[a-z]/.test(slug) ? slug : "";
+}
+
+/**
  * Build a `pmca-source.yaml` entry from the form fields, leaving out anything
  * left empty. `release` is left out entirely without both GitHub fields,
  * matching the spec: the entry is then listed but cannot be installed.
@@ -479,6 +490,7 @@ export function cardPublish(): HTMLElement {
       fillIfEmpty(fields.author, owner);
       fillIfEmpty(fields.desc, repo.description);
       fillIfEmpty(fields.homepage, repo.homepage);
+      if (isPlugin.checked) fillIfEmpty(fields.package, slugifyPluginId(repo.name));
       update();
       clearStatusState(fetchStatus);
       fetchStatus.textContent = "";
@@ -516,9 +528,9 @@ export function cardPublish(): HTMLElement {
   const panel = make(
     "div",
     {},
+    make("label", { className: "row" }, isPlugin, make("span", { i18n: "publish-is-plugin" })),
     make("div", { className: "row" }, repoLink, fetchButton, stars),
     fetchStatus,
-    make("label", { className: "row" }, isPlugin, make("span", { i18n: "publish-is-plugin" })),
     fields.package,
     fields.name,
     fields.author,

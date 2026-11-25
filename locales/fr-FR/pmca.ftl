@@ -14,6 +14,7 @@ nav-service = Shell de service
 nav-tools = Outils de fichiers
 nav-settings = Paramètres
 nav-license = Licence
+nav-extensions = Extensions
 
 # Page d'accueil : la page sur laquelle la fenêtre s'ouvre.
 nav-welcome = Bienvenue
@@ -38,7 +39,8 @@ welcome-where-analysis = Voir toutes les valeurs de la mémoire des réglages de
 welcome-where-firmware = Écrire une image de firmware sur l'appareil.
 welcome-where-tools = Décompresser et examiner des fichiers de firmware et de paquet. Sans appareil.
 welcome-where-shell = Shell de service et shell de l'updater : accès direct à la mémoire et au système de fichiers de l'appareil. Activez d'abord le mode avancé dans les Paramètres.
-welcome-where-settings = Modifier la traduction de ce programme, sources d'applications et d'extensions, extensions, notification de mise à jour, mode avancé et analyse des fonctions.
+welcome-where-settings = Modifier la traduction de ce programme, notification de mise à jour, mode avancé et analyse des fonctions.
+welcome-where-extensions = Sources d'applications et d'extensions, les extensions installées depuis celles-ci, et la publication de votre propre source.
 welcome-where-license = D'où vient ce portage, sur le travail de qui il s'appuie et sous quelles conditions il est publié.
 welcome-where-hint = Aucune page n'agit d'elle-même sur l'appareil. Rien n'est lu ni écrit tant que vous n'appuyez pas sur un bouton qui l'annonce.
 nav-diagnose = Diagnostic
@@ -1097,7 +1099,7 @@ plugin-inactive = (active après un redémarrage)
 plugin-author = Auteur
 plugin-restart = Redémarrez le programme pour que la modification prenne effet.
 publish-heading = Publier votre propre source
-publish-intro = Remplissez les champs pour créer une entrée pmca-source.yaml pour votre propre dépôt. Rien n’est envoyé ici ; copiez ou enregistrez le résultat vous-même.
+publish-intro = Remplissez les champs pour créer une entrée pmca-source.yaml pour votre propre dépôt. Rien n’est envoyé ici ; copiez ou enregistrez le résultat vous-même. Donnez aussi au dépôt le sujet (topic) GitHub `pmca-source`, afin qu'il puisse être trouvé.
 publish-is-plugin = Ceci décrit une extension, pas une application
 btn-publish-fetch = Remplir depuis GitHub
 publish-fetch-failed = Impossible de lire ce dépôt.

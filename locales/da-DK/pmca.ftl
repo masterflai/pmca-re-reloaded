@@ -14,6 +14,7 @@ nav-service = Serviceshell
 nav-tools = Filværktøjer
 nav-settings = Indstillinger
 nav-license = Licens
+nav-extensions = Udvidelser
 
 # Velkomstside: den side, vinduet åbner på.
 nav-welcome = Velkommen
@@ -38,7 +39,8 @@ welcome-where-analysis = Se alle værdier i kameraets indstillingshukommelse, fi
 welcome-where-firmware = Skrive et firmwarebillede til kameraet.
 welcome-where-tools = Pakke firmware- og pakkefiler ud og se dem efter. Uden kamera.
 welcome-where-shell = Service-shell og updater-shell: direkte adgang til kameraets hukommelse og filsystem. Slå først avanceret tilstand til under Indstillinger.
-welcome-where-settings = Rediger oversættelsen af dette program, app- og plugin-kilder, plugins, opdateringsbesked, avanceret tilstand og funktionsanalyse.
+welcome-where-settings = Rediger oversættelsen af dette program, opdateringsbesked, avanceret tilstand og funktionsanalyse.
+welcome-where-extensions = App- og plugin-kilder, de plugins der er installeret fra dem, og udgivelse af din egen kilde.
 welcome-where-license = Hvor denne portering kommer fra, hvis arbejde den bygger på, og på hvilke vilkår den står.
 welcome-where-hint = Ingen side rører kameraet af sig selv. Der bliver hverken læst eller skrevet noget, før du trykker på en knap, der siger det.
 nav-diagnose = Diagnose
@@ -1096,7 +1098,7 @@ plugin-inactive = (aktiv efter en genstart)
 plugin-author = Forfatter
 plugin-restart = Genstart programmet, så ændringen træder i kraft.
 publish-heading = Udgiv din egen kilde
-publish-intro = Udfyld felterne for at oprette en pmca-source.yaml-post til dit eget repositorium. Intet uploades her; kopiér eller gem selv resultatet.
+publish-intro = Udfyld felterne for at oprette en pmca-source.yaml-post til dit eget repositorium. Intet uploades her; kopiér eller gem selv resultatet. Giv også repositoriet GitHub-emnet (topic) `pmca-source`, så det kan findes.
 publish-is-plugin = Dette er et plugin, ikke en app
 btn-publish-fetch = Udfyld fra GitHub
 publish-fetch-failed = Kunne ikke læse dette repositorium.

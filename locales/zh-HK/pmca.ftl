@@ -15,6 +15,7 @@ nav-service = 服務模式 Shell
 nav-tools = 檔案工具
 nav-settings = 設定
 nav-license = 授權
+nav-extensions = 擴充功能
 
 # 歡迎頁面：視窗開啟時顯示的頁面。它說明這套工具的用途、
 # 首先要做甚麼，以及哪個頁面解答哪個問題。
@@ -45,7 +46,8 @@ welcome-where-analysis = 查看相機設定記憶體中的所有數值，找出�
 welcome-where-firmware = 將固件映像寫入相機。
 welcome-where-tools = 解開及檢查固件和套件檔案。無需連接相機。
 welcome-where-shell = 服務模式 Shell 及更新模式 Shell：直接存取相機的記憶體及檔案系統。須先在「設定」中開啟進階模式。
-welcome-where-settings = 編輯本程式的翻譯、應用程式及插件來源、插件、更新通知、進階模式及功能分析。
+welcome-where-settings = 編輯本程式的翻譯、更新通知、進階模式及功能分析。
+welcome-where-extensions = 應用程式及插件來源、從中安裝的插件，以及發佈您自己的來源。
 welcome-where-license = 本移植版本的來源、建基於哪些人的成果，以及適用的條款。
 welcome-where-hint = 沒有任何頁面會自行操作相機。在您按下註明會進行讀取或寫入的按鈕之前，本程式不會讀取或寫入任何內容。
 nav-diagnose = 診斷
@@ -1108,7 +1110,7 @@ plugin-inactive = （重新啟動後生效）
 plugin-author = 作者
 plugin-restart = 請重新啟動本程式，令變更生效。
 publish-heading = 發佈您自己的來源
-publish-intro = 填寫以下欄位，為您自己的儲存庫產生 pmca-source.yaml 項目。此處不會上傳任何內容；請自行複製或儲存結果。
+publish-intro = 填寫以下欄位，為您自己的儲存庫產生 pmca-source.yaml 項目。此處不會上傳任何內容；請自行複製或儲存結果。亦請為該儲存庫在 GitHub 上新增主題 (topic) `pmca-source`，以便被搜尋到。
 publish-is-plugin = 這是一個插件，而不是應用程式
 btn-publish-fetch = 從 GitHub 填入
 publish-fetch-failed = 無法讀取此儲存庫。

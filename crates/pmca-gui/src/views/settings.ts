@@ -33,8 +33,6 @@ import {
   writeTestsAllowed,
 } from "../preferences";
 import { syncUpdateToggles } from "../update";
-import { cardPlugins } from "./plugins";
-import { cardPublish, cardSources } from "./sources";
 
 /**
  * Settings: everything about the *content* of a translation.
@@ -48,9 +46,6 @@ import { cardPublish, cardSources } from "./sources";
 export function viewSettings(host: HTMLElement): void {
   host.append(
     cardTranslationEditor(),
-    cardSources(),
-    cardPublish(),
-    cardPlugins(),
     cardUpdateCheck(),
     cardAdvancedMode(),
     cardWriteTests(),

@@ -14,6 +14,7 @@ nav-service = Console de serviço
 nav-tools = Ferramentas de arquivo
 nav-settings = Configurações
 nav-license = Licença
+nav-extensions = Extensões
 
 # Página de boas-vindas: a página com que a janela abre.
 nav-welcome = Boas-vindas
@@ -38,7 +39,8 @@ welcome-where-analysis = Ver todos os valores da memória de configurações da 
 welcome-where-firmware = Gravar uma imagem de firmware na câmera.
 welcome-where-tools = Desempacotar e inspecionar arquivos de firmware e de pacote. Não precisa de câmera.
 welcome-where-shell = Console de serviço e console do atualizador: acesso direto à memória e ao sistema de arquivos da câmera. Antes, ative o modo avançado em Configurações.
-welcome-where-settings = Editar a tradução deste programa, fontes de aplicativos e plug-ins, plug-ins, aviso de atualização, modo avançado e análise de funções.
+welcome-where-settings = Editar a tradução deste programa, aviso de atualização, modo avançado e análise de funções.
+welcome-where-extensions = Fontes de aplicativos e plug-ins, os plug-ins instalados a partir delas e a publicação de sua própria fonte.
 welcome-where-license = De onde vem esta adaptação, sobre o trabalho de quem ela se apoia e sob quais termos é publicada.
 welcome-where-hint = Nenhuma página age sobre a câmera por conta própria. Nada é lido ou gravado até que você pressione um botão que anuncie isso.
 nav-diagnose = Diagnóstico
@@ -1097,7 +1099,7 @@ plugin-inactive = (ativo após reiniciar)
 plugin-author = Autor
 plugin-restart = Reinicie o programa para que a alteração tenha efeito.
 publish-heading = Publicar sua própria fonte
-publish-intro = Preencha os campos para criar uma entrada pmca-source.yaml para seu próprio repositório. Nada é enviado aqui; copie ou salve o resultado você mesmo.
+publish-intro = Preencha os campos para criar uma entrada pmca-source.yaml para seu próprio repositório. Nada é enviado aqui; copie ou salve o resultado você mesmo. Dê também ao repositório o tópico do GitHub `pmca-source`, para que possa ser encontrado.
 publish-is-plugin = Isto é um plug-in, não um aplicativo
 btn-publish-fetch = Preencher a partir do GitHub
 publish-fetch-failed = Não foi possível ler este repositório.

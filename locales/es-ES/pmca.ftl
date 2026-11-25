@@ -14,6 +14,7 @@ nav-service = Consola de servicio
 nav-tools = Herramientas de archivos
 nav-settings = Configuración
 nav-license = Licencia
+nav-extensions = Extensiones
 
 # Página de bienvenida: la página con la que se abre la ventana.
 nav-welcome = Bienvenida
@@ -38,7 +39,8 @@ welcome-where-analysis = Ver todos los valores de la memoria de ajustes de su c�
 welcome-where-firmware = Escribir una imagen de firmware en la cámara.
 welcome-where-tools = Desempaquetar e inspeccionar archivos de firmware y de paquete. No hace falta cámara.
 welcome-where-shell = Shell de servicio y shell del actualizador: acceso directo a la memoria y al sistema de archivos de la cámara. Antes hay que activar el modo avanzado en Configuración.
-welcome-where-settings = Editar la traducción de este programa, fuentes de aplicaciones y complementos, complementos, aviso de actualizaciones, modo avanzado y análisis de funciones.
+welcome-where-settings = Editar la traducción de este programa, aviso de actualizaciones, modo avanzado y análisis de funciones.
+welcome-where-extensions = Fuentes de aplicaciones y complementos, los complementos instalados desde ellas y la publicación de su propia fuente.
 welcome-where-license = De dónde procede esta adaptación, sobre el trabajo de quién se apoya y bajo qué condiciones se publica.
 welcome-where-hint = Ninguna página actúa sobre la cámara por su cuenta. No se lee ni se escribe nada hasta que pulse un botón que lo anuncie.
 nav-diagnose = Diagnóstico
@@ -1097,7 +1099,7 @@ plugin-inactive = (activo tras reiniciar)
 plugin-author = Autor
 plugin-restart = Reinicie el programa para que el cambio surta efecto.
 publish-heading = Publicar su propia fuente
-publish-intro = Complete los campos para generar una entrada pmca-source.yaml para su propio repositorio. Aquí no se sube nada; copie o guarde el resultado usted mismo.
+publish-intro = Complete los campos para generar una entrada pmca-source.yaml para su propio repositorio. Aquí no se sube nada; copie o guarde el resultado usted mismo. Añada también al repositorio el tema (topic) de GitHub `pmca-source`, para que pueda encontrarse.
 publish-is-plugin = Esto es un complemento, no una aplicación
 btn-publish-fetch = Rellenar desde GitHub
 publish-fetch-failed = No se pudo leer este repositorio.

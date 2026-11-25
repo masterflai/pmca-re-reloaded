@@ -14,6 +14,7 @@ nav-service = Shell servis
 nav-tools = Perkakas berkas
 nav-settings = Pengaturan
 nav-license = Lisensi
+nav-extensions = Ekstensi
 
 # Halaman sambutan: halaman yang dibuka pertama kali oleh jendela ini.
 nav-welcome = Selamat datang
@@ -38,7 +39,8 @@ welcome-where-analysis = Lihat semua nilai di memori pengaturan kamera Anda, car
 welcome-where-firmware = Menulis berkas citra firmware ke kamera.
 welcome-where-tools = Membongkar dan memeriksa berkas firmware dan paket. Tanpa kamera.
 welcome-where-shell = Shell servis dan shell updater: akses langsung ke memori dan sistem berkas kamera. Aktifkan dulu mode lanjutan di Pengaturan.
-welcome-where-settings = Menyunting terjemahan program ini, sumber aplikasi dan plugin, plugin, pemberitahuan pembaruan, mode lanjutan, dan analisis fungsi.
+welcome-where-settings = Menyunting terjemahan program ini, pemberitahuan pembaruan, mode lanjutan, dan analisis fungsi.
+welcome-where-extensions = Sumber aplikasi dan plugin, plugin yang dipasang dari sana, dan menerbitkan sumber Anda sendiri.
 welcome-where-license = Dari mana port ini berasal, di atas karya siapa ia dibangun, dan dengan syarat apa ia terbit.
 welcome-where-hint = Tidak ada halaman yang menyentuh kamera dengan sendirinya. Tidak ada yang dibaca atau ditulis sampai Anda menekan tombol yang menyatakannya.
 nav-diagnose = Diagnostik
@@ -1097,7 +1099,7 @@ plugin-inactive = (aktif setelah dimulai ulang)
 plugin-author = Pembuat
 plugin-restart = Mulai ulang program agar perubahan berlaku.
 publish-heading = Terbitkan sumber Anda sendiri
-publish-intro = Isi kolom untuk membuat entri pmca-source.yaml bagi repositori Anda sendiri. Tidak ada yang diunggah di sini; salin atau simpan sendiri hasilnya.
+publish-intro = Isi kolom untuk membuat entri pmca-source.yaml bagi repositori Anda sendiri. Tidak ada yang diunggah di sini; salin atau simpan sendiri hasilnya. Berikan juga topik GitHub `pmca-source` pada repositori, agar dapat ditemukan.
 publish-is-plugin = Ini adalah plugin, bukan aplikasi
 btn-publish-fetch = Isi dari GitHub
 publish-fetch-failed = Repositori ini tidak dapat dibaca.

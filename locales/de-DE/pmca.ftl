@@ -14,6 +14,7 @@ nav-service = Service-Shell
 nav-tools = Dateiwerkzeuge
 nav-settings = Einstellungen
 nav-license = Lizenz
+nav-extensions = Erweiterungen
 
 # Willkommensseite: die Seite, mit der das Fenster startet. Sie sagt, wofür das
 # Toolkit da ist, was zuerst zu tun ist und welche Seite welche Frage beantwortet.
@@ -44,7 +45,8 @@ welcome-where-analysis = Alle Werte im Einstellungsspeicher Ihrer Kamera ansehen
 welcome-where-firmware = Ein Firmware-Abbild auf die Kamera schreiben.
 welcome-where-tools = Firmware- und Paketdateien auspacken und ansehen. Ganz ohne Kamera.
 welcome-where-shell = Service- und Updater-Shell: direkter Zugriff auf Speicher und Dateisystem der Kamera. Vorher in den Einstellungen den erweiterten Modus einschalten.
-welcome-where-settings = Übersetzung bearbeiten, App- und Plugin-Quellen, Plugins, Update-Benachrichtigung, erweiterter Modus und Funktionsanalyse.
+welcome-where-settings = Übersetzung bearbeiten, Update-Benachrichtigung, erweiterter Modus und Funktionsanalyse.
+welcome-where-extensions = App- und Plugin-Quellen, die daraus installierten Plugins und das Veröffentlichen einer eigenen Quelle.
 welcome-where-license = Woher diese Portierung stammt, auf wessen Arbeit sie aufbaut und unter welchen Bedingungen sie steht.
 welcome-where-hint = Keine Seite greift von sich aus auf die Kamera zu. Es wird nichts gelesen oder geschrieben, bevor Sie eine Schaltfläche drücken, die das ankündigt.
 nav-diagnose = Diagnose
@@ -1103,7 +1105,7 @@ plugin-inactive = (aktiv nach einem Neustart)
 plugin-author = Autor
 plugin-restart = Starten Sie das Programm neu, damit die Änderung wirksam wird.
 publish-heading = Eigene Quelle veröffentlichen
-publish-intro = Füllen Sie die Felder aus, um einen pmca-source.yaml-Eintrag für Ihr eigenes Repository zu erzeugen. Hier wird nichts hochgeladen; kopieren oder speichern Sie das Ergebnis selbst.
+publish-intro = Füllen Sie die Felder aus, um einen pmca-source.yaml-Eintrag für Ihr eigenes Repository zu erzeugen. Hier wird nichts hochgeladen; kopieren oder speichern Sie das Ergebnis selbst. Geben Sie dem Repository auf GitHub außerdem das Thema (Topic) `pmca-source`, damit es gefunden werden kann.
 publish-is-plugin = Dies beschreibt ein Plugin, keine App
 btn-publish-fetch = Aus GitHub übernehmen
 publish-fetch-failed = Dieses Repository konnte nicht gelesen werden.

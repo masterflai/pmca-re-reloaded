@@ -15,6 +15,7 @@ nav-service = Trình bao dịch vụ
 nav-tools = Công cụ tệp
 nav-settings = Cài đặt
 nav-license = Giấy phép
+nav-extensions = Tiện ích mở rộng
 
 # Trang chào mừng: trang hiển thị khi cửa sổ mở ra. Trang này cho biết bộ công cụ
 # dùng để làm gì, cần làm gì trước tiên và trang nào trả lời câu hỏi nào.
@@ -45,7 +46,8 @@ welcome-where-analysis = Xem mọi giá trị trong bộ nhớ cài đặt của
 welcome-where-firmware = Ghi một bản phần sụn vào máy ảnh.
 welcome-where-tools = Giải nén và kiểm tra các tệp phần sụn và tệp gói. Không cần máy ảnh.
 welcome-where-shell = Trình bao dịch vụ và trình bao cập nhật: truy cập trực tiếp vào bộ nhớ và hệ thống tệp của máy ảnh. Trước tiên hãy bật chế độ nâng cao trong Cài đặt.
-welcome-where-settings = Chỉnh sửa bản dịch của chương trình này, nguồn ứng dụng và plugin, plugin, thông báo cập nhật, chế độ nâng cao và phân tích chức năng.
+welcome-where-settings = Chỉnh sửa bản dịch của chương trình này, thông báo cập nhật, chế độ nâng cao và phân tích chức năng.
+welcome-where-extensions = Nguồn ứng dụng và plugin, các plugin được cài đặt từ đó, và xuất bản nguồn của riêng bạn.
 welcome-where-license = Bản chuyển đổi này bắt nguồn từ đâu, dựa trên công sức của ai và tuân theo những điều khoản nào.
 welcome-where-hint = Không trang nào tự tác động đến máy ảnh. Không có gì được đọc hoặc ghi cho đến khi bạn nhấn một nút ghi rõ sẽ làm việc đó.
 nav-diagnose = Chẩn đoán
@@ -1108,7 +1110,7 @@ plugin-inactive = (hoạt động sau khi khởi động lại)
 plugin-author = Tác giả
 plugin-restart = Khởi động lại chương trình để thay đổi có hiệu lực.
 publish-heading = Xuất bản nguồn của riêng bạn
-publish-intro = Điền vào các trường để tạo mục pmca-source.yaml cho kho lưu trữ của riêng bạn. Không có gì được tải lên ở đây; hãy tự sao chép hoặc lưu kết quả.
+publish-intro = Điền vào các trường để tạo mục pmca-source.yaml cho kho lưu trữ của riêng bạn. Không có gì được tải lên ở đây; hãy tự sao chép hoặc lưu kết quả. Hãy gắn thêm chủ đề (topic) GitHub `pmca-source` cho kho lưu trữ, để có thể tìm thấy nó.
 publish-is-plugin = Đây là plugin, không phải ứng dụng
 btn-publish-fetch = Điền từ GitHub
 publish-fetch-failed = Không thể đọc kho lưu trữ này.

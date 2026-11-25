@@ -15,6 +15,7 @@ nav-service = Service shell
 nav-tools = File tools
 nav-settings = Settings
 nav-license = License
+nav-extensions = Extensions
 
 # Welcome page: the page the window opens on. It says what the toolkit is for,
 # what to do first, and which page answers which question.
@@ -45,7 +46,8 @@ welcome-where-analysis = Look at every value in your camera's settings memory, f
 welcome-where-firmware = Write a firmware image to the camera.
 welcome-where-tools = Unpack and inspect firmware and package files. Needs no camera.
 welcome-where-shell = The service shell and the updater shell: direct access to the camera's memory and filesystem. Switch on the advanced mode in Settings first.
-welcome-where-settings = Editing the translation of this program, app and plugin sources, plugins, the update notification, the advanced mode and the function analysis.
+welcome-where-settings = Editing the translation of this program, the update notification, the advanced mode and the function analysis.
+welcome-where-extensions = App and plugin sources, the plugins installed from them, and publishing a source of your own.
 welcome-where-license = Where this port came from, whose work it builds on, and the terms it is under.
 welcome-where-hint = No page acts on the camera by itself. Nothing is read or written until you press a button that says it will.
 nav-diagnose = Diagnosis
@@ -1108,7 +1110,7 @@ plugin-inactive = (active after a restart)
 plugin-author = Author
 plugin-restart = Restart the program for the change to take effect.
 publish-heading = Publish your own source
-publish-intro = Fill in the fields to build a pmca-source.yaml entry for your own repository. Nothing is uploaded here; copy or save the result yourself.
+publish-intro = Fill in the fields to build a pmca-source.yaml entry for your own repository. Nothing is uploaded here; copy or save the result yourself. Give the repository the GitHub topic `pmca-source` as well, so it can be found.
 publish-is-plugin = This is a plugin, not an app
 btn-publish-fetch = Fill in from GitHub
 publish-fetch-failed = Could not read this repository.

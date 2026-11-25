@@ -15,6 +15,7 @@ nav-service = Powłoka serwisowa
 nav-tools = Narzędzia plikowe
 nav-settings = Ustawienia
 nav-license = Licencja
+nav-extensions = Rozszerzenia
 
 # Strona powitalna: strona, od której zaczyna się okno.
 nav-welcome = Powitanie
@@ -39,7 +40,8 @@ welcome-where-analysis = Zobacz wszystkie wartości w pamięci ustawień aparatu
 welcome-where-firmware = Zapisać obraz oprogramowania układowego w aparacie.
 welcome-where-tools = Rozpakować i obejrzeć pliki oprogramowania układowego i pakietów. Bez aparatu.
 welcome-where-shell = Powłoka serwisowa i powłoka aktualizatora: bezpośredni dostęp do pamięci i systemu plików aparatu. Najpierw włącz tryb zaawansowany w Ustawieniach.
-welcome-where-settings = Edycja tłumaczenia tego programu, źródła aplikacji i wtyczek, wtyczki, powiadomienie o aktualizacji, tryb zaawansowany i analiza funkcji.
+welcome-where-settings = Edycja tłumaczenia tego programu, powiadomienie o aktualizacji, tryb zaawansowany i analiza funkcji.
+welcome-where-extensions = Źródła aplikacji i wtyczek, wtyczki zainstalowane z nich oraz publikowanie własnego źródła.
 welcome-where-license = Skąd pochodzi ten port, na czyjej pracy się opiera i na jakich warunkach jest udostępniony.
 welcome-where-hint = Żadna strona nie działa na aparat sama z siebie. Nic nie jest odczytywane ani zapisywane, dopóki nie naciśniesz przycisku, który to zapowiada.
 nav-diagnose = Diagnostyka
@@ -1096,7 +1098,7 @@ plugin-inactive = (aktywna po ponownym uruchomieniu)
 plugin-author = Autor
 plugin-restart = Zmiana zacznie obowiązywać po ponownym uruchomieniu programu.
 publish-heading = Opublikuj własne źródło
-publish-intro = Wypełnij pola, aby utworzyć wpis pmca-source.yaml dla własnego repozytorium. Nic nie jest tu przesyłane; wynik skopiuj lub zapisz samodzielnie.
+publish-intro = Wypełnij pola, aby utworzyć wpis pmca-source.yaml dla własnego repozytorium. Nic nie jest tu przesyłane; wynik skopiuj lub zapisz samodzielnie. Nadaj repozytorium na GitHubie również temat (topic) `pmca-source`, aby można było je znaleźć.
 publish-is-plugin = To jest wtyczka, a nie aplikacja
 btn-publish-fetch = Wypełnij z GitHuba
 publish-fetch-failed = Nie udało się odczytać tego repozytorium.

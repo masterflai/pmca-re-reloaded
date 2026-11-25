@@ -758,6 +758,12 @@ summary {
   border-top: 1px solid var(--border);
 }
 
+/* Between the version text above and the install row the banner adds once a
+   download is possible; without this the button sits flush under the text. */
+.update-install {
+  margin-top: 12px;
+}
+
 .update-optin .row {
   margin-bottom: 4px;
 }

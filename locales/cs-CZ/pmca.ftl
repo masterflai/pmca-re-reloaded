@@ -15,6 +15,7 @@ nav-service = Servisní shell
 nav-tools = Souborové nástroje
 nav-settings = Nastavení
 nav-license = Licence
+nav-extensions = Rozšíření
 
 # Úvodní stránka: stránka, kterou okno otevírá.
 nav-welcome = Vítejte
@@ -39,7 +40,8 @@ welcome-where-analysis = Prohlédnout všechny hodnoty v paměti nastavení foto
 welcome-where-firmware = Zapsat obraz firmwaru do fotoaparátu.
 welcome-where-tools = Rozbalit a prohlédnout si soubory firmwaru a balíčků. Bez fotoaparátu.
 welcome-where-shell = Servisní shell a shell updateru: přímý přístup k paměti a souborovému systému fotoaparátu. Nejprve v Nastavení zapněte rozšířený režim.
-welcome-where-settings = Úprava překladu tohoto programu, zdroje aplikací a zásuvných modulů, zásuvné moduly, upozornění na aktualizace, rozšířený režim a analýza funkcí.
+welcome-where-settings = Úprava překladu tohoto programu, upozornění na aktualizace, rozšířený režim a analýza funkcí.
+welcome-where-extensions = Zdroje aplikací a zásuvných modulů, z nich nainstalované zásuvné moduly a zveřejnění vlastního zdroje.
 welcome-where-license = Odkud tento převod pochází, na čí práci staví a za jakých podmínek je zveřejněn.
 welcome-where-hint = Žádná stránka na fotoaparát sama od sebe nesahá. Nic se nečte ani nezapisuje, dokud nestisknete tlačítko, které to ohlašuje.
 nav-diagnose = Diagnostika
@@ -1096,7 +1098,7 @@ plugin-inactive = (aktivní po restartu)
 plugin-author = Autor
 plugin-restart = Změna se projeví po restartu programu.
 publish-heading = Zveřejnit vlastní zdroj
-publish-intro = Vyplňte pole a vytvořte záznam pmca-source.yaml pro svůj vlastní repozitář. Nic se zde nenahrává; výsledek si sami zkopírujte nebo uložte.
+publish-intro = Vyplňte pole a vytvořte záznam pmca-source.yaml pro svůj vlastní repozitář. Nic se zde nenahrává; výsledek si sami zkopírujte nebo uložte. Repozitáři na GitHubu také přidejte téma (topic) `pmca-source`, aby bylo možné jej najít.
 publish-is-plugin = Toto je zásuvný modul, ne aplikace
 btn-publish-fetch = Vyplnit z GitHubu
 publish-fetch-failed = Tento repozitář se nepodařilo přečíst.

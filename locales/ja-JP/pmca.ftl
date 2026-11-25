@@ -14,6 +14,7 @@ nav-service = サービスシェル
 nav-tools = ファイルツール
 nav-settings = 設定
 nav-license = ライセンス
+nav-extensions = 拡張機能
 
 # ようこそページ：ウィンドウを開いたときに最初に表示されるページ。
 nav-welcome = ようこそ
@@ -38,7 +39,8 @@ welcome-where-analysis = カメラの設定メモリーのすべての値を見�
 welcome-where-firmware = ファームウェアイメージをカメラに書き込みます。
 welcome-where-tools = ファームウェアやパッケージのファイルを展開して調べます。カメラは不要です。
 welcome-where-shell = サービスシェルとアップデーターシェル：カメラのメモリとファイルシステムへの直接アクセス。先に「設定」で拡張モードをオンにしてください。
-welcome-where-settings = このプログラムの翻訳の編集、アプリとプラグインのソース、プラグイン、更新通知、拡張モード、機能解析。
+welcome-where-settings = このプログラムの翻訳の編集、更新通知、拡張モード、機能解析。
+welcome-where-extensions = アプリとプラグインのソース、そこからインストールしたプラグイン、自分のソースの公開。
 welcome-where-license = この移植版の出所、どなたの仕事に基づいているか、そしてどのような条件で公開されているか。
 welcome-where-hint = どのページも勝手にカメラを操作することはありません。その旨を示すボタンを押すまで、読み取りも書き込みも行われません。
 nav-diagnose = 診断
@@ -1095,7 +1097,7 @@ plugin-inactive = （再起動後に有効）
 plugin-author = 作成者
 plugin-restart = 変更を反映するには、プログラムを再起動してください。
 publish-heading = 自分のソースを公開
-publish-intro = 項目を入力すると、自分のリポジトリ用の pmca-source.yaml エントリを作成できます。ここでは何もアップロードされません。結果は自分でコピーまたは保存してください。
+publish-intro = 項目を入力すると、自分のリポジトリ用の pmca-source.yaml エントリを作成できます。ここでは何もアップロードされません。結果は自分でコピーまたは保存してください。見つけてもらえるように、リポジトリに GitHub のトピック `pmca-source` も付けてください。
 publish-is-plugin = これはプラグインであり、アプリではありません
 btn-publish-fetch = GitHub から入力
 publish-fetch-failed = このリポジトリを読み取れませんでした。

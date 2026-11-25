@@ -15,6 +15,7 @@ nav-service = 서비스 셸
 nav-tools = 파일 도구
 nav-settings = 설정
 nav-license = 라이선스
+nav-extensions = 확장 기능
 
 # 시작 페이지: 창이 열릴 때 처음 표시되는 페이지입니다. 이 툴킷의 용도와
 # 가장 먼저 할 일, 그리고 어느 페이지가 어떤 질문에 답하는지 알려 줍니다.
@@ -45,7 +46,8 @@ welcome-where-analysis = 카메라 설정 메모리의 모든 값을 보거나, 
 welcome-where-firmware = 펌웨어 이미지를 카메라에 기록합니다.
 welcome-where-tools = 펌웨어 파일과 패키지 파일의 압축을 풀고 검사합니다. 카메라가 필요하지 않습니다.
 welcome-where-shell = 서비스 셸과 업데이터 셸: 카메라의 메모리와 파일 시스템에 직접 접근합니다. 먼저 설정에서 고급 모드를 켜야 합니다.
-welcome-where-settings = 이 프로그램의 번역 편집, 앱 및 플러그인 소스, 플러그인, 업데이트 알림, 고급 모드, 기능 분석입니다.
+welcome-where-settings = 이 프로그램의 번역 편집, 업데이트 알림, 고급 모드, 기능 분석입니다.
+welcome-where-extensions = 앱 및 플러그인 소스, 거기서 설치한 플러그인, 그리고 내 소스 게시입니다.
 welcome-where-license = 이 포트의 출처, 기반이 된 작업의 저작자, 적용되는 라이선스 조건입니다.
 welcome-where-hint = 어떤 페이지도 스스로 카메라에 작업하지 않습니다. 해당 작업을 한다고 표시된 버튼을 누르기 전에는 아무것도 읽거나 쓰지 않습니다.
 nav-diagnose = 진단
@@ -1108,7 +1110,7 @@ plugin-inactive = (다시 시작한 후 활성화됨)
 plugin-author = 작성자
 plugin-restart = 변경 사항을 적용하려면 프로그램을 다시 시작하십시오.
 publish-heading = 내 소스 게시
-publish-intro = 필드를 채우면 자신의 저장소용 pmca-source.yaml 항목이 만들어집니다. 여기서는 아무것도 업로드되지 않습니다. 결과는 직접 복사하거나 저장하세요.
+publish-intro = 필드를 채우면 자신의 저장소용 pmca-source.yaml 항목이 만들어집니다. 여기서는 아무것도 업로드되지 않습니다. 결과는 직접 복사하거나 저장하세요. 저장소를 찾을 수 있도록 GitHub 토픽 `pmca-source`도 함께 지정하세요.
 publish-is-plugin = 이것은 앱이 아니라 플러그인입니다
 btn-publish-fetch = GitHub에서 채우기
 publish-fetch-failed = 이 저장소를 읽을 수 없습니다.

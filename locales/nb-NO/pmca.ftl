@@ -15,6 +15,7 @@ nav-service = Servicekonsoll
 nav-tools = Filverktøy
 nav-settings = Innstillinger
 nav-license = Lisens
+nav-extensions = Utvidelser
 
 # Velkomstside: siden vinduet åpner på.
 nav-welcome = Velkommen
@@ -39,7 +40,8 @@ welcome-where-analysis = Se alle verdiene i kameraets innstillingsminne, finn ut
 welcome-where-firmware = Skrive et fastvarebilde til kameraet.
 welcome-where-tools = Pakke ut og se på fastvare- og pakkefiler. Uten kamera.
 welcome-where-shell = Servicekonsollen og updater-konsollen: direkte tilgang til kameraets minne og filsystem. Slå først på avansert modus under Innstillinger.
-welcome-where-settings = Rediger oversettelsen av dette programmet, kilder for apper og programtillegg, programtillegg, oppdateringsvarsel, avansert modus og funksjonsanalyse.
+welcome-where-settings = Rediger oversettelsen av dette programmet, oppdateringsvarsel, avansert modus og funksjonsanalyse.
+welcome-where-extensions = Kilder for apper og programtillegg, programtilleggene installert fra dem, og publisering av din egen kilde.
 welcome-where-license = Hvor denne porteringen kommer fra, hvem sitt arbeid den bygger på, og hvilke vilkår den står under.
 welcome-where-hint = Ingen side gjør noe med kameraet av seg selv. Ingenting leses eller skrives før du trykker på en knapp som sier det.
 nav-diagnose = Diagnose
@@ -1097,7 +1099,7 @@ plugin-inactive = (aktivt etter en omstart)
 plugin-author = Forfatter
 plugin-restart = Start programmet på nytt for at endringen skal tre i kraft.
 publish-heading = Publiser din egen kilde
-publish-intro = Fyll ut feltene for å lage en pmca-source.yaml-oppføring for ditt eget repositorium. Ingenting lastes opp her; kopiér eller lagre resultatet selv.
+publish-intro = Fyll ut feltene for å lage en pmca-source.yaml-oppføring for ditt eget repositorium. Ingenting lastes opp her; kopiér eller lagre resultatet selv. Gi også repositoriet GitHub-emnet (topic) `pmca-source`, slik at det kan bli funnet.
 publish-is-plugin = Dette er et programtillegg, ikke en app
 btn-publish-fetch = Fyll ut fra GitHub
 publish-fetch-failed = Kunne ikke lese dette repositoriet.

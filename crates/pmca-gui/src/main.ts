@@ -46,6 +46,7 @@ import { viewAnalysis } from "./views/analysis";
 import { viewBackup } from "./views/backup";
 import { viewCameraInfo, viewCompatibility } from "./views/camera";
 import { viewDiagnose } from "./views/diagnose";
+import { viewExtensions } from "./views/extensions";
 import { viewFirmware } from "./views/firmware";
 import { viewInstall } from "./views/install";
 import { viewLicense } from "./views/license";
@@ -75,6 +76,7 @@ const VIEWS: Record<string, (host: HTMLElement) => void> = {
   updater: viewUpdater,
   tools: viewTools,
   settings: viewSettings,
+  extensions: viewExtensions,
   license: viewLicense,
 };
 

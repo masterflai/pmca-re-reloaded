@@ -14,6 +14,7 @@ nav-service = Servis kabuğu
 nav-tools = Dosya araçları
 nav-settings = Ayarlar
 nav-license = Lisans
+nav-extensions = Uzantılar
 
 # Karşılama sayfası: pencerenin açıldığı sayfa.
 nav-welcome = Hoş geldiniz
@@ -38,7 +39,8 @@ welcome-where-analysis = Kameranızın ayar belleğindeki tüm değerleri görü
 welcome-where-firmware = Kameraya bir ürün yazılımı görüntüsü yazmak.
 welcome-where-tools = Ürün yazılımı ve paket dosyalarını açıp incelemek. Kamera gerekmez.
 welcome-where-shell = Servis kabuğu ve güncelleyici kabuğu: kameranın belleğine ve dosya sistemine doğrudan erişim. Önce Ayarlar'da gelişmiş kipi açın.
-welcome-where-settings = Bu programın çevirisini düzenleme, uygulama ve eklenti kaynakları, eklentiler, güncelleme bildirimi, gelişmiş kip ve işlev analizi.
+welcome-where-settings = Bu programın çevirisini düzenleme, güncelleme bildirimi, gelişmiş kip ve işlev analizi.
+welcome-where-extensions = Uygulama ve eklenti kaynakları, buralardan yüklenen eklentiler ve kendi kaynağınızı yayımlama.
 welcome-where-license = Bu aktarımın nereden geldiği, kimin çalışmasına dayandığı ve hangi koşullarla yayımlandığı.
 welcome-where-hint = Hiçbir sayfa kameraya kendiliğinden dokunmaz. Bunu bildiren bir düğmeye basmadıkça ne okuma ne de yazma yapılır.
 nav-diagnose = Tanılama
@@ -1097,7 +1099,7 @@ plugin-inactive = (yeniden başlatmadan sonra etkin)
 plugin-author = Yazar
 plugin-restart = Değişikliğin geçerli olması için programı yeniden başlatın.
 publish-heading = Kendi kaynağınızı yayımlayın
-publish-intro = Kendi deponuz için bir pmca-source.yaml girdisi oluşturmak üzere alanları doldurun. Burada hiçbir şey yüklenmez; sonucu kendiniz kopyalayın veya kaydedin.
+publish-intro = Kendi deponuz için bir pmca-source.yaml girdisi oluşturmak üzere alanları doldurun. Burada hiçbir şey yüklenmez; sonucu kendiniz kopyalayın veya kaydedin. Bulunabilmesi için depoya GitHub'ta `pmca-source` konusunu (topic) da verin.
 publish-is-plugin = Bu bir eklenti, uygulama değil
 btn-publish-fetch = GitHub'tan doldur
 publish-fetch-failed = Bu depo okunamadı.
