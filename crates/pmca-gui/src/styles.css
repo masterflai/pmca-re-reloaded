@@ -529,6 +529,16 @@ select {
   cursor: pointer;
 }
 
+/*
+ * The open dropdown list paints each row with the `<option>`'s own colours,
+ * not the `<select>`'s — `color-scheme` alone leaves it white in dark mode
+ * because no author background/colour was set on the options themselves.
+ */
+option {
+  background: var(--control);
+  color: var(--text);
+}
+
 .view {
   margin-top: 20px;
   flex: 1;
