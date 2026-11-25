@@ -35,6 +35,10 @@ All notable changes to this project are documented here. The format follows
 - The in-app theme choice now also applies to native dialogs (the privacy
   confirmation, update prompts), which previously always followed the
   system theme regardless of what was chosen in the app.
+- The translation editor's suggestion-link button stays hidden, instead of
+  merely disabled, until there is a change to suggest.
+- Searching GitHub for projects no longer lists ones already pinned, and
+  says so when every match is already pinned.
 - Linux: the AppImage is renamed back to match the new version after an
   in-app self-update, instead of keeping the previous version's filename.
 
