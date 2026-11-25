@@ -1,6 +1,7 @@
 /** User preferences kept in local storage: advanced mode, the function analysis switch, the update notification and the theme. */
 
 import { invoke } from "@tauri-apps/api/core";
+import { getCurrentWindow } from "@tauri-apps/api/window";
 import { tr } from "./i18n";
 
 // ---------------------------------------------------------------------------
@@ -233,6 +234,13 @@ export function applyTheme(theme: Theme): void {
   } catch {
     /* the choice still applies to this session */
   }
+  // Native dialogs (the privacy confirmation, update prompts) are drawn by the
+  // OS and never see the page's CSS; without this they stay on the system
+  // theme even when the user overrides it in-app. A window not yet granted
+  // the permission, or none at all in a test harness, must not break startup.
+  void getCurrentWindow()
+    .setTheme(theme === "system" ? null : theme)
+    .catch(() => {});
   renderThemeSwitch();
 }
 
