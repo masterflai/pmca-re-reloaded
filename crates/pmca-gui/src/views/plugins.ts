@@ -55,7 +55,13 @@ export function pluginText(key: string | null, written: string): string {
  * checked. Changes apply at the next start, which the card says whenever the
  * installed set differs from the one in effect.
  */
-export function cardPlugins(): HTMLElement {
+export interface PluginsCard {
+  element: HTMLElement;
+  /** Re-read the installed list; used after installing one from a source. */
+  refresh: () => Promise<void>;
+}
+
+export function cardPlugins(): PluginsCard {
   const status = statusLine();
   const list = make("div", { className: "plugin-list" });
   const restart = make("p", { className: "warning", i18n: "plugin-restart" });
@@ -130,19 +136,38 @@ export function cardPlugins(): HTMLElement {
     }
   });
 
-  const sources = pluginSources(() => void refresh().catch((e) => showError(status, e)));
+  async function safeRefresh(): Promise<void> {
+    try {
+      await refresh();
+    } catch (e) {
+      showError(status, e);
+    }
+  }
 
-  refresh().catch((e) => showError(status, e));
-  return card(
-    make("h2", { i18n: "plugin-heading" }),
-    make("p", { i18n: "plugin-intro" }),
-    list,
-    restart,
-    make("div", { className: "row" }, install),
-    status,
-    make("h3", { i18n: "plugin-sources-heading" }),
-    ...sources,
-  );
+  void safeRefresh();
+  return {
+    element: card(
+      make("h2", { i18n: "plugin-heading" }),
+      make("p", { i18n: "plugin-intro" }),
+      list,
+      restart,
+      make("div", { className: "row" }, install),
+      status,
+    ),
+    refresh: safeRefresh,
+  };
+}
+
+/**
+ * The plugins the user's sources offer, as a card of its own.
+ *
+ * Kept apart from {@link cardPlugins}: one card is the installed list, the
+ * other is a catalogue to pick from, and showing both under one heading
+ * reads as if the catalogue were already installed. `installed` runs after a
+ * plugin from here was installed, so the other card's list can catch up.
+ */
+export function cardPluginSources(installed: () => void): HTMLElement {
+  return card(make("h2", { i18n: "plugin-sources-heading" }), ...pluginSources(installed));
 }
 
 /**
