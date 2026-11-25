@@ -6,6 +6,38 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+## [1.16.0] - 2026-11-25
+
+### Added
+
+- An Extensions page, split out of Settings, gathers sources, installed
+  plugins, available plugins and publishing in one place; Settings keeps the
+  translation editor, the update check, advanced mode and write tests.
+- Pasting a GitHub link into the publish-a-source form fills in the
+  repository's name, homepage and star count, and suggests a plugin id from
+  the repository name once "plugin" is chosen.
+- The translation editor can copy a GitHub issue link pre-filled with your
+  own changes, and a new card builds a pmca-source.yaml entry to copy or
+  save for publishing your own app or plugin source.
+- Plugin rows fold their author, description, signer and permissions behind
+  the same disclosure already used for sources and search results.
+
+### Changed
+
+- The Extensions page's sources card now explains that it only manages
+  which repositories you trust, not the apps or plugins themselves, and
+  points to where those live.
+
+### Fixed
+
+- Dark-mode dropdown lists, such as the language picker, now stay dark once
+  opened; the earlier colour-scheme fix did not reach the option list itself.
+- The in-app theme choice now also applies to native dialogs (the privacy
+  confirmation, update prompts), which previously always followed the
+  system theme regardless of what was chosen in the app.
+- Linux: the AppImage is renamed back to match the new version after an
+  in-app self-update, instead of keeping the previous version's filename.
+
 ## [1.15.1] - 2026-11-24
 
 ### Fixed
@@ -1123,6 +1155,7 @@ and Linux.
 - **Device list** in the app with the functions each known model supports,
   plus community reports for further models.
 
+[1.16.0]: https://github.com/masterflai/pmca-re-reloaded/compare/v1.15.1...v1.16.0
 [1.15.1]: https://github.com/masterflai/pmca-re-reloaded/compare/v1.15.0...v1.15.1
 [1.15.0]: https://github.com/masterflai/pmca-re-reloaded/compare/v1.14.1...v1.15.0
 [1.14.1]: https://github.com/masterflai/pmca-re-reloaded/compare/v1.14.0...v1.14.1

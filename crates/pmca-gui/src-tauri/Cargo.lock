@@ -2848,7 +2848,7 @@ dependencies = [
 
 [[package]]
 name = "pmca-apk"
-version = "1.15.1"
+version = "1.16.0"
 dependencies = [
  "num-bigint",
  "sha1",
@@ -2859,7 +2859,7 @@ dependencies = [
 
 [[package]]
 name = "pmca-app"
-version = "1.15.1"
+version = "1.16.0"
 dependencies = [
  "pmca-apk",
  "pmca-core",
@@ -2878,7 +2878,7 @@ dependencies = [
 
 [[package]]
 name = "pmca-core"
-version = "1.15.1"
+version = "1.16.0"
 dependencies = [
  "aes",
  "cipher",
@@ -2891,7 +2891,7 @@ dependencies = [
 
 [[package]]
 name = "pmca-gui-tauri"
-version = "1.15.1"
+version = "1.16.0"
 dependencies = [
  "pmca-app",
  "pmca-i18n",
@@ -2906,7 +2906,7 @@ dependencies = [
 
 [[package]]
 name = "pmca-i18n"
-version = "1.15.1"
+version = "1.16.0"
 dependencies = [
  "fluent",
  "fluent-langneg",
@@ -2917,7 +2917,7 @@ dependencies = [
 
 [[package]]
 name = "pmca-market"
-version = "1.15.1"
+version = "1.16.0"
 dependencies = [
  "aes",
  "cbc",
@@ -2937,7 +2937,7 @@ dependencies = [
 
 [[package]]
 name = "pmca-platform"
-version = "1.15.1"
+version = "1.16.0"
 dependencies = [
  "pmca-core",
  "thiserror 2.0.21",
@@ -2945,7 +2945,7 @@ dependencies = [
 
 [[package]]
 name = "pmca-usb"
-version = "1.15.1"
+version = "1.16.0"
 dependencies = [
  "core-foundation-sys",
  "io-kit-sys",
